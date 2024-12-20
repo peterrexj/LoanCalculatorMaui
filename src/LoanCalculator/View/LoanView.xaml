@@ -1,0 +1,1580 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="LoanCalculatorMaui.View.LoanView"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:buttons="clr-namespace:Syncfusion.Maui.Buttons;assembly=Syncfusion.Maui.Buttons"
+    xmlns:chart="clr-namespace:Syncfusion.Maui.Charts;assembly=Syncfusion.Maui.Charts"
+    xmlns:core="http://schemas.syncfusion.com/maui"
+    xmlns:datagrid="clr-namespace:Syncfusion.Maui.DataGrid;assembly=Syncfusion.Maui.DataGrid"
+    xmlns:editors="clr-namespace:Syncfusion.Maui.Inputs;assembly=Syncfusion.Maui.Inputs"
+    xmlns:expander="clr-namespace:Syncfusion.Maui.Expander;assembly=Syncfusion.Maui.Expander"
+    xmlns:pager="clr-namespace:Syncfusion.Maui.DataGrid.DataPager;assembly=Syncfusion.Maui.DataGrid"
+    xmlns:range="clr-namespace:Syncfusion.Maui.Sliders;assembly=Syncfusion.Maui.Sliders"
+    xmlns:system="clr-namespace:System;assembly=System.Runtime"
+    xmlns:tabView="clr-namespace:Syncfusion.Maui.TabView;assembly=Syncfusion.Maui.TabView"
+    xmlns:viewmodel="clr-namespace:LoanCalculatorMaui.ViewModel"
+    Title="LoanView"
+    x:DataType="viewmodel:LoanViewModel">
+    <ContentPage.Content>
+        <Grid>
+            <tabView:SfTabView
+                x:Name="TabView"
+                IndicatorPlacement="Bottom"
+                IndicatorStrokeThickness="10"
+                SelectionChanged="OnTabSelectionChanged"
+                TabBarBackground="Transparent">
+                <tabView:SfTabView.IndicatorBackground>
+                    <SolidColorBrush Color="{Binding DefaultStyle.DefaultTabStrokeColor, Converter={StaticResource StringToBrushConverter}}" />
+                </tabView:SfTabView.IndicatorBackground>
+                <tabView:SfTabItem x:Name="tabDefinitions" Header="Property">
+                    <tabView:SfTabItem.Content>
+                        <ScrollView>
+                            <StackLayout>
+
+                                <Grid HorizontalOptions="Center" VerticalOptions="Center">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="100*" />
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="80" />
+                                    </Grid.RowDefinitions>
+                                    <Label
+                                        Grid.Row="0"
+                                        Grid.Column="0"
+                                        Padding="20,5,20,5"
+                                        FontFamily="{Binding DefaultStyle.DefaultFontFamily}"
+                                        HorizontalOptions="Center"
+                                        HorizontalTextAlignment="Center"
+                                        Text="This loan calculator app is intended for informational purposes only and should not be considered a substitute for professional financial advice. It is highly recommended that you consult with your financial adviser before making any financial decisions."
+                                        TextColor="{Binding DefaultStyle.NotificationBgColor, Converter={StaticResource StringToColorConverter}}"
+                                        VerticalOptions="Center"
+                                        VerticalTextAlignment="Center" />
+                                </Grid>
+
+                                <FlexLayout Margin="0,5,0,0">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="10" />
+                                            <ColumnDefinition Width="33*" />
+                                            <ColumnDefinition Width="33*" />
+                                            <ColumnDefinition Width="33*" />
+                                            <ColumnDefinition Width="10" />
+                                        </Grid.ColumnDefinitions>
+
+                                        <Border
+                                            Grid.Row="0"
+                                            Grid.Column="1"
+                                            Stroke="{Binding DefaultStyle.HighlightBoxBorderColor, Converter={StaticResource StringToColorConverter}}"
+                                            StrokeThickness="2"
+                                            Style="{StaticResource SfBorderTopHighlightBox}">
+                                            <ContentView>
+                                                <Grid>
+                                                    <StackLayout>
+                                                        <Grid>
+                                                            <Grid.RowDefinitions>
+                                                                <RowDefinition Height="10" />
+                                                                <RowDefinition Height="Auto" />
+                                                                <RowDefinition Height="10" />
+                                                            </Grid.RowDefinitions>
+                                                            <StackLayout
+                                                                Grid.Row="1"
+                                                                HorizontalOptions="Fill"
+                                                                VerticalOptions="Fill">
+                                                                <Label
+                                                                    Margin="5,0,5,0"
+                                                                    HorizontalTextAlignment="Center"
+                                                                    TextColor="{Binding DefaultStyle.HighlightFgColor, Converter={StaticResource StringToColorConverter}}"
+                                                                    VerticalTextAlignment="Center">
+                                                                    <Label.FormattedText>
+                                                                        <FormattedString>
+                                                                            <Span
+                                                                                CharacterSpacing="1"
+                                                                                FontAttributes="Bold"
+                                                                                FontFamily="{Binding DefaultStyle.DefaultFontFamily}"
+                                                                                FontSize="{Binding DefaultStyle.BoxItemCurrencyFontSize}"
+                                                                                Text="{Binding CurrencySymbol}" />
+                                                                            <!--<Span Text=" " />-->
+                                                                            <Span
+                                                                                CharacterSpacing="-1"
+                                                                                FontAttributes="Bold"
+                                                                                FontFamily="{Binding DefaultStyle.DefaultFontFamily}"
+                                                                                FontSize="{Binding DefaultStyle.BoxItemHighlightNumberFontSize}"
+                                                                                Text="{Binding HomeLoanInfo.PaymentSummary.Payment.TermPaymentRoundedWithComma}" />
+                                                                            <Span Text="{Binding NewLine}" />
+                                                                            <!--<Span FontFamily="{Binding DefaultStyle.DefaultFontFamily}" Text=" per" />-->
+                                                                            <Span
+                                                                                FontFamily="{Binding DefaultStyle.DefaultFontFamily}"
+                                                                                FontSize="12"
+                                                                                Text="{Binding RepaymentFrequencySelected}" />
+                                                                            <Span Text=" " />
+
+                                                                            <!--<Span
+                FontFamily="{Binding DefaultStyle.DefaultFontFamily}"
+                FontSize="12"
+                Text=" for " />-->
+                                                                            <Span
+                                                                                CharacterSpacing="-1"
+                                                                                FontAttributes="Bold"
+                                                                                FontFamily="{Binding DefaultStyle.DefaultFontFamily}"
+                                                                                FontSize="16"
+                                                                                Text="{Binding LoanTermInYears}" />
+                                                                            <Span Text=" " />
+                                                                            <Span
+                                                                                FontFamily="{Binding DefaultStyle.DefaultFontFamily}"
+                                                                                FontSize="12"
+                                                                                Text=" years" />
+                                                                        </FormattedString>
+                                                                    </Label.FormattedText>
+                                                                </Label>
+                                                            </StackLayout>
+                                                        </Grid>
+                                                    </StackLayout>
+                                                </Grid>
+                                            </ContentView>
+                                        </Border>
+                                        <Border
+                                            Grid.Column="2"
+                                            Stroke="{Binding DefaultStyle.HighlightBoxBorderColor, Converter={StaticResource StringToColorConverter}}"
+                                            StrokeThickness="2"
+                                            Style="{StaticResource SfBorderTopHighlightBox}">
+                                            <ContentView />
+                                        </Border>
+
+                                        <Border
+                                            Grid.Column="2"
+                                            Stroke="{Binding DefaultStyle.HighlightBoxBorderColor, Converter={StaticResource StringToColorConverter}}"
+                                            Style="{StaticResource SfBorderTopHighlightBox}">
+                                            <ContentView>
+                                                <Grid>
+                                                    <StackLayout>
+                                                        <Grid>
+                                                            <Grid.RowDefinitions>
+                                                                <RowDefinition Height="10" />
+                                                                <RowDefinition Height="*" />
+                                                                <RowDefinition Height="10" />
+                                                            </Grid.RowDefinitions>
+                                                            <StackLayout Grid.Row="1">
+                                                                <Label
+                                                                    Margin="5,0,5,0"
+                                                                    HorizontalTextAlignment="Center"
+                                                                    TextColor="{Binding DefaultStyle.HighlightFgColor, Converter={StaticResource StringToColorConverter}}"
+                                                                    VerticalTextAlignment="Center">
+                                                                    <Label.FormattedText>
+                                                                        <FormattedString>
+                                                                            <Span
+                                                                                CharacterSpacing="1"
+                                                                                FontAttributes="Bold"
+                                                                                FontFamily="{Binding DefaultStyle.DefaultFontFamily}"
+                                                                                FontSize="17"
+                                                                                Text="{Binding CurrencySymbol}" />
+                                                                            <Span Text="" />
+                                                                            <Span
+                                                                                CharacterSpacing="-1"
+                                                                                FontAttributes="Bold"
+                                                                                FontFamily="{Binding DefaultStyle.DefaultFontFamily}"
+                                                                                FontSize="18"
+                                                                                Text="{Binding HomeLoanInfo.PaymentSummary.Payment.TotalInterestPaymentRoundedWithComma}" />
+                                                                            <Span
+                                                                                FontFamily="{Binding DefaultStyle.DefaultFontFamily}"
+                                                                                FontSize="12"
+                                                                                Text=" total interest payable over " />
+                                                                            <Span
+                                                                                CharacterSpacing="-1"
+                                                                                FontAttributes="Bold"
+                                                                                FontFamily="{Binding DefaultStyle.DefaultFontFamily}"
+                                                                                FontSize="15"
+                                                                                Text="{Binding LoanTermInYears}" />
+                                                                            <Span FontSize="12" Text=" years" />
+                                                                        </FormattedString>
+                                                                    </Label.FormattedText>
+                                                                </Label>
+                                                            </StackLayout>
+                                                        </Grid>
+                                                    </StackLayout>
+                                                </Grid>
+                                            </ContentView>
+                                        </Border>
+
+                                        <Border
+                                            Grid.Column="3"
+                                            Stroke="{Binding DefaultStyle.HighlightBoxBorderColor, Converter={StaticResource StringToColorConverter}}"
+                                            StrokeThickness="2"
+                                            Style="{StaticResource SfBorderTopHighlightBox}">
+                                            <ContentView>
+                                                <Grid>
+                                                    <StackLayout>
+                                                        <Grid>
+                                                            <Grid.RowDefinitions>
+                                                                <RowDefinition Height="10" />
+                                                                <RowDefinition Height="*" />
+                                                                <RowDefinition Height="10" />
+                                                            </Grid.RowDefinitions>
+                                                            <StackLayout Grid.Row="1">
+                                                                <Label
+                                                                    Margin="5,0,5,0"
+                                                                    HorizontalTextAlignment="Center"
+                                                                    TextColor="{Binding DefaultStyle.HighlightFgColor, Converter={StaticResource StringToColorConverter}}"
+                                                                    VerticalTextAlignment="Center">
+                                                                    <Label.FormattedText>
+                                                                        <FormattedString>
+                                                                            <Span
+                                                                                CharacterSpacing="1"
+                                                                                FontAttributes="Bold"
+                                                                                FontFamily="{Binding DefaultStyle.DefaultFontFamily}"
+                                                                                FontSize="17"
+                                                                                Text="{Binding CurrencySymbol}" />
+                                                                            <Span Text="" />
+                                                                            <Span
+                                                                                CharacterSpacing="-1"
+                                                                                FontAttributes="Bold"
+                                                                                FontFamily="{Binding DefaultStyle.DefaultFontFamily}"
+                                                                                FontSize="18"
+                                                                                Text="{Binding HomeLoanInfo.PaymentSummary.Payment.TotalPaymentRoundedWithComma}" />
+                                                                            <Span
+                                                                                FontFamily="{Binding DefaultStyle.DefaultFontFamily}"
+                                                                                FontSize="12"
+                                                                                Text=" total repayment (principal + interest)" />
+                                                                        </FormattedString>
+                                                                    </Label.FormattedText>
+                                                                </Label>
+                                                            </StackLayout>
+                                                        </Grid>
+                                                    </StackLayout>
+                                                </Grid>
+                                            </ContentView>
+                                        </Border>
+                                    </Grid>
+                                </FlexLayout>
+
+                                <FlexLayout>
+
+                                    <Border
+                                        Margin="12,5,12,2"
+                                        HorizontalOptions="Center"
+                                        Stroke="{Binding DefaultStyle.BoxBorderColor, Converter={StaticResource StringToColorConverter}}"
+                                        StrokeThickness="1"
+                                        VerticalOptions="Center">
+                                        <ContentView>
+                                            <Grid>
+                                                <StackLayout>
+
+                                                    <Grid Grid.Row="0" Margin="5,0,5,0">
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="50*" />
+                                                            <ColumnDefinition Width="50*" />
+                                                        </Grid.ColumnDefinitions>
+                                                        <core:SfTextInputLayout
+                                                            Grid.Column="0"
+                                                            Margin="0,0,0,-15"
+                                                            BackgroundColor="Transparent"
+                                                            ContainerBackground="Transparent"
+                                                            Hint="Property Value"
+                                                            HorizontalOptions="Start"
+                                                            Stroke="{Binding DefaultStyle.InputTextWhenFocusedColor, Converter={StaticResource StringToColorConverter}}">
+                                                            <core:SfTextInputLayout.HintLabelStyle>
+                                                                <core:LabelStyle FontFamily="{Binding DefaultStyle.DefaultFontFamily}" />
+                                                            </core:SfTextInputLayout.HintLabelStyle>
+                                                            <core:SfTextInputLayout.ErrorLabelStyle>
+                                                                <core:LabelStyle FontFamily="{Binding DefaultStyle.DefaultFontFamily}" />
+                                                            </core:SfTextInputLayout.ErrorLabelStyle>
+                                                            <core:SfTextInputLayout.HelperLabelStyle>
+                                                                <core:LabelStyle FontFamily="{Binding DefaultStyle.DefaultFontFamily}" />
+                                                            </core:SfTextInputLayout.HelperLabelStyle>
+                                                            <editors:SfNumericEntry
+                                                                CustomFormat="c"
+                                                                FontFamily="{Binding DefaultStyle.DefaultFontFamily}"
+                                                                MaximumNumberDecimalDigits="0"
+                                                                TextColor="{Binding DefaultStyle.InputTextFgColor, Converter={StaticResource StringToColorConverter}}"
+                                                                Value="{Binding PropertyAmount}" />
+                                                            <VisualStateManager.VisualStateGroups>
+                                                                <VisualStateGroupList>
+                                                                    <VisualStateGroup x:Name="CommonStates">
+                                                                        <VisualState Name="Normal">
+                                                                            <VisualState.Setters>
+                                                                                <Setter Property="Stroke" Value="{Binding DefaultStyle.InputTextWhenUnFocusedColor, Converter={StaticResource StringToColorConverter}}" />
+                                                                            </VisualState.Setters>
+                                                                        </VisualState>
+                                                                        <VisualState Name="Focused">
+                                                                            <VisualState.Setters>
+                                                                                <Setter Property="Stroke" Value="{Binding DefaultStyle.InputTextWhenFocusedColor, Converter={StaticResource StringToColorConverter}}" />
+                                                                            </VisualState.Setters>
+                                                                        </VisualState>
+                                                                        <VisualState Name="Error">
+                                                                            <VisualState.Setters>
+                                                                                <Setter Property="Stroke" Value="#B3261E" />
+                                                                            </VisualState.Setters>
+                                                                        </VisualState>
+                                                                    </VisualStateGroup>
+                                                                </VisualStateGroupList>
+                                                            </VisualStateManager.VisualStateGroups>
+                                                        </core:SfTextInputLayout>
+
+                                                        <Label
+                                                            Grid.Column="1"
+                                                            Margin="0,0,0,0"
+                                                            HorizontalOptions="Start"
+                                                            TextColor="{Binding DefaultStyle.InputTextFgColor, Converter={StaticResource StringToColorConverter}}"
+                                                            VerticalOptions="Center">
+                                                            <Label.FormattedText>
+                                                                <FormattedString>
+                                                                    <Span
+                                                                        FontFamily="{Binding DefaultStyle.DefaultFontFamily}"
+                                                                        FontSize="12"
+                                                                        Text="Total property amount" />
+                                                                    <Span Text="{x:Static system:Environment.NewLine}" />
+                                                                    <Span
+                                                                        FontAttributes="Bold"
+                                                                        FontFamily="{Binding DefaultStyle.DefaultFontFamily}"
+                                                                        FontSize="16"
+                                                                        Text="{Binding PropertyTotalAmount}" />
+                                                                </FormattedString>
+                                                            </Label.FormattedText>
+                                                        </Label>
+                                                    </Grid>
+
+                                                    <Grid Grid.Row="1" Margin="5,0,5,0">
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="50*" />
+                                                            <ColumnDefinition Width="50*" />
+                                                        </Grid.ColumnDefinitions>
+
+                                                        <core:SfTextInputLayout
+                                                            Grid.Column="0"
+                                                            Margin="0,0,0,-10"
+                                                            Padding="2,0,2,0"
+                                                            BackgroundColor="Transparent"
+                                                            ContainerBackground="Transparent"
+                                                            ContainerType="None"
+                                                            Hint="Interest Rate"
+                                                            OutlineCornerRadius="8"
+                                                            Stroke="{Binding DefaultStyle.InputTextWhenFocusedColor, Converter={StaticResource StringToColorConverter}}">
+                                                            <core:SfTextInputLayout.HintLabelStyle>
+                                                                <core:LabelStyle FontFamily="{Binding DefaultStyle.DefaultFontFamily}" />
+                                                            </core:SfTextInputLayout.HintLabelStyle>
+                                                            <core:SfTextInputLayout.ErrorLabelStyle>
+                                                                <core:LabelStyle FontFamily="{Binding DefaultStyle.DefaultFontFamily}" />
+                                                            </core:SfTextInputLayout.ErrorLabelStyle>
+                                                            <core:SfTextInputLayout.HelperLabelStyle>
+                                                                <core:LabelStyle FontFamily="{Binding DefaultStyle.DefaultFontFamily}" />
+                                                            </core:SfTextInputLayout.HelperLabelStyle>
+
+                                                            <editors:SfNumericEntry
+                                                                FontFamily="{Binding DefaultStyle.DefaultFontFamily}"
+                                                                FontSize="14"
+                                                                LargeChange="1"
+                                                                Maximum="100"
+                                                                Minimum="0"
+                                                                PercentDisplayMode="Value"
+                                                                SmallChange="0.05"
+                                                                TextColor="{Binding DefaultStyle.InputTextFgColor, Converter={StaticResource StringToColorConverter}}"
+                                                                UpDownPlacementMode="InlineVertical"
+                                                                Value="{Binding InterestRate}" />
+                                                            <VisualStateManager.VisualStateGroups>
+                                                                <VisualStateGroupList>
+                                                                    <VisualStateGroup x:Name="CommonStates">
+                                                                        <VisualState Name="Normal">
+                                                                            <VisualState.Setters>
+                                                                                <Setter Property="Stroke" Value="{Binding DefaultStyle.InputTextWhenUnFocusedColor, Converter={StaticResource StringToColorConverter}}" />
+                                                                            </VisualState.Setters>
+                                                                        </VisualState>
+                                                                        <VisualState Name="Focused">
+                                                                            <VisualState.Setters>
+                                                                                <Setter Property="Stroke" Value="{Binding DefaultStyle.InputTextWhenFocusedColor, Converter={StaticResource StringToColorConverter}}" />
+                                                                            </VisualState.Setters>
+                                                                        </VisualState>
+                                                                        <VisualState Name="Error">
+                                                                            <VisualState.Setters>
+                                                                                <Setter Property="Stroke" Value="#B3261E" />
+                                                                            </VisualState.Setters>
+                                                                        </VisualState>
+                                                                    </VisualStateGroup>
+                                                                </VisualStateGroupList>
+                                                            </VisualStateManager.VisualStateGroups>
+                                                        </core:SfTextInputLayout>
+
+                                                        <core:SfTextInputLayout
+                                                            Grid.Column="1"
+                                                            Margin="0,0,0,-10"
+                                                            BackgroundColor="Transparent"
+                                                            ContainerBackground="Transparent"
+                                                            ContainerType="None"
+                                                            Hint="Loan Term"
+                                                            OutlineCornerRadius="8"
+                                                            Stroke="{Binding DefaultStyle.InputTextWhenFocusedColor, Converter={StaticResource StringToColorConverter}}">
+                                                            <core:SfTextInputLayout.HintLabelStyle>
+                                                                <core:LabelStyle FontFamily="{Binding DefaultStyle.DefaultFontFamily}" />
+                                                            </core:SfTextInputLayout.HintLabelStyle>
+                                                            <core:SfTextInputLayout.ErrorLabelStyle>
+                                                                <core:LabelStyle FontFamily="{Binding DefaultStyle.DefaultFontFamily}" />
+                                                            </core:SfTextInputLayout.ErrorLabelStyle>
+                                                            <core:SfTextInputLayout.HelperLabelStyle>
+                                                                <core:LabelStyle FontFamily="{Binding DefaultStyle.DefaultFontFamily}" />
+                                                            </core:SfTextInputLayout.HelperLabelStyle>
+
+                                                            <editors:SfNumericEntry
+                                                                CustomFormat="years"
+                                                                FontFamily="{Binding DefaultStyle.DefaultFontFamily}"
+                                                                FontSize="14"
+                                                                LargeChange="5"
+                                                                Maximum="30"
+                                                                MaximumNumberDecimalDigits="0"
+                                                                Minimum="0"
+                                                                SmallChange="1"
+                                                                TextColor="{Binding DefaultStyle.InputTextFgColor, Converter={StaticResource StringToColorConverter}}"
+                                                                UpDownPlacementMode="InlineVertical"
+                                                                Value="{Binding LoanTermInYears}" />
+                                                            <VisualStateManager.VisualStateGroups>
+                                                                <VisualStateGroupList>
+                                                                    <VisualStateGroup x:Name="CommonStates">
+                                                                        <VisualState Name="Normal">
+                                                                            <VisualState.Setters>
+                                                                                <Setter Property="Stroke" Value="{Binding DefaultStyle.InputTextWhenUnFocusedColor, Converter={StaticResource StringToColorConverter}}" />
+                                                                            </VisualState.Setters>
+                                                                        </VisualState>
+                                                                        <VisualState Name="Focused">
+                                                                            <VisualState.Setters>
+                                                                                <Setter Property="Stroke" Value="{Binding DefaultStyle.InputTextWhenFocusedColor, Converter={StaticResource StringToColorConverter}}" />
+                                                                            </VisualState.Setters>
+                                                                        </VisualState>
+                                                                        <VisualState Name="Error">
+                                                                            <VisualState.Setters>
+                                                                                <Setter Property="Stroke" Value="#B3261E" />
+                                                                            </VisualState.Setters>
+                                                                        </VisualState>
+                                                                    </VisualStateGroup>
+                                                                </VisualStateGroupList>
+                                                            </VisualStateManager.VisualStateGroups>
+                                                        </core:SfTextInputLayout>
+                                                    </Grid>
+
+
+
+
+
+
+
+                                                    <buttons:SfSegmentedControl
+                                                        x:Name="segmentedRepaymentFrequency"
+                                                        Grid.Row="2"
+                                                        Margin="15,0,15,10"
+                                                        CornerRadius="15"
+                                                        ItemsSource="{Binding RepaymentFrequencyCollection}"
+                                                        SelectedIndex="{Binding RepaymentFrequencySelectedIndex}"
+                                                        Stroke="{Binding DefaultStyle.SegBorderColor, Converter={StaticResource StringToColorConverter}}"
+                                                        StrokeThickness="2"
+                                                        TextStyle="{buttons:SegmentTextStyle TextColor={Binding DefaultStyle.SegTextFgColor,
+                                                                                                                Converter={StaticResource StringToColorConverter}},
+                                                                                             FontFamily={Binding DefaultStyle.DefaultFontFamily}}"
+                                                        VisibleSegmentsCount="3">
+                                                        <!--  SelectedSegmentTextColor="{Binding DefaultStyle.SegSelectedTextFgColor, Converter={StaticResource StringToColorConverter}}"  -->
+                                                        <!--  Background="{Binding DefaultStyle.SegBgColor, Converter={StaticResource StringToColorConverter}}"  -->
+
+                                                        <!--  SelectionTextColor="{Binding DefaultStyle.SegSelectedTextFgColor, Converter={StaticResource StringToColorConverter}}"  -->
+                                                        <!--  Color="{Binding DefaultStyle.SegBgColor, Converter={StaticResource StringToColorConverter}}"  -->
+                                                        <buttons:SfSegmentedControl.SelectionIndicatorSettings>
+                                                            <buttons:SelectionIndicatorSettings Background="{Binding DefaultStyle.SegSelectedBgColor, Converter={StaticResource StringToColorConverter}}" SelectionIndicatorPlacement="Fill" />
+                                                        </buttons:SfSegmentedControl.SelectionIndicatorSettings>
+                                                    </buttons:SfSegmentedControl>
+
+                                                </StackLayout>
+
+                                            </Grid>
+                                        </ContentView>
+                                    </Border>
+
+
+                                </FlexLayout>
+
+                                <expander:SfExpander HeaderIconPosition="End">
+                                    <expander:SfExpander.Header>
+                                        <Grid>
+                                            <Label
+                                                Margin="15,0,0,0"
+                                                HeightRequest="30"
+                                                TextColor="{Binding DefaultStyle.ExpanderHeaderTextColor, Converter={StaticResource StringToColorConverter}}"
+                                                VerticalOptions="Center"
+                                                VerticalTextAlignment="Center">
+                                                <Label.FormattedText>
+                                                    <FormattedString>
+                                                        <Span
+                                                            FontFamily="{Binding DefaultStyle.DefaultFontFamily}"
+                                                            FontSize="10"
+                                                            Text="Deposit: " />
+                                                        <Span FontFamily="{Binding DefaultStyle.DefaultFontFamily}" Text="{Binding DepositAmountStrFormatted}" />
+                                                        <Span
+                                                            FontFamily="{Binding DefaultStyle.DefaultFontFamily}"
+                                                            FontSize="10"
+                                                            Text=" (" />
+                                                        <Span
+                                                            FontFamily="{Binding DefaultStyle.DefaultFontFamily}"
+                                                            FontSize="10"
+                                                            Text="{Binding DepositPercentage, StringFormat='{0:F2}'}" />
+                                                        <Span
+                                                            FontFamily="{Binding DefaultStyle.DefaultFontFamily}"
+                                                            FontSize="10"
+                                                            Text=" %)" />
+
+                                                        <Span FontSize="Micro" Text="  " />
+
+                                                        <Span
+                                                            FontFamily="{Binding DefaultStyle.DefaultFontFamily}"
+                                                            FontSize="10"
+                                                            Text="Loan: " />
+                                                        <Span
+                                                            FontFamily="{Binding DefaultStyle.DefaultFontFamily}"
+                                                            FontSize="10"
+                                                            Text=" " />
+                                                        <Span FontFamily="{Binding DefaultStyle.DefaultFontFamily}" Text="{Binding LoanAmountStrFormatted}" />
+                                                        <Span
+                                                            FontFamily="{Binding DefaultStyle.DefaultFontFamily}"
+                                                            FontSize="10"
+                                                            Text=" (" />
+                                                        <Span
+                                                            FontFamily="{Binding DefaultStyle.DefaultFontFamily}"
+                                                            FontSize="10"
+                                                            Text="{Binding LoanAmountPercentage, StringFormat='{0:F2}'}" />
+                                                        <Span
+                                                            FontFamily="{Binding DefaultStyle.DefaultFontFamily}"
+                                                            FontSize="10"
+                                                            Text=" %)" />
+                                                    </FormattedString>
+                                                </Label.FormattedText>
+                                            </Label>
+                                        </Grid>
+                                    </expander:SfExpander.Header>
+                                    <expander:SfExpander.Content>
+                                        <StackLayout BackgroundColor="Transparent">
+
+                                            <Border
+                                                Margin="12,5,12,5"
+                                                HorizontalOptions="Center"
+                                                Stroke="{Binding DefaultStyle.BoxBorderColor, Converter={StaticResource StringToColorConverter}}"
+                                                StrokeThickness="1"
+                                                VerticalOptions="Center">
+                                                <Grid>
+
+                                                    <!--<sfGradient:SfGradientView>
+            <sfGradient:SfGradientView.BackgroundBrush>
+                <sfGradient:SfLinearGradientBrush>
+                    <sfGradient:SfLinearGradientBrush.GradientStops>
+                        <sfGradient:SfGradientStop Offset="0.0" Color="#B3B6B7" />
+                        <sfGradient:SfGradientStop Offset="1.0" Color="#EBF5FB" />
+                    </sfGradient:SfLinearGradientBrush.GradientStops>
+                </sfGradient:SfLinearGradientBrush>
+            </sfGradient:SfGradientView.BackgroundBrush>
+        </sfGradient:SfGradientView>-->
+                                                    <StackLayout>
+                                                        <Grid Margin="5,0,5,0">
+                                                            <Grid.ColumnDefinitions>
+                                                                <ColumnDefinition Width="50*" />
+                                                                <ColumnDefinition Width="50*" />
+                                                            </Grid.ColumnDefinitions>
+                                                            <Grid.RowDefinitions>
+                                                                <RowDefinition Height="59" />
+                                                                <RowDefinition Height="*" />
+                                                            </Grid.RowDefinitions>
+
+                                                            <core:SfTextInputLayout
+                                                                Grid.Row="0"
+                                                                Grid.Column="0"
+                                                                Margin="0,0,0,-20"
+                                                                BackgroundColor="Transparent"
+                                                                ContainerBackground="Transparent"
+                                                                Hint="Deposit value (direct)">
+                                                                <core:SfTextInputLayout.HintLabelStyle>
+                                                                    <core:LabelStyle FontFamily="{Binding DefaultStyle.DefaultFontFamily}" />
+                                                                </core:SfTextInputLayout.HintLabelStyle>
+                                                                <core:SfTextInputLayout.ErrorLabelStyle>
+                                                                    <core:LabelStyle FontFamily="{Binding DefaultStyle.DefaultFontFamily}" />
+                                                                </core:SfTextInputLayout.ErrorLabelStyle>
+                                                                <core:SfTextInputLayout.HelperLabelStyle>
+                                                                    <core:LabelStyle FontFamily="{Binding DefaultStyle.DefaultFontFamily}" />
+                                                                </core:SfTextInputLayout.HelperLabelStyle>
+                                                                <editors:SfNumericEntry
+                                                                    CustomFormat="c"
+                                                                    FontFamily="{Binding DefaultStyle.DefaultFontFamily}"
+                                                                    MaximumNumberDecimalDigits="0"
+                                                                    TextColor="{Binding DefaultStyle.InputTextFgColor, Converter={StaticResource StringToColorConverter}}"
+                                                                    Value="{Binding DepositAmountDirectInput}" />
+                                                                <VisualStateManager.VisualStateGroups>
+                                                                    <VisualStateGroupList>
+                                                                        <VisualStateGroup x:Name="CommonStates">
+                                                                            <VisualState Name="Normal">
+                                                                                <VisualState.Setters>
+                                                                                    <Setter Property="Stroke" Value="{Binding DefaultStyle.InputTextWhenUnFocusedColor, Converter={StaticResource StringToColorConverter}}" />
+                                                                                </VisualState.Setters>
+                                                                            </VisualState>
+                                                                            <VisualState Name="Focused">
+                                                                                <VisualState.Setters>
+                                                                                    <Setter Property="Stroke" Value="{Binding DefaultStyle.InputTextWhenFocusedColor, Converter={StaticResource StringToColorConverter}}" />
+                                                                                </VisualState.Setters>
+                                                                            </VisualState>
+                                                                            <VisualState Name="Error">
+                                                                                <VisualState.Setters>
+                                                                                    <Setter Property="Stroke" Value="#B3261E" />
+                                                                                </VisualState.Setters>
+                                                                            </VisualState>
+                                                                        </VisualStateGroup>
+                                                                    </VisualStateGroupList>
+                                                                </VisualStateManager.VisualStateGroups>
+                                                            </core:SfTextInputLayout>
+
+
+                                                            <core:SfTextInputLayout
+                                                                Grid.Row="0"
+                                                                Grid.Column="1"
+                                                                Margin="0,0,0,-10"
+                                                                BackgroundColor="Transparent"
+                                                                ContainerBackground="Transparent"
+                                                                Hint="Loan Amount (direct)">
+                                                                <core:SfTextInputLayout.HintLabelStyle>
+                                                                    <core:LabelStyle FontFamily="{Binding DefaultStyle.DefaultFontFamily}" />
+                                                                </core:SfTextInputLayout.HintLabelStyle>
+                                                                <core:SfTextInputLayout.ErrorLabelStyle>
+                                                                    <core:LabelStyle FontFamily="{Binding DefaultStyle.DefaultFontFamily}" />
+                                                                </core:SfTextInputLayout.ErrorLabelStyle>
+                                                                <core:SfTextInputLayout.HelperLabelStyle>
+                                                                    <core:LabelStyle FontFamily="{Binding DefaultStyle.DefaultFontFamily}" />
+                                                                </core:SfTextInputLayout.HelperLabelStyle>
+                                                                <editors:SfNumericEntry
+                                                                    CustomFormat="c"
+                                                                    FontFamily="{Binding DefaultStyle.DefaultFontFamily}"
+                                                                    MaximumNumberDecimalDigits="0"
+                                                                    TextColor="{Binding DefaultStyle.InputTextFgColor, Converter={StaticResource StringToColorConverter}}"
+                                                                    Value="{Binding LoanAmountDirectInput}" />
+                                                                <VisualStateManager.VisualStateGroups>
+                                                                    <VisualStateGroupList>
+                                                                        <VisualStateGroup x:Name="CommonStates">
+                                                                            <VisualState Name="Normal">
+                                                                                <VisualState.Setters>
+                                                                                    <Setter Property="Stroke" Value="{Binding DefaultStyle.InputTextWhenUnFocusedColor, Converter={StaticResource StringToColorConverter}}" />
+                                                                                </VisualState.Setters>
+                                                                            </VisualState>
+                                                                            <VisualState Name="Focused">
+                                                                                <VisualState.Setters>
+                                                                                    <Setter Property="Stroke" Value="{Binding DefaultStyle.InputTextWhenFocusedColor, Converter={StaticResource StringToColorConverter}}" />
+                                                                                </VisualState.Setters>
+                                                                            </VisualState>
+                                                                            <VisualState Name="Error">
+                                                                                <VisualState.Setters>
+                                                                                    <Setter Property="Stroke" Value="#B3261E" />
+                                                                                </VisualState.Setters>
+                                                                            </VisualState>
+                                                                        </VisualStateGroup>
+                                                                    </VisualStateGroupList>
+                                                                </VisualStateManager.VisualStateGroups>
+                                                            </core:SfTextInputLayout>
+
+                                                            <StackLayout
+                                                                Grid.Row="1"
+                                                                Grid.Column="0"
+                                                                Grid.ColumnSpan="2"
+                                                                BackgroundColor="Transparent">
+                                                                <Label FontFamily="{Binding DefaultStyle.DefaultFontFamily}" Text="Deposit Percentage" />
+                                                                <range:SfSlider
+                                                                    Margin="0,-17,0,0"
+                                                                    HeightRequest="70"
+                                                                    IsEnabled="{Binding IsFree}"
+                                                                    Maximum="100"
+                                                                    Minimum="0"
+                                                                    ShowLabels="True"
+                                                                    StepSize="1"
+                                                                    Value="{Binding DepositPercentage}">
+                                                                    <!--
+                                                                        ShowRange="False"
+                                                                        StepFrequency="1"
+                                                                        ShowValueLabel="True"
+                                                                    -->
+                                                                    <range:SliderThumbStyle Fill="{Binding DefaultStyle.RangeSliderKnobColor, Converter={StaticResource StringToColorConverter}}" />
+                                                                    <range:SfSlider.LabelStyle>
+                                                                        <range:SliderLabelStyle
+                                                                            ActiveFontFamily="{Binding DefaultStyle.DefaultFontFamily}"
+                                                                            ActiveFontSize="12"
+                                                                            ActiveTextColor="{Binding DefaultStyle.RangeSliderLabelTextColor, Converter={StaticResource StringToColorConverter}}"
+                                                                            InactiveFontFamily="{Binding DefaultStyle.DefaultFontFamily}"
+                                                                            InactiveFontSize="12"
+                                                                            InactiveTextColor="{Binding DefaultStyle.RangeSliderLabelTextColor, Converter={StaticResource StringToColorConverter}}" />
+                                                                    </range:SfSlider.LabelStyle>
+                                                                    <range:SfSlider.TrackStyle>
+                                                                        <range:SliderTrackStyle
+                                                                            ActiveFill="{Binding DefaultStyle.RangeSliderTrackSelectionColor, Converter={StaticResource StringToColorConverter}}"
+                                                                            ActiveSize="5"
+                                                                            InactiveFill="{Binding DefaultStyle.RangeSliderTrackColor, Converter={StaticResource StringToColorConverter}}"
+                                                                            InactiveSize="1" />
+                                                                    </range:SfSlider.TrackStyle>
+                                                                </range:SfSlider>
+                                                            </StackLayout>
+                                                        </Grid>
+                                                    </StackLayout>
+                                                </Grid>
+                                            </Border>
+
+                                        </StackLayout>
+                                    </expander:SfExpander.Content>
+                                    <VisualStateManager.VisualStateGroups>
+                                        <VisualStateGroupList>
+                                            <VisualStateGroup>
+                                                <VisualState Name="Expanded">
+                                                    <VisualState.Setters>
+                                                        <Setter Property="HeaderBackground" Value="{Binding DefaultStyle.ExpanderHeaderIconExpandColor, Converter={StaticResource StringToColorConverter}}" />
+                                                    </VisualState.Setters>
+                                                </VisualState>
+                                                <VisualState Name="Collapsed">
+                                                    <VisualState.Setters>
+                                                        <Setter Property="HeaderBackground" Value="{Binding DefaultStyle.ExpanderHeaderIconCollapseColor, Converter={StaticResource StringToColorConverter}}" />
+                                                    </VisualState.Setters>
+                                                </VisualState>
+                                            </VisualStateGroup>
+                                        </VisualStateGroupList>
+                                    </VisualStateManager.VisualStateGroups>
+                                </expander:SfExpander>
+
+
+                                <expander:SfExpander HeaderIconPosition="End">
+                                    <expander:SfExpander.Header>
+                                        <Grid>
+
+                                            <Label
+                                                Margin="15,0,0,0"
+                                                HeightRequest="30"
+                                                TextColor="{Binding DefaultStyle.ExpanderHeaderTextColor, Converter={StaticResource StringToColorConverter}}"
+                                                VerticalOptions="Center"
+                                                VerticalTextAlignment="Center">
+                                                <Label.FormattedText>
+                                                    <FormattedString>
+                                                        <Span
+                                                            FontFamily="{Binding DefaultStyle.DefaultFontFamily}"
+                                                            FontSize="Micro"
+                                                            Text="Upfront costs: " />
+                                                        <Span FontFamily="{Binding DefaultStyle.DefaultFontFamily}" Text="{Binding OtherExpenseTotalAmount}" />
+                                                    </FormattedString>
+                                                </Label.FormattedText>
+                                            </Label>
+                                        </Grid>
+                                    </expander:SfExpander.Header>
+                                    <expander:SfExpander.Content>
+                                        <StackLayout>
+                                            <Border
+                                                Margin="12,5,12,5"
+                                                HorizontalOptions="Center"
+                                                Stroke="{Binding DefaultStyle.BoxBorderColor, Converter={StaticResource StringToColorConverter}}"
+                                                StrokeThickness="1"
+                                                VerticalOptions="Center">
+                                                <Grid>
+                                                    <!--<sfGradient:SfGradientView>
+                        <sfGradient:SfGradientView.BackgroundBrush>
+                            <sfGradient:SfLinearGradientBrush>
+                                <sfGradient:SfLinearGradientBrush.GradientStops>
+                                    <sfGradient:SfGradientStop Offset="0.0" Color="#B3B6B7" />
+                                    <sfGradient:SfGradientStop Offset="1.0" Color="#EBF5FB" />
+                                </sfGradient:SfLinearGradientBrush.GradientStops>
+                            </sfGradient:SfLinearGradientBrush>
+                        </sfGradient:SfGradientView.BackgroundBrush>
+                    </sfGradient:SfGradientView>-->
+
+                                                    <StackLayout>
+
+                                                        <Grid Grid.Row="0" Margin="5,0,5,0">
+                                                            <Grid.ColumnDefinitions>
+                                                                <ColumnDefinition Width="50*" />
+                                                                <ColumnDefinition Width="50*" />
+                                                            </Grid.ColumnDefinitions>
+
+                                                            <Grid.RowDefinitions>
+                                                                <RowDefinition Height="{Binding HeightOfGridRowToggledByCountryOnStampDuty}" />
+                                                                <RowDefinition Height="59" />
+                                                                <RowDefinition Height="59" />
+                                                                <RowDefinition Height="59" />
+                                                            </Grid.RowDefinitions>
+
+                                                            <buttons:SfSegmentedControl
+                                                                x:Name="segmentedAustraliaStates"
+                                                                Grid.Row="0"
+                                                                Grid.ColumnSpan="2"
+                                                                Margin="10,5"
+                                                                CornerRadius="15"
+                                                                IsVisible="{Binding ShowAustralianStateSelectorOnStampDuty}"
+                                                                ItemsSource="{Binding AustraliaStateCollection}"
+                                                                SelectedIndex="{Binding AustraliaStateSelectedIndex}"
+                                                                Stroke="{Binding DefaultStyle.SegBorderColor, Converter={StaticResource StringToColorConverter}}"
+                                                                StrokeThickness="2"
+                                                                TextStyle="{buttons:SegmentTextStyle TextColor={Binding DefaultStyle.SegTextFgColor,
+                                                                                                                        Converter={StaticResource StringToColorConverter}},
+                                                                                                     FontFamily={Binding DefaultStyle.DefaultFontFamily}}"
+                                                                VisibleSegmentsCount="8">
+                                                                <!--
+                                                                    DisplayMode="Text"
+                                                                    Color="{Binding DefaultStyle.SegBgColor, Converter={StaticResource StringToColorConverter}}"
+                                                                    SelectionTextColor="{Binding DefaultStyle.SegSelectedTextFgColor, Converter={StaticResource StringToColorConverter}}"
+                                                                -->
+                                                                <buttons:SfSegmentedControl.SelectionIndicatorSettings>
+                                                                    <buttons:SelectionIndicatorSettings Background="{Binding DefaultStyle.SegSelectedBgColor, Converter={StaticResource StringToColorConverter}}" SelectionIndicatorPlacement="Fill" />
+                                                                </buttons:SfSegmentedControl.SelectionIndicatorSettings>
+                                                            </buttons:SfSegmentedControl>
+
+                                                            <core:SfTextInputLayout
+                                                                Grid.Row="1"
+                                                                Grid.Column="0"
+                                                                Margin="0,0,0,-15"
+                                                                BackgroundColor="Transparent"
+                                                                ContainerBackground="Transparent"
+                                                                Hint="Property stamp duty (estimate)">
+                                                                <core:SfTextInputLayout.HintLabelStyle>
+                                                                    <core:LabelStyle FontFamily="{Binding DefaultStyle.DefaultFontFamily}" />
+                                                                </core:SfTextInputLayout.HintLabelStyle>
+                                                                <core:SfTextInputLayout.ErrorLabelStyle>
+                                                                    <core:LabelStyle FontFamily="{Binding DefaultStyle.DefaultFontFamily}" />
+                                                                </core:SfTextInputLayout.ErrorLabelStyle>
+                                                                <core:SfTextInputLayout.HelperLabelStyle>
+                                                                    <core:LabelStyle FontFamily="{Binding DefaultStyle.DefaultFontFamily}" />
+                                                                </core:SfTextInputLayout.HelperLabelStyle>
+                                                                <editors:SfNumericEntry
+                                                                    CustomFormat="c"
+                                                                    FontFamily="{Binding DefaultStyle.DefaultFontFamily}"
+                                                                    MaximumNumberDecimalDigits="0"
+                                                                    TextColor="{Binding DefaultStyle.InputTextFgColor, Converter={StaticResource StringToColorConverter}}"
+                                                                    Value="{Binding StampDuty}" />
+                                                                <VisualStateManager.VisualStateGroups>
+                                                                    <VisualStateGroupList>
+                                                                        <VisualStateGroup x:Name="CommonStates">
+                                                                            <VisualState Name="Normal">
+                                                                                <VisualState.Setters>
+                                                                                    <Setter Property="Stroke" Value="{Binding DefaultStyle.InputTextWhenUnFocusedColor, Converter={StaticResource StringToColorConverter}}" />
+                                                                                </VisualState.Setters>
+                                                                            </VisualState>
+                                                                            <VisualState Name="Focused">
+                                                                                <VisualState.Setters>
+                                                                                    <Setter Property="Stroke" Value="{Binding DefaultStyle.InputTextWhenFocusedColor, Converter={StaticResource StringToColorConverter}}" />
+                                                                                </VisualState.Setters>
+                                                                            </VisualState>
+                                                                            <VisualState Name="Error">
+                                                                                <VisualState.Setters>
+                                                                                    <Setter Property="Stroke" Value="#B3261E" />
+                                                                                </VisualState.Setters>
+                                                                            </VisualState>
+                                                                        </VisualStateGroup>
+                                                                    </VisualStateGroupList>
+                                                                </VisualStateManager.VisualStateGroups>
+                                                            </core:SfTextInputLayout>
+
+                                                            <core:SfTextInputLayout
+                                                                Grid.Row="1"
+                                                                Grid.Column="1"
+                                                                Margin="0,0,0,-15"
+                                                                BackgroundColor="Transparent"
+                                                                ContainerBackground="Transparent"
+                                                                Hint="Mortgage charges">
+                                                                <core:SfTextInputLayout.HintLabelStyle>
+                                                                    <core:LabelStyle FontFamily="{Binding DefaultStyle.DefaultFontFamily}" />
+                                                                </core:SfTextInputLayout.HintLabelStyle>
+                                                                <core:SfTextInputLayout.ErrorLabelStyle>
+                                                                    <core:LabelStyle FontFamily="{Binding DefaultStyle.DefaultFontFamily}" />
+                                                                </core:SfTextInputLayout.ErrorLabelStyle>
+                                                                <core:SfTextInputLayout.HelperLabelStyle>
+                                                                    <core:LabelStyle FontFamily="{Binding DefaultStyle.DefaultFontFamily}" />
+                                                                </core:SfTextInputLayout.HelperLabelStyle>
+
+                                                                <editors:SfNumericEntry
+                                                                    CustomFormat="c"
+                                                                    FontFamily="{Binding DefaultStyle.DefaultFontFamily}"
+                                                                    MaximumNumberDecimalDigits="0"
+                                                                    TextColor="{Binding DefaultStyle.InputTextFgColor, Converter={StaticResource StringToColorConverter}}"
+                                                                    Value="{Binding MortgageCharges}" />
+                                                                <VisualStateManager.VisualStateGroups>
+                                                                    <VisualStateGroupList>
+                                                                        <VisualStateGroup x:Name="CommonStates">
+                                                                            <VisualState Name="Normal">
+                                                                                <VisualState.Setters>
+                                                                                    <Setter Property="Stroke" Value="{Binding DefaultStyle.InputTextWhenUnFocusedColor, Converter={StaticResource StringToColorConverter}}" />
+                                                                                </VisualState.Setters>
+                                                                            </VisualState>
+                                                                            <VisualState Name="Focused">
+                                                                                <VisualState.Setters>
+                                                                                    <Setter Property="Stroke" Value="{Binding DefaultStyle.InputTextWhenFocusedColor, Converter={StaticResource StringToColorConverter}}" />
+                                                                                </VisualState.Setters>
+                                                                            </VisualState>
+                                                                            <VisualState Name="Error">
+                                                                                <VisualState.Setters>
+                                                                                    <Setter Property="Stroke" Value="#B3261E" />
+                                                                                </VisualState.Setters>
+                                                                            </VisualState>
+                                                                        </VisualStateGroup>
+                                                                    </VisualStateGroupList>
+                                                                </VisualStateManager.VisualStateGroups>
+                                                            </core:SfTextInputLayout>
+
+                                                            <core:SfTextInputLayout
+                                                                Grid.Row="2"
+                                                                Grid.Column="0"
+                                                                Margin="0,0,0,-15"
+                                                                BackgroundColor="Transparent"
+                                                                ContainerBackground="Transparent"
+                                                                Hint="Conveyance / solicitor fee">
+                                                                <core:SfTextInputLayout.HintLabelStyle>
+                                                                    <core:LabelStyle FontFamily="{Binding DefaultStyle.DefaultFontFamily}" />
+                                                                </core:SfTextInputLayout.HintLabelStyle>
+                                                                <core:SfTextInputLayout.ErrorLabelStyle>
+                                                                    <core:LabelStyle FontFamily="{Binding DefaultStyle.DefaultFontFamily}" />
+                                                                </core:SfTextInputLayout.ErrorLabelStyle>
+                                                                <core:SfTextInputLayout.HelperLabelStyle>
+                                                                    <core:LabelStyle FontFamily="{Binding DefaultStyle.DefaultFontFamily}" />
+                                                                </core:SfTextInputLayout.HelperLabelStyle>
+                                                                <editors:SfNumericEntry
+                                                                    CustomFormat="c"
+                                                                    FontFamily="{Binding DefaultStyle.DefaultFontFamily}"
+                                                                    MaximumNumberDecimalDigits="0"
+                                                                    TextColor="{Binding DefaultStyle.InputTextFgColor, Converter={StaticResource StringToColorConverter}}"
+                                                                    Value="{Binding ConveyancerFee}" />
+                                                                <VisualStateManager.VisualStateGroups>
+                                                                    <VisualStateGroupList>
+                                                                        <VisualStateGroup x:Name="CommonStates">
+                                                                            <VisualState Name="Normal">
+                                                                                <VisualState.Setters>
+                                                                                    <Setter Property="Stroke" Value="{Binding DefaultStyle.InputTextWhenUnFocusedColor, Converter={StaticResource StringToColorConverter}}" />
+                                                                                </VisualState.Setters>
+                                                                            </VisualState>
+                                                                            <VisualState Name="Focused">
+                                                                                <VisualState.Setters>
+                                                                                    <Setter Property="Stroke" Value="{Binding DefaultStyle.InputTextWhenFocusedColor, Converter={StaticResource StringToColorConverter}}" />
+                                                                                </VisualState.Setters>
+                                                                            </VisualState>
+                                                                            <VisualState Name="Error">
+                                                                                <VisualState.Setters>
+                                                                                    <Setter Property="Stroke" Value="#B3261E" />
+                                                                                </VisualState.Setters>
+                                                                            </VisualState>
+                                                                        </VisualStateGroup>
+                                                                    </VisualStateGroupList>
+                                                                </VisualStateManager.VisualStateGroups>
+                                                            </core:SfTextInputLayout>
+
+                                                            <core:SfTextInputLayout
+                                                                Grid.Row="2"
+                                                                Grid.Column="1"
+                                                                Margin="0,0,0,-15"
+                                                                BackgroundColor="Transparent"
+                                                                ContainerBackground="Transparent"
+                                                                Hint="Bank fees">
+                                                                <core:SfTextInputLayout.HintLabelStyle>
+                                                                    <core:LabelStyle FontFamily="{Binding DefaultStyle.DefaultFontFamily}" />
+                                                                </core:SfTextInputLayout.HintLabelStyle>
+                                                                <core:SfTextInputLayout.ErrorLabelStyle>
+                                                                    <core:LabelStyle FontFamily="{Binding DefaultStyle.DefaultFontFamily}" />
+                                                                </core:SfTextInputLayout.ErrorLabelStyle>
+                                                                <core:SfTextInputLayout.HelperLabelStyle>
+                                                                    <core:LabelStyle FontFamily="{Binding DefaultStyle.DefaultFontFamily}" />
+                                                                </core:SfTextInputLayout.HelperLabelStyle>
+                                                                <editors:SfNumericEntry
+                                                                    CustomFormat="c"
+                                                                    FontFamily="{Binding DefaultStyle.DefaultFontFamily}"
+                                                                    MaximumNumberDecimalDigits="0"
+                                                                    TextColor="{Binding DefaultStyle.InputTextFgColor, Converter={StaticResource StringToColorConverter}}"
+                                                                    Value="{Binding BankFee}" />
+                                                                <VisualStateManager.VisualStateGroups>
+                                                                    <VisualStateGroupList>
+                                                                        <VisualStateGroup x:Name="CommonStates">
+                                                                            <VisualState Name="Normal">
+                                                                                <VisualState.Setters>
+                                                                                    <Setter Property="Stroke" Value="{Binding DefaultStyle.InputTextWhenUnFocusedColor, Converter={StaticResource StringToColorConverter}}" />
+                                                                                </VisualState.Setters>
+                                                                            </VisualState>
+                                                                            <VisualState Name="Focused">
+                                                                                <VisualState.Setters>
+                                                                                    <Setter Property="Stroke" Value="{Binding DefaultStyle.InputTextWhenFocusedColor, Converter={StaticResource StringToColorConverter}}" />
+                                                                                </VisualState.Setters>
+                                                                            </VisualState>
+                                                                            <VisualState Name="Error">
+                                                                                <VisualState.Setters>
+                                                                                    <Setter Property="Stroke" Value="#B3261E" />
+                                                                                </VisualState.Setters>
+                                                                            </VisualState>
+                                                                        </VisualStateGroup>
+                                                                    </VisualStateGroupList>
+                                                                </VisualStateManager.VisualStateGroups>
+                                                            </core:SfTextInputLayout>
+
+                                                            <core:SfTextInputLayout
+                                                                Grid.Row="3"
+                                                                Grid.Column="0"
+                                                                Margin="0,0,0,-15"
+                                                                BackgroundColor="Transparent"
+                                                                ContainerBackground="Transparent"
+                                                                Hint="Inspection fee">
+                                                                <core:SfTextInputLayout.HintLabelStyle>
+                                                                    <core:LabelStyle FontFamily="{Binding DefaultStyle.DefaultFontFamily}" />
+                                                                </core:SfTextInputLayout.HintLabelStyle>
+                                                                <core:SfTextInputLayout.ErrorLabelStyle>
+                                                                    <core:LabelStyle FontFamily="{Binding DefaultStyle.DefaultFontFamily}" />
+                                                                </core:SfTextInputLayout.ErrorLabelStyle>
+                                                                <core:SfTextInputLayout.HelperLabelStyle>
+                                                                    <core:LabelStyle FontFamily="{Binding DefaultStyle.DefaultFontFamily}" />
+                                                                </core:SfTextInputLayout.HelperLabelStyle>
+                                                                <editors:SfNumericEntry
+                                                                    CustomFormat="c"
+                                                                    FontFamily="{Binding DefaultStyle.DefaultFontFamily}"
+                                                                    MaximumNumberDecimalDigits="0"
+                                                                    TextColor="{Binding DefaultStyle.InputTextFgColor, Converter={StaticResource StringToColorConverter}}"
+                                                                    Value="{Binding InspectionFee}" />
+                                                                <VisualStateManager.VisualStateGroups>
+                                                                    <VisualStateGroupList>
+                                                                        <VisualStateGroup x:Name="CommonStates">
+                                                                            <VisualState Name="Normal">
+                                                                                <VisualState.Setters>
+                                                                                    <Setter Property="Stroke" Value="{Binding DefaultStyle.InputTextWhenUnFocusedColor, Converter={StaticResource StringToColorConverter}}" />
+                                                                                </VisualState.Setters>
+                                                                            </VisualState>
+                                                                            <VisualState Name="Focused">
+                                                                                <VisualState.Setters>
+                                                                                    <Setter Property="Stroke" Value="{Binding DefaultStyle.InputTextWhenFocusedColor, Converter={StaticResource StringToColorConverter}}" />
+                                                                                </VisualState.Setters>
+                                                                            </VisualState>
+                                                                            <VisualState Name="Error">
+                                                                                <VisualState.Setters>
+                                                                                    <Setter Property="Stroke" Value="#B3261E" />
+                                                                                </VisualState.Setters>
+                                                                            </VisualState>
+                                                                        </VisualStateGroup>
+                                                                    </VisualStateGroupList>
+                                                                </VisualStateManager.VisualStateGroups>
+                                                            </core:SfTextInputLayout>
+
+                                                            <core:SfTextInputLayout
+                                                                Grid.Row="3"
+                                                                Grid.Column="1"
+                                                                Margin="0,0,0,-15"
+                                                                BackgroundColor="Transparent"
+                                                                ContainerBackground="Transparent"
+                                                                Hint="Other expenses">
+                                                                <core:SfTextInputLayout.HintLabelStyle>
+                                                                    <core:LabelStyle FontFamily="{Binding DefaultStyle.DefaultFontFamily}" />
+                                                                </core:SfTextInputLayout.HintLabelStyle>
+                                                                <core:SfTextInputLayout.ErrorLabelStyle>
+                                                                    <core:LabelStyle FontFamily="{Binding DefaultStyle.DefaultFontFamily}" />
+                                                                </core:SfTextInputLayout.ErrorLabelStyle>
+                                                                <core:SfTextInputLayout.HelperLabelStyle>
+                                                                    <core:LabelStyle FontFamily="{Binding DefaultStyle.DefaultFontFamily}" />
+                                                                </core:SfTextInputLayout.HelperLabelStyle>
+                                                                <editors:SfNumericEntry
+                                                                    CustomFormat="c"
+                                                                    FontFamily="{Binding DefaultStyle.DefaultFontFamily}"
+                                                                    MaximumNumberDecimalDigits="0"
+                                                                    TextColor="{Binding DefaultStyle.InputTextFgColor, Converter={StaticResource StringToColorConverter}}"
+                                                                    Value="{Binding OtherExpenses}" />
+                                                                <VisualStateManager.VisualStateGroups>
+                                                                    <VisualStateGroupList>
+                                                                        <VisualStateGroup x:Name="CommonStates">
+                                                                            <VisualState Name="Normal">
+                                                                                <VisualState.Setters>
+                                                                                    <Setter Property="Stroke" Value="{Binding DefaultStyle.InputTextWhenUnFocusedColor, Converter={StaticResource StringToColorConverter}}" />
+                                                                                </VisualState.Setters>
+                                                                            </VisualState>
+                                                                            <VisualState Name="Focused">
+                                                                                <VisualState.Setters>
+                                                                                    <Setter Property="Stroke" Value="{Binding DefaultStyle.InputTextWhenFocusedColor, Converter={StaticResource StringToColorConverter}}" />
+                                                                                </VisualState.Setters>
+                                                                            </VisualState>
+                                                                            <VisualState Name="Error">
+                                                                                <VisualState.Setters>
+                                                                                    <Setter Property="Stroke" Value="#B3261E" />
+                                                                                </VisualState.Setters>
+                                                                            </VisualState>
+                                                                        </VisualStateGroup>
+                                                                    </VisualStateGroupList>
+                                                                </VisualStateManager.VisualStateGroups>
+                                                            </core:SfTextInputLayout>
+                                                        </Grid>
+                                                    </StackLayout>
+                                                </Grid>
+
+                                            </Border>
+                                        </StackLayout>
+                                    </expander:SfExpander.Content>
+                                    <VisualStateManager.VisualStateGroups>
+                                        <VisualStateGroupList>
+                                            <VisualStateGroup>
+                                                <VisualState Name="Expanded">
+                                                    <VisualState.Setters>
+                                                        <Setter Property="HeaderBackground" Value="{Binding DefaultStyle.ExpanderHeaderIconExpandColor, Converter={StaticResource StringToColorConverter}}" />
+                                                    </VisualState.Setters>
+                                                </VisualState>
+                                                <VisualState Name="Collapsed">
+                                                    <VisualState.Setters>
+                                                        <Setter Property="HeaderBackground" Value="{Binding DefaultStyle.ExpanderHeaderIconCollapseColor, Converter={StaticResource StringToColorConverter}}" />
+                                                    </VisualState.Setters>
+                                                </VisualState>
+                                            </VisualStateGroup>
+                                        </VisualStateGroupList>
+                                    </VisualStateManager.VisualStateGroups>
+                                </expander:SfExpander>
+
+                                <FlexLayout
+                                    Margin="0"
+                                    AlignItems="Stretch"
+                                    Direction="Column"
+                                    JustifyContent="Center">
+                                    <Border
+                                        Margin="12,5,12,2"
+                                        HeightRequest="250"
+                                        HorizontalOptions="Fill"
+                                        StrokeShape="RoundRectangle 12,12,12,12"
+                                        StrokeThickness="2"
+                                        VerticalOptions="Center">
+                                        <!--  Stroke="{Binding DefaultStyle.ChartBorderColor, Converter={StaticResource StringToColorConverter}}"  -->
+                                        <Border.Stroke>
+                                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                                <GradientStop Offset="0.0" Color="#FF009FFF" />
+                                                <GradientStop Offset="1.0" Color="#FFec2F4B" />
+                                            </LinearGradientBrush>
+                                        </Border.Stroke>
+                                        <Border.Content>
+                                            <Grid Padding="10" HorizontalOptions="Fill">
+                                                <chart:SfCircularChart BackgroundColor="Transparent">
+                                                    <chart:SfCircularChart.Resources>
+                                                        <DataTemplate x:Key="labelTemplate">
+                                                            <StackLayout Orientation="Vertical">
+                                                                <Label>
+                                                                    <Label.FormattedText>
+                                                                        <FormattedString>
+                                                                            <Span
+                                                                                FontAttributes="Bold"
+                                                                                FontFamily="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.DefaultStyle.DefaultFontFamily}"
+                                                                                FontSize="10"
+                                                                                Text="{Binding Converter={StaticResource doubleToMoneyConverter}}"
+                                                                                TextColor="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.DefaultStyle.ChartDataMarkerColor, Converter={StaticResource StringToColorConverter}}" />
+                                                                        </FormattedString>
+                                                                    </Label.FormattedText>
+                                                                </Label>
+                                                            </StackLayout>
+                                                        </DataTemplate>
+                                                    </chart:SfCircularChart.Resources>
+                                                    <chart:SfCircularChart.Legend>
+                                                        <chart:ChartLegend Placement="{OnPlatform Android={OnIdiom Phone=Left, Tablet=Left}, iOS={OnIdiom Phone=Left, Tablet=Left}, UWP=Left}" ToggleSeriesVisibility="True">
+                                                            <!--
+                                                                IconHeight="14"
+                                                                IconWidth="14"
+                                                                OverflowMode="Wrap"
+                                                            -->
+                                                            <chart:ChartLegend.LabelStyle>
+                                                                <chart:ChartLegendLabelStyle
+                                                                    FontAttributes="Bold"
+                                                                    FontFamily="{Binding DefaultStyle.DefaultFontFamily}"
+                                                                    TextColor="{Binding DefaultStyle.ChartLegendColor, Converter={StaticResource StringToColorConverter}}" />
+                                                            </chart:ChartLegend.LabelStyle>
+                                                        </chart:ChartLegend>
+                                                    </chart:SfCircularChart.Legend>
+                                                    <chart:SfCircularChart.Series>
+                                                        <chart:DoughnutSeries
+                                                            ExplodeAll="False"
+                                                            ExplodeOnTouch="False"
+                                                            InnerRadius="0.5"
+                                                            ItemsSource="{Binding ChartPropertyValueWithInterestPayment}"
+                                                            LegendIcon="Circle"
+                                                            StrokeWidth="1"
+                                                            XBindingPath="Category"
+                                                            YBindingPath="Value">
+                                                            <chart:DoughnutSeries.SelectionBehavior>
+                                                                <chart:DataPointSelectionBehavior SelectionBrush="#314A6E" />
+                                                            </chart:DoughnutSeries.SelectionBehavior>
+                                                            <chart:DoughnutSeries.DataLabelSettings>
+                                                                <chart:CircularDataLabelSettings LabelPosition="Outside" SmartLabelAlignment="Shift">
+                                                                    <chart:CircularDataLabelSettings.ConnectorLineSettings>
+                                                                        <chart:ConnectorLineStyle
+                                                                            ConnectorType="Curve"
+                                                                            Stroke="DarkGray"
+                                                                            StrokeWidth="3" />
+                                                                    </chart:CircularDataLabelSettings.ConnectorLineSettings>
+                                                                </chart:CircularDataLabelSettings>
+                                                            </chart:DoughnutSeries.DataLabelSettings>
+                                                            <!--<chart:PieSeries.ColorModel>
+                                                            <chart:ChartColorModel CustomBrushes="{Binding CustomPaletteColors}" Palette="Custom" />
+                                                        </chart:PieSeries.ColorModel>-->
+                                                            <chart:DoughnutSeries.CenterView>
+                                                                <StackLayout HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
+                                                                    <Label
+                                                                        FontAttributes="Bold"
+                                                                        FontFamily="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.DefaultStyle.DefaultFontFamily}"
+                                                                        FontSize="10"
+                                                                        TextColor="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.DefaultStyle.ChartDataMarkerColor, Converter={StaticResource StringToColorConverter}}">
+                                                                        <Label.FormattedText>
+                                                                            <FormattedString>
+                                                                                <Span Text="$" />
+                                                                                <Span Text="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.HomeLoanInfo.PaymentSummary.Payment.TotalPaymentRoundedWithComma}" />
+                                                                            </FormattedString>
+                                                                        </Label.FormattedText>
+                                                                    </Label>
+                                                                </StackLayout>
+                                                            </chart:DoughnutSeries.CenterView>
+
+
+
+                                                            <!--<chart:DoughnutSeries.DataMarker>
+                                                            <chart:ChartDataMarker ="True">
+                                                                <chart:ChartDataMarker.LabelTemplate>
+                                                                    <DataTemplate>
+                                                                        <StackLayout Orientation="Vertical">
+                                                                            <Label>
+                                                                                <Label.FormattedText>
+                                                                                    <FormattedString>
+                                                                                        <Span
+                                                                                            FontAttributes="Bold"
+                                                                                            FontFamily="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.DefaultStyle.DefaultFontFamily}"
+                                                                                            FontSize="10"
+                                                                                            Text="{Binding Converter={StaticResource doubleToMoneyConverter}}"
+                                                                                            TextColor="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.DefaultStyle.ChartDataMarkerColor, Converter={StaticResource StringToColorConverter}}" />
+                                                                                    </FormattedString>
+                                                                                </Label.FormattedText>
+                                                                            </Label>
+                                                                        </StackLayout>
+                                                                    </DataTemplate>
+                                                                </chart:ChartDataMarker.LabelTemplate>
+                                                            </chart:ChartDataMarker>
+                                                        </chart:DoughnutSeries.DataMarker>-->
+                                                        </chart:DoughnutSeries>
+                                                    </chart:SfCircularChart.Series>
+                                                </chart:SfCircularChart>
+
+                                            </Grid>
+                                        </Border.Content>
+
+
+
+                                    </Border>
+                                </FlexLayout>
+                            </StackLayout>
+                        </ScrollView>
+                    </tabView:SfTabItem.Content>
+                </tabView:SfTabItem>
+                <tabView:SfTabItem Header="Amortisation">
+                    <tabView:SfTabItem.Content>
+                        <StackLayout>
+
+                            <buttons:SfSegmentedControl
+                                x:Name="AmortizationBreadDownFrequencySegmentCtrl"
+                                Margin="5"
+                                CornerRadius="15"
+                                ItemsSource="{Binding AmortizationBreakdownFrequencyCollection}"
+                                SelectedIndex="{Binding AmortizationBreakdownFrequencySelectedIndex}"
+                                Stroke="{Binding DefaultStyle.SegBorderColor, Converter={StaticResource StringToColorConverter}}"
+                                StrokeThickness="2"
+                                TextStyle="{buttons:SegmentTextStyle TextColor={Binding DefaultStyle.SegTextFgColor,
+                                                                                        Converter={StaticResource StringToColorConverter}},
+                                                                     FontFamily={Binding DefaultStyle.DefaultFontFamily}}"
+                                VisibleSegmentsCount="2">
+                                <!--
+                                    Color="{Binding DefaultStyle.SegBgColor, Converter={StaticResource StringToColorConverter}}"
+                                    SelectionTextColor="{Binding DefaultStyle.SegSelectedTextFgColor, Converter={StaticResource StringToColorConverter}}"
+                                -->
+                                <buttons:SfSegmentedControl.SelectionIndicatorSettings>
+                                    <buttons:SelectionIndicatorSettings Background="{Binding DefaultStyle.SegSelectedBgColor, Converter={StaticResource StringToColorConverter}}" SelectionIndicatorPlacement="Fill" />
+                                </buttons:SfSegmentedControl.SelectionIndicatorSettings>
+                            </buttons:SfSegmentedControl>
+
+                            <FlexLayout
+                                Margin="0"
+                                AlignItems="Stretch"
+                                Direction="Column"
+                                JustifyContent="Center">
+                                <Border
+                                    Margin="12,5,12,2"
+                                    HeightRequest="250"
+                                    HorizontalOptions="Fill"
+                                    StrokeShape="RoundRectangle 12,12,12,12"
+                                    StrokeThickness="2"
+                                    VerticalOptions="Center">
+                                    <Border.Stroke>
+                                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                            <GradientStop Offset="0.0" Color="#FF009FFF" />
+                                            <GradientStop Offset="1.0" Color="#FFec2F4B" />
+                                        </LinearGradientBrush>
+                                    </Border.Stroke>
+                                    <Border.Content>
+                                        <Grid Padding="10" HorizontalOptions="Fill">
+                                            <chart:SfCartesianChart
+                                                BackgroundColor="Transparent"
+                                                HeightRequest="200"
+                                                HorizontalOptions="FillAndExpand"
+                                                IsVisible="{Binding IsAmortizationYearBased}"
+                                                VerticalOptions="FillAndExpand">
+                                                <!--<chart:SfCartesianChart.Margin>
+                                                    <OnPlatform x:TypeArguments="Thickness" WinPhone="0,0,20,0" />
+                                                </chart:SfCartesianChart.Margin>-->
+                                                <chart:SfCartesianChart.Title>
+                                                    <Label
+                                                        BackgroundColor="Transparent"
+                                                        FontFamily="{Binding DefaultStyle.DefaultFontFamily}"
+                                                        Text="Gross Domestic Product Growth"
+                                                        TextColor="{Binding DefaultStyle.ChartTitleColor, Converter={StaticResource StringToColorConverter}}" />
+                                                </chart:SfCartesianChart.Title>
+                                                <chart:SfCartesianChart.XAxes>
+                                                    <chart:CategoryAxis
+                                                        EdgeLabelsDrawingMode="Fit"
+                                                        LabelPlacement="BetweenTicks"
+                                                        ShowMajorGridLines="False">
+                                                        <chart:CategoryAxis.LabelStyle>
+                                                            <chart:ChartAxisLabelStyle
+                                                                FontAttributes="Bold"
+                                                                FontFamily="{Binding DefaultStyle.DefaultFontFamily}"
+                                                                FontSize="12"
+                                                                TextColor="{Binding DefaultStyle.ChartAxisColor, Converter={StaticResource StringToColorConverter}}" />
+                                                        </chart:CategoryAxis.LabelStyle>
+                                                        <chart:CategoryAxis.MajorTickStyle>
+                                                            <chart:ChartAxisTickStyle TickSize="8" />
+                                                        </chart:CategoryAxis.MajorTickStyle>
+                                                    </chart:CategoryAxis>
+                                                </chart:SfCartesianChart.XAxes>
+                                                <chart:SfCartesianChart.YAxes>
+                                                    <chart:NumericalAxis>
+                                                        <chart:NumericalAxis.LabelStyle>
+                                                            <chart:ChartAxisLabelStyle
+                                                                x:Name="amortYearSecondaryAxisLabelStyle"
+                                                                FontAttributes="Bold"
+                                                                FontFamily="{Binding DefaultStyle.DefaultFontFamily}"
+                                                                FontSize="12"
+                                                                TextColor="{Binding DefaultStyle.ChartAxisColor, Converter={StaticResource StringToColorConverter}}" />
+                                                        </chart:NumericalAxis.LabelStyle>
+                                                        <chart:NumericalAxis.AxisLineStyle>
+                                                            <chart:ChartLineStyle StrokeWidth="0" />
+                                                        </chart:NumericalAxis.AxisLineStyle>
+                                                        <chart:NumericalAxis.MajorTickStyle>
+                                                            <chart:ChartAxisTickStyle TickSize="0" />
+                                                        </chart:NumericalAxis.MajorTickStyle>
+                                                    </chart:NumericalAxis>
+                                                </chart:SfCartesianChart.YAxes>
+                                                <chart:SfCartesianChart.Legend>
+                                                    <chart:ChartLegend Placement="{OnPlatform Android={OnIdiom Phone=Bottom, Tablet=Left}, iOS={OnIdiom Phone=Bottom, Tablet=Left}, UWP=Left}" ToggleSeriesVisibility="True" />
+                                                    <!--
+                                                        IconHeight="14"
+                                                        IconWidth="14"
+                                                    -->
+                                                </chart:SfCartesianChart.Legend>
+                                                <chart:SfCartesianChart.Series>
+                                                    <chart:StackingColumnSeries
+                                                        EnableAnimation="True"
+                                                        ItemsSource="{Binding AmortizationChartInterestAmountAxis}"
+                                                        LegendIcon="SeriesType"
+                                                        Stroke="{Binding DefaultStyle.ChartColor1, Converter={StaticResource StringToColorConverter}}"
+                                                        XBindingPath="Name"
+                                                        YBindingPath="Value" />
+                                                    <chart:StackingColumnSeries
+                                                        EnableAnimation="True"
+                                                        ItemsSource="{Binding AmortizationChartPrincipalAmountAxis}"
+                                                        LegendIcon="SeriesType"
+                                                        Stroke="{Binding DefaultStyle.ChartColor2, Converter={StaticResource StringToColorConverter}}"
+                                                        XBindingPath="Name"
+                                                        YBindingPath="Value" />
+                                                </chart:SfCartesianChart.Series>
+                                            </chart:SfCartesianChart>
+
+                                            <chart:SfCartesianChart
+                                                BackgroundColor="Transparent"
+                                                HeightRequest="200"
+                                                HorizontalOptions="FillAndExpand"
+                                                IsVisible="{Binding IsAmortizationTermBased}"
+                                                VerticalOptions="FillAndExpand">
+                                                <!--<chart:SfCartesianChart.Margin>
+                                                    <OnPlatform x:TypeArguments="Thickness" WinPhone="0,0,20,0" />
+                                                </chart:SfCartesianChart.Margin>-->
+                                                <chart:SfCartesianChart.Title>
+                                                    <Label
+                                                        BackgroundColor="Transparent"
+                                                        FontFamily="{Binding DefaultStyle.DefaultFontFamily}"
+                                                        Text="Gross Domestic Product Growth"
+                                                        TextColor="{Binding DefaultStyle.ChartTitleColor, Converter={StaticResource StringToColorConverter}}" />
+
+                                                </chart:SfCartesianChart.Title>
+                                                <chart:SfCartesianChart.XAxes>
+                                                    <chart:CategoryAxis
+                                                        EdgeLabelsDrawingMode="Shift"
+                                                        LabelPlacement="BetweenTicks"
+                                                        ShowMajorGridLines="False">
+                                                        <chart:CategoryAxis.LabelStyle>
+                                                            <chart:ChartAxisLabelStyle
+                                                                FontAttributes="Bold"
+                                                                FontFamily="{Binding DefaultStyle.DefaultFontFamily}"
+                                                                FontSize="12"
+                                                                TextColor="{Binding DefaultStyle.ChartAxisColor, Converter={StaticResource StringToColorConverter}}" />
+                                                        </chart:CategoryAxis.LabelStyle>
+                                                        <chart:CategoryAxis.MajorTickStyle>
+                                                            <chart:ChartAxisTickStyle TickSize="0" />
+                                                        </chart:CategoryAxis.MajorTickStyle>
+                                                    </chart:CategoryAxis>
+                                                </chart:SfCartesianChart.XAxes>
+                                                <chart:SfCartesianChart.YAxes>
+                                                    <chart:NumericalAxis>
+                                                        <chart:NumericalAxis.LabelStyle>
+                                                            <chart:ChartAxisLabelStyle
+                                                                x:Name="amortTermSecondaryAxisLabelStyle"
+                                                                FontAttributes="Bold"
+                                                                FontFamily="{Binding DefaultStyle.DefaultFontFamily}"
+                                                                FontSize="12"
+                                                                TextColor="{Binding DefaultStyle.ChartAxisColor, Converter={StaticResource StringToColorConverter}}" />
+                                                        </chart:NumericalAxis.LabelStyle>
+                                                        <chart:NumericalAxis.AxisLineStyle>
+                                                            <chart:ChartLineStyle StrokeWidth="0" />
+                                                        </chart:NumericalAxis.AxisLineStyle>
+                                                        <chart:NumericalAxis.MajorTickStyle>
+                                                            <chart:ChartAxisTickStyle TickSize="0" />
+                                                        </chart:NumericalAxis.MajorTickStyle>
+                                                    </chart:NumericalAxis>
+                                                </chart:SfCartesianChart.YAxes>
+                                                <chart:SfCartesianChart.Legend>
+                                                    <chart:ChartLegend Placement="{OnPlatform Android={OnIdiom Phone=Bottom, Tablet=Left}, iOS={OnIdiom Phone=Bottom, Tablet=Left}, UWP=Left}" ToggleSeriesVisibility="True" />
+                                                </chart:SfCartesianChart.Legend>
+                                                <chart:SfCartesianChart.Series>
+
+                                                    <chart:StackingAreaSeries
+                                                        EnableAnimation="True"
+                                                        ItemsSource="{Binding AmortizationChartAreaInterestAmountAxis}"
+                                                        LegendIcon="SeriesType"
+                                                        Stroke="{Binding DefaultStyle.ChartColor1, Converter={StaticResource StringToColorConverter}}"
+                                                        XBindingPath="Name"
+                                                        YBindingPath="Value" />
+                                                    <chart:StackingAreaSeries
+                                                        EnableAnimation="True"
+                                                        ItemsSource="{Binding AmortizationChartAreaPrincipalAmountAxis}"
+                                                        LegendIcon="SeriesType"
+                                                        Stroke="{Binding DefaultStyle.ChartColor2, Converter={StaticResource StringToColorConverter}}"
+                                                        XBindingPath="Name"
+                                                        YBindingPath="Value" />
+
+                                                </chart:SfCartesianChart.Series>
+                                            </chart:SfCartesianChart>
+                                        </Grid>
+                                    </Border.Content>
+                                </Border>
+
+
+
+                            </FlexLayout>
+
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="*" />
+                                </Grid.RowDefinitions>
+
+                                <!--  below is for paging in the grid  -->
+                                <!--  AppearanceManager="{StaticResource customAppearance}"  -->
+                                <!--<OnPlatform
+                                    x:TypeArguments="x:Double"
+                                    Android="50"
+                                    WinPhone="70"
+                                    iOS="50" />-->
+                                <pager:SfDataPager
+                                    x:Name="dataPager"
+                                    Grid.Row="0"
+                                    NumericButtonsGenerateMode="Auto"
+                                    PageSize="15"
+                                    Source="{Binding PaymentAmortization}">
+
+                                    <pager:SfDataPager.HeightRequest />
+                                </pager:SfDataPager>
+
+                                <!--  AlternationRowCount="2"  -->
+                                <!--  AutoGenerateColumnsMode="None"  -->
+                                <!--  EnableDataVirtualization="True"  -->
+                                <!--  ColumnWidthMode="Fill"  -->
+                                <!--
+                                    SelectionMode="None"
+                                    ShowRowHeader="True"
+                                -->
+                                <!--  ScrollingMode="PixelLine"  -->
+                                <datagrid:SfDataGrid
+                                    x:Name="dataGrid"
+                                    Grid.Row="1"
+                                    BackgroundColor="Transparent"
+                                    AutoGenerateColumnsMode="None"
+                                    GridLinesVisibility="Both"
+                                    HeaderGridLinesVisibility="Both"
+                                    ItemsSource="{Binding Source={x:Reference dataPager}, Path=PagedSource}">
+                                    <!--<datagrid:SfDataGrid.Margin>
+                                        <OnPlatform x:TypeArguments="Thickness">
+                                            <On Platform="Android, iOS" Value="-20,0,0,0" />
+                                            <On Platform="UWP" Value="0,0,0,0" />
+                                        </OnPlatform>
+                                    </datagrid:SfDataGrid.Margin>-->
+                                    <datagrid:SfDataGrid.Columns>
+                                        <datagrid:DataGridTemplateColumn HeaderText="Period" MappingName="PaymentPeriod">
+                                            <datagrid:DataGridTemplateColumn.HeaderTemplate>
+                                                <DataTemplate>
+                                                    <Label
+                                                        FontAttributes="Bold"
+                                                        FontFamily="{Binding DefaultStyle.DefaultFontFamily}"
+                                                        Text="Period" />
+                                                </DataTemplate>
+                                            </datagrid:DataGridTemplateColumn.HeaderTemplate>
+                                            <datagrid:DataGridTemplateColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <Label
+                                                        FontFamily="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.DefaultStyle.DefaultFontFamily}"
+                                                        HorizontalTextAlignment="Center"
+                                                        Text="{Binding PaymentPeriod}"
+                                                        TextColor="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.DefaultStyle.DataGridRowForegroundColor, Converter={StaticResource StringToColorConverter}}"
+                                                        VerticalTextAlignment="Center" />
+                                                </DataTemplate>
+                                            </datagrid:DataGridTemplateColumn.CellTemplate>
+                                        </datagrid:DataGridTemplateColumn>
+
+                                        <datagrid:DataGridTemplateColumn HeaderText="Principal" MappingName="PrincipalAmountRounded">
+                                            <datagrid:DataGridTemplateColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <Label
+                                                        FontFamily="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.DefaultStyle.DefaultFontFamily}"
+                                                        HorizontalTextAlignment="Center"
+                                                        Text="{Binding PrincipalAmountRounded}"
+                                                        TextColor="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.DefaultStyle.DataGridRowForegroundColor, Converter={StaticResource StringToColorConverter}}"
+                                                        VerticalTextAlignment="Center" />
+                                                </DataTemplate>
+                                            </datagrid:DataGridTemplateColumn.CellTemplate>
+                                        </datagrid:DataGridTemplateColumn>
+                                        <datagrid:DataGridTemplateColumn HeaderText="Interest" MappingName="InterestAmountRounded">
+                                            <datagrid:DataGridTemplateColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <Label
+                                                        FontFamily="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.DefaultStyle.DefaultFontFamily}"
+                                                        HorizontalTextAlignment="Center"
+                                                        Text="{Binding InterestAmountRounded}"
+                                                        TextColor="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.DefaultStyle.DataGridRowForegroundColor, Converter={StaticResource StringToColorConverter}}"
+                                                        VerticalTextAlignment="Center" />
+                                                </DataTemplate>
+                                            </datagrid:DataGridTemplateColumn.CellTemplate>
+                                        </datagrid:DataGridTemplateColumn>
+                                        <datagrid:DataGridTemplateColumn HeaderText="Balance" MappingName="BalanceAmountRounded">
+                                            <datagrid:DataGridTemplateColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <Label
+                                                        FontFamily="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.DefaultStyle.DefaultFontFamily}"
+                                                        HorizontalTextAlignment="Center"
+                                                        Text="{Binding BalanceAmountRounded}"
+                                                        TextColor="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.DefaultStyle.DataGridRowForegroundColor, Converter={StaticResource StringToColorConverter}}"
+                                                        VerticalTextAlignment="Center" />
+                                                </DataTemplate>
+                                            </datagrid:DataGridTemplateColumn.CellTemplate>
+                                        </datagrid:DataGridTemplateColumn>
+                                    </datagrid:SfDataGrid.Columns>
+
+                                    <!--  AlternatingRowColor="Yellow"  -->
+                                    <datagrid:SfDataGrid.DefaultStyle>
+                                        <core:DataGridStyle
+                                            AlternateRowBackground="Yellow"
+                                            GridLineStrokeThickness="3"
+                                            HeaderRowBackground="{Binding DefaultStyle.DataGridHeaderBackgroundColor, Converter={StaticResource StringToColorConverter}}"
+                                            HeaderRowTextColor="{Binding DefaultStyle.DataGridHeaderForegroundColor, Converter={StaticResource StringToColorConverter}}"
+                                            RowBackground="{Binding DefaultStyle.DataGridRowBackgroundColor, Converter={StaticResource StringToColorConverter}}"
+                                            RowTextColor="{Binding DefaultStyle.DataGridRowForegroundColor, Converter={StaticResource StringToColorConverter}}" />
+                                    </datagrid:SfDataGrid.DefaultStyle>
+
+                                    <!--  GridCellBorderColor="{Binding DefaultStyle.DataGridGridCellBorderColor, Converter={StaticResource StringToColorConverter}}"  -->
+                                    <!--  GridCellBorderWidth="1"  -->
+                                    <!--  GridLinesVisibility="Horizontal"  -->
+                                </datagrid:SfDataGrid>
+
+                            </Grid>
+                        </StackLayout>
+                    </tabView:SfTabItem.Content>
+                </tabView:SfTabItem>
+            </tabView:SfTabView>
+        </Grid>
+    </ContentPage.Content>
+</ContentPage>

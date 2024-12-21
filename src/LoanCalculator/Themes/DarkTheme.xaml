@@ -1,0 +1,82 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ResourceDictionary
+    x:Class="LoanCalculatorMaui.Themes.DarkTheme"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
+    <!-- Colors -->
+    <Color x:Key="DefaultForegroundColor">White</Color>
+    <Color x:Key="DefaultTabStrokeColor">#85929E</Color>
+    <Color x:Key="DefaultTabHeadTextColor">#EAEDED</Color>
+    <Color x:Key="ExpanderHeaderIconExpandColor">#BB8FCE</Color>
+    <Color x:Key="ExpanderHeaderIconCollapseColor">#2C3E50</Color>
+    <Color x:Key="BoxBorderColor">#F5EEF8</Color>
+    <Color x:Key="HighlightBoxBorderColor">#D2B4DE</Color>
+    <Color x:Key="HighlightFgColor">#1B2631</Color>
+    <Color x:Key="ChartBorderColor">#616A6B</Color>
+    <Color x:Key="ChartAxisColor">Red</Color>
+    <Color x:Key="ChartLegendColor">Green</Color>
+    <Color x:Key="ChartTitleColor">Pink</Color>
+    <Color x:Key="ChartDataMarkerColor">Brown</Color>
+    <Color x:Key="ChartColor1">#3498DB</Color>
+    <Color x:Key="ChartColor2">#48C9B0</Color>
+    <Color x:Key="ChartColor3">#884EA0</Color>
+    <Color x:Key="InputTextFgColor">#BFC9CA</Color>
+    <Color x:Key="InputTextWhenFocusedColor">#A9DFBF</Color>
+    <Color x:Key="InputTextWhenUnFocusedColor">#808B96</Color>
+    <Color x:Key="InputErrorTextFgColor">#F5B7B1</Color>
+    <Color x:Key="SegBgColor">#424949</Color>
+    <Color x:Key="SegBorderColor">#34495E</Color>
+    <Color x:Key="SegTextFgColor">#808B96</Color>
+    <Color x:Key="SegSelectedTextFgColor">#212F3C</Color>
+    <Color x:Key="SegSelectedBgColor">#D2B4DE</Color>
+    <Color x:Key="RangeSliderKnobColor">#34495E</Color>
+    <Color x:Key="RangeSliderTrackColor">#EC7063</Color>
+    <Color x:Key="RangeSliderTrackSelectionColor">#4A235A</Color>
+    <Color x:Key="RangeSliderLabelTextColor">White</Color>
+    <Color x:Key="DataGridHeaderBackgroundColor">#2E4053</Color>
+    <Color x:Key="DataGridHeaderForegroundColor">#EAECEE</Color>
+    <Color x:Key="DataGridGridCellBorderColor">#7F8C8D</Color>
+    <Color x:Key="DataGridRowBackgroundColor">#ABB2B9</Color>
+    <Color x:Key="DataGridRowForegroundColor">#212F3D</Color>
+    <Color x:Key="ComboDropDownBackgroundColor">#34495E</Color>
+    <Color x:Key="ComboDropDownTextColor">#BFC9CA</Color>
+    <Color x:Key="ComboHighlightedTextColor">#212F3D</Color>
+    <Color x:Key="ComboSelectedDropDownItemColor">#E5E7E9</Color>
+    <Color x:Key="ComboTextColor">#BFC9CA</Color>
+    <Color x:Key="LstForegroundColor">#CCD1D1</Color>
+    <Color x:Key="ButtonFgColor">Black</Color>
+    <Color x:Key="SwitchBusyIndicatorColorON">Transparent</Color>
+    <Color x:Key="SwitchThumbBorderColorON">Transparent</Color>
+    <Color x:Key="SwitchThumbColorON">#D7BDE2</Color>
+    <Color x:Key="SwitchTrackBorderColorON">Transparent</Color>
+    <Color x:Key="SwitchTrackColorON">#884EA0</Color>
+    <Color x:Key="SwitchBusyIndicatorColorOFF">Transparent</Color>
+    <Color x:Key="SwitchThumbBorderColorOFF">Transparent</Color>
+    <Color x:Key="SwitchThumbColorOFF">#884EA0</Color>
+    <Color x:Key="SwitchTrackBorderColorOFF">Transparent</Color>
+    <Color x:Key="SwitchTrackColorOFF">#EBDEF0</Color>
+    <Color x:Key="NotificationBgColor">#EBDEF0</Color>
+    <Color x:Key="AppShellBgColor">#1B2631</Color>
+    <Color x:Key="AppShellFgColor">#B3B6B7</Color>
+    <Color x:Key="AppShellTitleColor"></Color>
+    <Color x:Key="AppShellDisabledColor"></Color>
+    <Color x:Key="AppShellUnselectedColor"></Color>
+    <Color x:Key="AppShellTabBarBackgroundColor">#1B2631</Color>
+    <Color x:Key="AppShellTabBarForegroundColor">#B3B6B7</Color>
+    <Color x:Key="AppShellTabBarUnselectedColor"></Color>
+    <Color x:Key="AppShellTabBarDisabledColor"></Color>
+    <Color x:Key="AppShellTabBarTitleColor"></Color>
+
+    <!-- Font Families -->
+    <x:String x:Key="DefaultFontFamily">Calibri</x:String>
+
+    <!--  Brushes  -->
+    <SolidColorBrush x:Key="DefaultForegroundBrush" Color="{StaticResource DefaultForegroundColor}" />
+    <SolidColorBrush x:Key="DefaultTabStrokeBrush" Color="{StaticResource DefaultTabStrokeColor}" />
+
+    <!--  Example Styles  -->
+    <Style x:Key="HeaderLabelStyle" TargetType="Label">
+        <Setter Property="TextColor" Value="{StaticResource DefaultForegroundBrush}" />
+        <Setter Property="FontFamily" Value="Calibri" />
+    </Style>
+</ResourceDictionary>

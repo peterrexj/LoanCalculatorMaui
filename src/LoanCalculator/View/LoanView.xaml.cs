@@ -92,6 +92,7 @@ public partial class LoanView : ContentPage
 
     private void SegmentedRepaymentFrequency_SelectionChanged(object? sender, Syncfusion.Maui.Buttons.SelectionChangedEventArgs e)
     {
+        
         viewModel.RepaymentFrequencySelectedIndex = e.NewIndex.Value;
     }
 

@@ -25,7 +25,7 @@
                 SelectionChanged="OnTabSelectionChanged"
                 TabBarBackground="Transparent">
                 <tabView:SfTabView.IndicatorBackground>
-                    <SolidColorBrush Color="{Binding DefaultStyle.DefaultTabStrokeColor, Converter={StaticResource StringToBrushConverter}}" />
+                    <SolidColorBrush Color="{DynamicResource DefaultTabStrokeColor}" />
                 </tabView:SfTabView.IndicatorBackground>
                 <tabView:SfTabItem x:Name="tabDefinitions" Header="Property">
                     <tabView:SfTabItem.Content>
@@ -43,16 +43,20 @@
                                         Grid.Row="0"
                                         Grid.Column="0"
                                         Padding="20,5,20,5"
-                                        FontFamily="{Binding DefaultStyle.DefaultFontFamily}"
+                                        FontFamily="{DynamicResource DefaultFontFamily}"
                                         HorizontalOptions="Center"
                                         HorizontalTextAlignment="Center"
                                         Text="This loan calculator app is intended for informational purposes only and should not be considered a substitute for professional financial advice. It is highly recommended that you consult with your financial adviser before making any financial decisions."
-                                        TextColor="{Binding DefaultStyle.NotificationBgColor, Converter={StaticResource StringToColorConverter}}"
+                                        TextColor="{DynamicResource NotificationBgColor}"
                                         VerticalOptions="Center"
                                         VerticalTextAlignment="Center" />
                                 </Grid>
 
-                                <FlexLayout Margin="0,5,0,0">
+                                <FlexLayout
+                                    Margin="0,5,0,0"
+                                    AlignItems="Stretch"
+                                    Direction="Column"
+                                    JustifyContent="Center">
                                     <Grid>
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="10" />
@@ -65,9 +69,7 @@
                                         <Border
                                             Grid.Row="0"
                                             Grid.Column="1"
-                                            Stroke="{Binding DefaultStyle.HighlightBoxBorderColor, Converter={StaticResource StringToColorConverter}}"
-                                            StrokeThickness="2"
-                                            Style="{StaticResource SfBorderTopHighlightBox}">
+                                            Style="{DynamicResource BorderTopHighlightBox}">
                                             <ContentView>
                                                 <Grid>
                                                     <StackLayout>
@@ -91,37 +93,37 @@
                                                                             <Span
                                                                                 CharacterSpacing="1"
                                                                                 FontAttributes="Bold"
-                                                                                FontFamily="{Binding DefaultStyle.DefaultFontFamily}"
+                                                                                FontFamily="{DynamicResource DefaultFontFamily}"
                                                                                 FontSize="{Binding DefaultStyle.BoxItemCurrencyFontSize}"
                                                                                 Text="{Binding CurrencySymbol}" />
                                                                             <!--<Span Text=" " />-->
                                                                             <Span
                                                                                 CharacterSpacing="-1"
                                                                                 FontAttributes="Bold"
-                                                                                FontFamily="{Binding DefaultStyle.DefaultFontFamily}"
+                                                                                FontFamily="{DynamicResource DefaultFontFamily}"
                                                                                 FontSize="{Binding DefaultStyle.BoxItemHighlightNumberFontSize}"
                                                                                 Text="{Binding HomeLoanInfo.PaymentSummary.Payment.TermPaymentRoundedWithComma}" />
                                                                             <Span Text="{Binding NewLine}" />
-                                                                            <!--<Span FontFamily="{Binding DefaultStyle.DefaultFontFamily}" Text=" per" />-->
+                                                                            <!--<Span FontFamily="{DynamicResource DefaultFontFamily}" Text=" per" />-->
                                                                             <Span
-                                                                                FontFamily="{Binding DefaultStyle.DefaultFontFamily}"
+                                                                                FontFamily="{DynamicResource DefaultFontFamily}"
                                                                                 FontSize="12"
                                                                                 Text="{Binding RepaymentFrequencySelected}" />
                                                                             <Span Text=" " />
 
                                                                             <!--<Span
-                FontFamily="{Binding DefaultStyle.DefaultFontFamily}"
+                FontFamily="{DynamicResource DefaultFontFamily}"
                 FontSize="12"
                 Text=" for " />-->
                                                                             <Span
                                                                                 CharacterSpacing="-1"
                                                                                 FontAttributes="Bold"
-                                                                                FontFamily="{Binding DefaultStyle.DefaultFontFamily}"
+                                                                                FontFamily="{DynamicResource DefaultFontFamily}"
                                                                                 FontSize="16"
                                                                                 Text="{Binding LoanTermInYears}" />
                                                                             <Span Text=" " />
                                                                             <Span
-                                                                                FontFamily="{Binding DefaultStyle.DefaultFontFamily}"
+                                                                                FontFamily="{DynamicResource DefaultFontFamily}"
                                                                                 FontSize="12"
                                                                                 Text=" years" />
                                                                         </FormattedString>
@@ -133,18 +135,8 @@
                                                 </Grid>
                                             </ContentView>
                                         </Border>
-                                        <Border
-                                            Grid.Column="2"
-                                            Stroke="{Binding DefaultStyle.HighlightBoxBorderColor, Converter={StaticResource StringToColorConverter}}"
-                                            StrokeThickness="2"
-                                            Style="{StaticResource SfBorderTopHighlightBox}">
-                                            <ContentView />
-                                        </Border>
 
-                                        <Border
-                                            Grid.Column="2"
-                                            Stroke="{Binding DefaultStyle.HighlightBoxBorderColor, Converter={StaticResource StringToColorConverter}}"
-                                            Style="{StaticResource SfBorderTopHighlightBox}">
+                                        <Border Grid.Column="2" Style="{DynamicResource BorderTopHighlightBox}">
                                             <ContentView>
                                                 <Grid>
                                                     <StackLayout>
@@ -165,24 +157,24 @@
                                                                             <Span
                                                                                 CharacterSpacing="1"
                                                                                 FontAttributes="Bold"
-                                                                                FontFamily="{Binding DefaultStyle.DefaultFontFamily}"
+                                                                                FontFamily="{DynamicResource DefaultFontFamily}"
                                                                                 FontSize="17"
                                                                                 Text="{Binding CurrencySymbol}" />
                                                                             <Span Text="" />
                                                                             <Span
                                                                                 CharacterSpacing="-1"
                                                                                 FontAttributes="Bold"
-                                                                                FontFamily="{Binding DefaultStyle.DefaultFontFamily}"
+                                                                                FontFamily="{DynamicResource DefaultFontFamily}"
                                                                                 FontSize="18"
                                                                                 Text="{Binding HomeLoanInfo.PaymentSummary.Payment.TotalInterestPaymentRoundedWithComma}" />
                                                                             <Span
-                                                                                FontFamily="{Binding DefaultStyle.DefaultFontFamily}"
+                                                                                FontFamily="{DynamicResource DefaultFontFamily}"
                                                                                 FontSize="12"
                                                                                 Text=" total interest payable over " />
                                                                             <Span
                                                                                 CharacterSpacing="-1"
                                                                                 FontAttributes="Bold"
-                                                                                FontFamily="{Binding DefaultStyle.DefaultFontFamily}"
+                                                                                FontFamily="{DynamicResource DefaultFontFamily}"
                                                                                 FontSize="15"
                                                                                 Text="{Binding LoanTermInYears}" />
                                                                             <Span FontSize="12" Text=" years" />
@@ -196,11 +188,7 @@
                                             </ContentView>
                                         </Border>
 
-                                        <Border
-                                            Grid.Column="3"
-                                            Stroke="{Binding DefaultStyle.HighlightBoxBorderColor, Converter={StaticResource StringToColorConverter}}"
-                                            StrokeThickness="2"
-                                            Style="{StaticResource SfBorderTopHighlightBox}">
+                                        <Border Grid.Column="3" Style="{DynamicResource BorderTopHighlightBox}">
                                             <ContentView>
                                                 <Grid>
                                                     <StackLayout>
@@ -221,18 +209,18 @@
                                                                             <Span
                                                                                 CharacterSpacing="1"
                                                                                 FontAttributes="Bold"
-                                                                                FontFamily="{Binding DefaultStyle.DefaultFontFamily}"
+                                                                                FontFamily="{DynamicResource DefaultFontFamily}"
                                                                                 FontSize="17"
                                                                                 Text="{Binding CurrencySymbol}" />
                                                                             <Span Text="" />
                                                                             <Span
                                                                                 CharacterSpacing="-1"
                                                                                 FontAttributes="Bold"
-                                                                                FontFamily="{Binding DefaultStyle.DefaultFontFamily}"
+                                                                                FontFamily="{DynamicResource DefaultFontFamily}"
                                                                                 FontSize="18"
                                                                                 Text="{Binding HomeLoanInfo.PaymentSummary.Payment.TotalPaymentRoundedWithComma}" />
                                                                             <Span
-                                                                                FontFamily="{Binding DefaultStyle.DefaultFontFamily}"
+                                                                                FontFamily="{DynamicResource DefaultFontFamily}"
                                                                                 FontSize="12"
                                                                                 Text=" total repayment (principal + interest)" />
                                                                         </FormattedString>
@@ -273,17 +261,17 @@
                                                             HorizontalOptions="Start"
                                                             Stroke="{Binding DefaultStyle.InputTextWhenFocusedColor, Converter={StaticResource StringToColorConverter}}">
                                                             <core:SfTextInputLayout.HintLabelStyle>
-                                                                <core:LabelStyle FontFamily="{Binding DefaultStyle.DefaultFontFamily}" />
+                                                                <core:LabelStyle FontFamily="{DynamicResource DefaultFontFamily}" />
                                                             </core:SfTextInputLayout.HintLabelStyle>
                                                             <core:SfTextInputLayout.ErrorLabelStyle>
-                                                                <core:LabelStyle FontFamily="{Binding DefaultStyle.DefaultFontFamily}" />
+                                                                <core:LabelStyle FontFamily="{DynamicResource DefaultFontFamily}" />
                                                             </core:SfTextInputLayout.ErrorLabelStyle>
                                                             <core:SfTextInputLayout.HelperLabelStyle>
-                                                                <core:LabelStyle FontFamily="{Binding DefaultStyle.DefaultFontFamily}" />
+                                                                <core:LabelStyle FontFamily="{DynamicResource DefaultFontFamily}" />
                                                             </core:SfTextInputLayout.HelperLabelStyle>
                                                             <editors:SfNumericEntry
                                                                 CustomFormat="c"
-                                                                FontFamily="{Binding DefaultStyle.DefaultFontFamily}"
+                                                                FontFamily="{DynamicResource DefaultFontFamily}"
                                                                 MaximumNumberDecimalDigits="0"
                                                                 TextColor="{Binding DefaultStyle.InputTextFgColor, Converter={StaticResource StringToColorConverter}}"
                                                                 Value="{Binding PropertyAmount}" />
@@ -319,13 +307,13 @@
                                                             <Label.FormattedText>
                                                                 <FormattedString>
                                                                     <Span
-                                                                        FontFamily="{Binding DefaultStyle.DefaultFontFamily}"
+                                                                        FontFamily="{DynamicResource DefaultFontFamily}"
                                                                         FontSize="12"
                                                                         Text="Total property amount" />
                                                                     <Span Text="{x:Static system:Environment.NewLine}" />
                                                                     <Span
                                                                         FontAttributes="Bold"
-                                                                        FontFamily="{Binding DefaultStyle.DefaultFontFamily}"
+                                                                        FontFamily="{DynamicResource DefaultFontFamily}"
                                                                         FontSize="16"
                                                                         Text="{Binding PropertyTotalAmount}" />
                                                                 </FormattedString>
@@ -350,17 +338,17 @@
                                                             OutlineCornerRadius="8"
                                                             Stroke="{Binding DefaultStyle.InputTextWhenFocusedColor, Converter={StaticResource StringToColorConverter}}">
                                                             <core:SfTextInputLayout.HintLabelStyle>
-                                                                <core:LabelStyle FontFamily="{Binding DefaultStyle.DefaultFontFamily}" />
+                                                                <core:LabelStyle FontFamily="{DynamicResource DefaultFontFamily}" />
                                                             </core:SfTextInputLayout.HintLabelStyle>
                                                             <core:SfTextInputLayout.ErrorLabelStyle>
-                                                                <core:LabelStyle FontFamily="{Binding DefaultStyle.DefaultFontFamily}" />
+                                                                <core:LabelStyle FontFamily="{DynamicResource DefaultFontFamily}" />
                                                             </core:SfTextInputLayout.ErrorLabelStyle>
                                                             <core:SfTextInputLayout.HelperLabelStyle>
-                                                                <core:LabelStyle FontFamily="{Binding DefaultStyle.DefaultFontFamily}" />
+                                                                <core:LabelStyle FontFamily="{DynamicResource DefaultFontFamily}" />
                                                             </core:SfTextInputLayout.HelperLabelStyle>
 
                                                             <editors:SfNumericEntry
-                                                                FontFamily="{Binding DefaultStyle.DefaultFontFamily}"
+                                                                FontFamily="{DynamicResource DefaultFontFamily}"
                                                                 FontSize="14"
                                                                 LargeChange="1"
                                                                 Maximum="100"
@@ -403,18 +391,18 @@
                                                             OutlineCornerRadius="8"
                                                             Stroke="{Binding DefaultStyle.InputTextWhenFocusedColor, Converter={StaticResource StringToColorConverter}}">
                                                             <core:SfTextInputLayout.HintLabelStyle>
-                                                                <core:LabelStyle FontFamily="{Binding DefaultStyle.DefaultFontFamily}" />
+                                                                <core:LabelStyle FontFamily="{DynamicResource DefaultFontFamily}" />
                                                             </core:SfTextInputLayout.HintLabelStyle>
                                                             <core:SfTextInputLayout.ErrorLabelStyle>
-                                                                <core:LabelStyle FontFamily="{Binding DefaultStyle.DefaultFontFamily}" />
+                                                                <core:LabelStyle FontFamily="{DynamicResource DefaultFontFamily}" />
                                                             </core:SfTextInputLayout.ErrorLabelStyle>
                                                             <core:SfTextInputLayout.HelperLabelStyle>
-                                                                <core:LabelStyle FontFamily="{Binding DefaultStyle.DefaultFontFamily}" />
+                                                                <core:LabelStyle FontFamily="{DynamicResource DefaultFontFamily}" />
                                                             </core:SfTextInputLayout.HelperLabelStyle>
 
                                                             <editors:SfNumericEntry
                                                                 CustomFormat="years"
-                                                                FontFamily="{Binding DefaultStyle.DefaultFontFamily}"
+                                                                FontFamily="{DynamicResource DefaultFontFamily}"
                                                                 FontSize="14"
                                                                 LargeChange="5"
                                                                 Maximum="30"
@@ -465,7 +453,7 @@
                                                         StrokeThickness="2"
                                                         TextStyle="{buttons:SegmentTextStyle TextColor={Binding DefaultStyle.SegTextFgColor,
                                                                                                                 Converter={StaticResource StringToColorConverter}},
-                                                                                             FontFamily={Binding DefaultStyle.DefaultFontFamily}}"
+                                                                                             FontFamily={DynamicResource DefaultFontFamily}}"
                                                         VisibleSegmentsCount="3">
                                                         <!--  SelectedSegmentTextColor="{Binding DefaultStyle.SegSelectedTextFgColor, Converter={StaticResource StringToColorConverter}}"  -->
                                                         <!--  Background="{Binding DefaultStyle.SegBgColor, Converter={StaticResource StringToColorConverter}}"  -->
@@ -498,44 +486,44 @@
                                                 <Label.FormattedText>
                                                     <FormattedString>
                                                         <Span
-                                                            FontFamily="{Binding DefaultStyle.DefaultFontFamily}"
+                                                            FontFamily="{DynamicResource DefaultFontFamily}"
                                                             FontSize="10"
                                                             Text="Deposit: " />
-                                                        <Span FontFamily="{Binding DefaultStyle.DefaultFontFamily}" Text="{Binding DepositAmountStrFormatted}" />
+                                                        <Span FontFamily="{DynamicResource DefaultFontFamily}" Text="{Binding DepositAmountStrFormatted}" />
                                                         <Span
-                                                            FontFamily="{Binding DefaultStyle.DefaultFontFamily}"
+                                                            FontFamily="{DynamicResource DefaultFontFamily}"
                                                             FontSize="10"
                                                             Text=" (" />
                                                         <Span
-                                                            FontFamily="{Binding DefaultStyle.DefaultFontFamily}"
+                                                            FontFamily="{DynamicResource DefaultFontFamily}"
                                                             FontSize="10"
                                                             Text="{Binding DepositPercentage, StringFormat='{0:F2}'}" />
                                                         <Span
-                                                            FontFamily="{Binding DefaultStyle.DefaultFontFamily}"
+                                                            FontFamily="{DynamicResource DefaultFontFamily}"
                                                             FontSize="10"
                                                             Text=" %)" />
 
                                                         <Span FontSize="Micro" Text="  " />
 
                                                         <Span
-                                                            FontFamily="{Binding DefaultStyle.DefaultFontFamily}"
+                                                            FontFamily="{DynamicResource DefaultFontFamily}"
                                                             FontSize="10"
                                                             Text="Loan: " />
                                                         <Span
-                                                            FontFamily="{Binding DefaultStyle.DefaultFontFamily}"
+                                                            FontFamily="{DynamicResource DefaultFontFamily}"
                                                             FontSize="10"
                                                             Text=" " />
-                                                        <Span FontFamily="{Binding DefaultStyle.DefaultFontFamily}" Text="{Binding LoanAmountStrFormatted}" />
+                                                        <Span FontFamily="{DynamicResource DefaultFontFamily}" Text="{Binding LoanAmountStrFormatted}" />
                                                         <Span
-                                                            FontFamily="{Binding DefaultStyle.DefaultFontFamily}"
+                                                            FontFamily="{DynamicResource DefaultFontFamily}"
                                                             FontSize="10"
                                                             Text=" (" />
                                                         <Span
-                                                            FontFamily="{Binding DefaultStyle.DefaultFontFamily}"
+                                                            FontFamily="{DynamicResource DefaultFontFamily}"
                                                             FontSize="10"
                                                             Text="{Binding LoanAmountPercentage, StringFormat='{0:F2}'}" />
                                                         <Span
-                                                            FontFamily="{Binding DefaultStyle.DefaultFontFamily}"
+                                                            FontFamily="{DynamicResource DefaultFontFamily}"
                                                             FontSize="10"
                                                             Text=" %)" />
                                                     </FormattedString>
@@ -583,17 +571,17 @@
                                                                 ContainerBackground="Transparent"
                                                                 Hint="Deposit value (direct)">
                                                                 <core:SfTextInputLayout.HintLabelStyle>
-                                                                    <core:LabelStyle FontFamily="{Binding DefaultStyle.DefaultFontFamily}" />
+                                                                    <core:LabelStyle FontFamily="{DynamicResource DefaultFontFamily}" />
                                                                 </core:SfTextInputLayout.HintLabelStyle>
                                                                 <core:SfTextInputLayout.ErrorLabelStyle>
-                                                                    <core:LabelStyle FontFamily="{Binding DefaultStyle.DefaultFontFamily}" />
+                                                                    <core:LabelStyle FontFamily="{DynamicResource DefaultFontFamily}" />
                                                                 </core:SfTextInputLayout.ErrorLabelStyle>
                                                                 <core:SfTextInputLayout.HelperLabelStyle>
-                                                                    <core:LabelStyle FontFamily="{Binding DefaultStyle.DefaultFontFamily}" />
+                                                                    <core:LabelStyle FontFamily="{DynamicResource DefaultFontFamily}" />
                                                                 </core:SfTextInputLayout.HelperLabelStyle>
                                                                 <editors:SfNumericEntry
                                                                     CustomFormat="c"
-                                                                    FontFamily="{Binding DefaultStyle.DefaultFontFamily}"
+                                                                    FontFamily="{DynamicResource DefaultFontFamily}"
                                                                     MaximumNumberDecimalDigits="0"
                                                                     TextColor="{Binding DefaultStyle.InputTextFgColor, Converter={StaticResource StringToColorConverter}}"
                                                                     Value="{Binding DepositAmountDirectInput}" />
@@ -629,17 +617,17 @@
                                                                 ContainerBackground="Transparent"
                                                                 Hint="Loan Amount (direct)">
                                                                 <core:SfTextInputLayout.HintLabelStyle>
-                                                                    <core:LabelStyle FontFamily="{Binding DefaultStyle.DefaultFontFamily}" />
+                                                                    <core:LabelStyle FontFamily="{DynamicResource DefaultFontFamily}" />
                                                                 </core:SfTextInputLayout.HintLabelStyle>
                                                                 <core:SfTextInputLayout.ErrorLabelStyle>
-                                                                    <core:LabelStyle FontFamily="{Binding DefaultStyle.DefaultFontFamily}" />
+                                                                    <core:LabelStyle FontFamily="{DynamicResource DefaultFontFamily}" />
                                                                 </core:SfTextInputLayout.ErrorLabelStyle>
                                                                 <core:SfTextInputLayout.HelperLabelStyle>
-                                                                    <core:LabelStyle FontFamily="{Binding DefaultStyle.DefaultFontFamily}" />
+                                                                    <core:LabelStyle FontFamily="{DynamicResource DefaultFontFamily}" />
                                                                 </core:SfTextInputLayout.HelperLabelStyle>
                                                                 <editors:SfNumericEntry
                                                                     CustomFormat="c"
-                                                                    FontFamily="{Binding DefaultStyle.DefaultFontFamily}"
+                                                                    FontFamily="{DynamicResource DefaultFontFamily}"
                                                                     MaximumNumberDecimalDigits="0"
                                                                     TextColor="{Binding DefaultStyle.InputTextFgColor, Converter={StaticResource StringToColorConverter}}"
                                                                     Value="{Binding LoanAmountDirectInput}" />
@@ -671,7 +659,7 @@
                                                                 Grid.Column="0"
                                                                 Grid.ColumnSpan="2"
                                                                 BackgroundColor="Transparent">
-                                                                <Label FontFamily="{Binding DefaultStyle.DefaultFontFamily}" Text="Deposit Percentage" />
+                                                                <Label FontFamily="{DynamicResource DefaultFontFamily}" Text="Deposit Percentage" />
                                                                 <range:SfSlider
                                                                     Margin="0,-17,0,0"
                                                                     HeightRequest="70"
@@ -689,10 +677,10 @@
                                                                     <range:SliderThumbStyle Fill="{Binding DefaultStyle.RangeSliderKnobColor, Converter={StaticResource StringToColorConverter}}" />
                                                                     <range:SfSlider.LabelStyle>
                                                                         <range:SliderLabelStyle
-                                                                            ActiveFontFamily="{Binding DefaultStyle.DefaultFontFamily}"
+                                                                            ActiveFontFamily="{DynamicResource DefaultFontFamily}"
                                                                             ActiveFontSize="12"
                                                                             ActiveTextColor="{Binding DefaultStyle.RangeSliderLabelTextColor, Converter={StaticResource StringToColorConverter}}"
-                                                                            InactiveFontFamily="{Binding DefaultStyle.DefaultFontFamily}"
+                                                                            InactiveFontFamily="{DynamicResource DefaultFontFamily}"
                                                                             InactiveFontSize="12"
                                                                             InactiveTextColor="{Binding DefaultStyle.RangeSliderLabelTextColor, Converter={StaticResource StringToColorConverter}}" />
                                                                     </range:SfSlider.LabelStyle>
@@ -744,10 +732,10 @@
                                                 <Label.FormattedText>
                                                     <FormattedString>
                                                         <Span
-                                                            FontFamily="{Binding DefaultStyle.DefaultFontFamily}"
+                                                            FontFamily="{DynamicResource DefaultFontFamily}"
                                                             FontSize="Micro"
                                                             Text="Upfront costs: " />
-                                                        <Span FontFamily="{Binding DefaultStyle.DefaultFontFamily}" Text="{Binding OtherExpenseTotalAmount}" />
+                                                        <Span FontFamily="{DynamicResource DefaultFontFamily}" Text="{Binding OtherExpenseTotalAmount}" />
                                                     </FormattedString>
                                                 </Label.FormattedText>
                                             </Label>
@@ -801,7 +789,7 @@
                                                                 StrokeThickness="2"
                                                                 TextStyle="{buttons:SegmentTextStyle TextColor={Binding DefaultStyle.SegTextFgColor,
                                                                                                                         Converter={StaticResource StringToColorConverter}},
-                                                                                                     FontFamily={Binding DefaultStyle.DefaultFontFamily}}"
+                                                                                                     FontFamily={DynamicResource DefaultFontFamily}}"
                                                                 VisibleSegmentsCount="8">
                                                                 <!--
                                                                     DisplayMode="Text"
@@ -821,17 +809,17 @@
                                                                 ContainerBackground="Transparent"
                                                                 Hint="Property stamp duty (estimate)">
                                                                 <core:SfTextInputLayout.HintLabelStyle>
-                                                                    <core:LabelStyle FontFamily="{Binding DefaultStyle.DefaultFontFamily}" />
+                                                                    <core:LabelStyle FontFamily="{DynamicResource DefaultFontFamily}" />
                                                                 </core:SfTextInputLayout.HintLabelStyle>
                                                                 <core:SfTextInputLayout.ErrorLabelStyle>
-                                                                    <core:LabelStyle FontFamily="{Binding DefaultStyle.DefaultFontFamily}" />
+                                                                    <core:LabelStyle FontFamily="{DynamicResource DefaultFontFamily}" />
                                                                 </core:SfTextInputLayout.ErrorLabelStyle>
                                                                 <core:SfTextInputLayout.HelperLabelStyle>
-                                                                    <core:LabelStyle FontFamily="{Binding DefaultStyle.DefaultFontFamily}" />
+                                                                    <core:LabelStyle FontFamily="{DynamicResource DefaultFontFamily}" />
                                                                 </core:SfTextInputLayout.HelperLabelStyle>
                                                                 <editors:SfNumericEntry
                                                                     CustomFormat="c"
-                                                                    FontFamily="{Binding DefaultStyle.DefaultFontFamily}"
+                                                                    FontFamily="{DynamicResource DefaultFontFamily}"
                                                                     MaximumNumberDecimalDigits="0"
                                                                     TextColor="{Binding DefaultStyle.InputTextFgColor, Converter={StaticResource StringToColorConverter}}"
                                                                     Value="{Binding StampDuty}" />
@@ -866,18 +854,18 @@
                                                                 ContainerBackground="Transparent"
                                                                 Hint="Mortgage charges">
                                                                 <core:SfTextInputLayout.HintLabelStyle>
-                                                                    <core:LabelStyle FontFamily="{Binding DefaultStyle.DefaultFontFamily}" />
+                                                                    <core:LabelStyle FontFamily="{DynamicResource DefaultFontFamily}" />
                                                                 </core:SfTextInputLayout.HintLabelStyle>
                                                                 <core:SfTextInputLayout.ErrorLabelStyle>
-                                                                    <core:LabelStyle FontFamily="{Binding DefaultStyle.DefaultFontFamily}" />
+                                                                    <core:LabelStyle FontFamily="{DynamicResource DefaultFontFamily}" />
                                                                 </core:SfTextInputLayout.ErrorLabelStyle>
                                                                 <core:SfTextInputLayout.HelperLabelStyle>
-                                                                    <core:LabelStyle FontFamily="{Binding DefaultStyle.DefaultFontFamily}" />
+                                                                    <core:LabelStyle FontFamily="{DynamicResource DefaultFontFamily}" />
                                                                 </core:SfTextInputLayout.HelperLabelStyle>
 
                                                                 <editors:SfNumericEntry
                                                                     CustomFormat="c"
-                                                                    FontFamily="{Binding DefaultStyle.DefaultFontFamily}"
+                                                                    FontFamily="{DynamicResource DefaultFontFamily}"
                                                                     MaximumNumberDecimalDigits="0"
                                                                     TextColor="{Binding DefaultStyle.InputTextFgColor, Converter={StaticResource StringToColorConverter}}"
                                                                     Value="{Binding MortgageCharges}" />
@@ -912,17 +900,17 @@
                                                                 ContainerBackground="Transparent"
                                                                 Hint="Conveyance / solicitor fee">
                                                                 <core:SfTextInputLayout.HintLabelStyle>
-                                                                    <core:LabelStyle FontFamily="{Binding DefaultStyle.DefaultFontFamily}" />
+                                                                    <core:LabelStyle FontFamily="{DynamicResource DefaultFontFamily}" />
                                                                 </core:SfTextInputLayout.HintLabelStyle>
                                                                 <core:SfTextInputLayout.ErrorLabelStyle>
-                                                                    <core:LabelStyle FontFamily="{Binding DefaultStyle.DefaultFontFamily}" />
+                                                                    <core:LabelStyle FontFamily="{DynamicResource DefaultFontFamily}" />
                                                                 </core:SfTextInputLayout.ErrorLabelStyle>
                                                                 <core:SfTextInputLayout.HelperLabelStyle>
-                                                                    <core:LabelStyle FontFamily="{Binding DefaultStyle.DefaultFontFamily}" />
+                                                                    <core:LabelStyle FontFamily="{DynamicResource DefaultFontFamily}" />
                                                                 </core:SfTextInputLayout.HelperLabelStyle>
                                                                 <editors:SfNumericEntry
                                                                     CustomFormat="c"
-                                                                    FontFamily="{Binding DefaultStyle.DefaultFontFamily}"
+                                                                    FontFamily="{DynamicResource DefaultFontFamily}"
                                                                     MaximumNumberDecimalDigits="0"
                                                                     TextColor="{Binding DefaultStyle.InputTextFgColor, Converter={StaticResource StringToColorConverter}}"
                                                                     Value="{Binding ConveyancerFee}" />
@@ -957,17 +945,17 @@
                                                                 ContainerBackground="Transparent"
                                                                 Hint="Bank fees">
                                                                 <core:SfTextInputLayout.HintLabelStyle>
-                                                                    <core:LabelStyle FontFamily="{Binding DefaultStyle.DefaultFontFamily}" />
+                                                                    <core:LabelStyle FontFamily="{DynamicResource DefaultFontFamily}" />
                                                                 </core:SfTextInputLayout.HintLabelStyle>
                                                                 <core:SfTextInputLayout.ErrorLabelStyle>
-                                                                    <core:LabelStyle FontFamily="{Binding DefaultStyle.DefaultFontFamily}" />
+                                                                    <core:LabelStyle FontFamily="{DynamicResource DefaultFontFamily}" />
                                                                 </core:SfTextInputLayout.ErrorLabelStyle>
                                                                 <core:SfTextInputLayout.HelperLabelStyle>
-                                                                    <core:LabelStyle FontFamily="{Binding DefaultStyle.DefaultFontFamily}" />
+                                                                    <core:LabelStyle FontFamily="{DynamicResource DefaultFontFamily}" />
                                                                 </core:SfTextInputLayout.HelperLabelStyle>
                                                                 <editors:SfNumericEntry
                                                                     CustomFormat="c"
-                                                                    FontFamily="{Binding DefaultStyle.DefaultFontFamily}"
+                                                                    FontFamily="{DynamicResource DefaultFontFamily}"
                                                                     MaximumNumberDecimalDigits="0"
                                                                     TextColor="{Binding DefaultStyle.InputTextFgColor, Converter={StaticResource StringToColorConverter}}"
                                                                     Value="{Binding BankFee}" />
@@ -1002,17 +990,17 @@
                                                                 ContainerBackground="Transparent"
                                                                 Hint="Inspection fee">
                                                                 <core:SfTextInputLayout.HintLabelStyle>
-                                                                    <core:LabelStyle FontFamily="{Binding DefaultStyle.DefaultFontFamily}" />
+                                                                    <core:LabelStyle FontFamily="{DynamicResource DefaultFontFamily}" />
                                                                 </core:SfTextInputLayout.HintLabelStyle>
                                                                 <core:SfTextInputLayout.ErrorLabelStyle>
-                                                                    <core:LabelStyle FontFamily="{Binding DefaultStyle.DefaultFontFamily}" />
+                                                                    <core:LabelStyle FontFamily="{DynamicResource DefaultFontFamily}" />
                                                                 </core:SfTextInputLayout.ErrorLabelStyle>
                                                                 <core:SfTextInputLayout.HelperLabelStyle>
-                                                                    <core:LabelStyle FontFamily="{Binding DefaultStyle.DefaultFontFamily}" />
+                                                                    <core:LabelStyle FontFamily="{DynamicResource DefaultFontFamily}" />
                                                                 </core:SfTextInputLayout.HelperLabelStyle>
                                                                 <editors:SfNumericEntry
                                                                     CustomFormat="c"
-                                                                    FontFamily="{Binding DefaultStyle.DefaultFontFamily}"
+                                                                    FontFamily="{DynamicResource DefaultFontFamily}"
                                                                     MaximumNumberDecimalDigits="0"
                                                                     TextColor="{Binding DefaultStyle.InputTextFgColor, Converter={StaticResource StringToColorConverter}}"
                                                                     Value="{Binding InspectionFee}" />
@@ -1047,17 +1035,17 @@
                                                                 ContainerBackground="Transparent"
                                                                 Hint="Other expenses">
                                                                 <core:SfTextInputLayout.HintLabelStyle>
-                                                                    <core:LabelStyle FontFamily="{Binding DefaultStyle.DefaultFontFamily}" />
+                                                                    <core:LabelStyle FontFamily="{DynamicResource DefaultFontFamily}" />
                                                                 </core:SfTextInputLayout.HintLabelStyle>
                                                                 <core:SfTextInputLayout.ErrorLabelStyle>
-                                                                    <core:LabelStyle FontFamily="{Binding DefaultStyle.DefaultFontFamily}" />
+                                                                    <core:LabelStyle FontFamily="{DynamicResource DefaultFontFamily}" />
                                                                 </core:SfTextInputLayout.ErrorLabelStyle>
                                                                 <core:SfTextInputLayout.HelperLabelStyle>
-                                                                    <core:LabelStyle FontFamily="{Binding DefaultStyle.DefaultFontFamily}" />
+                                                                    <core:LabelStyle FontFamily="{DynamicResource DefaultFontFamily}" />
                                                                 </core:SfTextInputLayout.HelperLabelStyle>
                                                                 <editors:SfNumericEntry
                                                                     CustomFormat="c"
-                                                                    FontFamily="{Binding DefaultStyle.DefaultFontFamily}"
+                                                                    FontFamily="{DynamicResource DefaultFontFamily}"
                                                                     MaximumNumberDecimalDigits="0"
                                                                     TextColor="{Binding DefaultStyle.InputTextFgColor, Converter={StaticResource StringToColorConverter}}"
                                                                     Value="{Binding OtherExpenses}" />
@@ -1158,7 +1146,7 @@
                                                             <chart:ChartLegend.LabelStyle>
                                                                 <chart:ChartLegendLabelStyle
                                                                     FontAttributes="Bold"
-                                                                    FontFamily="{Binding DefaultStyle.DefaultFontFamily}"
+                                                                    FontFamily="{DynamicResource DefaultFontFamily}"
                                                                     TextColor="{Binding DefaultStyle.ChartLegendColor, Converter={StaticResource StringToColorConverter}}" />
                                                             </chart:ChartLegend.LabelStyle>
                                                         </chart:ChartLegend>
@@ -1259,7 +1247,7 @@
                                 StrokeThickness="2"
                                 TextStyle="{buttons:SegmentTextStyle TextColor={Binding DefaultStyle.SegTextFgColor,
                                                                                         Converter={StaticResource StringToColorConverter}},
-                                                                     FontFamily={Binding DefaultStyle.DefaultFontFamily}}"
+                                                                     FontFamily={DynamicResource DefaultFontFamily}}"
                                 VisibleSegmentsCount="2">
                                 <!--
                                     Color="{Binding DefaultStyle.SegBgColor, Converter={StaticResource StringToColorConverter}}"
@@ -1302,7 +1290,7 @@
                                                 <chart:SfCartesianChart.Title>
                                                     <Label
                                                         BackgroundColor="Transparent"
-                                                        FontFamily="{Binding DefaultStyle.DefaultFontFamily}"
+                                                        FontFamily="{DynamicResource DefaultFontFamily}"
                                                         Text="Gross Domestic Product Growth"
                                                         TextColor="{Binding DefaultStyle.ChartTitleColor, Converter={StaticResource StringToColorConverter}}" />
                                                 </chart:SfCartesianChart.Title>
@@ -1314,7 +1302,7 @@
                                                         <chart:CategoryAxis.LabelStyle>
                                                             <chart:ChartAxisLabelStyle
                                                                 FontAttributes="Bold"
-                                                                FontFamily="{Binding DefaultStyle.DefaultFontFamily}"
+                                                                FontFamily="{DynamicResource DefaultFontFamily}"
                                                                 FontSize="12"
                                                                 TextColor="{Binding DefaultStyle.ChartAxisColor, Converter={StaticResource StringToColorConverter}}" />
                                                         </chart:CategoryAxis.LabelStyle>
@@ -1329,7 +1317,7 @@
                                                             <chart:ChartAxisLabelStyle
                                                                 x:Name="amortYearSecondaryAxisLabelStyle"
                                                                 FontAttributes="Bold"
-                                                                FontFamily="{Binding DefaultStyle.DefaultFontFamily}"
+                                                                FontFamily="{DynamicResource DefaultFontFamily}"
                                                                 FontSize="12"
                                                                 TextColor="{Binding DefaultStyle.ChartAxisColor, Converter={StaticResource StringToColorConverter}}" />
                                                         </chart:NumericalAxis.LabelStyle>
@@ -1378,7 +1366,7 @@
                                                 <chart:SfCartesianChart.Title>
                                                     <Label
                                                         BackgroundColor="Transparent"
-                                                        FontFamily="{Binding DefaultStyle.DefaultFontFamily}"
+                                                        FontFamily="{DynamicResource DefaultFontFamily}"
                                                         Text="Gross Domestic Product Growth"
                                                         TextColor="{Binding DefaultStyle.ChartTitleColor, Converter={StaticResource StringToColorConverter}}" />
 
@@ -1391,7 +1379,7 @@
                                                         <chart:CategoryAxis.LabelStyle>
                                                             <chart:ChartAxisLabelStyle
                                                                 FontAttributes="Bold"
-                                                                FontFamily="{Binding DefaultStyle.DefaultFontFamily}"
+                                                                FontFamily="{DynamicResource DefaultFontFamily}"
                                                                 FontSize="12"
                                                                 TextColor="{Binding DefaultStyle.ChartAxisColor, Converter={StaticResource StringToColorConverter}}" />
                                                         </chart:CategoryAxis.LabelStyle>
@@ -1406,7 +1394,7 @@
                                                             <chart:ChartAxisLabelStyle
                                                                 x:Name="amortTermSecondaryAxisLabelStyle"
                                                                 FontAttributes="Bold"
-                                                                FontFamily="{Binding DefaultStyle.DefaultFontFamily}"
+                                                                FontFamily="{DynamicResource DefaultFontFamily}"
                                                                 FontSize="12"
                                                                 TextColor="{Binding DefaultStyle.ChartAxisColor, Converter={StaticResource StringToColorConverter}}" />
                                                         </chart:NumericalAxis.LabelStyle>
@@ -1500,7 +1488,7 @@
                                                 <DataTemplate>
                                                     <Label
                                                         FontAttributes="Bold"
-                                                        FontFamily="{Binding DefaultStyle.DefaultFontFamily}"
+                                                        FontFamily="{DynamicResource DefaultFontFamily}"
                                                         Text="Period" />
                                                 </DataTemplate>
                                             </datagrid:DataGridTemplateColumn.HeaderTemplate>

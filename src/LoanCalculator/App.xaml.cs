@@ -1,4 +1,7 @@
-﻿namespace LoanCalculatorMaui
+﻿using LoanCalculator.Models.Enums;
+using LoanCalculatorMaui.Extensions;
+
+namespace LoanCalculatorMaui
 {
     public partial class App : Application
     {
@@ -11,6 +14,8 @@
             Services = serviceProvider;
 
             Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense("Ngo9BigBOggjHTQxAR8/V1NMaF5cXmBCf1FpR2JGfV5ycEVCallSTnVfUiweQnxTdEFiW35acHBQRWNcVEZ3WQ==");
+
+            DefaultStyleProvider.LoadDefaultStyle(AppThemes.Light);
         }
 
         public App()

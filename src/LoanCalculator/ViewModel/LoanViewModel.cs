@@ -9,17 +9,12 @@ using System.Collections.ObjectModel;
 using System.Text.Json.Serialization;
 using LoanCalculatorMaui.Services;
 using Syncfusion.Maui.Buttons;
-using AndroidX.Lifecycle;
 
 namespace LoanCalculatorMaui.ViewModel
 {
     public class LoanViewModel : ViewModelUiBase    
     {
         public bool HasInitialized { get; private set; } = false;
-
-        public LoanViewModel(ISharedServices sharedServices) : base(sharedServices) { }
-
-        public LoanViewModel() : base() { }
 
         public void InitializeViewData()
         {
@@ -47,7 +42,6 @@ namespace LoanCalculatorMaui.ViewModel
 
             HasInitialized = true;
         }
-
 
         [JsonIgnore]
         private HomeLoanInformation _homeLoanInfo;
@@ -794,7 +788,7 @@ namespace LoanCalculatorMaui.ViewModel
         #region Country specific functionality
 
         [JsonIgnore]
-        public bool ShowAustralianStateSelectorOnStampDuty => _sharedServices.AppInformation.IsAustralia;
+        public bool ShowAustralianStateSelectorOnStampDuty => SharedServices.AppInformation.IsAustralia;
         [JsonIgnore]
         public int HeightOfGridRowToggledByCountryOnStampDuty => ShowAustralianStateSelectorOnStampDuty ? 59 : 0;
 

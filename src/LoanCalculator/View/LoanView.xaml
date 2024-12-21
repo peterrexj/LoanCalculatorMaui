@@ -1483,8 +1483,8 @@
                                 <datagrid:SfDataGrid
                                     x:Name="dataGrid"
                                     Grid.Row="1"
-                                    BackgroundColor="Transparent"
                                     AutoGenerateColumnsMode="None"
+                                    BackgroundColor="Transparent"
                                     GridLinesVisibility="Both"
                                     HeaderGridLinesVisibility="Both"
                                     ItemsSource="{Binding Source={x:Reference dataPager}, Path=PagedSource}">

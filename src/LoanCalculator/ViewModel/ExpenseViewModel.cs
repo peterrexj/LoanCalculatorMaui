@@ -12,15 +12,6 @@ namespace LoanCalculatorMaui.ViewModel
 {
     public class ExpenseViewModel : ViewModelUiBase
     {
-        public ExpenseViewModel(ISharedServices sharedServices) : base(sharedServices)
-        {
-            CurrencySymbol = Helper.CurrencySymbol;
-
-            IncomeFrequencyCollection = new ObservableCollection<string>(IncomeExpenseHelper.TimeFrequencies.Select(f => f.ToString()));
-
-            IncomeExpenseEntry = new IncomeExpense();
-        }
-
         public ExpenseViewModel() : base()
         {
             CurrencySymbol = Helper.CurrencySymbol;

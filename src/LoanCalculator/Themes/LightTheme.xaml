@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ResourceDictionary
+    x:Class="LoanCalculatorMaui.Themes.LightTheme"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
+    <!--  Colors  -->
+    <Color x:Key="DefaultForegroundColor">Green</Color>
+    <Color x:Key="DefaultTabStrokeColor">#85929E</Color>
+    <Color x:Key="DefaultTabHeadTextColor">#EAEDED</Color>
+    <Color x:Key="ExpanderHeaderIconExpandColor">#BB8FCE</Color>
+    <Color x:Key="ExpanderHeaderIconCollapseColor">#2C3E50</Color>
+
+    <!--  Brushes  -->
+    <SolidColorBrush x:Key="DefaultForegroundBrush" Color="{StaticResource DefaultForegroundColor}" />
+    <SolidColorBrush x:Key="DefaultTabStrokeBrush" Color="{StaticResource DefaultTabStrokeColor}" />
+
+    <!--  Example Styles  -->
+    <Style x:Key="HeaderLabelStyle" TargetType="Label">
+        <Setter Property="TextColor" Value="{StaticResource DefaultForegroundBrush}" />
+        <Setter Property="FontFamily" Value="Calibri" />
+    </Style>
+</ResourceDictionary>

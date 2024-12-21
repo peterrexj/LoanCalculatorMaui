@@ -1,4 +1,5 @@
 ﻿using LoanCalculatorMaui.Services;
+using LoanCalculatorMaui.Themes;
 using LoanCalculatorMaui.View;
 using LoanCalculatorMaui.ViewModel;
 using Microsoft.Extensions.Logging;
@@ -34,21 +35,24 @@ namespace LoanCalculatorMaui
 #endif
 
             builder.Services.AddSingleton<INameValueDataService, NameValueDataService>();
-            builder.Services.AddSingleton<ISharedServices, SharedServices>();
+            builder.Services.AddSingleton<IThemeHelper, ThemeHelper>();
             builder.Services.AddSingleton<LoanView>();
             builder.Services.AddSingleton<LoanViewModel>();
-            
-
-
-
-
-
 
 #if DEBUG
             builder.Logging.AddDebug();
 #endif
+            var serviceProvider = builder.Build();
 
-            return builder.Build();
+            SharedServices.Initialize(
+                serviceProvider.Services?.GetService<ILocalStorage>() ?? null,
+                serviceProvider.Services?.GetService<INameValueDataService>(),
+                serviceProvider.Services?.GetService<IAppInformation>(),
+                serviceProvider.Services?.GetService<IThemeHelper>()
+            );
+
+            return serviceProvider;
+
         }
     }
 }

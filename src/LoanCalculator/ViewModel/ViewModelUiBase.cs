@@ -13,21 +13,8 @@ namespace LoanCalculatorMaui.ViewModel
         public string NewLine { get; set; }
         protected bool isUpdating = false;
 
-        protected readonly ISharedServices _sharedServices;
-
         public ViewModelUiBase()
         {
-            _sharedServices = App.Services.GetService<ISharedServices>();
-
-            CurrencySymbol = Helper.CurrencySymbol;
-            NewLine = Environment.NewLine;
-            this.AcceptAppLaunchDisclaimer = new Command<SfPopup>(AcceptAppLaunchDisclaimerAction);
-        }
-
-        public ViewModelUiBase(ISharedServices sharedServices)
-        {
-            _sharedServices = sharedServices;
-
             CurrencySymbol = Helper.CurrencySymbol;
             NewLine = Environment.NewLine;
             this.AcceptAppLaunchDisclaimer = new Command<SfPopup>(AcceptAppLaunchDisclaimerAction);
@@ -35,7 +22,7 @@ namespace LoanCalculatorMaui.ViewModel
 
         #region Disclaimers
         [JsonIgnore]
-        public string AppLaunchDisclaimerData => _sharedServices.GetAppLaunchDisclaimerData();
+        public string AppLaunchDisclaimerData => SharedServices.GetAppLaunchDisclaimerData();
 
         [JsonIgnore]
         public Command<SfPopup> AcceptAppLaunchDisclaimer { get; set; }
@@ -57,7 +44,7 @@ namespace LoanCalculatorMaui.ViewModel
 
         private void LaunchAppDisclaimer(SfPopup sfPopupLayout)
         {
-            if (_sharedServices.ShouldShowAppLaunchDisclaimer())
+            if (SharedServices.ShouldShowAppLaunchDisclaimer())
             {
                 //sfPopupLayout.PopupView.IsFullScreen = true;
                 //sfPopupLayout.ClosePopupOnBackButtonPressed = false;
@@ -76,8 +63,8 @@ namespace LoanCalculatorMaui.ViewModel
 
         private void AcceptAppLaunchDisclaimerAction(SfPopup sfPopupLayout)
         {
-            _sharedServices.NameValueDataService.NameValueDataModel.HasShowAppLaunchDisclaimer = true;
-            _sharedServices.NameValueDataService.SaveNameValueData();
+            SharedServices.NameValueDataService.NameValueDataModel.HasShowAppLaunchDisclaimer = true;
+            SharedServices.NameValueDataService.SaveNameValueData();
             sfPopupLayout.Dismiss();
         }
         #endregion
@@ -89,7 +76,7 @@ namespace LoanCalculatorMaui.ViewModel
 
             Task.Run(async () =>
             {
-                await _sharedServices.LocalStorage.SaveData<T>(data);
+                await SharedServices.LocalStorage.SaveData<T>(data);
             }).Wait();
         }
         #endregion

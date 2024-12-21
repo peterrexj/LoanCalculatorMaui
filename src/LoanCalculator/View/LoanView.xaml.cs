@@ -10,13 +10,9 @@ namespace LoanCalculatorMaui.View;
 public partial class LoanView : ContentPage
 {
     private LoanViewModel viewModel;
-    private ISharedServices _sharedServices;
-
-
-    public LoanView(LoanViewModel vm, ISharedServices sharedServices)
+    public LoanView(LoanViewModel vm)
 	{
 		InitializeComponent();
-        _sharedServices = sharedServices;
         viewModel = vm;
 	}
 
@@ -35,7 +31,7 @@ public partial class LoanView : ContentPage
     {
         LoanViewModel temp = null;
         //Task.Run(async () => temp = await _sharedServices.LocalStorage.GetData<LoanViewModel>).Wait();
-        Task.Run(async () => temp = await _sharedServices.LocalStorage.GetData<LoanViewModel>());
+        Task.Run(async () => temp = await SharedServices.LocalStorage.GetData<LoanViewModel>());
 
 
 
@@ -82,8 +78,8 @@ public partial class LoanView : ContentPage
         viewModel.IncomeExpenseFrequencySelectedIndex = TimeFrequencyEnum.Monthly.ToString();
         //lstEntry.DataSource.SortDescriptors.Clear();
 
-        viewModel.ExpenseSummary = _sharedServices.ExpenseSummary;
-        viewModel.IncomeSummary = _sharedServices.IncomeSummary;
+        viewModel.ExpenseSummary = SharedServices.ExpenseSummary;
+        viewModel.IncomeSummary = SharedServices.IncomeSummary;
 
         segmentedRepaymentFrequency.SelectionChanged += SegmentedRepaymentFrequency_SelectionChanged;
         AmortizationBreadDownFrequencySegmentCtrl.SelectionChanged += AmortizationBreadDownFrequencySegmentCtrlOnSelectionChanged;

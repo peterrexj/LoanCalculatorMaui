@@ -1,0 +1,132 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ResourceDictionary
+    x:Class="LoanCalculatorMaui.Themes.CommonStyles"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:buttons="clr-namespace:Syncfusion.Maui.Buttons;assembly=Syncfusion.Maui.Buttons"
+    xmlns:chart="clr-namespace:Syncfusion.Maui.Charts;assembly=Syncfusion.Maui.Charts"
+    xmlns:collections="clr-namespace:System.Collections.ObjectModel;assembly=System.ObjectModel"
+    xmlns:core="http://schemas.syncfusion.com/maui"
+    xmlns:expander="clr-namespace:Syncfusion.Maui.Expander;assembly=Syncfusion.Maui.Expander"
+    xmlns:tabView="clr-namespace:Syncfusion.Maui.TabView;assembly=Syncfusion.Maui.TabView">
+
+    <!--  Font Families  -->
+    <x:String x:Key="DefaultFontFamily">Calibri</x:String>
+
+    <Style x:Key="CommonExpanderStyle" TargetType="expander:SfExpander">
+        <Setter Property="VisualStateManager.VisualStateGroups">
+            <Setter.Value>
+                <VisualStateGroupList>
+                    <VisualStateGroup>
+                        <VisualState Name="Expanded">
+                            <VisualState.Setters>
+                                <Setter Property="HeaderBackground" Value="{DynamicResource ExpanderHeaderGradient}" />
+                            </VisualState.Setters>
+                        </VisualState>
+                        <VisualState Name="Collapsed">
+                            <VisualState.Setters>
+                                <Setter Property="HeaderBackground" Value="{DynamicResource CollapsedHeaderGradient}" />
+                            </VisualState.Setters>
+                        </VisualState>
+                    </VisualStateGroup>
+                </VisualStateGroupList>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="tabView:SfTabItem">
+        <Setter Property="FontFamily" Value="{DynamicResource DefaultFontFamily}" />
+        <Setter Property="FontSize" Value="10" />
+    </Style>
+
+
+    <!--  Input Text styles  -->
+    <Style x:Key="CommonTextInputLayoutStyle" TargetType="core:SfTextInputLayout">
+        <Setter Property="ContainerBackground" Value="Transparent" />
+        <Setter Property="IsHintAlwaysFloated" Value="True" />
+        <Setter Property="BackgroundColor" Value="Transparent" />
+        <Setter Property="ContainerType" Value="None" />
+        <Setter Property="FocusedStrokeThickness" Value="3" />
+        <Setter Property="UnfocusedStrokeThickness" Value="0" />
+        <!--<Setter Property="OutlineCornerRadius" Value="8" />-->
+        <!--<Setter Property="Margin" Value="5" />-->
+        <Setter Property="Stroke" Value="{DynamicResource InputTextWhenFocusedColor}" />
+        <Setter Property="HintLabelStyle">
+            <Setter.Value>
+                <core:LabelStyle FontFamily="{DynamicResource DefaultFontFamily}" />
+            </Setter.Value>
+        </Setter>
+        <Setter Property="ErrorLabelStyle">
+            <Setter.Value>
+                <core:LabelStyle FontFamily="{DynamicResource DefaultFontFamily}" />
+            </Setter.Value>
+        </Setter>
+        <Setter Property="HelperLabelStyle">
+            <Setter.Value>
+                <core:LabelStyle FontFamily="{DynamicResource DefaultFontFamily}" />
+            </Setter.Value>
+        </Setter>
+        <Setter Property="VisualStateManager.VisualStateGroups">
+            <Setter.Value>
+                <VisualStateGroupList>
+                    <VisualStateGroup x:Name="CommonStates">
+                        <VisualState Name="Normal">
+                            <VisualState.Setters>
+                                <Setter Property="Stroke" Value="{DynamicResource InputTextWhenUnFocusedColor}" />
+                            </VisualState.Setters>
+                        </VisualState>
+                        <VisualState Name="Focused">
+                            <VisualState.Setters>
+                                <Setter Property="Stroke" Value="{DynamicResource InputTextWhenFocusedColor}" />
+                            </VisualState.Setters>
+                        </VisualState>
+                        <VisualState Name="Error">
+                            <VisualState.Setters>
+                                <Setter Property="Stroke" Value="{DynamicResource InputErrorTextFgColor}" />
+                            </VisualState.Setters>
+                        </VisualState>
+                    </VisualStateGroup>
+                </VisualStateGroupList>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!--  Segment styles  -->
+    <Style x:Key="SegmentDefaultStyle" TargetType="buttons:SfSegmentedControl">
+        <!--  SelectedSegmentTextColor="{Binding DefaultStyle.SegSelectedTextFgColor, Converter={StaticResource StringToColorConverter}}"  -->
+        <!--  SelectionTextColor="{Binding DefaultStyle.SegSelectedTextFgColor, Converter={StaticResource StringToColorConverter}}"  -->
+        <Setter Property="StrokeThickness" Value="2" />
+        <Setter Property="CornerRadius" Value="15" />
+        <Setter Property="Stroke" Value="{DynamicResource SegBorderColor}" />
+        <Setter Property="Background" Value="{DynamicResource SegBgColor}" />
+        <Setter Property="buttons:SfSegmentedControl.TextStyle">
+            <Setter.Value>
+                <buttons:SegmentTextStyle
+                    FontFamily="{DynamicResource DefaultFontFamily}"
+                    FontSize="12"
+                    TextColor="{DynamicResource SegTextFgColor}" />
+            </Setter.Value>
+        </Setter>
+        <Setter Property="buttons:SfSegmentedControl.SelectionIndicatorSettings">
+            <Setter.Value>
+                <buttons:SelectionIndicatorSettings Background="{DynamicResource SegSelectedBgColor}" SelectionIndicatorPlacement="Fill" />
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!--  Chart Insights data marker style  -->
+    <Style x:Key="InsightsChartDataLabelStyle" TargetType="chart:ChartDataLabelStyle">
+        <Setter Property="FontAttributes" Value="Bold" />
+        <Setter Property="FontFamily" Value="{DynamicResource DefaultFontFamily}" />
+        <Setter Property="FontSize" Value="10" />
+        <Setter Property="LabelFormat" Value="c" />
+        <Setter Property="TextColor" Value="{DynamicResource ChartDataMarkerColor}" />
+    </Style>
+
+    <!--  Define ObservableCollection of Brushes  --><!--
+    <collections:ObservableCollection x:Key="ChartColors" x:TypeArguments="Brush">
+        <SolidColorBrush Color="{DynamicResource ChartColor1}" />
+        <SolidColorBrush Color="{DynamicResource ChartColor2}" />
+        <SolidColorBrush Color="{DynamicResource ChartColor3}" />
+    </collections:ObservableCollection>-->
+</ResourceDictionary>

@@ -46,7 +46,7 @@ namespace LoanCalculatorMaui.ViewModel
         public ObservableCollection<string> IncomeFrequencyCollection { get; set; }
 
         [JsonIgnore]
-        public ObservableCollection<IncomeExpense> ExpensesList => Expenses.IncomeExpenseEntries;
+        public ObservableCollection<IncomeExpense>? ExpensesList => Expenses.IncomeExpenseEntries;
 
         [JsonIgnore]
         public List<IncomeExpenseProjectionOutput> IncomeProjectList => Expenses.IncomeExpenseSummary.ProjectionTerms;

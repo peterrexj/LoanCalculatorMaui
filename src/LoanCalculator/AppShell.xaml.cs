@@ -8,6 +8,7 @@ namespace LoanCalculatorMaui
         {
             InitializeComponent();
             Routing.RegisterRoute(nameof(LoanView), typeof(LoanView));
+            Routing.RegisterRoute(nameof(ExpenseView), typeof(ExpenseView));
         }
     }
 }

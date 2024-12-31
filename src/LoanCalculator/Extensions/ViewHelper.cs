@@ -2,14 +2,11 @@
 {
     public class ViewHelper
     {
-        public static async Task RunOnAppDispatcher(Action action)
+        public static async Task RunOnAppDispatcherAsync(Action action)
         {
             try
             {
-                await MainThread.InvokeOnMainThreadAsync(() =>
-                {
-                    action(); // Execute the provided action on the UI thread
-                });
+                await MainThread.InvokeOnMainThreadAsync(action);
             }
             catch (Exception ex)
             {

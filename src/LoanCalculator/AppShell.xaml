@@ -4,28 +4,50 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:localview="clr-namespace:LoanCalculatorMaui.View"
-    Shell.FlyoutBehavior="Disabled"
+    Title="LoanCalculatorMaui"
     NavBarIsVisible="False"
-    Title="LoanCalculatorMaui">
+    Shell.FlyoutBehavior="Disabled">
+
+    <Shell.Resources>
+        <ResourceDictionary>
+            <Style x:Key="BaseStyle" TargetType="Element">
+                <Setter Property="Shell.BackgroundColor" Value="{DynamicResource AppShellBgColor}" />
+                <Setter Property="Shell.ForegroundColor" Value="{DynamicResource AppShellFgColor}" />
+                <Setter Property="Shell.TitleColor" Value="{DynamicResource AppShellTitleColor}" />
+                <Setter Property="Shell.DisabledColor" Value="{DynamicResource AppShellDisabledColor}" />
+                <Setter Property="Shell.UnselectedColor" Value="{DynamicResource AppShellUnselectedColor}" />
+                <Setter Property="Shell.TabBarBackgroundColor" Value="{DynamicResource AppShellTabBarBackgroundColor}" />
+                <Setter Property="Shell.TabBarForegroundColor" Value="{DynamicResource AppShellTabBarForegroundColor}" />
+                <Setter Property="Shell.TabBarUnselectedColor" Value="{DynamicResource AppShellTabBarUnselectedColor}" />
+                <Setter Property="Shell.TabBarDisabledColor" Value="{DynamicResource AppShellTabBarDisabledColor}" />
+                <Setter Property="Shell.TabBarTitleColor" Value="{DynamicResource AppShellTabBarTitleColor}" />
+            </Style>
+            <Style BasedOn="{StaticResource BaseStyle}" TargetType="TabBar" />
+            <Style BasedOn="{StaticResource BaseStyle}" TargetType="FlyoutItem" />
+        </ResourceDictionary>
+    </Shell.Resources>
 
     <TabBar>
         <ShellContent
             Title="Loan"
             ContentTemplate="{DataTemplate localview:LoanView}"
+            Icon="icon_loan.png"
             Route="LoanView" />
         <ShellContent
             Title="Income"
             ContentTemplate="{DataTemplate localview:LoanView}"
+            Icon="icon_income.png"
             Route="LoanView" />
         <ShellContent
             Title="Expense"
-            ContentTemplate="{DataTemplate localview:LoanView}"
+            ContentTemplate="{DataTemplate localview:ExpenseView}"
+            Icon="icon_expense.png"
             Route="LoanView" />
         <ShellContent
             Title="Settings"
             ContentTemplate="{DataTemplate localview:LoanView}"
+            Icon="icon_settings.png"
             Route="LoanView" />
     </TabBar>
-    
 
 </Shell>

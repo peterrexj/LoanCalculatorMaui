@@ -1,8 +1,13 @@
 using LoanCalculator.Models.Enums;
 using LoanCalculator.Models.Income;
+using LoanCalculatorMaui.Extensions;
 using LoanCalculatorMaui.Services;
 using LoanCalculatorMaui.ViewModel;
 using Pj.Library;
+using Syncfusion.Maui.Buttons;
+using Syncfusion.Maui.DataGrid;
+using Syncfusion.Maui.DataSource;
+using Syncfusion.Maui.ListView;
 using SelectionChangedEventArgs = Syncfusion.Maui.Buttons.SelectionChangedEventArgs;
 
 namespace LoanCalculatorMaui.View;
@@ -10,111 +15,112 @@ namespace LoanCalculatorMaui.View;
 public partial class LoanView : ContentPage
 {
     private LoanViewModel viewModel;
-    public LoanView(LoanViewModel vm)
-	{
-		InitializeComponent();
-        viewModel = vm;
-	}
-
-    protected override void OnAppearing()
+    public LoanView()
     {
-        //Task.Run(async () => await LoadDataSet());
-        LoadDataSet();
+        InitializeComponent();
+        viewModel = new LoanViewModel();
+    }
+
+    protected override async void OnAppearing()
+    {
+        PageHelper.PageIsLoading();
+
+        await LoadDataSet();
+
+        PageHelper.PageLoadingComplete();
 
         BindingContext ??= viewModel;
 
+        lstEntry.DataSource.SortDescriptors.Add(new SortDescriptor() { PropertyName = "Name", Direction = ListSortDirection.Ascending });
+
         base.OnAppearing();
 
+        viewModel.TriggerOneTimeUpdateOnPage();
+        viewModel.TriggerPropertyChangedOnPropertyTab();
+
+
+        //viewModel.ShowAppLaunchDisclaimer(disclaimerAppLevelPopupLayout);
     }
 
-    private void LoadDataSet()
+    private async Task LoadDataSet()
     {
         LoanViewModel temp = null;
-        //Task.Run(async () => temp = await _sharedServices.LocalStorage.GetData<LoanViewModel>).Wait();
-        Task.Run(async () => temp = await SharedServices.LocalStorage.GetData<LoanViewModel>());
-
-
-
-        //if (viewModel.HasInitialized == false)
-        //{
-        //    viewModel.InitializeViewData();
-        //}
-        if (!viewModel.HasInitialized && temp == null)
+        bool shouldAddDefaultValues = false;
+        try
         {
-            viewModel.InitializeViewData();
-            viewModel.IncomeExpenseEntry = new IncomeExpense();
-            viewModel.Expenses = new Incomes
+            if (SharedServices.LocalStorage != null)
             {
-                IncomeExpenseEntries = new System.Collections.ObjectModel.ObservableCollection<IncomeExpense>()
-            };
-            AddDefaultValues();
-            AddDefaultToExpenses();
+                //await SharedServices.LocalStorage.ClearData<LoanViewModel>().ConfigureAwait(false);
+                temp = await SharedServices.LocalStorage.GetData<LoanViewModel>().ConfigureAwait(false);
+            }
         }
-        else if (!viewModel.HasInitialized && temp != null)
+        catch (Exception e)
         {
-            viewModel = temp.DeepClone();
+            // Log or handle the exception as needed
+            // ExceptionHandler.CaptureException(e);
+        }
+
+        if (!viewModel.HasInitialized)
+        {
+            if (temp == null)
+            {
+                //viewModel.InitializeViewData();
+                shouldAddDefaultValues = true;
+                viewModel.AddDefaultToExpenses();
+            }
+            else
+            {
+                viewModel = temp.DeepClone();
+            }
         }
         else if (temp == null)
         {
             viewModel.Expenses.DeleteAll();
-            AddDefaultValues();
-            AddDefaultToExpenses();
+            shouldAddDefaultValues = true;
+            viewModel.AddDefaultToExpenses();
         }
 
-        if (viewModel.IncomeExpenseEntry == null)
+        viewModel.InitializeViewData();
+        viewModel.InitializeBrushes();
+       
+        viewModel.MarkInitializationComplete();
+
+        if (shouldAddDefaultValues)
         {
-            viewModel.IncomeExpenseEntry = new IncomeExpense();
-        }
-        if (viewModel.Expenses == null)
-        {
-            viewModel.Expenses = new Incomes
-            {
-                IncomeExpenseEntries = new System.Collections.ObjectModel.ObservableCollection<IncomeExpense>()
-            };
-            AddDefaultToExpenses();
+            viewModel.AddDefaultValues();
         }
 
-        viewModel.IncomeExpenseEntry.Frequency = TimeFrequencyEnum.Monthly;
-        viewModel.IncomeExpenseFrequencySelectedIndex = TimeFrequencyEnum.Monthly.ToString();
-        //lstEntry.DataSource.SortDescriptors.Clear();
+        lstEntry.DataSource.SortDescriptors.Clear();
 
         viewModel.ExpenseSummary = SharedServices.ExpenseSummary;
         viewModel.IncomeSummary = SharedServices.IncomeSummary;
 
-        segmentedRepaymentFrequency.SelectionChanged += SegmentedRepaymentFrequency_SelectionChanged;
+        SegmentedRepaymentFrequency.SelectionChanged += SegmentedRepaymentFrequency_SelectionChanged;
         AmortizationBreadDownFrequencySegmentCtrl.SelectionChanged += AmortizationBreadDownFrequencySegmentCtrlOnSelectionChanged;
+        SegmentedAustraliaStates.SelectionChanged += SegmentedAustraliaStatesOnSelectionChanged;
     }
+
+    private void SegmentedAustraliaStatesOnSelectionChanged(object? sender, SelectionChangedEventArgs e)
+    {
+        if (e.NewIndex != null) viewModel.AustraliaStateSelectedIndex = e.NewIndex.Value;
+    }
+
 
     private void AmortizationBreadDownFrequencySegmentCtrlOnSelectionChanged(object? sender, SelectionChangedEventArgs e)
     {
-        viewModel.AmortizationBreakdownFrequencySelectedIndex = e.NewIndex.Value;
+        if (e.NewIndex != null) viewModel.AmortizationBreakdownFrequencySelectedIndex = e.NewIndex.Value;
     }
 
     private void SegmentedRepaymentFrequency_SelectionChanged(object? sender, Syncfusion.Maui.Buttons.SelectionChangedEventArgs e)
     {
-        
-        viewModel.RepaymentFrequencySelectedIndex = e.NewIndex.Value;
+        if (e.NewIndex != null) viewModel.RepaymentFrequencySelectedIndex = e.NewIndex.Value;
     }
 
-    private void AddDefaultValues()
-    {
-        viewModel.PropertyAmount = 1000000;
-        viewModel.InterestRate = 5.0;
-        viewModel.LoanTermInYears = 30;
-        viewModel.DepositPercentage = 10;
-    }
-    private void AddDefaultToExpenses()
-    {
-        viewModel?.Expenses?.Add("Maintenance cost", 0, TimeFrequencyEnum.Monthly, isCheckForExistingRequired: true);
-        viewModel?.Expenses?.Add("Water bills", 0, TimeFrequencyEnum.Monthly, isCheckForExistingRequired: true);
-        viewModel?.Expenses?.Add("Electricity bills", 0, TimeFrequencyEnum.Monthly, isCheckForExistingRequired: true);
-        viewModel?.Expenses?.Add("Gas bills", 0, TimeFrequencyEnum.Monthly, isCheckForExistingRequired: true);
-        viewModel?.Expenses?.Add("Council bills", 0, TimeFrequencyEnum.Monthly, isCheckForExistingRequired: true);
-    }
+
 
     private void Estimate_TabItem_Clicked(object sender, EventArgs e)
     {
-
+        //tabView.SelectedIndex = 0;
     }
 
     private void OnTabSelectionChanged(object sender, Syncfusion.Maui.TabView.TabSelectionChangedEventArgs e)
@@ -123,5 +129,158 @@ public partial class LoanView : ContentPage
         {
             viewModel.SyncAmortization();
         }
+        else if (e.NewIndex == 2)
+        {
+            viewModel.RefreshExpenseTabPropertyChanged();
+        }
+        else if (e.NewIndex == 3)
+        {
+            viewModel.RefreshInsightsTabPropertyChanged();
+        }
+    }
+
+
+
+    private void autoComplete_Completed(object sender, EventArgs e)
+    {
+
+    }
+
+    private async Task RefreshListOfIncomeExpense()
+    {
+        await Task.Run(() =>
+        {
+            try
+            {
+                ViewHelper.RunOnAppDispatcherAsync(() =>
+                {
+                    if (lstEntry.DataSource != null)
+                    {
+                        lstEntry.DataSource.Filter = FilterExpenseIncome;
+                        lstEntry.DataSource.RefreshFilter();
+                    }
+                });
+            }
+            catch (Exception ex)
+            {
+                //ExceptionHandler.CaptureException(ex);
+            }
+        });
+    }
+
+    private bool FilterExpenseIncome(object obj)
+    {
+        try
+        {
+            var persona = obj as IncomeExpense;
+            var filterText = string.Empty;
+            if (viewModel.SearchExpenseIncomeName.HasValue())
+            {
+                filterText = viewModel.SearchExpenseIncomeName;
+            }
+            else if (autoComplete.SelectedItem != null)
+            {
+                filterText = (autoComplete.SelectedItem as SearchAutoCompleteViewModel).Name;
+            }
+            else if (autoComplete.Text.HasValue())
+            {
+                filterText = autoComplete.Text;
+            }
+
+            if (filterText.IsEmpty())
+            {
+                return true;
+            }
+
+            return persona.Name.ContainsIgnoreCase(filterText);
+        }
+        catch (OperationCanceledException)
+        {
+            return true;
+        }
+        catch (Exception ex)
+        {
+            //ExceptionHandler.CaptureException(ex);
+            return true;
+        }
+    }
+    private async void autoComplete_SelectionChanged(object sender, Syncfusion.Maui.Inputs.SelectionChangedEventArgs e)
+    {
+        try
+        {
+            if (autoComplete.Text.IsEmpty())
+            {
+                await ViewHelper.RunOnAppDispatcherAsync(() =>
+                {
+                    autoComplete.SelectedItem = null;
+                });
+                viewModel.SearchExpenseIncomeName = "";
+                await RefreshListOfIncomeExpense();
+                autoComplete.IsDropDownOpen = false;
+            }
+            else
+            {
+                lstEntry.DataSource.Filter = FilterExpenseIncome;
+                lstEntry.DataSource.RefreshFilter();
+            }
+        }
+        catch (Exception ex)
+        {
+            //ExceptionHandler.CaptureException(ex);
+        }
+    }
+
+    private void AddNewIncome_Clicked(object sender, EventArgs e)
+    {
+        if (viewModel.HasErrorIncomeDescription)
+        {
+            txtIncomeDescription.Focus();
+            return;
+        }
+        if (viewModel.HasErrorIncomeAmount)
+        {
+            txtInputAmount.Focus();
+            return;
+        }
+
+        if (viewModel.AddOrUpdateEntryFromView() == false) return;
+
+        lstEntry.DataSource.SortDescriptors.Clear();
+        lstEntry.DataSource.SortDescriptors.Add(new SortDescriptor() { PropertyName = "Name", Direction = ListSortDirection.Ascending });
+
+        lstEntry.RefreshItem(canReload: true);
+        viewModel.RefreshExpenseTabPropertyChanged();
+    }
+
+    private void ResetButton_Clicked(object sender, EventArgs e)
+    {
+        viewModel.IncomeExpenseEntry.Name = string.Empty;
+        viewModel.IncomeExpenseEntry.Amount = 0;
+        viewModel.IncomeExpenseFrequencySelectedIndex = TimeFrequencyEnum.Monthly.ToString();
+        viewModel.IncomeExpenseEntry.Id = Guid.Empty;
+        viewModel.RefreshExpenseTabPropertyChanged();
+    }
+
+    private void btnEditEntry_Clicked(object sender, EventArgs e)
+    {
+        if (sender is not SfButton button || !button.AutomationId.HasValue()) return;
+
+        viewModel.IncomeExpenseEntry = viewModel.Expenses.Get(Guid.Parse(button.AutomationId)).DeepClone();
+        viewModel.IncomeExpenseFrequencySelectedIndex = viewModel.IncomeExpenseEntry.Frequency.ToString();
+
+        viewModel.RefreshExpenseTabPropertyChanged();
+    }
+
+    private void btnDeleteEntry_Clicked(object sender, EventArgs e)
+    {
+        if (sender is not SfButton button || !button.AutomationId.HasValue()) return;
+
+        viewModel.Expenses.Delete(Guid.Parse(button.AutomationId));
+        viewModel.RefreshExpenseTabPropertyChanged();
+    }
+
+    private void LstEntry_OnSelectionChanged(object? sender, ItemSelectionChangedEventArgs e)
+    {
+
     }
 }

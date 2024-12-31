@@ -7,6 +7,9 @@ namespace LoanCalculator.Models.Income
 {
     public class Incomes : IncomeExpenseBase
     {
-        
+        public Incomes()
+        {
+            
+        }
     }
 }

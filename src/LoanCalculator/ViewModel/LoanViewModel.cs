@@ -4,7 +4,6 @@ using LoanCalculator.Models.Charts;
 using LoanCalculator.Models.Enums;
 using LoanCalculator.Models.Income;
 using LoanCalculator.Models.Income.Summary;
-using Pj.Library;
 using System.Collections.ObjectModel;
 using System.Text.Json.Serialization;
 using LoanCalculatorMaui.Services;
@@ -12,49 +11,113 @@ using Syncfusion.Maui.Buttons;
 
 namespace LoanCalculatorMaui.ViewModel
 {
-    public class LoanViewModel : ViewModelUiBase    
+    public class LoanViewModel : ViewModelUiBase
     {
+        [JsonIgnore]
         public bool HasInitialized { get; private set; } = false;
 
         public void InitializeViewData()
         {
-            RepaymentFrequencyCollection =
-            [
-                new SfSegmentItem { Text = "Monthly" },
-                new SfSegmentItem { Text = "Fortnightly" },
-                new SfSegmentItem { Text = "Weekly" }
-            ];
+            if (RepaymentFrequencyCollection == null || RepaymentFrequencyCollection.Count == 0)
+            {
+                RepaymentFrequencyCollection =
+                [
+                    new SfSegmentItem { Text = "Monthly" },
+                    new SfSegmentItem { Text = "Fortnightly" },
+                    new SfSegmentItem { Text = "Weekly" }
+                ];
+            }
 
-            AmortizationBreakdownFrequencyCollection =
-            [
-                new SfSegmentItem { Text = "Yearly" },
-                new SfSegmentItem { Text = "Term" }
-            ];
+            if (AmortizationBreakdownFrequencyCollection == null || AmortizationBreakdownFrequencyCollection.Count == 0)
+            {
+                AmortizationBreakdownFrequencyCollection =
+                [
+                    new SfSegmentItem { Text = "Yearly" },
+                    new SfSegmentItem { Text = "Term" }
+                ];
+            }
 
-            AustraliaStateCollection = new ObservableCollection<SfSegmentItem>(StampDutyOutput.AustralianStates.Select(f => new SfSegmentItem { Text = f.ToString() }));
+            if (AustraliaStateCollection == null || AustraliaStateCollection.Count == 0)
+            {
+                AustraliaStateCollection = new ObservableCollection<SfSegmentItem>(StampDutyOutput.AustralianStates.Select(f => new SfSegmentItem { Text = f.ToString() }));
+            }
 
-            HomeLoanInfo = new LoanCalculator.Models.HomeLoanInformation
+            HomeLoanInfo ??= new LoanCalculator.Models.HomeLoanInformation
             {
                 HomeLoanRepaymentRequest = new HomeLoanRepaymentInput()
             };
 
-            IncomeFrequencyCollection = new ObservableCollection<string>(IncomeExpenseHelper.TimeFrequencies.Select(f => f.ToString()));
+            IncomeFrequencyCollection ??= new ObservableCollection<string>(IncomeExpenseHelper.TimeFrequencies.Select(f => f.ToString()));
 
+            IncomeExpenseEntry ??= new IncomeExpense();
+            Expenses ??= new Incomes
+            {
+                IncomeExpenseEntries = []
+            };
+
+            IncomeExpenseEntry.Frequency = TimeFrequencyEnum.Monthly;
+            IncomeExpenseFrequencySelectedIndex = TimeFrequencyEnum.Monthly.ToString();
+        }
+
+        public void InitializeBrushes()
+        {
+            var appResources = Application.Current?.Resources;
+            if (appResources != null)
+            {
+                CustomChartColors =
+                [
+                    new SolidColorBrush((Color)appResources["ChartColor1"]),
+                    new SolidColorBrush((Color)appResources["ChartColor2"]),
+                    new SolidColorBrush((Color)appResources["ChartColor3"])
+                ];
+            }
+            else
+            {
+                CustomChartColors =
+                [
+                    new SolidColorBrush(Color.FromArgb("#d7bde2")),
+                    new SolidColorBrush(Color.FromArgb("#d6eaf8")),
+                    new SolidColorBrush(Color.FromArgb("#fdebd0"))
+                ];
+            }
+        }
+        public void AddDefaultValues()
+        {
+            PropertyAmount = 1000000;
+            InterestRate = 5.0;
+            LoanTermInYears = 30;
+            DepositPercentage = 10;
+        }
+        public void AddDefaultToExpenses()
+        {
+            Expenses ??= new Incomes
+            {
+                IncomeExpenseEntries = []
+            };
+            Expenses?.Add("Maintenance cost", 0, TimeFrequencyEnum.Monthly, isCheckForExistingRequired: true);
+            Expenses?.Add("Water bills", 0, TimeFrequencyEnum.Monthly, isCheckForExistingRequired: true);
+            Expenses?.Add("Electricity bills", 0, TimeFrequencyEnum.Monthly, isCheckForExistingRequired: true);
+            Expenses?.Add("Gas bills", 0, TimeFrequencyEnum.Monthly, isCheckForExistingRequired: true);
+            Expenses?.Add("Council bills", 0, TimeFrequencyEnum.Monthly, isCheckForExistingRequired: true);
+        }
+
+        public void MarkInitializationComplete()
+        {
             HasInitialized = true;
         }
+
+        [JsonIgnore]
+        public ObservableCollection<Brush> CustomChartColors { get; set; }
 
         [JsonIgnore]
         private HomeLoanInformation _homeLoanInfo;
         public HomeLoanInformation HomeLoanInfo
         {
-            get
-            {
-                return _homeLoanInfo;
-            }
+            get => _homeLoanInfo;
             set
             {
                 _homeLoanInfo = value;
-                OnPropertyChanged("HomeLoanInfo");
+                OnPropertyChanged();
             }
         }
 
@@ -155,19 +218,16 @@ namespace LoanCalculatorMaui.ViewModel
             get => HomeLoanInfo.PropertyAmount;
             set
             {
-                if (isUpdating == false)
-                {
-                    if (HomeLoanInfo.PropertyAmount != value)
-                    {
-                        isUpdating = true;
-                        HomeLoanInfo.PropertyAmount = value;
-                        HomeLoanInfo.LoanAmountDirectInput = HomeLoanInfo.LoanAmountDirectInput;
+                if (isUpdating || !HasInitialized) return;
+                if (HomeLoanInfo.PropertyAmount == value) return;
 
-                        EventsTriggerStampDutyUpdate();
-                        TriggerPropertyChangedOnPropertyTab();
-                        isUpdating = false;
-                    }
-                }
+                isUpdating = true;
+                HomeLoanInfo.PropertyAmount = value;
+                HomeLoanInfo.LoanAmountDirectInput = HomeLoanInfo.LoanAmountDirectInput;
+
+                EventsTriggerStampDutyUpdate();
+                TriggerPropertyChangedOnPropertyTab();
+                isUpdating = false;
             }
         }
         public int LoanTermInYears
@@ -175,15 +235,16 @@ namespace LoanCalculatorMaui.ViewModel
             get => HomeLoanInfo.HomeLoanRepaymentRequest.LoanTermInYears;
             set
             {
-                if (isUpdating == false)
-                {
-                    isUpdating = true;
+                if (isUpdating || !HasInitialized) return;
+                if (HomeLoanInfo.HomeLoanRepaymentRequest.LoanTermInYears == value) return;
 
-                    HomeLoanInfo.HomeLoanRepaymentRequest.LoanTermInYears = value;
-                    TriggerPropertyChangedOnPropertyTab();
+                isUpdating = true;
 
-                    isUpdating = false;
-                }
+                HomeLoanInfo.HomeLoanRepaymentRequest.LoanTermInYears = value;
+
+                TriggerPropertyChangedOnPropertyTab();
+
+                isUpdating = false;
             }
         }
         public double InterestRate
@@ -191,23 +252,22 @@ namespace LoanCalculatorMaui.ViewModel
             get => HomeLoanInfo.HomeLoanRepaymentRequest.InterestRate;
             set
             {
-                if (isUpdating == false)
-                {
-                    isUpdating = true;
+                if (isUpdating || !HasInitialized) return;
+                if (HomeLoanInfo.HomeLoanRepaymentRequest.InterestRate == value) return;
 
-                    HomeLoanInfo.HomeLoanRepaymentRequest.InterestRate = value;
-                    TriggerPropertyChangedOnPropertyTab();
-                    EventsTriggerPriceUpdate();
+                isUpdating = true;
 
-                    isUpdating = false;
-                }
+                HomeLoanInfo.HomeLoanRepaymentRequest.InterestRate = value;
+
+                TriggerPropertyChangedOnPropertyTab();
+                EventsTriggerPriceUpdate();
+
+                isUpdating = false;
             }
         }
 
-        public string LoanAmount
-        {
-            get => $"{CurrencySymbol}{HomeLoanInfo.LoanAmount:N0}";
-        }
+        public string LoanAmount => $"{CurrencySymbol}{HomeLoanInfo.LoanAmount:N0}";
+
         [JsonIgnore]
         public string PropertyTotalAmount => $"{CurrencySymbol}{HomeLoanInfo.PropertyTotalAmount:N0}";
 
@@ -268,7 +328,7 @@ namespace LoanCalculatorMaui.ViewModel
                 {
                     HomeLoanInfo.HomeLoanRepaymentRequest.TotalNumberPaymentPerYear = 12;
                 }
-                if (isUpdating == false)
+                if (isUpdating == false && HasInitialized)
                 {
                     isUpdating = true;
 
@@ -315,15 +375,15 @@ namespace LoanCalculatorMaui.ViewModel
             get => HomeLoanInfo.DepositPercentage;
             set
             {
-                if (isUpdating == false)
-                {
-                    isUpdating = true;
+                if (isUpdating || !HasInitialized) return;
+                //if (HomeLoanInfo.DepositPercentage == value) return;
 
-                    HomeLoanInfo.DepositPercentage = value;
-                    TriggerPropertyChangedOnPropertyTab();
+                isUpdating = true;
 
-                    isUpdating = false;
-                }
+                HomeLoanInfo.DepositPercentage = value;
+                TriggerPropertyChangedOnPropertyTab();
+
+                isUpdating = false;
             }
         }
         public double DepositAmountDirectInput
@@ -331,7 +391,7 @@ namespace LoanCalculatorMaui.ViewModel
             get => HomeLoanInfo.DepositAmountDirectInput;
             set
             {
-                if (isUpdating == false)
+                if (isUpdating == false && HasInitialized)
                 {
                     isUpdating = true;
                     HomeLoanInfo.DepositAmountDirectInput = value;
@@ -347,15 +407,15 @@ namespace LoanCalculatorMaui.ViewModel
             get => HomeLoanInfo.LoanAmountPercentage;
             set
             {
-                if (isUpdating == false)
-                {
-                    isUpdating = true;
+                if (isUpdating || !HasInitialized) return;
+                //if (HomeLoanInfo.LoanAmountPercentage == value) return;
 
-                    HomeLoanInfo.LoanAmountPercentage = value;
-                    TriggerPropertyChangedOnPropertyTab();
+                isUpdating = true;
 
-                    isUpdating = false;
-                }
+                HomeLoanInfo.LoanAmountPercentage = value;
+                TriggerPropertyChangedOnPropertyTab();
+
+                isUpdating = false;
             }
         }
         public double LoanAmountDirectInput
@@ -363,13 +423,13 @@ namespace LoanCalculatorMaui.ViewModel
             get => HomeLoanInfo.LoanAmountDirectInput;
             set
             {
-                if (isUpdating == false)
-                {
-                    isUpdating = true;
-                    HomeLoanInfo.LoanAmountDirectInput = value;
-                    TriggerPropertyChangedOnPropertyTab();
-                    isUpdating = false;
-                }
+                if (isUpdating || !HasInitialized) return;
+                //if (HomeLoanInfo.LoanAmountDirectInput == value) return;
+
+                isUpdating = true;
+                HomeLoanInfo.LoanAmountDirectInput = value;
+                TriggerPropertyChangedOnPropertyTab();
+                isUpdating = false;
             }
         }
 
@@ -405,17 +465,17 @@ namespace LoanCalculatorMaui.ViewModel
             get => HomeLoanInfo.StampDuty.StampDuty;
             set
             {
-                if (isUpdating == false)
-                {
-                    isUpdating = true;
+                if (isUpdating || !HasInitialized) return;
+                //if (HomeLoanInfo.StampDuty.StampDuty == value) return;
 
-                    HomeLoanInfo.StampDuty.StampDuty = value;
-                    HomeLoanInfo.DepositAmountDirectInput = HomeLoanInfo.DepositAmountDirectInput;
+                isUpdating = true;
 
-                    TriggerPropertyChangedOnPropertyTab();
+                HomeLoanInfo.StampDuty.StampDuty = value;
+                HomeLoanInfo.DepositAmountDirectInput = HomeLoanInfo.DepositAmountDirectInput;
 
-                    isUpdating = false;
-                }
+                TriggerPropertyChangedOnPropertyTab();
+
+                isUpdating = false;
             }
         }
         [JsonIgnore]
@@ -424,17 +484,17 @@ namespace LoanCalculatorMaui.ViewModel
             get => HomeLoanInfo.StampDuty.MortgageCharges;
             set
             {
-                if (isUpdating == false)
-                {
-                    isUpdating = true;
+                if (isUpdating || !HasInitialized) return;
+                //if (HomeLoanInfo.StampDuty.MortgageCharges == value) return;
 
-                    HomeLoanInfo.StampDuty.MortgageCharges = value;
-                    HomeLoanInfo.DepositAmountDirectInput = HomeLoanInfo.DepositAmountDirectInput;
+                isUpdating = true;
 
-                    TriggerPropertyChangedOnPropertyTab();
+                HomeLoanInfo.StampDuty.MortgageCharges = value;
+                HomeLoanInfo.DepositAmountDirectInput = HomeLoanInfo.DepositAmountDirectInput;
 
-                    isUpdating = false;
-                }
+                TriggerPropertyChangedOnPropertyTab();
+
+                isUpdating = false;
             }
         }
         [JsonIgnore]
@@ -443,7 +503,7 @@ namespace LoanCalculatorMaui.ViewModel
             get => HomeLoanInfo.ConveyanceExpense.ConveyancerFee;
             set
             {
-                if (isUpdating == false)
+                if (isUpdating == false && HasInitialized)
                 {
                     isUpdating = true;
 
@@ -462,7 +522,7 @@ namespace LoanCalculatorMaui.ViewModel
             get => HomeLoanInfo.BankExpense.BankSettlementFee;
             set
             {
-                if (isUpdating == false)
+                if (isUpdating == false && HasInitialized)
                 {
                     isUpdating = true;
 
@@ -481,7 +541,7 @@ namespace LoanCalculatorMaui.ViewModel
             get => HomeLoanInfo.OtherExpense.InspectionFee;
             set
             {
-                if (isUpdating == false)
+                if (isUpdating == false && HasInitialized)
                 {
                     isUpdating = true;
 
@@ -500,7 +560,7 @@ namespace LoanCalculatorMaui.ViewModel
             get => HomeLoanInfo.OtherExpense.OtherExpenses;
             set
             {
-                if (isUpdating == false)
+                if (isUpdating == false && HasInitialized)
                 {
                     isUpdating = true;
 
@@ -529,7 +589,7 @@ namespace LoanCalculatorMaui.ViewModel
             set
             {
                 _amortizationBreakdownFrequencySelectedIndex = value;
-                if (isUpdating == false)
+                if (isUpdating == false && HasInitialized)
                 {
                     isUpdating = true;
 
@@ -631,6 +691,8 @@ namespace LoanCalculatorMaui.ViewModel
             }
         }
 
+
+
         #endregion
 
         #region Expense
@@ -638,12 +700,12 @@ namespace LoanCalculatorMaui.ViewModel
         public ObservableCollection<string> IncomeFrequencyCollection { get; set; }
 
         [JsonIgnore]
-        public ObservableCollection<IncomeExpense> ExpensesList => Expenses.IncomeExpenseEntries;
+        public ObservableCollection<IncomeExpense>? ExpensesList => Expenses?.IncomeExpenseEntries;
 
         #region AutoCompleteSearch
         [JsonIgnore]
-        public IEnumerable<SearchAutoCompleteViewModel> AutocompleteList
-            => ExpensesList.Select(f => new SearchAutoCompleteViewModel { Id = 0, Name = f.Name });
+        public IEnumerable<SearchAutoCompleteViewModel>? AutocompleteList
+            => ExpensesList?.Select(f => new SearchAutoCompleteViewModel { Id = 0, Name = f.Name });
         [JsonIgnore]
         public string SearchExpenseIncomeName { get; set; }
 
@@ -706,7 +768,7 @@ namespace LoanCalculatorMaui.ViewModel
         [JsonIgnore]
         public bool HasErrorIncomeDescription
         {
-            get => IncomeExpenseEntry == null || IncomeExpenseEntry.Name.IsEmpty();
+            get => IncomeExpenseEntry == null || string.IsNullOrEmpty(IncomeExpenseEntry.Name);
         }
         [JsonIgnore]
         public string IncomeEntryName
@@ -794,6 +856,12 @@ namespace LoanCalculatorMaui.ViewModel
 
         #endregion
 
+        public void TriggerOneTimeUpdateOnPage()
+        {
+            IsBusy = false;
+            OnPropertyChanged(nameof(CustomChartColors));
+            IsBusy = true;
+        }
         public void TriggerPropertyChangedOnPropertyTab()
         {
             IsBusy = false;
@@ -842,6 +910,7 @@ namespace LoanCalculatorMaui.ViewModel
         public void RefreshExpenseTabPropertyChanged()
         {
             Expenses.SumUpData();
+
             OnPropertyChanged("IncomeEntryName");
             OnPropertyChanged("HasErrorIncomeDescription");
 
@@ -901,6 +970,7 @@ namespace LoanCalculatorMaui.ViewModel
         {
             HomeLoanInfo.StampDuty = HomeLoanCalculator.StampDutyCalculator.CalculateStampDutyAustralia(HomeLoanInfo.StampDuty.AustraliaStateSelected, PropertyAmount);
             HomeLoanInfo.StampDuty.AutoUpdateMortgageCharges();
+            OnPropertyChanged("StampDuty");
         }
         public void EventsTriggerPriceUpdate()
         {
@@ -925,5 +995,7 @@ namespace LoanCalculatorMaui.ViewModel
                 };
             }
         }
+
+
     }
 }

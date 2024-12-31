@@ -68,7 +68,7 @@
     <Color x:Key="AppShellTabBarDisabledColor" />
     <Color x:Key="AppShellTabBarTitleColor" />
 
-    <!-- Font Families -->
+    <!--  Font Families  -->
     <x:String x:Key="DefaultFontFamily">Calibri</x:String>
 
 </ResourceDictionary>

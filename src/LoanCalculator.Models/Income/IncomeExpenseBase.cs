@@ -13,8 +13,8 @@ namespace LoanCalculator.Models.Income
 
         public IncomeExpenseSummary IncomeExpenseSummary { get; set; }
 
-        private ObservableCollection<IncomeExpense> _incomeExpenseEntries;
-        public ObservableCollection<IncomeExpense> IncomeExpenseEntries
+        private ObservableCollection<IncomeExpense>? _incomeExpenseEntries;
+        public ObservableCollection<IncomeExpense>? IncomeExpenseEntries
         {
             get
             {

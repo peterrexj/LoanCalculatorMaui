@@ -1,5 +1,5 @@
 ﻿using LoanCalculator.Models.Enums;
-using LoanCalculatorMaui.Extensions;
+using LoanCalculatorMaui.Themes;
 
 namespace LoanCalculatorMaui
 {
@@ -13,7 +13,7 @@ namespace LoanCalculatorMaui
             
             Services = serviceProvider;
 
-            Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense("Ngo9BigBOggjHTQxAR8/V1NMaF5cXmBCf1FpR2JGfV5ycEVCallSTnVfUiweQnxTdEFiW35acHBQRWNcVEZ3WQ==");
+            Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense("Ngo9BigBOggjHTQxAR8/V1NMaF5cXmBCf1FpRmJGdld5fUVHYVZUTXxaS00DNHVRdkdnWH1ccXVSQ2dcV0Z0W0A=");
 
             DefaultStyleProvider.LoadDefaultStyle(AppThemes.Light);
         }

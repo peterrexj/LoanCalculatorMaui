@@ -3,7 +3,7 @@
     x:Class="LoanCalculatorMaui.Themes.DarkTheme"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
-    <!-- Colors -->
+    <!--  Colors  -->
     <Color x:Key="DefaultForegroundColor">White</Color>
     <Color x:Key="DefaultTabStrokeColor">#85929E</Color>
     <Color x:Key="DefaultTabHeadTextColor">#EAEDED</Color>
@@ -58,25 +58,19 @@
     <Color x:Key="NotificationBgColor">#EBDEF0</Color>
     <Color x:Key="AppShellBgColor">#1B2631</Color>
     <Color x:Key="AppShellFgColor">#B3B6B7</Color>
-    <Color x:Key="AppShellTitleColor"></Color>
-    <Color x:Key="AppShellDisabledColor"></Color>
-    <Color x:Key="AppShellUnselectedColor"></Color>
+    <Color x:Key="AppShellTitleColor" />
+    <Color x:Key="AppShellDisabledColor" />
+    <Color x:Key="AppShellUnselectedColor" />
     <Color x:Key="AppShellTabBarBackgroundColor">#1B2631</Color>
     <Color x:Key="AppShellTabBarForegroundColor">#B3B6B7</Color>
-    <Color x:Key="AppShellTabBarUnselectedColor"></Color>
-    <Color x:Key="AppShellTabBarDisabledColor"></Color>
-    <Color x:Key="AppShellTabBarTitleColor"></Color>
+    <Color x:Key="AppShellTabBarUnselectedColor" />
+    <Color x:Key="AppShellTabBarDisabledColor" />
+    <Color x:Key="AppShellTabBarTitleColor" />
 
-    <!-- Font Families -->
+    <!--  Font Families  -->
     <x:String x:Key="DefaultFontFamily">Calibri</x:String>
 
     <!--  Brushes  -->
     <SolidColorBrush x:Key="DefaultForegroundBrush" Color="{StaticResource DefaultForegroundColor}" />
     <SolidColorBrush x:Key="DefaultTabStrokeBrush" Color="{StaticResource DefaultTabStrokeColor}" />
-
-    <!--  Example Styles  -->
-    <Style x:Key="HeaderLabelStyle" TargetType="Label">
-        <Setter Property="TextColor" Value="{StaticResource DefaultForegroundBrush}" />
-        <Setter Property="FontFamily" Value="Calibri" />
-    </Style>
 </ResourceDictionary>

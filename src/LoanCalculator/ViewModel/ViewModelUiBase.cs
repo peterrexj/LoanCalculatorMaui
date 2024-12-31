@@ -1,4 +1,5 @@
 ﻿using System.Text.Json.Serialization;
+using System.Windows.Input;
 using LoanCalculator.Models;
 using LoanCalculator.Models.BaseExtensions;
 using LoanCalculatorMaui.Extensions;
@@ -17,57 +18,7 @@ namespace LoanCalculatorMaui.ViewModel
         {
             CurrencySymbol = Helper.CurrencySymbol;
             NewLine = Environment.NewLine;
-            this.AcceptAppLaunchDisclaimer = new Command<SfPopup>(AcceptAppLaunchDisclaimerAction);
         }
-
-        #region Disclaimers
-        [JsonIgnore]
-        public string AppLaunchDisclaimerData => SharedServices.GetAppLaunchDisclaimerData();
-
-        [JsonIgnore]
-        public Command<SfPopup> AcceptAppLaunchDisclaimer { get; set; }
-
-        public void ShowAppLaunchDisclaimer(SfPopup sfPopupLayout)
-        {
-            //if (Device.RuntimePlatform == Device.UWP)
-            //{
-            // Create a thread
-            Thread backgroundThread = new Thread(() => ShowAppLaunchThreadedDisclaimer(sfPopupLayout));
-            // Start thread
-            backgroundThread.Start();
-            //}
-            //else
-            //{
-            //    LaunchAppDisclaimer(sfPopupLayout);
-            //}
-        }
-
-        private void LaunchAppDisclaimer(SfPopup sfPopupLayout)
-        {
-            if (SharedServices.ShouldShowAppLaunchDisclaimer())
-            {
-                //sfPopupLayout.PopupView.IsFullScreen = true;
-                //sfPopupLayout.ClosePopupOnBackButtonPressed = false;
-
-                sfPopupLayout.Show(true);
-            }
-        }
-        private void ShowAppLaunchThreadedDisclaimer(SfPopup sfPopupLayout)
-        {
-            Thread.Sleep(2000);
-            ViewHelper.RunOnAppDispatcher(() =>
-            {
-                LaunchAppDisclaimer(sfPopupLayout);
-            });
-        }
-
-        private void AcceptAppLaunchDisclaimerAction(SfPopup sfPopupLayout)
-        {
-            SharedServices.NameValueDataService.NameValueDataModel.HasShowAppLaunchDisclaimer = true;
-            SharedServices.NameValueDataService.SaveNameValueData();
-            sfPopupLayout.Dismiss();
-        }
-        #endregion
 
         #region Save
         protected void SaveData<T>(T data)
@@ -76,7 +27,9 @@ namespace LoanCalculatorMaui.ViewModel
 
             Task.Run(async () =>
             {
-                await SharedServices.LocalStorage.SaveData<T>(data);
+                if (SharedServices.LocalStorage == null) { return; }
+
+                await SharedServices.LocalStorage.SaveData<T>(data).ConfigureAwait(false);
             }).Wait();
         }
         #endregion

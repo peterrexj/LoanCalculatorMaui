@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView
+    x:Class="LoanCalculatorMaui.Controls.PopupDisclaimerView"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:sfPopup="clr-namespace:Syncfusion.Maui.Popup;assembly=Syncfusion.Maui.Popup"
+    xmlns:viewModel="clr-namespace:LoanCalculatorMaui.ViewModel">
+    <ContentView.BindingContext>
+        <viewModel:PopupDisclaimerViewModel />
+    </ContentView.BindingContext>
+    <sfPopup:SfPopup
+        Padding="10,25,10,20"
+        AcceptButtonText="Accept"
+        AnimationMode="Zoom"
+        AppearanceMode="OneButton"
+        IsFullScreen="True"
+        IsOpen="{Binding IsPopupRequired}"
+        ShowCloseButton="False"
+        ShowFooter="True"
+        ShowHeader="True"
+        StaysOpen="True">
+        <sfPopup:SfPopup.HeaderTemplate>
+            <DataTemplate>
+                <Grid>
+                    <Label
+                        BackgroundColor="Transparent"
+                        FontAttributes="Bold"
+                        FontFamily="{DynamicResource DefaultFontFamily}"
+                        FontSize="18"
+                        HorizontalTextAlignment="Center"
+                        Text="Disclaimer"
+                        VerticalTextAlignment="Center" />
+                </Grid>
+            </DataTemplate>
+        </sfPopup:SfPopup.HeaderTemplate>
+        <sfPopup:SfPopup.FooterTemplate>
+            <DataTemplate>
+                <Grid>
+                    <Button
+                        BackgroundColor="Transparent"
+                        Command="{Binding PopupAcceptCommand}"
+                        FontAttributes="Bold"
+                        FontFamily="{DynamicResource DefaultFontFamily}"
+                        FontSize="16"
+                        Text="Accept" />
+                </Grid>
+            </DataTemplate>
+        </sfPopup:SfPopup.FooterTemplate>
+        <sfPopup:SfPopup.ContentTemplate>
+            <DataTemplate>
+                <Grid>
+                    <ScrollView>
+                        <Label
+                            Padding="10"
+                            BackgroundColor="Transparent"
+                            FontFamily="{DynamicResource DefaultFontFamily}"
+                            FontSize="18"
+                            HorizontalTextAlignment="Start"
+                            Text="{Binding AppLaunchDisclaimerData}"
+                            TextColor="{DynamicResource NotificationBgColor}" />
+                    </ScrollView>
+                </Grid>
+            </DataTemplate>
+        </sfPopup:SfPopup.ContentTemplate>
+    </sfPopup:SfPopup>
+</ContentView>

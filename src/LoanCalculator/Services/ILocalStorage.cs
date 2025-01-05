@@ -2,6 +2,8 @@
 {
     public interface ILocalStorage
     {
+        bool IsInitialized { get; }
+        void Initialize();
         Task WriteTextAsync(string fileName, string text);
         Task<string> ReadTextAsync(string fileName);
 

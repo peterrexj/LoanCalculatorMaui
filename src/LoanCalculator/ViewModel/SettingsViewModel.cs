@@ -1,107 +1,75 @@
-﻿using System.Collections.ObjectModel;
+﻿using LoanCalculator.Models.BaseExtensions;
+using System.Collections.ObjectModel;
 using System.Windows.Input;
-using LoanCalculator.Models.BaseExtensions;
-using LoanCalculator.Models.Enums;
 using LoanCalculatorMaui.Services;
-using LoanCalculatorMaui.Themes;
-using Newtonsoft.Json;
 
 namespace LoanCalculatorMaui.ViewModel
 {
+    public class Theme
+    {
+        public string Name { get; set; }
+        public Color BoxBackgroundGradientBrushStart { get; set; }
+        public Color BoxBackgroundGradientBrushEnd { get; set; }
+
+        public Color TextBackground { get; set; }
+    }
+
     public class SettingsViewModel : BaseViewModel
     {
-        private bool isUpdating = false;
+        public ICommand ClearLoanDataCommand { get; }
+        public ICommand ClearExpenseDataCommand { get; }
+        public ICommand ClearIncomeDataCommand { get; }
+        public ICommand ClearAllDataCommand { get; }
 
         public SettingsViewModel()
         {
-            themes = new ObservableCollection<string>(Enum.GetNames(typeof(AppThemes)));
-            ClearLoanCommand = new Command(async () => await ClearLoanData());
-            ClearIncomeCommand = new Command(async () => await ClearIncomeData());
-            ClearExpenseCommand = new Command(async () => await ClearExpenseData());
-            ClearDisclaimersCommand = new Command(async () => await ClearDisclaimerData());
+            Themes = new ObservableCollection<Theme>
+            {
+                new Theme { Name = "Dark", BoxBackgroundGradientBrushStart = Color.FromArgb("#5d6d7e"), BoxBackgroundGradientBrushEnd = Color.FromArgb("#212f3c"), TextBackground = Color.FromArgb("#ebedef")},
+                new Theme { Name = "Light", BoxBackgroundGradientBrushStart = Color.FromArgb("#e5e7e9"), BoxBackgroundGradientBrushEnd = Color.FromArgb("#bdc3c7"), TextBackground = Color.FromArgb("#34495e")},
+                new Theme { Name = "FireBreather", BoxBackgroundGradientBrushStart = Color.FromArgb("#f5cba7"), BoxBackgroundGradientBrushEnd = Color.FromArgb("#d68910"), TextBackground = Color.FromArgb("#6e2c00") } // Pastel Red
+            };
+
+            SelectedTheme = Themes[0]; // Default to Light theme
+
+            ClearLoanDataCommand = new Command(async () => await ClearLoanData());
+            ClearIncomeDataCommand = new Command(async () => await ClearIncomeData());
+            ClearExpenseDataCommand = new Command(async () => await ClearExpenseData());
+            ClearAllDataCommand = new Command(async () => await ClearDisclaimerData());
         }
 
-        private string selectedTheme;
-        public string SelectedTheme
+        public ObservableCollection<Theme> Themes { get; }
+
+        private Theme _selectedTheme;
+        public Theme SelectedTheme
         {
-            get
-            {
-                return selectedTheme;
-            }
+            get => _selectedTheme;
             set
             {
-                if (isUpdating == false)
-                {
-                    isUpdating = true;
-                    selectedTheme = value;
-                    OnPropertyChanged("SelectedTheme");
-                    SaveData();
-                    //DefaultStyle = ThemeHelper.GetDefaultStyleTheme(SelectedAppTheme);
-                    SharedServices.ThemeHelper.UpdateAppThemes(DefaultStyle);
-                    OnPropertyChanged("DefaultStyle");
-                    isUpdating = false;
-                }
+                _selectedTheme = value;
+                OnPropertyChanged();
+                // Implement theme change logic here
+                ApplyTheme(_selectedTheme);
             }
         }
-        public AppThemes SelectedAppTheme => EnumHelper<AppThemes>.FromString(selectedTheme);
 
-        #region Commands
-
-        public ICommand ClearLoanCommand { get; }
-        public ICommand ClearExpenseCommand { get; }
-        public ICommand ClearIncomeCommand { get; }
-        public ICommand ClearDisclaimersCommand { get; }
+        private void ApplyTheme(Theme theme)
+        {
+            // Implement the logic to apply the selected theme
+            // This might involve updating the resource dictionary or other UI elements
+        }
 
         private async Task ClearLoanData() => await SharedServices.LocalStorage.ClearData<LoanViewModel>();
         private async Task ClearIncomeData() => await SharedServices.LocalStorage.ClearData<IncomeViewModel>();
         private async Task ClearExpenseData() => await SharedServices.LocalStorage.ClearData<ExpenseViewModel>();
-        private async Task ClearDisclaimerData()
+        private async Task ClearDisclaimerData() //TODO: Change this from clearing disclaimer to clearing all data
         {
             await Task.Run(() =>
             {
-                SharedServices.NameValueDataService.NameValueDataModel.HasShowAppLaunchDisclaimer = false;
-                SharedServices.NameValueDataService.SaveNameValueData();
+                new PdfGenerator().GeneratePdf();
+                //SharedServices.NameValueDataService.NameValueDataModel.HasShowAppLaunchDisclaimer = false;
+                //SharedServices.NameValueDataService.SaveNameValueData();
             });
-        }
-
-        #endregion
-
-
-        [JsonIgnore]
-        private ObservableCollection<string> themes;
-        [JsonIgnore]
-        public ObservableCollection<string> Themes
-        {
-            get
-            {
-                return themes;
-            }
-            set
-            {
-                Themes = value;
-                OnPropertyChanged("Themes");
-            }
-        }
-
-        [JsonIgnore]
-        private StyleModelDefault styleModelDefault;
-        [JsonIgnore]
-        public StyleModelDefault DefaultStyle
-        {
-            get => styleModelDefault;
-            set
-            {
-                styleModelDefault = value;
-                OnPropertyChanged(nameof(StyleModelDefault));
-            }
-        }
-
-        private void SaveData()
-        {
-            Task.Run(async () =>
-            {
-                await SharedServices.LocalStorage.SaveData<SettingsViewModel>(this);
-            }).Wait();
         }
     }
 }

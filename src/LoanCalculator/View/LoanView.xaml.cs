@@ -48,6 +48,8 @@ public partial class LoanView : ContentPage
         bool shouldAddDefaultValues = false;
         try
         {
+            SharedServices.LocalStorage.Initialize();
+
             if (SharedServices.LocalStorage != null)
             {
                 //await SharedServices.LocalStorage.ClearData<LoanViewModel>().ConfigureAwait(false);

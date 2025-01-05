@@ -12,7 +12,7 @@ namespace LoanCalculatorMaui.Services
                 if (_nameValueDataModel == null)
                 {
                     Task.Run(async () => _nameValueDataModel = await localStorage.GetData<NameValueDataModel>()).Wait();
-                    if (_nameValueDataModel == null )
+                    if (_nameValueDataModel == null)
                     {
                         _nameValueDataModel = new NameValueDataModel
                         {

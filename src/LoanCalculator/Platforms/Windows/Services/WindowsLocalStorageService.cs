@@ -4,9 +4,14 @@ using Windows.Storage;
 namespace LoanCalculatorMaui.Platforms.Windows.Services;
 
 public class WindowsLocalStorageService()
-    : LocalStorageService(ApplicationData.Current.LocalFolder.Path),
+    : LocalStorageService(string.Empty),
         ILocalStorage
 {
+    public void Initialize()
+    {
+        RootFolder = ApplicationData.Current.LocalFolder.Path;
+    }
+
     public async Task WriteTextAsync(string fileName, string text)
     {
         var folder = ApplicationData.Current.LocalFolder;

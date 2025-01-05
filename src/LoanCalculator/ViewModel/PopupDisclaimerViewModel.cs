@@ -14,8 +14,15 @@ public class PopupDisclaimerViewModel : BaseViewModel
             {
                 //SharedServices.NameValueDataService.NameValueDataModel.HasShowAppLaunchDisclaimer = false;
                 //SharedServices.NameValueDataService.SaveNameValueData();
+                if (SharedServices.LocalStorage.IsInitialized)
+                {
+                    _isPopupRequired = SharedServices.ShouldShowAppLaunchDisclaimer();
+                }
+            }
 
-                _isPopupRequired = SharedServices.ShouldShowAppLaunchDisclaimer();
+            if (_isPopupRequired.HasValue == false)
+            {
+                return true;
             }
 
             return _isPopupRequired.Value;

@@ -3,14 +3,23 @@ using System.Text.Json.Serialization;
 
 namespace LoanCalculatorMaui.Services;
 
-public abstract class LocalStorageService(string rootFolder)
+public abstract class LocalStorageService
 {
-    public string HomeLoanDataFilePath => Path.Combine(rootFolder, "homeloandata.json");
-    public string IncomeDataFilePath => Path.Combine(rootFolder, "incomedata.json");
-    public string ExpenseDataFilePath => Path.Combine(rootFolder, "expensedata.json");
-    public string DefaultDataFilePath => Path.Combine(rootFolder, "defaultdata.json");
-    public string SettingsDataFilePath => Path.Combine(rootFolder, "settingsdata.json");
-    public string NameValueDataFilePath => Path.Combine(rootFolder, "namevaluedata.json");
+    public string RootFolder { get; set; }
+
+    protected LocalStorageService(string rootFolder)
+    {
+        RootFolder = rootFolder;
+    }
+
+    public bool IsInitialized => !string.IsNullOrEmpty(RootFolder);
+
+    public string HomeLoanDataFilePath => Path.Combine(RootFolder, "homeloandata.json");
+    public string IncomeDataFilePath => Path.Combine(RootFolder, "incomedata.json");
+    public string ExpenseDataFilePath => Path.Combine(RootFolder, "expensedata.json");
+    public string DefaultDataFilePath => Path.Combine(RootFolder, "defaultdata.json");
+    public string SettingsDataFilePath => Path.Combine(RootFolder, "settingsdata.json");
+    public string NameValueDataFilePath => Path.Combine(RootFolder, "namevaluedata.json");
 
     public string FilePathBasedOnType<T>() =>
         typeof(T).Name switch
@@ -24,6 +33,7 @@ public abstract class LocalStorageService(string rootFolder)
 
     public async Task<T> GetData<T>()
     {
+        EnsureRootFolderIsSet();
         var filePath = FilePathBasedOnType<T>();
         if (!File.Exists(filePath))
         {
@@ -36,6 +46,7 @@ public abstract class LocalStorageService(string rootFolder)
 
     public async Task SaveData<T>(T data)
     {
+        EnsureRootFolderIsSet();
         var options = new JsonSerializerOptions
         {
             NumberHandling = JsonNumberHandling.AllowNamedFloatingPointLiterals
@@ -48,10 +59,19 @@ public abstract class LocalStorageService(string rootFolder)
 
     public async Task ClearData<T>()
     {
+        EnsureRootFolderIsSet();
         var filePath = FilePathBasedOnType<T>();
         if (File.Exists(filePath))
         {
             await Task.Run(() => File.Delete(filePath));
+        }
+    }
+
+    private void EnsureRootFolderIsSet()
+    {
+        if (string.IsNullOrEmpty(RootFolder))
+        {
+            throw new InvalidOperationException("Root folder is not set.");
         }
     }
 }

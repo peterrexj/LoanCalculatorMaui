@@ -6,6 +6,11 @@ public class iOSLocalStorageService()
     : LocalStorageService(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)),
         ILocalStorage
 {
+    public void Initialize()
+    {
+        RootFolder = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+    }
+
     public async Task WriteTextAsync(string fileName, string text)
     {
         var documents = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);

@@ -35,9 +35,9 @@ namespace LoanCalculatorMaui.Services
             LocalStorage = localStorage ?? throw new ArgumentNullException(nameof(localStorage));
             NameValueDataService = nameValueDataService ?? throw new ArgumentNullException(nameof(nameValueDataService));
             AppInformation = appInformation ?? throw new ArgumentNullException(nameof(appInformation));
-            ThemeHelper = themeHelper ?? throw new ArgumentNullException( nameof(themeHelper));
+            ThemeHelper = themeHelper ?? throw new ArgumentNullException(nameof(themeHelper));
         }
-        
+
         public static IncomeExpenseSummary ExpenseSummary
         {
             get
@@ -150,7 +150,7 @@ namespace LoanCalculatorMaui.Services
     //            disclaimerData = PjUtility.Runtime.GetAssembly("LoanCalculatorMaui").GetEmbeddedResourceAsText("LoanCalculatorMaui.Extensions.DisclaimerData.AppLaunchDisclaimerData.txt");
     //        }
     //        return disclaimerData;
-            
+
     //    }
     //}
 }

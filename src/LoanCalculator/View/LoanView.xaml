@@ -11,10 +11,10 @@
     xmlns:editors="clr-namespace:Syncfusion.Maui.Inputs;assembly=Syncfusion.Maui.Inputs"
     xmlns:expander="clr-namespace:Syncfusion.Maui.Expander;assembly=Syncfusion.Maui.Expander"
     xmlns:income="clr-namespace:LoanCalculator.Models.Income;assembly=LoanCalculator.Models"
+    xmlns:models="clr-namespace:LoanCalculator.Models;assembly=LoanCalculator.Models"
     xmlns:pager="clr-namespace:Syncfusion.Maui.DataGrid.DataPager;assembly=Syncfusion.Maui.DataGrid"
     xmlns:range="clr-namespace:Syncfusion.Maui.Sliders;assembly=Syncfusion.Maui.Sliders"
     xmlns:sfList="clr-namespace:Syncfusion.Maui.ListView;assembly=Syncfusion.Maui.ListView"
-    xmlns:sfPopup="clr-namespace:Syncfusion.Maui.Popup;assembly=Syncfusion.Maui.Popup"
     xmlns:system="clr-namespace:System;assembly=System.Runtime"
     xmlns:tabView="clr-namespace:Syncfusion.Maui.TabView;assembly=Syncfusion.Maui.TabView"
     xmlns:viewmodel="clr-namespace:LoanCalculatorMaui.ViewModel"
@@ -27,17 +27,11 @@
             <tabView:SfTabView
                 x:Name="TabView"
                 HeaderHorizontalTextAlignment="Center"
-                IndicatorBackground="{DynamicResource DefaultTabStrokeColor}"
-                IndicatorCornerRadius="5"
-                IndicatorPlacement="Fill"
-                IndicatorWidthMode="Stretch"
-                SelectionChanged="OnTabSelectionChanged"
-                TabBarBackground="{DynamicResource TabBarBackground}">
+                SelectionChanged="OnTabSelectionChanged">
                 <tabView:SfTabItem x:Name="tabDefinitions" Header="Property">
                     <tabView:SfTabItem.Content>
                         <ScrollView>
                             <StackLayout>
-
                                 <Grid HorizontalOptions="Center" VerticalOptions="Center">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="100*" />
@@ -49,7 +43,6 @@
                                         Grid.Row="0"
                                         Grid.Column="0"
                                         Padding="20,5,20,5"
-                                        FontFamily="{DynamicResource DefaultFontFamily}"
                                         HorizontalOptions="Center"
                                         HorizontalTextAlignment="Center"
                                         Text="This loan calculator app is intended for informational purposes only and should not be considered a substitute for professional financial advice. It is highly recommended that you consult with your financial adviser before making any financial decisions."
@@ -64,33 +57,24 @@
                                             <Span
                                                 CharacterSpacing="1"
                                                 FontAttributes="Bold"
-                                                FontFamily="{DynamicResource DefaultFontFamily}"
                                                 FontSize="{Binding DefaultStyle.BoxItemCurrencyFontSize}"
                                                 Text="{Binding CurrencySymbol}" />
                                             <!--<Span Text=" " />-->
                                             <Span
                                                 CharacterSpacing="-1"
                                                 FontAttributes="Bold"
-                                                FontFamily="{DynamicResource DefaultFontFamily}"
                                                 FontSize="{Binding DefaultStyle.BoxItemHighlightNumberFontSize}"
                                                 Text="{Binding HomeLoanInfo.PaymentSummary.Payment.TermPaymentRoundedWithComma}" />
                                             <Span Text="{Binding NewLine}" />
-                                            <Span
-                                                FontFamily="{DynamicResource DefaultFontFamily}"
-                                                FontSize="12"
-                                                Text="{Binding RepaymentFrequencySelected}" />
+                                            <Span FontSize="12" Text="{Binding RepaymentFrequencySelected}" />
                                             <Span Text=" " />
                                             <Span
                                                 CharacterSpacing="-1"
                                                 FontAttributes="Bold"
-                                                FontFamily="{DynamicResource DefaultFontFamily}"
                                                 FontSize="16"
                                                 Text="{Binding LoanTermInYears}" />
                                             <Span Text=" " />
-                                            <Span
-                                                FontFamily="{DynamicResource DefaultFontFamily}"
-                                                FontSize="12"
-                                                Text=" years" />
+                                            <Span FontSize="12" Text=" years" />
                                         </FormattedString>
                                     </controls:ThreeColumnBorderedContentView.FormattedText1>
                                     <controls:ThreeColumnBorderedContentView.FormattedText2>
@@ -98,24 +82,18 @@
                                             <Span
                                                 CharacterSpacing="1"
                                                 FontAttributes="Bold"
-                                                FontFamily="{DynamicResource DefaultFontFamily}"
                                                 FontSize="17"
                                                 Text="{Binding CurrencySymbol}" />
                                             <Span Text="" />
                                             <Span
                                                 CharacterSpacing="-1"
                                                 FontAttributes="Bold"
-                                                FontFamily="{DynamicResource DefaultFontFamily}"
                                                 FontSize="18"
                                                 Text="{Binding HomeLoanInfo.PaymentSummary.Payment.TotalInterestPaymentRoundedWithComma}" />
-                                            <Span
-                                                FontFamily="{DynamicResource DefaultFontFamily}"
-                                                FontSize="12"
-                                                Text=" total interest payable over " />
+                                            <Span FontSize="12" Text=" total interest payable over " />
                                             <Span
                                                 CharacterSpacing="-1"
                                                 FontAttributes="Bold"
-                                                FontFamily="{DynamicResource DefaultFontFamily}"
                                                 FontSize="15"
                                                 Text="{Binding LoanTermInYears}" />
                                             <Span FontSize="12" Text=" years" />
@@ -126,20 +104,15 @@
                                             <Span
                                                 CharacterSpacing="1"
                                                 FontAttributes="Bold"
-                                                FontFamily="{DynamicResource DefaultFontFamily}"
                                                 FontSize="17"
                                                 Text="{Binding CurrencySymbol}" />
                                             <Span Text="" />
                                             <Span
                                                 CharacterSpacing="-1"
                                                 FontAttributes="Bold"
-                                                FontFamily="{DynamicResource DefaultFontFamily}"
                                                 FontSize="18"
                                                 Text="{Binding HomeLoanInfo.PaymentSummary.Payment.TotalPaymentRoundedWithComma}" />
-                                            <Span
-                                                FontFamily="{DynamicResource DefaultFontFamily}"
-                                                FontSize="12"
-                                                Text=" total repayment (principal + interest)" />
+                                            <Span FontSize="12" Text=" total repayment (principal + interest)" />
                                         </FormattedString>
                                     </controls:ThreeColumnBorderedContentView.FormattedText3>
                                 </controls:ThreeColumnBorderedContentView>
@@ -161,7 +134,6 @@
                                                     Style="{DynamicResource CommonTextInputLayoutStyle}">
                                                     <editors:SfNumericEntry
                                                         CustomFormat="c"
-                                                        FontFamily="{DynamicResource DefaultFontFamily}"
                                                         MaximumNumberDecimalDigits="0"
                                                         TextColor="{DynamicResource InputTextFgColor}"
                                                         Value="{Binding PropertyAmount}" />
@@ -175,14 +147,10 @@
                                                     VerticalOptions="Center">
                                                     <Label.FormattedText>
                                                         <FormattedString>
-                                                            <Span
-                                                                FontFamily="{DynamicResource DefaultFontFamily}"
-                                                                FontSize="12"
-                                                                Text="Total property amount" />
+                                                            <Span FontSize="12" Text="Total property amount" />
                                                             <Span Text="{x:Static system:Environment.NewLine}" />
                                                             <Span
                                                                 FontAttributes="Bold"
-                                                                FontFamily="{DynamicResource DefaultFontFamily}"
                                                                 FontSize="16"
                                                                 Text="{Binding PropertyTotalAmount}" />
                                                         </FormattedString>
@@ -205,7 +173,6 @@
                                                     Style="{DynamicResource CommonTextInputLayoutStyle}">
                                                     <editors:SfNumericEntry
                                                         CustomFormat="##0.##'%'"
-                                                        FontFamily="{DynamicResource DefaultFontFamily}"
                                                         FontSize="14"
                                                         HorizontalTextAlignment="Center"
                                                         LargeChange="1"
@@ -226,7 +193,6 @@
                                                     Style="{DynamicResource CommonTextInputLayoutStyle}">
                                                     <editors:SfNumericEntry
                                                         CustomFormat="00"
-                                                        FontFamily="{DynamicResource DefaultFontFamily}"
                                                         FontSize="14"
                                                         HorizontalTextAlignment="Center"
                                                         LargeChange="5"
@@ -261,55 +227,23 @@
                                     Style="{DynamicResource CommonExpanderStyle}">
                                     <expander:SfExpander.Header>
                                         <Grid>
-                                            <Label
-                                                Margin="15,0,0,0"
-                                                HeightRequest="30"
-                                                TextColor="{DynamicResource ExpanderHeaderTextColor}"
-                                                VerticalOptions="Center"
-                                                VerticalTextAlignment="Center">
+                                            <Label Style="{DynamicResource ExpanderHeaderLabelStyle}">
                                                 <Label.FormattedText>
                                                     <FormattedString>
-                                                        <Span
-                                                            FontFamily="{DynamicResource DefaultFontFamily}"
-                                                            FontSize="10"
-                                                            Text="Deposit: " />
-                                                        <Span FontFamily="{DynamicResource DefaultFontFamily}" Text="{Binding DepositAmountStrFormatted}" />
-                                                        <Span
-                                                            FontFamily="{DynamicResource DefaultFontFamily}"
-                                                            FontSize="10"
-                                                            Text=" (" />
-                                                        <Span
-                                                            FontFamily="{DynamicResource DefaultFontFamily}"
-                                                            FontSize="10"
-                                                            Text="{Binding DepositPercentage, StringFormat='{0:F2}'}" />
-                                                        <Span
-                                                            FontFamily="{DynamicResource DefaultFontFamily}"
-                                                            FontSize="10"
-                                                            Text=" %)" />
+                                                        <Span FontSize="10" Text="Deposit: " />
+                                                        <Span Text="{Binding DepositAmountStrFormatted}" />
+                                                        <Span FontSize="10" Text=" (" />
+                                                        <Span FontSize="10" Text="{Binding DepositPercentage, StringFormat='{0:F2}'}" />
+                                                        <Span FontSize="10" Text=" %)" />
 
                                                         <Span FontSize="Micro" Text="  " />
 
-                                                        <Span
-                                                            FontFamily="{DynamicResource DefaultFontFamily}"
-                                                            FontSize="10"
-                                                            Text="Loan: " />
-                                                        <Span
-                                                            FontFamily="{DynamicResource DefaultFontFamily}"
-                                                            FontSize="10"
-                                                            Text=" " />
-                                                        <Span FontFamily="{DynamicResource DefaultFontFamily}" Text="{Binding LoanAmountStrFormatted}" />
-                                                        <Span
-                                                            FontFamily="{DynamicResource DefaultFontFamily}"
-                                                            FontSize="10"
-                                                            Text=" (" />
-                                                        <Span
-                                                            FontFamily="{DynamicResource DefaultFontFamily}"
-                                                            FontSize="10"
-                                                            Text="{Binding LoanAmountPercentage, StringFormat='{0:F2}'}" />
-                                                        <Span
-                                                            FontFamily="{DynamicResource DefaultFontFamily}"
-                                                            FontSize="10"
-                                                            Text=" %)" />
+                                                        <Span FontSize="10" Text="Loan: " />
+                                                        <Span FontSize="10" Text=" " />
+                                                        <Span Text="{Binding LoanAmountStrFormatted}" />
+                                                        <Span FontSize="10" Text=" (" />
+                                                        <Span FontSize="10" Text="{Binding LoanAmountPercentage, StringFormat='{0:F2}'}" />
+                                                        <Span FontSize="10" Text=" %)" />
                                                     </FormattedString>
                                                 </Label.FormattedText>
                                             </Label>
@@ -335,7 +269,6 @@
                                                     Style="{DynamicResource CommonTextInputLayoutStyle}">
                                                     <editors:SfNumericEntry
                                                         CustomFormat="c2"
-                                                        FontFamily="{DynamicResource DefaultFontFamily}"
                                                         MaximumNumberDecimalDigits="0"
                                                         ShowClearButton="False"
                                                         TextColor="{DynamicResource InputTextFgColor}"
@@ -351,7 +284,6 @@
                                                     Style="{DynamicResource CommonTextInputLayoutStyle}">
                                                     <editors:SfNumericEntry
                                                         CustomFormat="c2"
-                                                        FontFamily="{DynamicResource DefaultFontFamily}"
                                                         MaximumNumberDecimalDigits="0"
                                                         ShowClearButton="False"
                                                         TextColor="{DynamicResource InputTextFgColor}"
@@ -409,18 +341,10 @@
                                 <expander:SfExpander HeaderIconPosition="End" Style="{DynamicResource CommonExpanderStyle}">
                                     <expander:SfExpander.Header>
                                         <Grid>
-                                            <Label
-                                                Margin="15,0,0,0"
-                                                HeightRequest="30"
-                                                TextColor="{DynamicResource ExpanderHeaderTextColor}"
-                                                VerticalOptions="Center"
-                                                VerticalTextAlignment="Center">
+                                            <Label Style="{DynamicResource ExpanderHeaderLabelStyle}">
                                                 <Label.FormattedText>
                                                     <FormattedString>
-                                                        <Span
-                                                            FontFamily="{DynamicResource DefaultFontFamily}"
-                                                            FontSize="Micro"
-                                                            Text="Upfront costs: " />
+                                                        <Span FontSize="Micro" Text="Upfront costs: " />
                                                         <Span FontFamily="{DynamicResource DefaultFontFamily}" Text="{Binding OtherExpenseTotalAmount}" />
                                                     </FormattedString>
                                                 </Label.FormattedText>
@@ -461,7 +385,6 @@
                                                     Style="{DynamicResource CommonTextInputLayoutStyle}">
                                                     <editors:SfNumericEntry
                                                         CustomFormat="c"
-                                                        FontFamily="{DynamicResource DefaultFontFamily}"
                                                         MaximumNumberDecimalDigits="0"
                                                         ShowClearButton="False"
                                                         TextColor="{DynamicResource InputTextFgColor}"
@@ -476,7 +399,6 @@
                                                     Style="{DynamicResource CommonTextInputLayoutStyle}">
                                                     <editors:SfNumericEntry
                                                         CustomFormat="c"
-                                                        FontFamily="{DynamicResource DefaultFontFamily}"
                                                         MaximumNumberDecimalDigits="0"
                                                         ShowClearButton="False"
                                                         TextColor="{DynamicResource InputTextFgColor}"
@@ -491,7 +413,6 @@
                                                     Style="{DynamicResource CommonTextInputLayoutStyle}">
                                                     <editors:SfNumericEntry
                                                         CustomFormat="c"
-                                                        FontFamily="{DynamicResource DefaultFontFamily}"
                                                         MaximumNumberDecimalDigits="0"
                                                         ShowClearButton="False"
                                                         TextColor="{DynamicResource InputTextFgColor}"
@@ -508,7 +429,6 @@
                                                     Style="{DynamicResource CommonTextInputLayoutStyle}">
                                                     <editors:SfNumericEntry
                                                         CustomFormat="c"
-                                                        FontFamily="{DynamicResource DefaultFontFamily}"
                                                         MaximumNumberDecimalDigits="0"
                                                         ShowClearButton="False"
                                                         TextColor="{DynamicResource InputTextFgColor}"
@@ -523,7 +443,6 @@
                                                     Style="{DynamicResource CommonTextInputLayoutStyle}">
                                                     <editors:SfNumericEntry
                                                         CustomFormat="c"
-                                                        FontFamily="{DynamicResource DefaultFontFamily}"
                                                         MaximumNumberDecimalDigits="0"
                                                         ShowClearButton="False"
                                                         TextColor="{DynamicResource InputTextFgColor}"
@@ -538,7 +457,6 @@
                                                     Style="{DynamicResource CommonTextInputLayoutStyle}">
                                                     <editors:SfNumericEntry
                                                         CustomFormat="c"
-                                                        FontFamily="{DynamicResource DefaultFontFamily}"
                                                         MaximumNumberDecimalDigits="0"
                                                         ShowClearButton="False"
                                                         TextColor="{DynamicResource InputTextFgColor}"
@@ -556,23 +474,20 @@
                                     JustifyContent="Center">
                                     <Border
                                         Margin="12,5,12,2"
+                                        Background="{DynamicResource ChartInnerBorderGradientBrush}"
                                         HeightRequest="250"
                                         HorizontalOptions="Fill"
+                                        Stroke="{DynamicResource ChartOuterBorderGradientBrush}"
                                         StrokeShape="RoundRectangle 12,12,12,12"
                                         StrokeThickness="2"
                                         VerticalOptions="Center">
                                         <!--  Stroke="{Binding DefaultStyle.ChartBorderColor, Converter={StaticResource StringToColorConverter}}"  -->
-                                        <Border.Stroke>
-                                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                                                <GradientStop Offset="0.0" Color="#FF009FFF" />
-                                                <GradientStop Offset="1.0" Color="#FFec2F4B" />
-                                            </LinearGradientBrush>
-                                        </Border.Stroke>
-                                        <Border.Content>
-                                            <Grid Padding="10" HorizontalOptions="Fill">
-                                                <chart:SfCircularChart>
 
-                                                    <!--<chart:SfCircularChart.Resources>
+                                        <Border.Content>
+                                            <!--<Grid Padding="10" HorizontalOptions="Fill">-->
+                                            <chart:SfCircularChart>
+
+                                                <!--<chart:SfCircularChart.Resources>
                                                         <DataTemplate x:Key="labelTemplate">
                                                             <StackLayout Orientation="Vertical">
                                                                 <Label>
@@ -592,74 +507,72 @@
                                                     </chart:SfCircularChart.Resources>-->
 
 
-                                                    <chart:SfCircularChart.Legend>
-                                                        <chart:ChartLegend Placement="{OnPlatform Android={OnIdiom Phone=Bottom, Tablet=Left}, iOS={OnIdiom Phone=Bottom, Tablet=Left}, UWP=Left}" ToggleSeriesVisibility="True">
-                                                            <chart:ChartLegend.LabelStyle>
-                                                                <chart:ChartLegendLabelStyle
-                                                                    FontAttributes="Bold"
-                                                                    FontFamily="{DynamicResource DefaultFontFamily}"
-                                                                    TextColor="{DynamicResource ChartLegendColor}" />
-                                                            </chart:ChartLegend.LabelStyle>
-                                                        </chart:ChartLegend>
-                                                    </chart:SfCircularChart.Legend>
-                                                    <chart:SfCircularChart.Series>
-                                                        <chart:DoughnutSeries
-                                                            ExplodeAll="False"
-                                                            ExplodeOnTouch="False"
-                                                            InnerRadius="0.5"
-                                                            ItemsSource="{Binding ChartPropertyValueWithInterestPayment}"
-                                                            LegendIcon="Circle"
-                                                            PaletteBrushes="{Binding CustomChartColors}"
-                                                            ShowDataLabels="True"
-                                                            XBindingPath="Category"
-                                                            YBindingPath="Value">
-                                                            <!--<chart:DoughnutSeries.SelectionBehavior>
+                                                <chart:SfCircularChart.Legend>
+                                                    <chart:ChartLegend Placement="{OnPlatform Android={OnIdiom Phone=Bottom, Tablet=Left}, iOS={OnIdiom Phone=Bottom, Tablet=Left}, UWP=Left}" ToggleSeriesVisibility="True">
+                                                        <chart:ChartLegend.LabelStyle>
+                                                            <chart:ChartLegendLabelStyle
+                                                                FontAttributes="Bold"
+                                                                FontFamily="{DynamicResource DefaultFontFamily}"
+                                                                TextColor="{DynamicResource ChartLegendTextColor}" />
+                                                        </chart:ChartLegend.LabelStyle>
+                                                    </chart:ChartLegend>
+                                                </chart:SfCircularChart.Legend>
+                                                <chart:SfCircularChart.Series>
+                                                    <chart:DoughnutSeries
+                                                        ExplodeAll="False"
+                                                        ExplodeOnTouch="False"
+                                                        InnerRadius="0.5"
+                                                        ItemsSource="{Binding ChartPropertyValueWithInterestPayment}"
+                                                        LegendIcon="Circle"
+                                                        PaletteBrushes="{Binding CustomChartColors}"
+                                                        ShowDataLabels="True"
+                                                        XBindingPath="Category"
+                                                        YBindingPath="Value">
+                                                        <!--<chart:DoughnutSeries.SelectionBehavior>
                                                                 <chart:DataPointSelectionBehavior SelectionBrush="#314A6E" />
                                                             </chart:DoughnutSeries.SelectionBehavior>-->
-                                                            <chart:DoughnutSeries.DataLabelSettings>
-                                                                <chart:CircularDataLabelSettings LabelPosition="Inside" UseSeriesPalette="True">
-                                                                    <!--<chart:CircularDataLabelSettings.ConnectorLineSettings>
+                                                        <chart:DoughnutSeries.DataLabelSettings>
+                                                            <chart:CircularDataLabelSettings LabelPosition="Inside" UseSeriesPalette="True">
+                                                                <!--<chart:CircularDataLabelSettings.ConnectorLineSettings>
                                                                         <chart:ConnectorLineStyle
                                                                             ConnectorType="Curve"
                                                                             Stroke="DarkGray"
                                                                             StrokeWidth="3" />
                                                                     </chart:CircularDataLabelSettings.ConnectorLineSettings>-->
-                                                                    <chart:CircularDataLabelSettings.LabelStyle>
-                                                                        <chart:ChartDataLabelStyle
-                                                                            FontFamily="{DynamicResource DefaultFontFamily}"
-                                                                            FontSize="10"
-                                                                            LabelFormat="c" />
-                                                                    </chart:CircularDataLabelSettings.LabelStyle>
-                                                                </chart:CircularDataLabelSettings>
-                                                            </chart:DoughnutSeries.DataLabelSettings>
+                                                                <chart:CircularDataLabelSettings.LabelStyle>
+                                                                    <chart:ChartDataLabelStyle
+                                                                        FontFamily="{DynamicResource DefaultFontFamily}"
+                                                                        FontSize="10"
+                                                                        LabelFormat="c" />
+                                                                </chart:CircularDataLabelSettings.LabelStyle>
+                                                            </chart:CircularDataLabelSettings>
+                                                        </chart:DoughnutSeries.DataLabelSettings>
 
 
-                                                            <chart:DoughnutSeries.CenterView>
-                                                                <StackLayout HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
-                                                                    <Label>
-                                                                        <Label.FormattedText>
-                                                                            <FormattedString>
-                                                                                <Span
-                                                                                    FontAttributes="Bold"
-                                                                                    FontFamily="{DynamicResource DefaultFontFamily}"
-                                                                                    FontSize="10"
-                                                                                    Text="$"
-                                                                                    TextColor="{DynamicResource ChartDataMarkerColor}" />
-                                                                                <Span
-                                                                                    FontAttributes="Bold"
-                                                                                    FontFamily="{DynamicResource DefaultFontFamily}"
-                                                                                    FontSize="10"
-                                                                                    Text="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.HomeLoanInfo.PaymentSummary.Payment.TotalPaymentRoundedWithComma}"
-                                                                                    TextColor="{DynamicResource ChartDataMarkerColor}" />
-                                                                            </FormattedString>
-                                                                        </Label.FormattedText>
-                                                                    </Label>
-                                                                </StackLayout>
-                                                            </chart:DoughnutSeries.CenterView>
+                                                        <chart:DoughnutSeries.CenterView>
+                                                            <StackLayout HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
+                                                                <Label>
+                                                                    <Label.FormattedText>
+                                                                        <FormattedString>
+                                                                            <Span
+                                                                                FontAttributes="Bold"
+                                                                                FontSize="10"
+                                                                                Text="$"
+                                                                                TextColor="{DynamicResource ChartDataMarkerTextColor}" />
+                                                                            <Span
+                                                                                FontAttributes="Bold"
+                                                                                FontSize="10"
+                                                                                Text="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.HomeLoanInfo.PaymentSummary.Payment.TotalPaymentRoundedWithComma}"
+                                                                                TextColor="{DynamicResource ChartDataMarkerTextColor}" />
+                                                                        </FormattedString>
+                                                                    </Label.FormattedText>
+                                                                </Label>
+                                                            </StackLayout>
+                                                        </chart:DoughnutSeries.CenterView>
 
 
 
-                                                            <!--<chart:DoughnutSeries.DataMarker>
+                                                        <!--<chart:DoughnutSeries.DataMarker>
                                                             <chart:ChartDataMarker ="True">
                                                                 <chart:ChartDataMarker.LabelTemplate>
                                                                     <DataTemplate>
@@ -681,11 +594,11 @@
                                                                 </chart:ChartDataMarker.LabelTemplate>
                                                             </chart:ChartDataMarker>
                                                         </chart:DoughnutSeries.DataMarker>-->
-                                                        </chart:DoughnutSeries>
-                                                    </chart:SfCircularChart.Series>
-                                                </chart:SfCircularChart>
+                                                    </chart:DoughnutSeries>
+                                                </chart:SfCircularChart.Series>
+                                            </chart:SfCircularChart>
 
-                                            </Grid>
+                                            <!--</Grid>-->
                                         </Border.Content>
 
 
@@ -716,17 +629,13 @@
                                     JustifyContent="Center">
                                     <Border
                                         Margin="12,5,12,2"
+                                        Background="{DynamicResource ChartInnerBorderGradientBrush}"
                                         HeightRequest="250"
                                         HorizontalOptions="Fill"
+                                        Stroke="{DynamicResource ChartOuterBorderGradientBrush}"
                                         StrokeShape="RoundRectangle 12,12,12,12"
                                         StrokeThickness="2"
                                         VerticalOptions="Center">
-                                        <Border.Stroke>
-                                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                                                <GradientStop Offset="0.0" Color="#FF009FFF" />
-                                                <GradientStop Offset="1.0" Color="#FFec2F4B" />
-                                            </LinearGradientBrush>
-                                        </Border.Stroke>
                                         <Border.Content>
                                             <Grid Padding="10" HorizontalOptions="Fill">
                                                 <chart:SfCartesianChart
@@ -747,9 +656,9 @@
                                                     <chart:SfCartesianChart.Title>
                                                         <Label
                                                             BackgroundColor="Transparent"
-                                                            FontFamily="{DynamicResource DefaultFontFamily}"
-                                                            Text="Gross Domestic Product Growth"
-                                                            TextColor="{DynamicResource ChartTitleColor}" />
+                                                            FontSize="9"
+                                                            Text="Loan repayment breakdown"
+                                                            TextColor="{DynamicResource ChartTitleTextColor}" />
                                                     </chart:SfCartesianChart.Title>
                                                     <chart:SfCartesianChart.XAxes>
                                                         <chart:CategoryAxis
@@ -761,7 +670,7 @@
                                                                     FontAttributes="Bold"
                                                                     FontFamily="{DynamicResource DefaultFontFamily}"
                                                                     FontSize="12"
-                                                                    TextColor="{DynamicResource ChartAxisColor}" />
+                                                                    TextColor="{DynamicResource ChartAxisTextColor}" />
                                                             </chart:CategoryAxis.LabelStyle>
                                                             <chart:CategoryAxis.MajorTickStyle>
                                                                 <chart:ChartAxisTickStyle TickSize="8" />
@@ -776,7 +685,7 @@
                                                                     FontAttributes="Bold"
                                                                     FontFamily="{DynamicResource DefaultFontFamily}"
                                                                     FontSize="12"
-                                                                    TextColor="{DynamicResource ChartAxisColor}" />
+                                                                    TextColor="{DynamicResource ChartAxisTextColor}" />
                                                             </chart:NumericalAxis.LabelStyle>
                                                             <chart:NumericalAxis.AxisLineStyle>
                                                                 <chart:ChartLineStyle StrokeWidth="0" />
@@ -797,7 +706,7 @@
                                                         <chart:StackingColumnSeries
                                                             EnableAnimation="True"
                                                             ItemsSource="{Binding AmortizationChartInterestAmountAxis}"
-                                                            LegendIcon="SeriesType"
+                                                            LegendIcon="Rectangle"
                                                             Stroke="{DynamicResource ChartColor1}"
                                                             XBindingPath="Name"
                                                             YBindingPath="Value" />
@@ -805,7 +714,7 @@
                                                         <chart:StackingColumnSeries
                                                             EnableAnimation="True"
                                                             ItemsSource="{Binding AmortizationChartPrincipalAmountAxis}"
-                                                            LegendIcon="SeriesType"
+                                                            LegendIcon="Rectangle"
                                                             Stroke="{DynamicResource ChartColor2}"
                                                             XBindingPath="Name"
                                                             YBindingPath="Value" />
@@ -825,9 +734,9 @@
                                                     <chart:SfCartesianChart.Title>
                                                         <Label
                                                             BackgroundColor="Transparent"
-                                                            FontFamily="{DynamicResource DefaultFontFamily}"
-                                                            Text="Gross Domestic Product Growth"
-                                                            TextColor="{DynamicResource ChartTitleColor}" />
+                                                            FontSize="9"
+                                                            Text="Loan repayment breakdown"
+                                                            TextColor="{DynamicResource ChartTitleTextColor}" />
 
                                                     </chart:SfCartesianChart.Title>
                                                     <chart:SfCartesianChart.XAxes>
@@ -840,7 +749,7 @@
                                                                     FontAttributes="Bold"
                                                                     FontFamily="{DynamicResource DefaultFontFamily}"
                                                                     FontSize="12"
-                                                                    TextColor="{DynamicResource ChartAxisColor}" />
+                                                                    TextColor="{DynamicResource ChartAxisTextColor}" />
                                                             </chart:CategoryAxis.LabelStyle>
                                                             <chart:CategoryAxis.MajorTickStyle>
                                                                 <chart:ChartAxisTickStyle TickSize="0" />
@@ -855,7 +764,7 @@
                                                                     FontAttributes="Bold"
                                                                     FontFamily="{DynamicResource DefaultFontFamily}"
                                                                     FontSize="12"
-                                                                    TextColor="{DynamicResource ChartAxisColor}" />
+                                                                    TextColor="{DynamicResource ChartAxisTextColor}" />
                                                             </chart:NumericalAxis.LabelStyle>
                                                             <chart:NumericalAxis.AxisLineStyle>
                                                                 <chart:ChartLineStyle StrokeWidth="0" />
@@ -873,14 +782,14 @@
                                                         <chart:StackingAreaSeries
                                                             EnableAnimation="True"
                                                             ItemsSource="{Binding AmortizationChartAreaInterestAmountAxis}"
-                                                            LegendIcon="SeriesType"
+                                                            LegendIcon="Rectangle"
                                                             Stroke="{DynamicResource ChartColor1}"
                                                             XBindingPath="Name"
                                                             YBindingPath="Value" />
                                                         <chart:StackingAreaSeries
                                                             EnableAnimation="True"
                                                             ItemsSource="{Binding AmortizationChartAreaPrincipalAmountAxis}"
-                                                            LegendIcon="SeriesType"
+                                                            LegendIcon="Rectangle"
                                                             Stroke="{DynamicResource ChartColor2}"
                                                             XBindingPath="Name"
                                                             YBindingPath="Value" />
@@ -917,17 +826,129 @@
                                         VerticalOptions="Fill">
                                         <datagrid:SfDataGrid.Columns>
 
-                                            <datagrid:DataGridTextColumn HeaderText="Period" MappingName="PaymentPeriod" />
+                                            <datagrid:DataGridTemplateColumn HeaderText="Period" MappingName="PaymentPeriod">
+                                                <datagrid:DataGridTemplateColumn.HeaderTemplate>
+                                                    <DataTemplate>
+                                                        <Label
+                                                            BackgroundColor="#154360"
+                                                            HorizontalTextAlignment="Center"
+                                                            Text="Period"
+                                                            TextColor="#eaf2f8"
+                                                            VerticalTextAlignment="Center" />
+                                                    </DataTemplate>
+                                                </datagrid:DataGridTemplateColumn.HeaderTemplate>
+                                                <datagrid:DataGridTemplateColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <Frame
+                                                            Margin="0"
+                                                            Padding="0"
+                                                            BackgroundColor="#d4e6f1"
+                                                            BorderColor="Transparent"
+                                                            HasShadow="False">
+                                                            <Label
+                                                                x:DataType="models:PaymentAmortisationOutput"
+                                                                HorizontalTextAlignment="Center"
+                                                                Text="{Binding PaymentPeriod}"
+                                                                TextColor="#154360"
+                                                                VerticalTextAlignment="Center" />
+                                                        </Frame>
+                                                    </DataTemplate>
+                                                </datagrid:DataGridTemplateColumn.CellTemplate>
+                                            </datagrid:DataGridTemplateColumn>
 
-                                            <datagrid:DataGridTextColumn HeaderText="Principal" MappingName="PrincipalAmountRounded" />
+                                            <datagrid:DataGridTemplateColumn HeaderText="Principal" MappingName="PrincipalAmountRounded">
+                                                <datagrid:DataGridTemplateColumn.HeaderTemplate>
+                                                    <DataTemplate>
+                                                        <Label
+                                                            BackgroundColor="#154360"
+                                                            HorizontalTextAlignment="Center"
+                                                            Text="Principal"
+                                                            TextColor="#eaf2f8"
+                                                            VerticalTextAlignment="Center" />
+                                                    </DataTemplate>
+                                                </datagrid:DataGridTemplateColumn.HeaderTemplate>
+                                                <datagrid:DataGridTemplateColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <Frame
+                                                            Margin="0"
+                                                            Padding="0"
+                                                            BackgroundColor="#a9cce3"
+                                                            BorderColor="Transparent"
+                                                            HasShadow="False">
+                                                            <Label
+                                                                x:DataType="models:PaymentAmortisationOutput"
+                                                                HorizontalTextAlignment="Center"
+                                                                Text="{Binding PrincipalAmountRounded}"
+                                                                TextColor="#154360"
+                                                                VerticalTextAlignment="Center" />
+                                                        </Frame>
+                                                    </DataTemplate>
+                                                </datagrid:DataGridTemplateColumn.CellTemplate>
+                                            </datagrid:DataGridTemplateColumn>
 
-                                            <datagrid:DataGridTextColumn HeaderText="Interest" MappingName="InterestAmountRounded" />
+                                            <datagrid:DataGridTemplateColumn HeaderText="Interest" MappingName="InterestAmountRounded">
+                                                <datagrid:DataGridTemplateColumn.HeaderTemplate>
+                                                    <DataTemplate>
+                                                        <Label
+                                                            BackgroundColor="#154360"
+                                                            HorizontalTextAlignment="Center"
+                                                            Text="Interest"
+                                                            TextColor="#eaf2f8"
+                                                            VerticalTextAlignment="Center" />
+                                                    </DataTemplate>
+                                                </datagrid:DataGridTemplateColumn.HeaderTemplate>
+                                                <datagrid:DataGridTemplateColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <Frame
+                                                            Margin="0"
+                                                            Padding="0"
+                                                            BackgroundColor="#5499c7"
+                                                            BorderColor="Transparent"
+                                                            HasShadow="False">
+                                                            <Label
+                                                                x:DataType="models:PaymentAmortisationOutput"
+                                                                HorizontalTextAlignment="Center"
+                                                                Text="{Binding InterestAmountRounded}"
+                                                                TextColor="#154360"
+                                                                VerticalTextAlignment="Center" />
+                                                        </Frame>
+                                                    </DataTemplate>
+                                                </datagrid:DataGridTemplateColumn.CellTemplate>
+                                            </datagrid:DataGridTemplateColumn>
 
-                                            <datagrid:DataGridTextColumn HeaderText="Balance" MappingName="BalanceAmountRounded" />
+                                            <datagrid:DataGridTemplateColumn HeaderText="Balance" MappingName="BalanceAmountRounded">
+                                                <datagrid:DataGridTemplateColumn.HeaderTemplate>
+                                                    <DataTemplate>
+                                                        <Label
+                                                            BackgroundColor="#154360"
+                                                            HorizontalTextAlignment="Center"
+                                                            Text="Balance"
+                                                            TextColor="#eaf2f8"
+                                                            VerticalTextAlignment="Center" />
+                                                    </DataTemplate>
+                                                </datagrid:DataGridTemplateColumn.HeaderTemplate>
+                                                <datagrid:DataGridTemplateColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <Frame
+                                                            Margin="0"
+                                                            Padding="0"
+                                                            BackgroundColor="#2980b9"
+                                                            BorderColor="Transparent"
+                                                            HasShadow="False">
+                                                            <Label
+                                                                x:DataType="models:PaymentAmortisationOutput"
+                                                                HorizontalTextAlignment="Center"
+                                                                Text="{Binding BalanceAmountRounded}"
+                                                                TextColor="#154360"
+                                                                VerticalTextAlignment="Center" />
+                                                        </Frame>
+                                                    </DataTemplate>
+                                                </datagrid:DataGridTemplateColumn.CellTemplate>
+                                            </datagrid:DataGridTemplateColumn>
                                         </datagrid:SfDataGrid.Columns>
 
                                         <!--  AlternatingRowColor="Yellow"  -->
-                                        <datagrid:SfDataGrid.DefaultStyle>
+                                        <!--<datagrid:SfDataGrid.DefaultStyle>
                                             <core:DataGridStyle
                                                 AlternateRowBackground="{DynamicResource DataGridRowAlternateBackgroundColor}"
                                                 GridLineStrokeThickness="3"
@@ -938,7 +959,7 @@
                                                 RowBackground="{DynamicResource DataGridRowBackgroundColor}"
                                                 RowFontFamily="{DynamicResource DefaultFontFamily}"
                                                 RowTextColor="{DynamicResource DataGridRowForegroundColor}" />
-                                        </datagrid:SfDataGrid.DefaultStyle>
+                                        </datagrid:SfDataGrid.DefaultStyle>-->
 
                                         <!--  GridCellBorderColor="{Binding DefaultStyle.DataGridGridCellBorderColor, Converter={StaticResource StringToColorConverter}}"  -->
                                         <!--  GridCellBorderWidth="1"  -->
@@ -966,7 +987,6 @@
                                         Grid.Row="0"
                                         Grid.Column="0"
                                         Padding="20,5,20,5"
-                                        FontFamily="{DynamicResource DefaultFontFamily}"
                                         HorizontalOptions="Center"
                                         HorizontalTextAlignment="Center"
                                         Text="Enter the anticipated ongoing costs for this property (such as maintenance, insurance, and taxes) after purchase, excluding mortgage payments."
@@ -981,20 +1001,17 @@
                                             <Span
                                                 CharacterSpacing="1"
                                                 FontAttributes="Bold"
-                                                FontFamily="{DynamicResource DefaultFontFamily}"
                                                 FontSize="{Binding DefaultStyle.BoxItemCurrencyFontSize}"
                                                 Text="{Binding CurrencySymbol}" />
                                             <Span
                                                 CharacterSpacing="-1"
                                                 FontAttributes="Bold"
-                                                FontFamily="{DynamicResource DefaultFontFamily}"
                                                 FontSize="{Binding DefaultStyle.BoxItemHighlightNumberFontSize}"
                                                 Text="{Binding TotalMonthlyExpenseWithComma}" />
                                             <Span Text="{Binding NewLine}" />
                                             <Span
                                                 CharacterSpacing="-1"
                                                 FontAttributes="Bold"
-                                                FontFamily="{DynamicResource DefaultFontFamily}"
                                                 FontSize="{Binding DefaultStyle.BoxItemHighlightNumberFontSize}"
                                                 Text="Monthly this property (expense)"
                                                 TextColor="Red" />
@@ -1005,20 +1022,17 @@
                                             <Span
                                                 CharacterSpacing="1"
                                                 FontAttributes="Bold"
-                                                FontFamily="{DynamicResource DefaultFontFamily}"
                                                 FontSize="{Binding DefaultStyle.BoxItemCurrencyFontSize}"
                                                 Text="{Binding CurrencySymbol}" />
                                             <Span
                                                 CharacterSpacing="-1"
                                                 FontAttributes="Bold"
-                                                FontFamily="{DynamicResource DefaultFontFamily}"
                                                 FontSize="{Binding DefaultStyle.BoxItemHighlightNumberFontSize}"
                                                 Text="{Binding TotalYearlyExpenseWithComma}" />
                                             <Span Text="{Binding NewLine}" />
                                             <Span
                                                 CharacterSpacing="-1"
                                                 FontAttributes="Bold"
-                                                FontFamily="{DynamicResource DefaultFontFamily}"
                                                 FontSize="{Binding DefaultStyle.BoxItemHighlightNumberFontSize}"
                                                 Text="Yearly this property (expense)"
                                                 TextColor="Red" />
@@ -1029,44 +1043,37 @@
                                             <Span
                                                 CharacterSpacing="1"
                                                 FontAttributes="Bold"
-                                                FontFamily="{DynamicResource DefaultFontFamily}"
                                                 FontSize="{Binding DefaultStyle.BoxItemCurrencyFontSize}"
                                                 Text="{Binding CurrencySymbol}" />
                                             <Span
                                                 CharacterSpacing="-1"
                                                 FontAttributes="Bold"
-                                                FontFamily="{DynamicResource DefaultFontFamily}"
                                                 FontSize="{Binding DefaultStyle.BoxItemHighlightNumberFontSize}"
                                                 Text="{Binding TotalMonthlyOverallExpense}" />
                                             <Span Text="{Binding NewLine}" />
                                             <Span
                                                 CharacterSpacing="1"
                                                 FontAttributes="Bold"
-                                                FontFamily="{DynamicResource DefaultFontFamily}"
                                                 FontSize="12"
                                                 Text="{Binding CurrencySymbol}" />
                                             <Span
                                                 CharacterSpacing="-1"
                                                 FontAttributes="Bold"
-                                                FontFamily="{DynamicResource DefaultFontFamily}"
                                                 FontSize="18"
                                                 Text="{Binding TotalMonthlyExpenseWithComma}" />
                                             <Span
                                                 CharacterSpacing="1"
                                                 FontAttributes="Bold"
-                                                FontFamily="{DynamicResource DefaultFontFamily}"
                                                 FontSize="12"
                                                 Text=" + " />
                                             <Span
                                                 CharacterSpacing="1"
                                                 FontAttributes="Bold"
-                                                FontFamily="{DynamicResource DefaultFontFamily}"
                                                 FontSize="12"
                                                 Text="{Binding CurrencySymbol}" />
                                             <Span
                                                 CharacterSpacing="-1"
                                                 FontAttributes="Bold"
-                                                FontFamily="{DynamicResource DefaultFontFamily}"
                                                 FontSize="18"
                                                 Text="{Binding TotalMonthlyExistingExpense}" />
                                         </FormattedString>
@@ -1103,7 +1110,6 @@
                                                             Style="{DynamicResource CommonTextInputLayoutStyle}">
                                                             <Entry
                                                                 x:Name="txtIncomeDescription"
-                                                                FontFamily="{DynamicResource DefaultFontFamily}"
                                                                 FontSize="14"
                                                                 Placeholder="Salaray Primary - Sample"
                                                                 Text="{Binding IncomeEntryName}"
@@ -1123,7 +1129,6 @@
                                                             <core:SfNumericEntry
                                                                 x:Name="txtInputAmount"
                                                                 CustomFormat="c"
-                                                                FontFamily="{DynamicResource DefaultFontFamily}"
                                                                 FontSize="14"
                                                                 MaximumNumberDecimalDigits="2"
                                                                 TextColor="{DynamicResource InputTextFgColor}"
@@ -1167,36 +1172,20 @@ iOS="30" />
                                                             x:Name="AddNewIncome"
                                                             Grid.Row="2"
                                                             Grid.Column="2"
-                                                            Margin="4"
-                                                            BackgroundColor="Transparent"
                                                             Clicked="AddNewIncome_Clicked"
-                                                            CornerRadius="1"
-                                                            MaximumHeightRequest="50">
+                                                            Style="{DynamicResource ButtonStyle}">
                                                             <Grid>
-                                                                <Label
-                                                                    FontFamily="{DynamicResource DefaultFontFamily}"
-                                                                    HorizontalOptions="Center"
-                                                                    Text="Add"
-                                                                    TextColor="{DynamicResource ButtonFgColor}"
-                                                                    VerticalOptions="Center" />
+                                                                <Label Style="{DynamicResource ButtonLabelStyle}" Text="Add" />
                                                             </Grid>
                                                         </core:SfButton>
 
                                                         <core:SfButton
                                                             Grid.Row="2"
                                                             Grid.Column="3"
-                                                            Margin="4"
-                                                            BackgroundColor="Transparent"
                                                             Clicked="ResetButton_Clicked"
-                                                            CornerRadius="1"
-                                                            MaximumHeightRequest="50">
+                                                            Style="{DynamicResource ButtonStyle}">
                                                             <Grid>
-                                                                <Label
-                                                                    FontFamily="{DynamicResource DefaultFontFamily}"
-                                                                    HorizontalOptions="Center"
-                                                                    Text="Reset"
-                                                                    TextColor="{DynamicResource ButtonFgColor}"
-                                                                    VerticalOptions="Center" />
+                                                                <Label Style="{DynamicResource ButtonLabelStyle}" Text="Reset" />
                                                             </Grid>
                                                         </core:SfButton>
                                                     </Grid>
@@ -1281,7 +1270,6 @@ iOS="30" />
                                                             <Label
                                                                 Grid.Column="0"
                                                                 Margin="5,0,0,0"
-                                                                FontFamily="{DynamicResource DefaultFontFamily}"
                                                                 FontSize="12"
                                                                 HorizontalOptions="Start"
                                                                 HorizontalTextAlignment="Start"
@@ -1290,7 +1278,6 @@ iOS="30" />
                                                                 VerticalOptions="Center" />
                                                             <Label
                                                                 Grid.Column="1"
-                                                                FontFamily="{DynamicResource DefaultFontFamily}"
                                                                 FontSize="12"
                                                                 HorizontalOptions="Start"
                                                                 HorizontalTextAlignment="Start"
@@ -1299,7 +1286,6 @@ iOS="30" />
                                                                 VerticalOptions="Center" />
                                                             <Label
                                                                 Grid.Column="2"
-                                                                FontFamily="{DynamicResource DefaultFontFamily}"
                                                                 FontSize="12"
                                                                 HorizontalOptions="End"
                                                                 Text="{Binding Frequency}"
@@ -1309,12 +1295,9 @@ iOS="30" />
                                                             <buttons:SfButton
                                                                 x:Name="btnEditEntry"
                                                                 Grid.Column="3"
-                                                                Margin="3,0,0,0"
                                                                 AutomationId="{Binding Id}"
-                                                                BackgroundColor="Transparent"
                                                                 Clicked="btnEditEntry_Clicked"
-                                                                CornerRadius="0"
-                                                                ShowIcon="True">
+                                                                Style="{DynamicResource ListIconButtonStyle}">
                                                                 <Grid>
                                                                     <Image Margin="10" Source="icon_edit.png" />
                                                                 </Grid>
@@ -1322,12 +1305,9 @@ iOS="30" />
                                                             <buttons:SfButton
                                                                 x:Name="btnDeleteEntry"
                                                                 Grid.Column="4"
-                                                                Margin="3,0,0,0"
                                                                 AutomationId="{Binding Id}"
-                                                                BackgroundColor="Transparent"
                                                                 Clicked="btnDeleteEntry_Clicked"
-                                                                CornerRadius="0"
-                                                                ShowIcon="True">
+                                                                Style="{DynamicResource ListIconButtonStyle}">
                                                                 <Grid>
                                                                     <Image Margin="10" Source="icon_delete.png" />
                                                                 </Grid>
@@ -1360,7 +1340,6 @@ iOS="30" />
                                         Grid.Row="0"
                                         Grid.Column="0"
                                         Padding="20,5,20,5"
-                                        FontFamily="{DynamicResource DefaultFontFamily}"
                                         HorizontalOptions="Center"
                                         HorizontalTextAlignment="Center"
                                         Text="This loan calculator app is intended for informational purposes only and should not be considered a substitute for professional financial advice. It is highly recommended that you consult with your financial adviser before making any financial decisions."
@@ -1369,41 +1348,39 @@ iOS="30" />
                                         VerticalTextAlignment="Center" />
                                 </Grid>
 
+                                <Grid HorizontalOptions="Center" VerticalOptions="Center">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="40*" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+                                    <core:SfButton
+                                        Grid.Column="0"
+                                        CornerRadius="5"
+                                        Style="{DynamicResource ButtonStyle}">
+                                        <Grid>
+                                            <Label Style="{DynamicResource ButtonLabelStyle}" Text="Export Insights" />
+                                        </Grid>
+                                    </core:SfButton>
+                                </Grid>
+
                                 <expander:SfExpander HeaderIconPosition="End" Style="{DynamicResource CommonExpanderStyle}">
                                     <expander:SfExpander.Header>
                                         <Grid>
-                                            <Label
-                                                Margin="15,0,0,0"
-                                                FontFamily="{DynamicResource DefaultFontFamily}"
-                                                HeightRequest="30"
-                                                Text="Property Insights"
-                                                TextColor="{DynamicResource ExpanderHeaderTextColor}"
-                                                VerticalOptions="Center"
-                                                VerticalTextAlignment="Center" />
+                                            <Label Style="{DynamicResource ExpanderHeaderLabelStyle}" Text="Property Insights" />
                                         </Grid>
                                     </expander:SfExpander.Header>
                                     <expander:SfExpander.Content>
                                         <StackLayout>
-                                            <Border
-                                                Margin="12,10,12,10"
-                                                HorizontalOptions="Center"
-                                                Stroke="{DynamicResource BoxBorderColor}"
-                                                StrokeShape="RoundRectangle 3,3,3,3"
-                                                StrokeThickness="1"
-                                                VerticalOptions="Center">
+                                            <Border Style="{DynamicResource BorderInsightsHighlightBox}">
                                                 <Grid>
                                                     <StackLayout Margin="0,0,0,5">
-                                                        <controls:InsightsItemView
-                                                            FontFamily="{DynamicResource DefaultFontFamily}"
-                                                            InsightItem="{Binding InsightsDetails.PropertyAmount}"
-                                                            TextColor="{DynamicResource LstForegroundColor}" />
-                                                        <controls:InsightsItemView
-                                                            FontFamily="{DynamicResource DefaultFontFamily}"
-                                                            InsightItem="{Binding InsightsDetails.PropertyEstimatedUpfront}"
-                                                            TextColor="{DynamicResource LstForegroundColor}" />
+                                                        <controls:InsightsItemView InsightItem="{Binding InsightsDetails.PropertyAmount}" TextColor="{DynamicResource LstForegroundColor}" />
+                                                        <controls:InsightsItemView InsightItem="{Binding InsightsDetails.PropertyEstimatedUpfront}" TextColor="{DynamicResource LstForegroundColor}" />
                                                         <controls:InsightsItemView
                                                             Margin="0,0,0,20"
-                                                            FontFamily="{DynamicResource DefaultFontFamily}"
                                                             InsightItem="{Binding InsightsDetails.PropertyTotalAmount}"
                                                             TextColor="{DynamicResource LstForegroundColor}" />
                                                     </StackLayout>
@@ -1413,68 +1390,47 @@ iOS="30" />
                                     </expander:SfExpander.Content>
                                 </expander:SfExpander>
 
-                                <expander:SfExpander HeaderIconPosition="End" Style="{DynamicResource CommonExpanderStyle}">
+                                <expander:SfExpander
+                                    Margin="0,5,0,5"
+                                    HeaderIconPosition="End"
+                                    Style="{DynamicResource CommonExpanderStyle}">
                                     <expander:SfExpander.Header>
                                         <Grid>
-                                            <Label
-                                                Margin="15,0,0,0"
-                                                FontFamily="{DynamicResource DefaultFontFamily}"
-                                                HeightRequest="30"
-                                                Text="Loan Insights"
-                                                TextColor="{DynamicResource ExpanderHeaderTextColor}"
-                                                VerticalOptions="Center"
-                                                VerticalTextAlignment="Center" />
+                                            <Label Style="{DynamicResource ExpanderHeaderLabelStyle}" Text="Loan Insights" />
                                         </Grid>
                                     </expander:SfExpander.Header>
                                     <expander:SfExpander.Content>
                                         <StackLayout>
-                                            <Border
-                                                Margin="12,10,12,10"
-                                                HorizontalOptions="Center"
-                                                Stroke="{DynamicResource BoxBorderColor}"
-                                                StrokeShape="RoundRectangle 3,3,3,3"
-                                                StrokeThickness="1"
-                                                VerticalOptions="Center">
+                                            <Border Style="{DynamicResource BorderInsightsHighlightBox}">
                                                 <Grid>
                                                     <StackLayout Margin="0,0,0,5">
-                                                        <controls:InsightsItemView
-                                                            FontFamily="{DynamicResource DefaultFontFamily}"
-                                                            InsightItem="{Binding InsightsDetails.LoanAmount}"
-                                                            TextColor="{DynamicResource LstForegroundColor}" />
-                                                        <controls:InsightsItemView
-                                                            FontFamily="{DynamicResource DefaultFontFamily}"
-                                                            InsightItem="{Binding InsightsDetails.DepositAmount}"
-                                                            TextColor="{DynamicResource LstForegroundColor}" />
-                                                        <controls:InsightsItemView
-                                                            FontFamily="{DynamicResource DefaultFontFamily}"
-                                                            InsightItem="{Binding InsightsDetails.TotalRepaymentToBank}"
-                                                            TextColor="{DynamicResource LstForegroundColor}" />
-                                                        <controls:InsightsItemView
-                                                            FontFamily="{DynamicResource DefaultFontFamily}"
-                                                            InsightItem="{Binding InsightsDetails.TotalInterestToBank}"
-                                                            TextColor="{DynamicResource LstForegroundColor}" />
+                                                        <controls:InsightsItemView InsightItem="{Binding InsightsDetails.LoanAmount}" TextColor="{DynamicResource LstForegroundColor}" />
+                                                        <controls:InsightsItemView InsightItem="{Binding InsightsDetails.DepositAmount}" TextColor="{DynamicResource LstForegroundColor}" />
+                                                        <controls:InsightsItemView InsightItem="{Binding InsightsDetails.TotalRepaymentToBank}" TextColor="{DynamicResource LstForegroundColor}" />
+                                                        <controls:InsightsItemView InsightItem="{Binding InsightsDetails.TotalInterestToBank}" TextColor="{DynamicResource LstForegroundColor}" />
                                                         <chart:SfCartesianChart
                                                             x:Name="insightsChart"
+                                                            Margin="10,0,20,0"
                                                             BackgroundColor="Transparent"
                                                             HeightRequest="150"
                                                             HorizontalOptions="FillAndExpand"
                                                             IsTransposed="True"
                                                             PaletteBrushes="{Binding CustomChartColors}"
                                                             VerticalOptions="FillAndExpand">
-                                                            <chart:SfCartesianChart.Margin>
+                                                            <!--<chart:SfCartesianChart.Margin>
                                                                 <OnPlatform x:TypeArguments="Thickness">
-                                                                    <On Platform="Windows" Value="0,0,20,0" />
-                                                                    <On Platform="Android" Value="0,0,20,0" />
-                                                                    <On Platform="iOS" Value="0,0,20,0" />
+                                                                    <On Platform="Windows" Value="10,0,20,0" />
+                                                                    <On Platform="Android" Value="10,0,20,0" />
+                                                                    <On Platform="iOS" Value="0,10,20,0" />
                                                                 </OnPlatform>
-                                                            </chart:SfCartesianChart.Margin>
+                                                            </chart:SfCartesianChart.Margin>-->
                                                             <chart:SfCartesianChart.Legend>
                                                                 <chart:ChartLegend Placement="{OnPlatform Android={OnIdiom Phone=Bottom, Tablet=Left}, iOS={OnIdiom Phone=Bottom, Tablet=Left}, UWP=Bottom}" ToggleSeriesVisibility="True">
                                                                     <chart:ChartLegend.LabelStyle>
                                                                         <chart:ChartLegendLabelStyle
                                                                             FontAttributes="Bold"
                                                                             FontFamily="{DynamicResource DefaultFontFamily}"
-                                                                            TextColor="{DynamicResource ChartLegendColor}" />
+                                                                            TextColor="{DynamicResource ChartLegendTextColor}" />
                                                                     </chart:ChartLegend.LabelStyle>
                                                                 </chart:ChartLegend>
                                                             </chart:SfCartesianChart.Legend>
@@ -1504,7 +1460,7 @@ iOS="30" />
                                                                                     FontFamily="{DynamicResource DefaultFontFamily}"
                                                                                     FontSize="10"
                                                                                     LabelFormat="c"
-                                                                                    TextColor="{DynamicResource ChartDataMarkerColor}" />
+                                                                                    TextColor="{DynamicResource ChartDataMarkerTextColor}" />
                                                                             </chart:CartesianDataLabelSettings.LabelStyle>
                                                                         </chart:CartesianDataLabelSettings>
                                                                     </chart:StackingColumn100Series.DataLabelSettings>
@@ -1514,7 +1470,7 @@ iOS="30" />
                                                                     ItemsSource="{Binding InsightChartLoanAmountAxis}"
                                                                     Label="Loan"
                                                                     LabelContext="YValue"
-                                                                    LegendIcon="SeriesType"
+                                                                    LegendIcon="Rectangle"
                                                                     ShowDataLabels="True"
                                                                     Stroke="{DynamicResource ChartColor2}"
                                                                     XBindingPath="Name"
@@ -1527,7 +1483,7 @@ iOS="30" />
                                                                                     FontFamily="{DynamicResource DefaultFontFamily}"
                                                                                     FontSize="10"
                                                                                     LabelFormat="c"
-                                                                                    TextColor="{DynamicResource ChartDataMarkerColor}" />
+                                                                                    TextColor="{DynamicResource ChartDataMarkerTextColor}" />
                                                                             </chart:CartesianDataLabelSettings.LabelStyle>
                                                                         </chart:CartesianDataLabelSettings>
                                                                     </chart:StackingColumn100Series.DataLabelSettings>
@@ -1537,7 +1493,7 @@ iOS="30" />
                                                                     ItemsSource="{Binding InsightChartLoanInterestAxis}"
                                                                     Label="Interest"
                                                                     LabelContext="YValue"
-                                                                    LegendIcon="SeriesType"
+                                                                    LegendIcon="Rectangle"
                                                                     ShowDataLabels="True"
                                                                     Stroke="{DynamicResource ChartColor3}"
                                                                     XBindingPath="Name"
@@ -1550,7 +1506,7 @@ iOS="30" />
                                                                                     FontFamily="{DynamicResource DefaultFontFamily}"
                                                                                     FontSize="10"
                                                                                     LabelFormat="c"
-                                                                                    TextColor="{DynamicResource ChartDataMarkerColor}" />
+                                                                                    TextColor="{DynamicResource ChartDataMarkerTextColor}" />
                                                                             </chart:CartesianDataLabelSettings.LabelStyle>
                                                                         </chart:CartesianDataLabelSettings>
                                                                     </chart:StackingColumn100Series.DataLabelSettings>
@@ -1558,25 +1514,12 @@ iOS="30" />
                                                             </chart:SfCartesianChart.Series>
                                                         </chart:SfCartesianChart>
 
-                                                        <controls:InsightsItemView
-                                                            FontFamily="{DynamicResource DefaultFontFamily}"
-                                                            InsightItem="{Binding InsightsDetails.LoanTerm}"
-                                                            TextColor="{DynamicResource LstForegroundColor}" />
-                                                        <controls:InsightsItemView
-                                                            FontFamily="{DynamicResource DefaultFontFamily}"
-                                                            InsightItem="{Binding InsightsDetails.InterestRate}"
-                                                            TextColor="{DynamicResource LstForegroundColor}" />
-                                                        <controls:InsightsItemView
-                                                            FontFamily="{DynamicResource DefaultFontFamily}"
-                                                            InsightItem="{Binding InsightsDetails.RepaymentFrequency}"
-                                                            TextColor="{DynamicResource LstForegroundColor}" />
-                                                        <controls:InsightsItemView
-                                                            FontFamily="{DynamicResource DefaultFontFamily}"
-                                                            InsightItem="{Binding InsightsDetails.RepaymentDetailSelectedFrequency}"
-                                                            TextColor="{DynamicResource LstForegroundColor}" />
+                                                        <controls:InsightsItemView InsightItem="{Binding InsightsDetails.LoanTerm}" TextColor="{DynamicResource LstForegroundColor}" />
+                                                        <controls:InsightsItemView InsightItem="{Binding InsightsDetails.InterestRate}" TextColor="{DynamicResource LstForegroundColor}" />
+                                                        <controls:InsightsItemView InsightItem="{Binding InsightsDetails.RepaymentFrequency}" TextColor="{DynamicResource LstForegroundColor}" />
+                                                        <controls:InsightsItemView InsightItem="{Binding InsightsDetails.RepaymentDetailSelectedFrequency}" TextColor="{DynamicResource LstForegroundColor}" />
                                                         <controls:InsightsItemView
                                                             Margin="0,0,0,20"
-                                                            FontFamily="{DynamicResource DefaultFontFamily}"
                                                             InsightItem="{Binding InsightsDetails.RepaymentDetailYearly}"
                                                             TextColor="{DynamicResource LstForegroundColor}" />
                                                     </StackLayout>
@@ -1589,68 +1532,26 @@ iOS="30" />
                                 <expander:SfExpander HeaderIconPosition="End" Style="{DynamicResource CommonExpanderStyle}">
                                     <expander:SfExpander.Header>
                                         <Grid>
-
-                                            <Label
-                                                Margin="15,0,0,0"
-                                                FontFamily="{DynamicResource DefaultFontFamily}"
-                                                HeightRequest="30"
-                                                Text="Expense Income Insights"
-                                                TextColor="{DynamicResource ExpanderHeaderTextColor}"
-                                                VerticalOptions="Center"
-                                                VerticalTextAlignment="Center" />
+                                            <Label Style="{DynamicResource ExpanderHeaderLabelStyle}" Text="Expense Income Insights" />
                                         </Grid>
                                     </expander:SfExpander.Header>
                                     <expander:SfExpander.Content>
                                         <StackLayout>
-                                            <Border
-                                                Margin="12,10,12,10"
-                                                HorizontalOptions="Center"
-                                                Stroke="{DynamicResource BoxBorderColor}"
-                                                StrokeShape="RoundRectangle 3,3,3,3"
-                                                StrokeThickness="1"
-                                                VerticalOptions="Center">
+                                            <Border Style="{DynamicResource BorderInsightsHighlightBox}">
                                                 <Grid>
                                                     <StackLayout Margin="0,0,0,5">
-                                                        <controls:InsightsItemView
-                                                            FontFamily="{DynamicResource DefaultFontFamily}"
-                                                            InsightItem="{Binding InsightsDetails.ExpenseExistingMonthly}"
-                                                            TextColor="{DynamicResource LstForegroundColor}" />
-                                                        <controls:InsightsItemView
-                                                            FontFamily="{DynamicResource DefaultFontFamily}"
-                                                            InsightItem="{Binding InsightsDetails.ExpenseExistingYearly}"
-                                                            TextColor="{DynamicResource LstForegroundColor}" />
-                                                        <controls:InsightsItemView
-                                                            FontFamily="{DynamicResource DefaultFontFamily}"
-                                                            InsightItem="{Binding InsightsDetails.ExpenseThisPropertyMonthly}"
-                                                            TextColor="{DynamicResource LstForegroundColor}" />
-                                                        <controls:InsightsItemView
-                                                            FontFamily="{DynamicResource DefaultFontFamily}"
-                                                            InsightItem="{Binding InsightsDetails.ExpenseThisPropertyYearly}"
-                                                            TextColor="{DynamicResource LstForegroundColor}" />
-                                                        <controls:InsightsItemView
-                                                            FontFamily="{DynamicResource DefaultFontFamily}"
-                                                            InsightItem="{Binding InsightsDetails.ExpenseTotalMonthly}"
-                                                            TextColor="{DynamicResource LstForegroundColor}" />
-                                                        <controls:InsightsItemView
-                                                            FontFamily="{DynamicResource DefaultFontFamily}"
-                                                            InsightItem="{Binding InsightsDetails.ExpenseTotalYearly}"
-                                                            TextColor="{DynamicResource LstForegroundColor}" />
+                                                        <controls:InsightsItemView InsightItem="{Binding InsightsDetails.ExpenseExistingMonthly}" TextColor="{DynamicResource LstForegroundColor}" />
+                                                        <controls:InsightsItemView InsightItem="{Binding InsightsDetails.ExpenseExistingYearly}" TextColor="{DynamicResource LstForegroundColor}" />
+                                                        <controls:InsightsItemView InsightItem="{Binding InsightsDetails.ExpenseThisPropertyMonthly}" TextColor="{DynamicResource LstForegroundColor}" />
+                                                        <controls:InsightsItemView InsightItem="{Binding InsightsDetails.ExpenseThisPropertyYearly}" TextColor="{DynamicResource LstForegroundColor}" />
+                                                        <controls:InsightsItemView InsightItem="{Binding InsightsDetails.ExpenseTotalMonthly}" TextColor="{DynamicResource LstForegroundColor}" />
+                                                        <controls:InsightsItemView InsightItem="{Binding InsightsDetails.ExpenseTotalYearly}" TextColor="{DynamicResource LstForegroundColor}" />
 
-                                                        <controls:InsightsItemView
-                                                            FontFamily="{DynamicResource DefaultFontFamily}"
-                                                            InsightItem="{Binding InsightsDetails.IncomeTotalMonthly}"
-                                                            TextColor="{DynamicResource LstForegroundColor}" />
-                                                        <controls:InsightsItemView
-                                                            FontFamily="{DynamicResource DefaultFontFamily}"
-                                                            InsightItem="{Binding InsightsDetails.IncomeTotalYearly}"
-                                                            TextColor="{DynamicResource LstForegroundColor}" />
-                                                        <controls:InsightsItemView
-                                                            FontFamily="{DynamicResource DefaultFontFamily}"
-                                                            InsightItem="{Binding InsightsDetails.SavingMonthly}"
-                                                            TextColor="{DynamicResource LstForegroundColor}" />
+                                                        <controls:InsightsItemView InsightItem="{Binding InsightsDetails.IncomeTotalMonthly}" TextColor="{DynamicResource LstForegroundColor}" />
+                                                        <controls:InsightsItemView InsightItem="{Binding InsightsDetails.IncomeTotalYearly}" TextColor="{DynamicResource LstForegroundColor}" />
+                                                        <controls:InsightsItemView InsightItem="{Binding InsightsDetails.SavingMonthly}" TextColor="{DynamicResource LstForegroundColor}" />
                                                         <controls:InsightsItemView
                                                             Margin="0,0,0,20"
-                                                            FontFamily="{DynamicResource DefaultFontFamily}"
                                                             InsightItem="{Binding InsightsDetails.SavingYearly}"
                                                             TextColor="{DynamicResource LstForegroundColor}" />
                                                     </StackLayout>

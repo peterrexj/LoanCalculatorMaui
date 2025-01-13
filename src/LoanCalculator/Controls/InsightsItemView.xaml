@@ -21,13 +21,9 @@
                     <Span
                         x:Name="InnerInsightsNameLabel"
                         FontAttributes="Bold"
-                        FontFamily="{Binding DefaultStyle.DefaultFontFamily}"
                         FontSize="16" />
                     <Span Text="  " />
-                    <Span
-                        x:Name="InnerInsightsDescriptionLabel"
-                        FontFamily="{Binding DefaultStyle.DefaultFontFamily}"
-                        FontSize="12" />
+                    <Span x:Name="InnerInsightsDescriptionLabel" FontSize="12" />
                 </FormattedString>
             </Label.FormattedText>
         </Label>

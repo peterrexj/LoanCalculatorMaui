@@ -80,14 +80,7 @@
                 Style="{DynamicResource CommonExpanderStyle}">
                 <expander:SfExpander.Header>
                     <Grid>
-                        <Label
-                            Margin="15,0,0,0"
-                            FontFamily="{DynamicResource DefaultFontFamily}"
-                            HeightRequest="30"
-                            Text="Clear Data"
-                            TextColor="{DynamicResource ExpanderHeaderTextColor}"
-                            VerticalOptions="Center"
-                            VerticalTextAlignment="Center" />
+                        <Label Style="{DynamicResource ExpanderHeaderLabelStyle}" Text="Clear Data" />
                     </Grid>
                 </expander:SfExpander.Header>
                 <expander:SfExpander.Content>

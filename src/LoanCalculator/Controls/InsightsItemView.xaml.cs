@@ -11,10 +11,6 @@ public partial class InsightsItemView : ContentView
         InnerInsightsValueLabel.SetBinding(Label.TextColorProperty, new Binding("TextColor", source: this));
         InnerInsightsNameLabel.SetBinding(Label.TextColorProperty, new Binding("TextColor", source: this));
         InnerInsightsDescriptionLabel.SetBinding(Label.TextColorProperty, new Binding("TextColor", source: this));
-
-        InnerInsightsValueLabel.SetBinding(Label.FontFamilyProperty, new Binding("FontFamily", source: this));
-        InnerInsightsNameLabel.SetBinding(Label.FontFamilyProperty, new Binding("FontFamily", source: this));
-        InnerInsightsDescriptionLabel.SetBinding(Label.FontFamilyProperty, new Binding("FontFamily", source: this));
     }
 
     public static readonly BindableProperty InsightItemProperty =
@@ -48,14 +44,4 @@ public partial class InsightsItemView : ContentView
         get => (Color)GetValue(TextColorProperty);
         set => SetValue(TextColorProperty, value);
     }
-
-    public static readonly BindableProperty FontFamilyProperty =
-        BindableProperty.Create(nameof(FontFamily), typeof(string), typeof(InsightsItemView), default(string));
-
-    public string FontFamily
-    {
-        get => (string)GetValue(FontFamilyProperty);
-        set => SetValue(FontFamilyProperty, value);
-    }
-
 }

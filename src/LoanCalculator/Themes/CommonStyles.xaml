@@ -5,14 +5,97 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:buttons="clr-namespace:Syncfusion.Maui.Buttons;assembly=Syncfusion.Maui.Buttons"
     xmlns:chart="clr-namespace:Syncfusion.Maui.Charts;assembly=Syncfusion.Maui.Charts"
+    xmlns:editors="clr-namespace:Syncfusion.Maui.Inputs;assembly=Syncfusion.Maui.Inputs"
     xmlns:collections="clr-namespace:System.Collections.ObjectModel;assembly=System.ObjectModel"
+    xmlns:controls="clr-namespace:LoanCalculatorMaui.Controls"
     xmlns:core="http://schemas.syncfusion.com/maui"
     xmlns:expander="clr-namespace:Syncfusion.Maui.Expander;assembly=Syncfusion.Maui.Expander"
     xmlns:tabView="clr-namespace:Syncfusion.Maui.TabView;assembly=Syncfusion.Maui.TabView">
 
     <!--  Font Families  -->
     <x:String x:Key="DefaultFontFamily">Calibri</x:String>
+    <!-- Global style for Label -->
+    <Style TargetType="Label">
+        <Setter Property="FontFamily" Value="{StaticResource DefaultFontFamily}" />
+    </Style>
 
+    <!-- Global style for Span -->
+    <Style TargetType="Span">
+        <Setter Property="FontFamily" Value="{StaticResource DefaultFontFamily}" />
+    </Style>
+
+    <!-- Global style for Button -->
+    <Style TargetType="Button">
+        <Setter Property="FontFamily" Value="{StaticResource DefaultFontFamily}" />
+    </Style>
+
+    <!-- Global style for Entry -->
+    <Style TargetType="Entry">
+        <Setter Property="FontFamily" Value="{StaticResource DefaultFontFamily}" />
+    </Style>
+
+    <!-- Global style for SfNumericEntry -->
+    <Style TargetType="editors:SfNumericEntry">
+        <Setter Property="FontFamily" Value="{StaticResource DefaultFontFamily}" />
+    </Style>
+
+    <!--  Border top highlight box styles  -->
+    <LinearGradientBrush x:Key="BorderTopGradientBrush" StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Offset="0.0" Color="{DynamicResource BorderTopGradientOuterLineStart}" />
+        <GradientStop Offset="1.0" Color="{DynamicResource BorderTopGradientOuterLineEnd}" />
+    </LinearGradientBrush>
+    <LinearGradientBrush x:Key="BorderTopBackgroundGradientBrush" StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Offset="0.0" Color="{DynamicResource BorderTopGradientBackgroundStart}" />
+        <GradientStop Offset="1.0" Color="{DynamicResource BorderTopGradientBackgroundEnd}" />
+    </LinearGradientBrush>
+    <Style x:Key="BorderTopHighlightBox" TargetType="Border">
+        <Setter Property="StrokeThickness" Value="2" />
+        <Setter Property="Stroke" Value="{DynamicResource BorderTopGradientBrush}" />
+        <Setter Property="Background" Value="{DynamicResource BorderTopBackgroundGradientBrush}" />
+        <Setter Property="HorizontalOptions" Value="FillAndExpand" />
+        <Setter Property="StrokeShape" Value="RoundRectangle 12,12,12,12" />
+        <Setter Property="VerticalOptions" Value="FillAndExpand" />
+    </Style>
+
+    <!--  Border controls box styles  -->
+    <LinearGradientBrush x:Key="BorderControlGradientBrush" StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Offset="0.0" Color="{DynamicResource BorderControlGradientOuterLineStart}" />
+        <GradientStop Offset="1.0" Color="{DynamicResource BorderControlGradientOuterLineEnd}" />
+    </LinearGradientBrush>
+    <LinearGradientBrush x:Key="BorderControlBackgroundGradientBrush" StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Offset="0.0" Color="{DynamicResource BorderControlGradientBackgroundStart}" />
+        <GradientStop Offset="1.0" Color="{DynamicResource BorderControlGradientBackgroundEnd}" />
+    </LinearGradientBrush>
+    <Style x:Key="BorderControlHighlightBox" TargetType="Border">
+        <Setter Property="StrokeShape" Value="RoundRectangle 3,3,3,3" />
+        <Setter Property="StrokeThickness" Value="2" />
+        <Setter Property="Stroke" Value="{DynamicResource BorderControlGradientBrush}" />
+        <Setter Property="Background" Value="{DynamicResource BorderControlBackgroundGradientBrush}" />
+        <Setter Property="HorizontalOptions" Value="Center" />
+        <Setter Property="VerticalOptions" Value="Center" />
+        <Setter Property="Margin" Value="12,5,12,2" />
+    </Style>
+
+    <!--  Border insights box styles  -->
+    <LinearGradientBrush x:Key="BorderInsightsGradientBrush" StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Offset="0.0" Color="{DynamicResource BorderInsightsGradientOuterLineStart}" />
+        <GradientStop Offset="1.0" Color="{DynamicResource BorderInsightsGradientOuterLineEnd}" />
+    </LinearGradientBrush>
+    <LinearGradientBrush x:Key="BorderInsightsBackgroundGradientBrush" StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Offset="0.0" Color="{DynamicResource BorderInsightsGradientBackgroundStart}" />
+        <GradientStop Offset="1.0" Color="{DynamicResource BorderInsightsGradientBackgroundEnd}" />
+    </LinearGradientBrush>
+    <Style x:Key="BorderInsightsHighlightBox" TargetType="Border">
+        <Setter Property="StrokeShape" Value="RoundRectangle 3,3,3,3" />
+        <Setter Property="StrokeThickness" Value="1" />
+        <Setter Property="Stroke" Value="{DynamicResource BorderInsightsGradientBrush}" />
+        <Setter Property="Background" Value="{DynamicResource BorderInsightsBackgroundGradientBrush}" />
+        <Setter Property="HorizontalOptions" Value="Center" />
+        <Setter Property="VerticalOptions" Value="Center" />
+        <Setter Property="Margin" Value="12,10,12,10" />
+    </Style>
+
+    <!--  Expander styles  -->
     <Style x:Key="CommonExpanderStyle" TargetType="expander:SfExpander">
         <Setter Property="VisualStateManager.VisualStateGroups">
             <Setter.Value>
@@ -20,12 +103,12 @@
                     <VisualStateGroup>
                         <VisualState Name="Expanded">
                             <VisualState.Setters>
-                                <Setter Property="HeaderBackground" Value="{DynamicResource ExpanderHeaderGradient}" />
+                                <Setter Property="HeaderBackground" Value="{DynamicResource ExpanderExpandedGradientBrush}" />
                             </VisualState.Setters>
                         </VisualState>
                         <VisualState Name="Collapsed">
                             <VisualState.Setters>
-                                <Setter Property="HeaderBackground" Value="{DynamicResource CollapsedHeaderGradient}" />
+                                <Setter Property="HeaderBackground" Value="{DynamicResource ExpanderCollapsedGradientBrush}" />
                             </VisualState.Setters>
                         </VisualState>
                     </VisualStateGroup>
@@ -34,11 +117,56 @@
         </Setter>
     </Style>
 
+    <!--  Expander header label  -->
+    <Style x:Key="ExpanderHeaderLabelStyle" TargetType="Label">
+        <Setter Property="Margin" Value="15,0,0,0" />
+        <Setter Property="HeightRequest" Value="30" />
+        <Setter Property="TextColor" Value="{DynamicResource ExpanderHeaderTextColor}" />
+        <Setter Property="VerticalOptions" Value="Center" />
+        <Setter Property="VerticalTextAlignment" Value="Center" />
+        <Setter Property="FontFamily" Value="{DynamicResource DefaultFontFamily}" />
+    </Style>
+
+
+    <!--  Tab View  -->
+    <RadialGradientBrush x:Key="TabBarBackgroundGradientBrush" Center="0.5,0.5" Radius="0.5">
+        <GradientStop Offset="0.0" Color="{DynamicResource TabBarBackgroundGradientStart}" />
+        <GradientStop Offset="0.7" Color="{DynamicResource TabBarBackgroundGradientStart}" />
+        <GradientStop Offset="1.0" Color="{DynamicResource TabBarBackgroundGradientEnd}" />
+    </RadialGradientBrush>
+
+    <Style TargetType="tabView:SfTabView">
+        <Setter Property="HeaderHorizontalTextAlignment" Value="Center"></Setter>
+        <Setter Property="IndicatorCornerRadius" Value="1"></Setter>
+        <Setter Property="IndicatorPlacement" Value="Bottom"></Setter>
+        <Setter Property="IndicatorWidthMode" Value="Stretch"></Setter>
+        <Setter Property="IndicatorBackground" Value="{DynamicResource TabIndicatorStrokeColor}"></Setter>
+        <Setter Property="TabBarBackground" Value="{DynamicResource TabBarBackgroundGradientBrush}"></Setter>
+    </Style>
+
+
+    <!--  Tab Item  -->
     <Style TargetType="tabView:SfTabItem">
         <Setter Property="FontFamily" Value="{DynamicResource DefaultFontFamily}" />
         <Setter Property="FontSize" Value="10" />
-    </Style>
 
+        <Setter Property="VisualStateManager.VisualStateGroups">
+            <VisualStateGroupList>
+                <VisualStateGroup>
+                    <VisualState x:Name="Normal" >
+                        <VisualState.Setters>
+                            <Setter Property="TextColor" Value="Black" />
+                        </VisualState.Setters>
+                    </VisualState>
+                    <VisualState x:Name="Selected">
+                        <VisualState.Setters>
+                            <Setter Property="TextColor" Value="Red" />
+                        </VisualState.Setters>
+                    </VisualState>
+                </VisualStateGroup>
+            </VisualStateGroupList>
+        </Setter>
+    </Style>
 
     <!--  Input Text styles  -->
     <Style x:Key="CommonTextInputLayoutStyle" TargetType="core:SfTextInputLayout">
@@ -120,10 +248,40 @@
         <Setter Property="FontFamily" Value="{DynamicResource DefaultFontFamily}" />
         <Setter Property="FontSize" Value="10" />
         <Setter Property="LabelFormat" Value="c" />
-        <Setter Property="TextColor" Value="{DynamicResource ChartDataMarkerColor}" />
+        <Setter Property="TextColor" Value="{DynamicResource ChartDataMarkerTextColor}" />
+    </Style>
+    <LinearGradientBrush x:Key="ChartOuterBorderGradientBrush" StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Offset="0.0" Color="{DynamicResource ChartOuterBorderGradientStart}" />
+        <GradientStop Offset="1.0" Color="{DynamicResource ChartOuterBorderGradientEnd}" />
+    </LinearGradientBrush>
+    <RadialGradientBrush x:Key="ChartInnerBorderGradientBrush" Center="0.5,0.5" Radius="0.5">
+        <GradientStop Offset="0.0" Color="{DynamicResource ChartInnerBorderGradientStart}" />
+        <GradientStop Offset="0.7" Color="{DynamicResource ChartInnerBorderGradientStart}" />
+        <GradientStop Offset="1.0" Color="{DynamicResource ChartInnerBorderGradientEnd}" />
+    </RadialGradientBrush>
+
+    <Style x:Key="ButtonStyle" TargetType="core:SfButton">
+        <Setter Property="Background" Value="{DynamicResource ButtonBgColor}" />
+        <Setter Property="CornerRadius" Value="1" />
+        <Setter Property="Margin" Value="4" />
+        <Setter Property="MaximumHeightRequest" Value="50" />
+    </Style>
+    <Style x:Key="ButtonLabelStyle" TargetType="Label">
+        <Setter Property="HorizontalOptions" Value="Center" />
+        <Setter Property="VerticalOptions" Value="Center" />
+        <Setter Property="TextColor" Value="{DynamicResource ButtonFgColor}" />
+        <Setter Property="FontFamily" Value="{DynamicResource DefaultFontFamily}" />
+        <Setter Property="FontSize" Value="14" />
+    </Style>
+    <Style x:Key="ListIconButtonStyle" TargetType="core:SfButton">
+        <Setter Property="Background" Value="{DynamicResource ButtonBgColor}" />
+        <Setter Property="CornerRadius" Value="1" />
+        <Setter Property="Margin" Value="3,0,0,0" />
+        <Setter Property="ShowIcon" Value="True" />
     </Style>
 
-    <!--  Define ObservableCollection of Brushes  --><!--
+    <!--  Define ObservableCollection of Brushes  -->
+    <!--
     <collections:ObservableCollection x:Key="ChartColors" x:TypeArguments="Brush">
         <SolidColorBrush Color="{DynamicResource ChartColor1}" />
         <SolidColorBrush Color="{DynamicResource ChartColor2}" />

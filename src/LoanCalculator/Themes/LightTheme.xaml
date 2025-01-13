@@ -2,74 +2,75 @@
 <ResourceDictionary
     x:Class="LoanCalculatorMaui.Themes.LightTheme"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    xmlns:buttons="clr-namespace:Syncfusion.Maui.Buttons;assembly=Syncfusion.Maui.Buttons"
-    xmlns:chart="clr-namespace:Syncfusion.Maui.Charts;assembly=Syncfusion.Maui.Charts"
-    xmlns:collections="clr-namespace:System.Collections.ObjectModel;assembly=System.ObjectModel"
-    xmlns:core="http://schemas.syncfusion.com/maui"
-    xmlns:dataGrid="http://schemas.syncfusion.com/maui"
-    xmlns:expander="clr-namespace:Syncfusion.Maui.Expander;assembly=Syncfusion.Maui.Expander"
-    xmlns:tabView="clr-namespace:Syncfusion.Maui.TabView;assembly=Syncfusion.Maui.TabView">
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
+
     <!--  Colors  -->
     <Color x:Key="DefaultForegroundColor">Black</Color>
-    <Color x:Key="TabBarBackground">LightCoral</Color>
-    <Color x:Key="DefaultTabStrokeColor">#1C2833</Color>
-    <Color x:Key="DefaultTabHeadTextColor">#2E4053</Color>
-    <Color x:Key="ExpanderHeaderIconExpandColor">#EBF5FB</Color>
-    <Color x:Key="ExpanderHeaderIconCollapseColor">#D5D8DC</Color>
-    <Color x:Key="ExpanderHeaderTextColor">#212F3C</Color>
-    <Color x:Key="BoxBorderColor">#F5EEF8</Color>
-    <Color x:Key="HighlightBoxBorderColor">#D6EAF8</Color>
-    <Color x:Key="HighlightFgColor">DarkGray</Color>
 
-    #region Chart Colors
-    <Color x:Key="ChartBorderColor">#616A6B</Color>
-    <Color x:Key="ChartAxisColor">#2E4053</Color>
-    <Color x:Key="ChartLegendColor">#2E4053</Color>
-    <Color x:Key="ChartTitleColor">#1B2631</Color>
-    <Color x:Key="ChartDataMarkerColor">#2E4053</Color>
-    <Color x:Key="ChartColor1">#F5B041</Color>
-    <Color x:Key="ChartColor2">#73C6B6</Color>
-    <Color x:Key="ChartColor3">#BB8FCE</Color>
-    #endregion
+    <Color x:Key="TabBarBackgroundGradientStart">#a9cce3</Color>
+    <Color x:Key="TabBarBackgroundGradientEnd">#7fb3d5</Color>
+    <Color x:Key="TabIndicatorStrokeColor">#2471a3</Color>
+
+
+    <Color x:Key="ExpanderHeaderIconExpandColor">#EBF5FB</Color>
+    <!--  Not used  -->
+    <Color x:Key="ExpanderHeaderIconCollapseColor">#D5D8DC</Color>
+    <!--  Not used  -->
+    <Color x:Key="ExpanderHeaderTextColor">#212F3C</Color>
+    <Color x:Key="HighlightFgColor">#34495e</Color>
 
     <Color x:Key="InputTextFgColor">#17202A</Color>
     <Color x:Key="InputTextWhenFocusedColor">#566573</Color>
     <Color x:Key="InputTextWhenUnFocusedColor">#17202A</Color>
     <Color x:Key="InputErrorTextFgColor">#CA6F1E</Color>
+
     <Color x:Key="SegBgColor">#F7F9F9</Color>
     <Color x:Key="SegBorderColor">#34495E</Color>
     <Color x:Key="SegTextFgColor">#808B96</Color>
     <Color x:Key="SegSelectedTextFgColor">#212F3C</Color>
+    <!--  Not used  -->
     <Color x:Key="SegSelectedBgColor">#AED6F1</Color>
+
     <Color x:Key="SliderKnobColor">Red</Color>
     <Color x:Key="RangeSliderTrackColor">#AED6F1</Color>
     <Color x:Key="RangeSliderTrackSelectionColor">#2980B9</Color>
     <Color x:Key="RangeSliderLabelTextColor">#17202A</Color>
+
     <Color x:Key="DataGridHeaderBackgroundColor">Red</Color>
     <Color x:Key="DataGridHeaderForegroundColor">Green</Color>
     <Color x:Key="DataGridGridCellBorderColor">#7F8C8D</Color>
+    <!--  Not used  -->
     <Color x:Key="DataGridRowBackgroundColor">LightPink</Color>
     <Color x:Key="DataGridRowAlternateBackgroundColor">DarkGoldenrod</Color>
     <Color x:Key="DataGridRowForegroundColor">DarkBlue</Color>
+
     <Color x:Key="ComboDropDownBackgroundColor">#BDC3C7</Color>
     <Color x:Key="ComboDropDownTextColor">#17202A</Color>
     <Color x:Key="ComboHighlightedTextColor">#EBEDEF</Color>
     <Color x:Key="ComboSelectedDropDownItemColor">#5D6D7E</Color>
     <Color x:Key="ComboTextColor">#17202A</Color>
-    <Color x:Key="LstForegroundColor">#17202A</Color>
-    <Color x:Key="ButtonFgColor">#EBEDEF</Color>
+
     <Color x:Key="SwitchBusyIndicatorColorON">Transparent</Color>
+    <!--  Not used  -->
     <Color x:Key="SwitchThumbBorderColorON">Transparent</Color>
+    <!--  Not used  -->
     <Color x:Key="SwitchThumbColorON">#D6EAF8</Color>
+    <!--  Not used  -->
     <Color x:Key="SwitchTrackBorderColorON">Transparent</Color>
+    <!--  Not used  -->
     <Color x:Key="SwitchTrackColorON">#1A5276</Color>
+    <!--  Not used  -->
     <Color x:Key="SwitchBusyIndicatorColorOFF">Transparent</Color>
+    <!--  Not used  -->
     <Color x:Key="SwitchThumbBorderColorOFF">Transparent</Color>
+    <!--  Not used  -->
     <Color x:Key="SwitchThumbColorOFF">#1A5276</Color>
+    <!--  Not used  -->
     <Color x:Key="SwitchTrackBorderColorOFF">Transparent</Color>
+    <!--  Not used  -->
     <Color x:Key="SwitchTrackColorOFF">#D6EAF8</Color>
-    <Color x:Key="NotificationBgColor">Black</Color>
+    <!--  Not used  -->
+
     <Color x:Key="AppShellBgColor">#B3B6B7</Color>
     <Color x:Key="AppShellFgColor">#283747</Color>
     <Color x:Key="AppShellTitleColor">#283747</Color>
@@ -81,84 +82,59 @@
     <Color x:Key="AppShellTabBarDisabledColor">#979A9A</Color>
     <Color x:Key="AppShellTabBarTitleColor">#21618C</Color>
 
+    <Color x:Key="LstForegroundColor">#17202A</Color>
+    <Color x:Key="NotificationBgColor">Black</Color>
+    <Color x:Key="ButtonFgColor">#d4e6f1</Color>
+    <Color x:Key="ButtonBgColor">#154360</Color>
 
-    <!--  Brushes  --><!--
-    <SolidColorBrush x:Key="DefaultForegroundBrush" Color="{StaticResource DefaultForegroundColor}" />
-    <SolidColorBrush x:Key="DefaultTabStrokeBrush" Color="{StaticResource DefaultTabStrokeColor}" />-->
+    <!--  Charts  -->
+    <Color x:Key="ChartAxisTextColor">#2E4053</Color>
+    <Color x:Key="ChartLegendTextColor">#2E4053</Color>
+    <Color x:Key="ChartTitleTextColor">#1B2631</Color>
+    <Color x:Key="ChartDataMarkerTextColor">#2E4053</Color>
+    <Color x:Key="ChartOuterBorderGradientStart">Green</Color>
+    <Color x:Key="ChartOuterBorderGradientEnd">Purple</Color>
+    <Color x:Key="ChartInnerBorderGradientStart">#ebf5fb</Color>
+    <Color x:Key="ChartInnerBorderGradientEnd">#d6eaf8</Color>
+    <Color x:Key="ChartColor1">#F5B041</Color>
+    <Color x:Key="ChartColor2">#73C6B6</Color>
+    <Color x:Key="ChartColor3">#BB8FCE</Color>
 
-    <!--  Border top highlight box styles  -->
-    <LinearGradientBrush x:Key="BorderTopGradientBrush" StartPoint="0,0" EndPoint="1,1">
-        <GradientStop Offset="0.0" Color="#FFB3E5FC" />
-        <!--  Light Blue  -->
-        <GradientStop Offset="1.0" Color="Red" />
-        <!--  Light Yellow  -->
-    </LinearGradientBrush>
 
-    <LinearGradientBrush x:Key="BorderTopBackgroundGradientBrush" StartPoint="0,0" EndPoint="1,1">
-        <GradientStop Offset="0.0" Color="#FFFAFAD2" />
-        <!--  Light Goldenrod Yellow  -->
-        <GradientStop Offset="1.0" Color="#FFF0E68C" />
-        <!--  Khaki  -->
-    </LinearGradientBrush>
-
-    <Style x:Key="BorderTopHighlightBox" TargetType="Border">
-        <Setter Property="StrokeThickness" Value="2" />
-        <Setter Property="Stroke" Value="{DynamicResource BorderTopGradientBrush}" />
-        <Setter Property="Background" Value="{DynamicResource BorderTopBackgroundGradientBrush}" />
-        <Setter Property="HorizontalOptions" Value="FillAndExpand" />
-        <Setter Property="StrokeShape" Value="RoundRectangle 12,12,12,12" />
-        <Setter Property="VerticalOptions" Value="FillAndExpand" />
-    </Style>
+    <!--  Borders  -->
+    <Color x:Key="BorderTopGradientOuterLineStart">#566573</Color>
+    <Color x:Key="BorderTopGradientOuterLineEnd">#34495e</Color>
+    <Color x:Key="BorderTopGradientBackgroundStart">#d7dbdd</Color>
+    <Color x:Key="BorderTopGradientBackgroundEnd">#a6acaf</Color>
 
     <!--  Border controls box styles  -->
-    <LinearGradientBrush x:Key="BorderControlGradientBrush" StartPoint="0,0" EndPoint="1,1">
-        <GradientStop Offset="0.0" Color="#FFB3E5FC" />
-        <GradientStop Offset="1.0" Color="Red" />
-    </LinearGradientBrush>
+    <Color x:Key="BorderControlGradientOuterLineStart">#d4e6f1</Color>
+    <Color x:Key="BorderControlGradientOuterLineEnd">#1a5276</Color>
+    <Color x:Key="BorderControlGradientBackgroundStart">#d4e6f1</Color>
+    <Color x:Key="BorderControlGradientBackgroundEnd">#a9cce3</Color>
 
-    <LinearGradientBrush x:Key="BorderControlBackgroundGradientBrush" StartPoint="0,0" EndPoint="1,1">
-        <GradientStop Offset="0.0" Color="#FFFAFAD2" />
-        <GradientStop Offset="1.0" Color="#FFF0E68C" />
-    </LinearGradientBrush>
-    <Style x:Key="BorderControlHighlightBox" TargetType="Border">
-        <Setter Property="StrokeShape" Value="RoundRectangle 3,3,3,3" />
-        <Setter Property="StrokeThickness" Value="2" />
-        <Setter Property="Stroke" Value="{DynamicResource BorderTopGradientBrush}" />
-        <Setter Property="Background" Value="{DynamicResource BorderTopBackgroundGradientBrush}" />
-        <Setter Property="HorizontalOptions" Value="Center" />
-        <Setter Property="VerticalOptions" Value="Center" />
-        <Setter Property="Margin" Value="12,5,12,2" />
-    </Style>
-
-    <!--<sfGradient:SfGradientView>
-    <sfGradient:SfGradientView.BackgroundBrush>
-        <sfGradient:SfLinearGradientBrush>
-            <sfGradient:SfLinearGradientBrush.GradientStops>
-                <sfGradient:SfGradientStop Offset="0.0" Color="#B3B6B7" />
-                <sfGradient:SfGradientStop Offset="1.0" Color="#EBF5FB" />
-            </sfGradient:SfLinearGradientBrush.GradientStops>
-        </sfGradient:SfLinearGradientBrush>
-    </sfGradient:SfGradientView.BackgroundBrush>
-    </sfGradient:SfGradientView>-->
-
-    <!--<Style TargetType="dataGrid:DataGridHeaderRow">
-        <Setter Property="Background" Value="#0074E3" />
-    </Style>-->
-
-
+    <!--  Insights controls box styles  -->
+    <Color x:Key="BorderInsightsGradientOuterLineStart">#d4e6f1</Color>
+    <Color x:Key="BorderInsightsGradientOuterLineEnd">#1a5276</Color>
+    <Color x:Key="BorderInsightsGradientBackgroundStart">#bdc3c7</Color>
+    <Color x:Key="BorderInsightsGradientBackgroundEnd">#eaecee</Color>
 
     <!--  Expander styles  -->
-    <LinearGradientBrush x:Key="ExpanderHeaderGradient" StartPoint="0,0" EndPoint="1,1">
-        <GradientStop Offset="0.0" Color="#FFB3E5FC" />
-        <GradientStop Offset="1.0" Color="#FFFFF9C4" />
+    <Color x:Key="ExpanderExpandedGradientStart">#FFB3E5FC</Color>
+    <Color x:Key="ExpanderExpandedGradientEnd">#FFFFF9C4</Color>
+    <Color x:Key="ExpanderCollapsedGradientStart">#bdc3c7</Color>
+    <Color x:Key="ExpanderCollapsedGradientEnd">#eaecee</Color>
+
+    <!--  Expander styles - cannot move this cuz of the initialization failure, need to repeat in all themes  -->
+    <LinearGradientBrush x:Key="ExpanderExpandedGradientBrush" StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Offset="0.0" Color="{StaticResource ExpanderExpandedGradientStart}" />
+        <GradientStop Offset="1.0" Color="{StaticResource ExpanderExpandedGradientEnd}" />
     </LinearGradientBrush>
 
-    <LinearGradientBrush x:Key="CollapsedHeaderGradient" StartPoint="0,0" EndPoint="1,1">
-        <GradientStop Offset="0.0" Color="DarkKhaki" />
-        <GradientStop Offset="1.0" Color="Coral" />
+    <LinearGradientBrush x:Key="ExpanderCollapsedGradientBrush" StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Offset="0.0" Color="{StaticResource ExpanderCollapsedGradientStart}" />
+        <GradientStop Offset="1.0" Color="{StaticResource ExpanderCollapsedGradientEnd}" />
     </LinearGradientBrush>
 
-
-    
 
 </ResourceDictionary>

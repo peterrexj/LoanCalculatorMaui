@@ -5,36 +5,36 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:buttons="clr-namespace:Syncfusion.Maui.Buttons;assembly=Syncfusion.Maui.Buttons"
     xmlns:chart="clr-namespace:Syncfusion.Maui.Charts;assembly=Syncfusion.Maui.Charts"
-    xmlns:editors="clr-namespace:Syncfusion.Maui.Inputs;assembly=Syncfusion.Maui.Inputs"
     xmlns:collections="clr-namespace:System.Collections.ObjectModel;assembly=System.ObjectModel"
     xmlns:controls="clr-namespace:LoanCalculatorMaui.Controls"
     xmlns:core="http://schemas.syncfusion.com/maui"
+    xmlns:editors="clr-namespace:Syncfusion.Maui.Inputs;assembly=Syncfusion.Maui.Inputs"
     xmlns:expander="clr-namespace:Syncfusion.Maui.Expander;assembly=Syncfusion.Maui.Expander"
     xmlns:tabView="clr-namespace:Syncfusion.Maui.TabView;assembly=Syncfusion.Maui.TabView">
 
     <!--  Font Families  -->
     <x:String x:Key="DefaultFontFamily">Calibri</x:String>
-    <!-- Global style for Label -->
+    <!--  Global style for Label  -->
     <Style TargetType="Label">
         <Setter Property="FontFamily" Value="{StaticResource DefaultFontFamily}" />
     </Style>
 
-    <!-- Global style for Span -->
+    <!--  Global style for Span  -->
     <Style TargetType="Span">
         <Setter Property="FontFamily" Value="{StaticResource DefaultFontFamily}" />
     </Style>
 
-    <!-- Global style for Button -->
+    <!--  Global style for Button  -->
     <Style TargetType="Button">
         <Setter Property="FontFamily" Value="{StaticResource DefaultFontFamily}" />
     </Style>
 
-    <!-- Global style for Entry -->
+    <!--  Global style for Entry  -->
     <Style TargetType="Entry">
         <Setter Property="FontFamily" Value="{StaticResource DefaultFontFamily}" />
     </Style>
 
-    <!-- Global style for SfNumericEntry -->
+    <!--  Global style for SfNumericEntry  -->
     <Style TargetType="editors:SfNumericEntry">
         <Setter Property="FontFamily" Value="{StaticResource DefaultFontFamily}" />
     </Style>
@@ -136,12 +136,12 @@
     </RadialGradientBrush>
 
     <Style TargetType="tabView:SfTabView">
-        <Setter Property="HeaderHorizontalTextAlignment" Value="Center"></Setter>
-        <Setter Property="IndicatorCornerRadius" Value="1"></Setter>
-        <Setter Property="IndicatorPlacement" Value="Bottom"></Setter>
-        <Setter Property="IndicatorWidthMode" Value="Stretch"></Setter>
-        <Setter Property="IndicatorBackground" Value="{DynamicResource TabIndicatorStrokeColor}"></Setter>
-        <Setter Property="TabBarBackground" Value="{DynamicResource TabBarBackgroundGradientBrush}"></Setter>
+        <Setter Property="HeaderHorizontalTextAlignment" Value="Center" />
+        <Setter Property="IndicatorCornerRadius" Value="1" />
+        <Setter Property="IndicatorPlacement" Value="Bottom" />
+        <Setter Property="IndicatorWidthMode" Value="Stretch" />
+        <Setter Property="IndicatorBackground" Value="{DynamicResource TabIndicatorStrokeColor}" />
+        <Setter Property="TabBarBackground" Value="{DynamicResource TabBarBackgroundGradientBrush}" />
     </Style>
 
 
@@ -153,7 +153,7 @@
         <Setter Property="VisualStateManager.VisualStateGroups">
             <VisualStateGroupList>
                 <VisualStateGroup>
-                    <VisualState x:Name="Normal" >
+                    <VisualState x:Name="Normal">
                         <VisualState.Setters>
                             <Setter Property="TextColor" Value="Black" />
                         </VisualState.Setters>
@@ -279,6 +279,20 @@
         <Setter Property="Margin" Value="3,0,0,0" />
         <Setter Property="ShowIcon" Value="True" />
     </Style>
+
+    <Style x:Key="LabelInsideDataGridCell" TargetType="Label">
+        <Setter Property="FontSize" Value="11" />
+        <Setter Property="HorizontalTextAlignment" Value="Center"></Setter>
+        <Setter Property="VerticalTextAlignment" Value="Center"></Setter>
+    </Style>
+
+    <!--  Notification background brush -->
+    <RadialGradientBrush x:Key="NotificationBackgroundGradientBrush" Center="0.5,0.5" Radius="0.5">
+        <GradientStop Offset="0.0" Color="{DynamicResource NotificationBgGradientStart}" />
+        <GradientStop Offset="0.7" Color="{DynamicResource NotificationBgGradientStart}" />
+        <GradientStop Offset="1.0" Color="{DynamicResource NotificationBgGradientEnd}" />
+    </RadialGradientBrush>
+
 
     <!--  Define ObservableCollection of Brushes  -->
     <!--

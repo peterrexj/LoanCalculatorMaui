@@ -89,6 +89,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <MauiXaml Update="Controls\DisclaimerBannerView.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
 	  <MauiXaml Update="Controls\InsightsItemView.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>

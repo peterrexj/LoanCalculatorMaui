@@ -32,24 +32,7 @@
                     <tabView:SfTabItem.Content>
                         <ScrollView>
                             <StackLayout>
-                                <Grid HorizontalOptions="Center" VerticalOptions="Center">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="100*" />
-                                    </Grid.ColumnDefinitions>
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="80" />
-                                    </Grid.RowDefinitions>
-                                    <Label
-                                        Grid.Row="0"
-                                        Grid.Column="0"
-                                        Padding="20,5,20,5"
-                                        HorizontalOptions="Center"
-                                        HorizontalTextAlignment="Center"
-                                        Text="This loan calculator app is intended for informational purposes only and should not be considered a substitute for professional financial advice. It is highly recommended that you consult with your financial adviser before making any financial decisions."
-                                        TextColor="{DynamicResource NotificationBgColor}"
-                                        VerticalOptions="Center"
-                                        VerticalTextAlignment="Center" />
-                                </Grid>
+                                <controls:DisclaimerBannerView Text="This loan calculator app is intended for informational purposes only and should not be considered a substitute for professional financial advice. It is highly recommended that you consult with your financial adviser before making any financial decisions." />
 
                                 <controls:ThreeColumnBorderedContentView>
                                     <controls:ThreeColumnBorderedContentView.FormattedText1>
@@ -831,10 +814,9 @@
                                                     <DataTemplate>
                                                         <Label
                                                             BackgroundColor="#154360"
-                                                            HorizontalTextAlignment="Center"
+                                                            Style="{DynamicResource LabelInsideDataGridCell}"
                                                             Text="Period"
-                                                            TextColor="#eaf2f8"
-                                                            VerticalTextAlignment="Center" />
+                                                            TextColor="#eaf2f8" />
                                                     </DataTemplate>
                                                 </datagrid:DataGridTemplateColumn.HeaderTemplate>
                                                 <datagrid:DataGridTemplateColumn.CellTemplate>
@@ -847,10 +829,9 @@
                                                             HasShadow="False">
                                                             <Label
                                                                 x:DataType="models:PaymentAmortisationOutput"
-                                                                HorizontalTextAlignment="Center"
+                                                                Style="{DynamicResource LabelInsideDataGridCell}"
                                                                 Text="{Binding PaymentPeriod}"
-                                                                TextColor="#154360"
-                                                                VerticalTextAlignment="Center" />
+                                                                TextColor="#154360" />
                                                         </Frame>
                                                     </DataTemplate>
                                                 </datagrid:DataGridTemplateColumn.CellTemplate>
@@ -861,10 +842,9 @@
                                                     <DataTemplate>
                                                         <Label
                                                             BackgroundColor="#154360"
-                                                            HorizontalTextAlignment="Center"
+                                                            Style="{DynamicResource LabelInsideDataGridCell}"
                                                             Text="Principal"
-                                                            TextColor="#eaf2f8"
-                                                            VerticalTextAlignment="Center" />
+                                                            TextColor="#eaf2f8" />
                                                     </DataTemplate>
                                                 </datagrid:DataGridTemplateColumn.HeaderTemplate>
                                                 <datagrid:DataGridTemplateColumn.CellTemplate>
@@ -877,10 +857,9 @@
                                                             HasShadow="False">
                                                             <Label
                                                                 x:DataType="models:PaymentAmortisationOutput"
-                                                                HorizontalTextAlignment="Center"
+                                                                Style="{DynamicResource LabelInsideDataGridCell}"
                                                                 Text="{Binding PrincipalAmountRounded}"
-                                                                TextColor="#154360"
-                                                                VerticalTextAlignment="Center" />
+                                                                TextColor="#154360" />
                                                         </Frame>
                                                     </DataTemplate>
                                                 </datagrid:DataGridTemplateColumn.CellTemplate>
@@ -891,10 +870,9 @@
                                                     <DataTemplate>
                                                         <Label
                                                             BackgroundColor="#154360"
-                                                            HorizontalTextAlignment="Center"
+                                                            Style="{DynamicResource LabelInsideDataGridCell}"
                                                             Text="Interest"
-                                                            TextColor="#eaf2f8"
-                                                            VerticalTextAlignment="Center" />
+                                                            TextColor="#eaf2f8" />
                                                     </DataTemplate>
                                                 </datagrid:DataGridTemplateColumn.HeaderTemplate>
                                                 <datagrid:DataGridTemplateColumn.CellTemplate>
@@ -907,10 +885,9 @@
                                                             HasShadow="False">
                                                             <Label
                                                                 x:DataType="models:PaymentAmortisationOutput"
-                                                                HorizontalTextAlignment="Center"
+                                                                Style="{DynamicResource LabelInsideDataGridCell}"
                                                                 Text="{Binding InterestAmountRounded}"
-                                                                TextColor="#154360"
-                                                                VerticalTextAlignment="Center" />
+                                                                TextColor="#154360" />
                                                         </Frame>
                                                     </DataTemplate>
                                                 </datagrid:DataGridTemplateColumn.CellTemplate>
@@ -921,10 +898,9 @@
                                                     <DataTemplate>
                                                         <Label
                                                             BackgroundColor="#154360"
-                                                            HorizontalTextAlignment="Center"
+                                                            Style="{DynamicResource LabelInsideDataGridCell}"
                                                             Text="Balance"
-                                                            TextColor="#eaf2f8"
-                                                            VerticalTextAlignment="Center" />
+                                                            TextColor="#eaf2f8" />
                                                     </DataTemplate>
                                                 </datagrid:DataGridTemplateColumn.HeaderTemplate>
                                                 <datagrid:DataGridTemplateColumn.CellTemplate>
@@ -937,10 +913,9 @@
                                                             HasShadow="False">
                                                             <Label
                                                                 x:DataType="models:PaymentAmortisationOutput"
-                                                                HorizontalTextAlignment="Center"
+                                                                Style="{DynamicResource LabelInsideDataGridCell}"
                                                                 Text="{Binding BalanceAmountRounded}"
-                                                                TextColor="#154360"
-                                                                VerticalTextAlignment="Center" />
+                                                                TextColor="#154360" />
                                                         </Frame>
                                                     </DataTemplate>
                                                 </datagrid:DataGridTemplateColumn.CellTemplate>
@@ -976,24 +951,7 @@
                     <tabView:SfTabItem.Content>
                         <ScrollView>
                             <StackLayout>
-                                <Grid HorizontalOptions="Center" VerticalOptions="Center">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="100*" />
-                                    </Grid.ColumnDefinitions>
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="80" />
-                                    </Grid.RowDefinitions>
-                                    <Label
-                                        Grid.Row="0"
-                                        Grid.Column="0"
-                                        Padding="20,5,20,5"
-                                        HorizontalOptions="Center"
-                                        HorizontalTextAlignment="Center"
-                                        Text="Enter the anticipated ongoing costs for this property (such as maintenance, insurance, and taxes) after purchase, excluding mortgage payments."
-                                        TextColor="{DynamicResource NotificationBgColor}"
-                                        VerticalOptions="Center"
-                                        VerticalTextAlignment="Center" />
-                                </Grid>
+                                <controls:DisclaimerBannerView Text="Enter the anticipated ongoing costs for this property (such as maintenance, insurance, and taxes) after purchase, excluding mortgage payments." />
 
                                 <controls:ThreeColumnBorderedContentView>
                                     <controls:ThreeColumnBorderedContentView.FormattedText1>
@@ -1329,24 +1287,7 @@ iOS="30" />
                     <tabView:SfTabItem.Content>
                         <ScrollView>
                             <StackLayout>
-                                <Grid HorizontalOptions="Center" VerticalOptions="Center">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="100*" />
-                                    </Grid.ColumnDefinitions>
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="80" />
-                                    </Grid.RowDefinitions>
-                                    <Label
-                                        Grid.Row="0"
-                                        Grid.Column="0"
-                                        Padding="20,5,20,5"
-                                        HorizontalOptions="Center"
-                                        HorizontalTextAlignment="Center"
-                                        Text="This loan calculator app is intended for informational purposes only and should not be considered a substitute for professional financial advice. It is highly recommended that you consult with your financial adviser before making any financial decisions."
-                                        TextColor="{DynamicResource NotificationBgColor}"
-                                        VerticalOptions="Center"
-                                        VerticalTextAlignment="Center" />
-                                </Grid>
+                                <controls:DisclaimerBannerView Text="This loan calculator app is intended for informational purposes only and should not be considered a substitute for professional financial advice. It is highly recommended that you consult with your financial adviser before making any financial decisions." />
 
                                 <Grid HorizontalOptions="Center" VerticalOptions="Center">
                                     <Grid.ColumnDefinitions>

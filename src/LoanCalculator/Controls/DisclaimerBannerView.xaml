@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView
+    x:Class="LoanCalculatorMaui.Controls.DisclaimerBannerView"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    x:Name="DisclaimerBannerContentView">
+    <!--  Background="{DynamicResource NotificationBgColor}"  -->
+    <Grid HorizontalOptions="Center" VerticalOptions="Center" Background="{DynamicResource NotificationBackgroundGradientBrush}">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="100*" />
+        </Grid.ColumnDefinitions>
+        <Label
+            Grid.Row="0"
+            Grid.Column="0"
+            Margin="5"
+            FontAttributes="Italic, Bold"
+            FontAutoScalingEnabled="True"
+            FontFamily="{DynamicResource DefaultFontFamily}"
+            HorizontalOptions="Center"
+            HorizontalTextAlignment="Center"
+            Text="{Binding Text, Source={x:Reference Name=DisclaimerBannerContentView}}"
+            TextColor="{DynamicResource NotificationTextColor}"
+            VerticalOptions="Center"
+            VerticalTextAlignment="Center" />
+    </Grid>
+</ContentView>

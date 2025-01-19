@@ -82,6 +82,12 @@
     <Color x:Key="AppShellTabBarDisabledColor">#979A9A</Color>
     <Color x:Key="AppShellTabBarTitleColor">#21618C</Color>
 
+    <!--  Notifications  -->
+    <Color x:Key="NotificationBgGradientStart">#e6b0aa</Color>
+    <Color x:Key="NotificationBgGradientEnd">#d98880</Color>
+    <Color x:Key="NotificationTextColor">#641e16</Color>
+
+
     <Color x:Key="LstForegroundColor">#17202A</Color>
     <Color x:Key="NotificationBgColor">Black</Color>
     <Color x:Key="ButtonFgColor">#d4e6f1</Color>

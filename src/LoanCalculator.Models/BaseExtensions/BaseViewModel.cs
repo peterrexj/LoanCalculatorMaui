@@ -9,18 +9,15 @@ namespace LoanCalculator.Models.BaseExtensions
         private bool _isBusy;
         public bool IsBusy
         {
-            get
-            {
-                return _isBusy;
-            }
+            get => _isBusy;
             set
             {
-                _isBusy = !value;
+                _isBusy = value;
                 OnPropertyChanged(nameof(IsBusy));
-                OnPropertyChanged(nameof(IsFree));
+                //OnPropertyChanged(nameof(IsFree));
             }
         }
-        public bool IsFree => !IsBusy;
+        //public bool IsFree => !IsBusy;
 
         private bool _isActive { get; set; }
         public bool IsActive

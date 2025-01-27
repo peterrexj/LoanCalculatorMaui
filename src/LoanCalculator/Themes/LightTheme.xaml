@@ -6,6 +6,7 @@
 
     <!--  Colors  -->
     <Color x:Key="DefaultForegroundColor">Black</Color>
+    <Color x:Key="DefaultBackgroundColor">LightGreen</Color>
 
     <Color x:Key="TabBarBackgroundGradientStart">#a9cce3</Color>
     <Color x:Key="TabBarBackgroundGradientEnd">#7fb3d5</Color>
@@ -56,6 +57,7 @@
     <Color x:Key="ComboHighlightedTextColor">#EBEDEF</Color>
     <Color x:Key="ComboSelectedDropDownItemColor">#5D6D7E</Color>
     <Color x:Key="ComboTextColor">#17202A</Color>
+    <Color x:Key="ComboDropDownSettingsBackgroundColor">#e5e7e9</Color>
 
     <Color x:Key="SwitchThumbBorderColorOn">Transparent</Color>
     <Color x:Key="SwitchThumbColorOn">#D6EAF8</Color>

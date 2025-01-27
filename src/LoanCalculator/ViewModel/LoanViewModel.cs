@@ -752,14 +752,14 @@ public class LoanViewModel : ExpenseEntryViewBaseModel
 
     public void TriggerOneTimeUpdateOnPage()
     {
-        IsBusy = false;
-        OnPropertyChanged(nameof(CustomChartColors));
         IsBusy = true;
+        OnPropertyChanged(nameof(CustomChartColors));
+        IsBusy = false;
     }
 
     public void TriggerPropertyChangedOnPropertyTab()
     {
-        IsBusy = false;
+        IsBusy = true;
         EventsTriggerPriceUpdate();
         OnPropertyChanged(nameof(PropertyAmount));
         OnPropertyChanged(nameof(LoanTermInYears));
@@ -781,13 +781,12 @@ public class LoanViewModel : ExpenseEntryViewBaseModel
         OnPropertyChanged(nameof(OtherExpenses));
         OnPropertyChanged(nameof(RepaymentFrequencySelected));
         base.SaveData(this);
-        IsBusy = true;
+        IsBusy = false;
     }
 
     public void TriggerPropertyChangedOnAmortizationTab()
     {
-        IsBusy = false;
-
+        IsBusy = true;
         OnPropertyChanged(nameof(PaymentAmortization));
         OnPropertyChanged(nameof(AmortizationBreakdownFrequencyCollection));
         OnPropertyChanged(nameof(AmortizationBreakdownFrequencySelectedIndex));
@@ -799,7 +798,7 @@ public class LoanViewModel : ExpenseEntryViewBaseModel
         OnPropertyChanged(nameof(IsAmortizationYearBased));
 
         base.SaveData(this);
-        IsBusy = true;
+        IsBusy = false;
     }
 
     public void RefreshExpenseTabPropertyChanged()

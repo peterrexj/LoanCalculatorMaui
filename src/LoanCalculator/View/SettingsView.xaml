@@ -3,147 +3,152 @@
     x:Class="LoanCalculatorMaui.View.SettingsView"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:baseExtensions="clr-namespace:LoanCalculator.Models.BaseExtensions;assembly=LoanCalculator.Models"
     xmlns:expander="clr-namespace:Syncfusion.Maui.Expander;assembly=Syncfusion.Maui.Expander"
     xmlns:inputs="http://schemas.syncfusion.com/maui"
-    xmlns:viewModel="clr-namespace:LoanCalculatorMaui.ViewModel"
     Title="SettingsView">
-    <ContentPage.BindingContext>
-        <viewModel:SettingsViewModel />
-    </ContentPage.BindingContext>
-    <VerticalStackLayout>
-        <!--  Top Section  -->
-        <Grid Padding="20" BackgroundColor="{DynamicResource AppShellBgColor}">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="*" />
-            </Grid.ColumnDefinitions>
-            <Image
-                Grid.Column="0"
-                HeightRequest="50"
-                Source="icon_settings.png"
-                WidthRequest="50" />
-            <StackLayout Grid.Column="1" Padding="10,0,0,0">
-                <Label
-                    FontAttributes="Bold"
-                    FontSize="24"
-                    Text="Settings"
-                    TextColor="{DynamicResource AppShellFgColor}" />
-                <Label
-                    FontSize="14"
-                    Text="Manage your preferences"
-                    TextColor="{DynamicResource AppShellFgColor}" />
-            </StackLayout>
-        </Grid>
-
+    <Grid>
         <!--  Main Content  -->
-        <VerticalStackLayout Padding="20">
-            <!--  Theme Selector  -->
-            <Label
-                Margin="0,20,0,0"
-                FontSize="Small"
-                Text="Select Theme" />
-            <inputs:SfComboBox
-                x:Name="ThemeComboBox"
-                Margin="0,10,0,0"
-                DisplayMemberPath="Name"
-                DropDownBackground="Transparent"
-                DropDownItemFontFamily="{DynamicResource DefaultFontFamily}"
-                FontFamily="{DynamicResource DefaultFontFamily}"
-                IsClearButtonVisible="False"
-                IsEditable="False"
-                ItemsSource="{Binding Themes}"
-                SelectedItem="{Binding SelectedTheme}">
-                <inputs:SfComboBox.ItemTemplate>
-                    <DataTemplate>
-                        <Border
-                            Padding="10"
-                            Stroke="{Binding BoxBackgroundGradientBrushStart}"
-                            StrokeThickness="1">
-                            <Border.Background>
-                                <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                                    <GradientStop Offset="0.0" Color="{Binding BoxBackgroundGradientBrushStart}" />
-                                    <GradientStop Offset="1.0" Color="{Binding BoxBackgroundGradientBrushEnd}" />
-                                </LinearGradientBrush>
-                            </Border.Background>
-                            <Label
-                                Text="{Binding Name}"
-                                TextColor="{Binding TextBackground}"
-                                VerticalOptions="Center" />
-                        </Border>
-                    </DataTemplate>
-                </inputs:SfComboBox.ItemTemplate>
-            </inputs:SfComboBox>
+        <VerticalStackLayout BackgroundColor="{DynamicResource DefaultBackgroundColor}">
+            <!--  Top Section  -->
+            <Grid Padding="20">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Image
+                    Grid.Column="0"
+                    HeightRequest="50"
+                    Source="icon_settings.png"
+                    WidthRequest="50" />
+                <StackLayout Grid.Column="1" Padding="10,0,0,0">
+                    <Label
+                        FontAttributes="Bold"
+                        FontSize="24"
+                        Text="Settings"
+                        TextColor="{DynamicResource AppShellFgColor}" />
+                    <Label
+                        FontSize="14"
+                        Text="Manage your preferences"
+                        TextColor="{DynamicResource AppShellFgColor}" />
+                </StackLayout>
+            </Grid>
 
-            <expander:SfExpander
-                Margin="0,15,0,0"
-                HeaderIconPosition="End"
-                Style="{DynamicResource CommonExpanderStyle}">
-                <expander:SfExpander.Header>
-                    <Grid>
-                        <Label Style="{DynamicResource ExpanderHeaderLabelStyle}" Text="Clear Data" />
-                    </Grid>
-                </expander:SfExpander.Header>
-                <expander:SfExpander.Content>
+            <!--  Main Content  -->
+            <VerticalStackLayout Padding="20">
+                <!--  Theme Selector  -->
+                <Label
+                    Margin="0,20,0,0"
+                    FontSize="Small"
+                    Text="Select Theme" />
+                <inputs:SfComboBox
+                    x:Name="ThemeComboBox"
+                    Margin="0,10,0,0"
+                    DisplayMemberPath="Name"
+                    DropDownBackground="Transparent"
+                    DropDownItemFontFamily="{DynamicResource DefaultFontFamily}"
+                    FontFamily="{DynamicResource DefaultFontFamily}"
+                    IsClearButtonVisible="False"
+                    IsEditable="False"
+                    ItemsSource="{Binding Themes}"
+                    SelectedItem="{Binding SelectedTheme}">
+                    <inputs:SfComboBox.ItemTemplate>
+                        <DataTemplate>
+                            <Border
+                                Padding="10"
+                                Stroke="{Binding BoxBackgroundGradientBrushStart}"
+                                StrokeThickness="1">
+                                <Border.Background>
+                                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                        <GradientStop Offset="0.0" Color="{Binding BoxBackgroundGradientBrushStart}" />
+                                        <GradientStop Offset="1.0" Color="{Binding BoxBackgroundGradientBrushEnd}" />
+                                    </LinearGradientBrush>
+                                </Border.Background>
+                                <Label
+                                    Text="{Binding Name}"
+                                    TextColor="{Binding TextBackground}"
+                                    VerticalOptions="Center" />
+                            </Border>
+                        </DataTemplate>
+                    </inputs:SfComboBox.ItemTemplate>
+                </inputs:SfComboBox>
 
-                    <Grid Margin="15,10,15,0">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="*" />
-                        </Grid.ColumnDefinitions>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                        </Grid.RowDefinitions>
-                        <inputs:SfButton
-                            Grid.Row="0"
-                            Grid.Column="0"
-                            Margin="0,10,10,0"
-                            Command="{Binding ClearLoanDataCommand}"
-                            CornerRadius="5"
-                            Style="{DynamicResource ButtonStyle}">
-                            <Grid>
-                                <Label Style="{DynamicResource ButtonLabelStyle}" Text="Clear Loan Data" />
-                            </Grid>
-                        </inputs:SfButton>
-                        <inputs:SfButton
-                            Grid.Row="0"
-                            Grid.Column="1"
-                            Margin="10,10,0,0"
-                            Command="{Binding ClearExpenseDataCommand}"
-                            CornerRadius="5"
-                            Style="{DynamicResource ButtonStyle}">
-                            <Grid>
-                                <Label Style="{DynamicResource ButtonLabelStyle}" Text="Clear Expense Data" />
-                            </Grid>
-                        </inputs:SfButton>
-                        <inputs:SfButton
-                            Grid.Row="1"
-                            Grid.Column="0"
-                            Margin="0,10,10,0"
-                            Command="{Binding ClearIncomeDataCommand}"
-                            CornerRadius="5"
-                            Style="{DynamicResource ButtonStyle}">
-                            <Grid>
-                                <Label Style="{DynamicResource ButtonLabelStyle}" Text="Clear Income Data" />
-                            </Grid>
-                        </inputs:SfButton>
-                        <inputs:SfButton
-                            Grid.Row="1"
-                            Grid.Column="1"
-                            Margin="10,10,0,0"
-                            Command="{Binding ClearAllDataCommand}"
-                            CornerRadius="5"
-                            Style="{DynamicResource ButtonStyle}">
-                            <Grid>
-                                <Label Style="{DynamicResource ButtonLabelStyle}" Text="Clear All Data" />
-                            </Grid>
-                        </inputs:SfButton>
-                    </Grid>
+                <expander:SfExpander
+                    Margin="0,15,0,0"
+                    HeaderIconPosition="End"
+                    Style="{DynamicResource CommonExpanderStyle}">
+                    <expander:SfExpander.Header>
+                        <Grid>
+                            <Label Style="{DynamicResource ExpanderHeaderLabelStyle}" Text="Clear Data" />
+                        </Grid>
+                    </expander:SfExpander.Header>
+                    <expander:SfExpander.Content>
 
-                </expander:SfExpander.Content>
-            </expander:SfExpander>
+                        <Grid Margin="15,10,15,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <inputs:SfButton
+                                Grid.Row="0"
+                                Grid.Column="0"
+                                Margin="0,10,10,0"
+                                Command="{Binding ClearLoanDataCommand}"
+                                CornerRadius="5"
+                                Style="{DynamicResource ButtonStyle}">
+                                <Grid>
+                                    <Label Style="{DynamicResource ButtonLabelStyle}" Text="Clear Loan Data" />
+                                </Grid>
+                            </inputs:SfButton>
+                            <inputs:SfButton
+                                Grid.Row="0"
+                                Grid.Column="1"
+                                Margin="10,10,0,0"
+                                Command="{Binding ClearExpenseDataCommand}"
+                                CornerRadius="5"
+                                Style="{DynamicResource ButtonStyle}">
+                                <Grid>
+                                    <Label Style="{DynamicResource ButtonLabelStyle}" Text="Clear Expense Data" />
+                                </Grid>
+                            </inputs:SfButton>
+                            <inputs:SfButton
+                                Grid.Row="1"
+                                Grid.Column="0"
+                                Margin="0,10,10,0"
+                                Command="{Binding ClearIncomeDataCommand}"
+                                CornerRadius="5"
+                                Style="{DynamicResource ButtonStyle}">
+                                <Grid>
+                                    <Label Style="{DynamicResource ButtonLabelStyle}" Text="Clear Income Data" />
+                                </Grid>
+                            </inputs:SfButton>
+                            <inputs:SfButton
+                                Grid.Row="1"
+                                Grid.Column="1"
+                                Margin="10,10,0,0"
+                                Command="{Binding ClearAllDataCommand}"
+                                CornerRadius="5"
+                                Style="{DynamicResource ButtonStyle}">
+                                <Grid>
+                                    <Label Style="{DynamicResource ButtonLabelStyle}" Text="Clear All Data" />
+                                </Grid>
+                            </inputs:SfButton>
+                        </Grid>
 
-
+                    </expander:SfExpander.Content>
+                </expander:SfExpander>
+            </VerticalStackLayout>
         </VerticalStackLayout>
-    </VerticalStackLayout>
+
+        <!--  Activity Indicator  -->
+        <ActivityIndicator
+            HorizontalOptions="Center"
+            IsRunning="{Binding IsBusy}"
+            VerticalOptions="Center"
+            Color="{DynamicResource AppShellFgColor}" />
+    </Grid>
 </ContentPage>

@@ -162,23 +162,5 @@ namespace LoanCalculatorMaui.ViewModel
         [JsonIgnore]
         public string SearchExpenseIncomeName { get; set; }
         #endregion
-
-        public async Task<T?> LoadDataFile<T>()
-        {
-            T? data = default;
-
-            try
-            {
-                SharedServices.LocalStorage!.Initialize();
-                data = await SharedServices.LocalStorage.GetData<T>().ConfigureAwait(false);
-            }
-            catch (Exception e)
-            {
-                // Log or handle the exception as needed
-                // ExceptionHandler.CaptureException(e);
-            }
-
-            return data;
-        }
     }
 }

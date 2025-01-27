@@ -21,7 +21,7 @@
     Title="LoanView"
     x:DataType="viewmodel:LoanViewModel">
     <ContentPage.Content>
-        <Grid>
+        <Grid BackgroundColor="{DynamicResource DefaultBackgroundColor}">
             <customControls:PopupDisclaimerView />
 
             <tabView:SfTabView
@@ -281,7 +281,6 @@
                                                     <range:SfSlider
                                                         Margin="0,-17,0,0"
                                                         HeightRequest="70"
-                                                        IsEnabled="{Binding IsFree}"
                                                         Maximum="100"
                                                         Minimum="0"
                                                         ShowLabels="True"

@@ -54,9 +54,9 @@ public class ExpenseViewModel : ExpenseEntryViewBaseModel
 
     public void TriggerOneTimeUpdateOnPage()
     {
-        IsBusy = false;
-        OnPropertyChanged(nameof(CustomChartColors));
         IsBusy = true;
+        OnPropertyChanged(nameof(CustomChartColors));
+        IsBusy = false;
     }
 
     [JsonIgnore]

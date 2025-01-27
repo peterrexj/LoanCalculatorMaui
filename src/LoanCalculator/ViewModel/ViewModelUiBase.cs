@@ -2,8 +2,10 @@
 using System.Windows.Input;
 using LoanCalculator.Models;
 using LoanCalculator.Models.BaseExtensions;
+using LoanCalculator.Models.Enums;
 using LoanCalculatorMaui.Extensions;
 using LoanCalculatorMaui.Services;
+using Syncfusion.Maui.Core.Carousel;
 using Syncfusion.Maui.Popup;
 
 namespace LoanCalculatorMaui.ViewModel
@@ -20,10 +22,31 @@ namespace LoanCalculatorMaui.ViewModel
             NewLine = Environment.NewLine;
         }
 
-        #region Save
-        protected void SaveData<T>(T data)
+        #region Data files
+        public async Task<T?> LoadDataFile<T>()
         {
-            if (PageHelper.IsFormLoading) { return; }
+            T? data = default;
+
+            try
+            {
+                SharedServices.LocalStorage!.Initialize();
+                data = await SharedServices.LocalStorage.GetData<T>().ConfigureAwait(false);
+            }
+            catch (Exception e)
+            {
+                // Log or handle the exception as needed
+                // ExceptionHandler.CaptureException(e);
+            }
+
+            return data;
+        }
+
+        protected Task SaveData<T>(T data)
+        {
+            if (PageHelper.IsFormLoading)
+            {
+                return Task.CompletedTask;
+            }
 
             Task.Run(async () =>
             {
@@ -31,7 +54,11 @@ namespace LoanCalculatorMaui.ViewModel
 
                 await SharedServices.LocalStorage.SaveData<T>(data).ConfigureAwait(false);
             }).Wait();
+            return Task.CompletedTask;
         }
+
         #endregion
+
+        
     }
 }

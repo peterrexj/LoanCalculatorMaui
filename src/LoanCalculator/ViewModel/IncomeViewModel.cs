@@ -13,9 +13,9 @@ public class IncomeViewModel : ExpenseEntryViewBaseModel
 {
     public void TriggerOneTimeUpdateOnPage()
     {
-        IsBusy = false;
-        OnPropertyChanged(nameof(CustomChartColors));
         IsBusy = true;
+        OnPropertyChanged(nameof(CustomChartColors));
+        IsBusy = false;
     }
 
     public void InitializeViewData()

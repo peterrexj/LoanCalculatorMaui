@@ -18,7 +18,7 @@
     xmlns:viewModel="clr-namespace:LoanCalculatorMaui.ViewModel"
     Title="ExpenseView">
     <ContentPage.Content>
-        <Grid>
+        <Grid BackgroundColor="{DynamicResource DefaultBackgroundColor}">
             <customControls:PopupDisclaimerView />
             <tabView:SfTabView x:Name="tabView" HeaderHorizontalTextAlignment="Center">
                 <tabView:SfTabItem x:Name="tabIncomeDetails" Header="Expense">
@@ -383,7 +383,6 @@
                                             Margin="10,-17,20,0"
                                             HeightRequest="70"
                                             Interval="5"
-                                            IsEnabled="{Binding IsFree}"
                                             Maximum="25"
                                             Minimum="1"
                                             MinorTicksPerInterval="3"

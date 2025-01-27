@@ -5,7 +5,10 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     x:Name="DisclaimerBannerContentView">
     <!--  Background="{DynamicResource NotificationBgColor}"  -->
-    <Grid HorizontalOptions="Center" VerticalOptions="Center" Background="{DynamicResource NotificationBackgroundGradientBrush}">
+    <Grid
+        Background="{DynamicResource NotificationBackgroundGradientBrush}"
+        HorizontalOptions="Center"
+        VerticalOptions="Center">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="100*" />
         </Grid.ColumnDefinitions>

@@ -50,8 +50,8 @@ namespace LoanCalculatorMaui.Services
                     return new IncomeExpenseSummary();
                 }
 
-                temp?.Expenses?.SumUpData();
-                return temp?.Expenses?.IncomeExpenseSummary;
+                temp?.TransactionRecords?.SumUpData();
+                return temp?.TransactionRecords?.IncomeExpenseSummary;
             }
         }
 
@@ -67,8 +67,8 @@ namespace LoanCalculatorMaui.Services
                     return new IncomeExpenseSummary();
                 }
 
-                temp?.Incomes?.SumUpData();
-                return temp?.Incomes?.IncomeExpenseSummary;
+                temp?.TransactionRecords?.SumUpData();
+                return temp?.TransactionRecords?.IncomeExpenseSummary;
             }
         }
 

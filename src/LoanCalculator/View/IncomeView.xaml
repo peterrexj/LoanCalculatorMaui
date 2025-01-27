@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage
-    x:Class="LoanCalculatorMaui.View.ExpenseView"
+    x:Class="LoanCalculatorMaui.View.IncomeView"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:buttons="clr-namespace:Syncfusion.Maui.Buttons;assembly=Syncfusion.Maui.Buttons"
@@ -16,12 +16,12 @@
     xmlns:summary="clr-namespace:LoanCalculator.Models.Income.Summary;assembly=LoanCalculator.Models"
     xmlns:tabView="clr-namespace:Syncfusion.Maui.TabView;assembly=Syncfusion.Maui.TabView"
     xmlns:viewModel="clr-namespace:LoanCalculatorMaui.ViewModel"
-    Title="ExpenseView">
+    Title="IncomeView">
     <ContentPage.Content>
         <Grid>
             <customControls:PopupDisclaimerView />
             <tabView:SfTabView x:Name="tabView" HeaderHorizontalTextAlignment="Center">
-                <tabView:SfTabItem x:Name="tabIncomeDetails" Header="Expense">
+                <tabView:SfTabItem x:Name="tabIncomeDetails" Header="Income">
                     <tabView:SfTabItem.Content>
                         <StackLayout>
 
@@ -42,7 +42,7 @@
                                         <Span
                                             FontAttributes="Bold"
                                             FontSize="12"
-                                            Text="Monthly Expense" />
+                                            Text="{Binding StringMonthlyTextOnTopBox}" />
                                     </FormattedString>
                                 </customControls:ThreeColumnBorderedContentView.FormattedText1>
                                 <customControls:ThreeColumnBorderedContentView.FormattedText2>
@@ -61,7 +61,7 @@
                                         <Span
                                             FontAttributes="Bold"
                                             FontSize="12"
-                                            Text="Yearly Expense" />
+                                            Text="{Binding StringYearlyTextOnTopBox}" />
                                     </FormattedString>
                                 </customControls:ThreeColumnBorderedContentView.FormattedText2>
                                 <customControls:ThreeColumnBorderedContentView.FormattedText3>
@@ -76,11 +76,10 @@
                                             FontAttributes="Bold"
                                             FontSize="18"
                                             Text="{Binding TotalIncomeMonthlyWithComma}" />
-                                        <Span Text="{Binding NewLine}" />
                                         <Span
                                             FontAttributes="Bold"
                                             FontSize="12"
-                                            Text="Monthly Income" />
+                                            Text="Monthly Expense" />
                                     </FormattedString>
                                 </customControls:ThreeColumnBorderedContentView.FormattedText3>
                             </customControls:ThreeColumnBorderedContentView>
@@ -91,7 +90,7 @@
                                     FontSize="12"
                                     Text="Show income after expense"
                                     TextColor="{DynamicResource DefaultForegroundColor}" />
-                                <!--  BusyIndicatorColor="{Binding DefaultStyle.SwitchBusyIndicatorColorON, Converter={StaticResource stringToColorConverter}}"  -->
+
                                 <buttons:SfSwitch IsOn="{Binding ShowIncomeAfterExpense}">
                                     <VisualStateManager.VisualStateGroups>
                                         <VisualStateGroup x:Name="CommonStates">
@@ -152,12 +151,12 @@
                                                 ErrorText="Describe your income type"
                                                 HasError="{Binding HasErrorIncomeDescription}"
                                                 HelperText="Describe your expense type"
-                                                Hint="Expense"
+                                                Hint="Income"
                                                 Style="{DynamicResource CommonTextInputLayoutStyle}">
                                                 <Entry
                                                     x:Name="txtIncomeDescription"
                                                     FontSize="14"
-                                                    Placeholder="Salary Primary - Sample"
+                                                    Placeholder="Salary - Sample"
                                                     Text="{Binding IncomeEntryName}"
                                                     TextColor="{DynamicResource InputTextFgColor}" />
 
@@ -194,6 +193,7 @@
                                                     ItemsSource="{Binding IncomeFrequencyCollection}"
                                                     SelectedItem="{Binding IncomeExpenseFrequencySelectedIndex, Mode=TwoWay}"
                                                     Style="{DynamicResource SfComboBoxStyle}" />
+
                                             </core:SfTextInputLayout>
 
                                             <core:SfButton
@@ -307,6 +307,7 @@
                                     </sfList:SfListView.ItemTemplate>
                                 </sfList:SfListView>
                             </Grid>
+
                         </StackLayout>
                     </tabView:SfTabItem.Content>
                 </tabView:SfTabItem>
@@ -326,18 +327,23 @@
                                         VerticalTextAlignment="Center">
                                         <Label.FormattedText>
                                             <FormattedString>
-                                                <Span FontSize="12" Text="Projected Expense of " />
+                                                <Span FontSize="12" Text="Projected Income of " />
                                                 <Span
                                                     CharacterSpacing="1"
                                                     FontAttributes="Bold"
-                                                    FontSize="17"
+                                                    FontSize="14"
                                                     Text="{Binding CurrencySymbol}" />
                                                 <Span
                                                     CharacterSpacing="-1"
                                                     FontAttributes="Bold"
                                                     FontSize="18"
                                                     Text="{Binding TotalProjectedYearlyIncomeWithComma}" />
-                                                <Span FontSize="12" Text=" over a period of " />
+                                                <Span FontSize="12" Text=" (yearly" />
+                                                <Span
+                                                    FontAttributes="Bold"
+                                                    FontSize="12"
+                                                    Text="{Binding StringProjectionInfoText}" />
+                                                <Span FontSize="12" Text=") over a period of " />
                                                 <Span
                                                     FontAttributes="Bold"
                                                     FontSize="18"
@@ -347,7 +353,7 @@
                                                     FontAttributes="Bold"
                                                     FontSize="18"
                                                     Text="{Binding AnnualGrowthRate}" />
-                                                <Span FontSize="12" Text="% yearly expense growth" />
+                                                <Span FontSize="12" Text="% yearly income growth" />
                                             </FormattedString>
                                         </Label.FormattedText>
                                     </Label>
@@ -363,6 +369,7 @@
                                     <core:SfTextInputLayout
                                         Grid.Row="0"
                                         Grid.Column="0"
+                                        HelperText="{Binding AnnualGrowthRatePercentage}"
                                         Hint="Expense growth rate percentage"
                                         HorizontalOptions="Start"
                                         Style="{DynamicResource CommonTextInputLayoutStyle}">
@@ -374,7 +381,6 @@
                                             TextColor="{DynamicResource InputTextFgColor}"
                                             Value="{Binding AnnualGrowthRate}" />
                                     </core:SfTextInputLayout>
-
                                     <StackLayout
                                         Grid.Row="0"
                                         Grid.Column="1"
@@ -417,7 +423,6 @@
                                 </Grid>
                             </FlexLayout>
 
-
                             <Border Style="{DynamicResource ChartBorderStyle}">
                                 <Border.Content>
                                     <chart:SfCartesianChart
@@ -438,7 +443,7 @@
                                             <Label
                                                 BackgroundColor="Transparent"
                                                 FontSize="10"
-                                                Text="Expense Projection Over Time"
+                                                Text="{Binding StringChartTitleText}"
                                                 TextColor="{DynamicResource ChartTitleTextColor}" />
                                         </chart:SfCartesianChart.Title>
 
@@ -480,10 +485,12 @@
                                         </chart:SfCartesianChart.YAxes>
                                         <chart:SfCartesianChart.Legend>
                                             <chart:ChartLegend Placement="{OnPlatform Android={OnIdiom Phone=Bottom, Tablet=Left}, iOS={OnIdiom Phone=Bottom, Tablet=Left}, UWP=Left}" ToggleSeriesVisibility="True" />
+
                                             <!--
                                                 IconHeight="14"
                                                 IconWidth="14"
                                             -->
+
                                         </chart:SfCartesianChart.Legend>
                                         <chart:SfCartesianChart.Series>
                                             <chart:StackingColumnSeries
@@ -512,9 +519,7 @@
                                 </Border.Content>
                             </Border>
 
-
-
-                            <Grid HorizontalOptions="Fill" VerticalOptions="Fill">
+                            <Grid>
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="Auto" />
                                     <RowDefinition Height="*" />
@@ -528,17 +533,7 @@
                                     ButtonShape="Rectangle"
                                     NumericButtonsGenerateMode="Auto"
                                     PageSize="11"
-                                    Source="{Binding IncomeProjectList}">
-                                    <!--<pager:SfDataPager.HeightRequest>
-                                        <OnPlatform
-                                x:TypeArguments="x:Double"
-                                Android="50"
-                                WinPhone="70"
-                                iOS="50" />
-                                    </pager:SfDataPager.HeightRequest>-->
-                                </pager:SfDataPager>
-
-
+                                    Source="{Binding IncomeProjectList}" />
                                 <!--
                                     SelectionMode="None"
                                     ShowRowHeader="True"
@@ -549,12 +544,12 @@
                                     AutoGenerateColumnsMode="None"
                                     ColumnWidthMode="Fill"
                                     ItemsSource="{Binding PagedSource, Source={x:Reference dataPager}}">
-                                    <!--<datagrid:SfDataGrid.Margin>
+                                    <datagrid:SfDataGrid.Margin>
                                         <OnPlatform x:TypeArguments="Thickness">
                                             <On Platform="Android, iOS" Value="-20,0,0,0" />
                                             <On Platform="UWP" Value="0,0,0,0" />
                                         </OnPlatform>
-                                    </datagrid:SfDataGrid.Margin>-->
+                                    </datagrid:SfDataGrid.Margin>
                                     <datagrid:SfDataGrid.Columns>
 
                                         <datagrid:DataGridTemplateColumn HeaderText="Period" MappingName="PaymentPeriod">

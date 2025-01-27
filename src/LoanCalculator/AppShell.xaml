@@ -35,7 +35,7 @@
             Route="LoanView" />
         <ShellContent
             Title="Income"
-            ContentTemplate="{DataTemplate localview:LoanView}"
+            ContentTemplate="{DataTemplate localview:IncomeView}"
             Icon="icon_income.png"
             Route="LoanView" />
         <ShellContent

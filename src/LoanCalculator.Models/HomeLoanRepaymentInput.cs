@@ -16,8 +16,8 @@ namespace LoanCalculator.Models
             set
             {
                 _interestRate = value;
-                OnPropertyChanged("InterestRate");
-                OnPropertyChanged("TotalNumberOfPaymentsWithInTermPeriod");
+                OnPropertyChanged(nameof(InterestRate));
+                OnPropertyChanged(nameof(TotalNumberOfPaymentsWithInTermPeriod));
             }
         }
 
@@ -33,8 +33,8 @@ namespace LoanCalculator.Models
             set
             {
                 _loanTermInYears = value;
-                OnPropertyChanged("LoanTermInYears");
-                OnPropertyChanged("TotalNumberOfPaymentsWithInTermPeriod");
+                OnPropertyChanged(nameof(LoanTermInYears));
+                OnPropertyChanged(nameof(TotalNumberOfPaymentsWithInTermPeriod));
             }
         }
 
@@ -50,8 +50,8 @@ namespace LoanCalculator.Models
             set
             {
                 _totalNumberPaymentPerYear = value;
-                OnPropertyChanged("TotalNumberPaymentPerYear");
-                OnPropertyChanged("TotalNumberOfPaymentsWithInTermPeriod");
+                OnPropertyChanged(nameof(TotalNumberPaymentPerYear));
+                OnPropertyChanged(nameof(TotalNumberOfPaymentsWithInTermPeriod));
             }
         }
         public int TotalNumberOfPaymentsWithInTermPeriod => LoanTermInYears * TotalNumberPaymentPerYear;

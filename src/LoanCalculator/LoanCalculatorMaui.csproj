@@ -113,6 +113,9 @@
 	  <MauiXaml Update="View\ExpenseView.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
+	  <MauiXaml Update="View\IncomeView.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
 	  <MauiXaml Update="View\LoanView.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>

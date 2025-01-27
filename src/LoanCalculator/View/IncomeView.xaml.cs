@@ -3,54 +3,48 @@ using LoanCalculator.Models.Income;
 using LoanCalculatorMaui.Extensions;
 using LoanCalculatorMaui.Services;
 using LoanCalculatorMaui.ViewModel;
+using Microsoft.Extensions.Logging.Abstractions;
 using Pj.Library;
 using Syncfusion.Maui.Buttons;
-using Syncfusion.Maui.DataGrid;
 using Syncfusion.Maui.DataSource;
-using Syncfusion.Maui.ListView;
-using SelectionChangedEventArgs = Syncfusion.Maui.Buttons.SelectionChangedEventArgs;
+using Syncfusion.Maui.Inputs;
 
 namespace LoanCalculatorMaui.View;
 
-public partial class LoanView : ContentPage
+public partial class IncomeView : ContentPage
 {
-    private LoanViewModel viewModel;
-    public LoanView()
+    private IncomeViewModel viewModel;
+
+    public IncomeView()
     {
         InitializeComponent();
-        viewModel = new LoanViewModel();
+        viewModel = new IncomeViewModel();
     }
 
     protected override async void OnAppearing()
     {
         PageHelper.PageIsLoading();
-
         await LoadDataSet();
-
         PageHelper.PageLoadingComplete();
 
         BindingContext ??= viewModel;
-
         lstEntry.DataSource.SortDescriptors.Add(new SortDescriptor() { PropertyName = "Name", Direction = ListSortDirection.Ascending });
 
         base.OnAppearing();
 
         viewModel.TriggerOneTimeUpdateOnPage();
-        viewModel.TriggerPropertyChangedOnPropertyTab();
+        viewModel.RefreshIncomePropertyChanged();
     }
 
     private async Task LoadDataSet()
     {
-        LoanViewModel? data = await viewModel.LoadDataFile<LoanViewModel>();
-
-        bool shouldAddDefaultValues = false;
+        IncomeViewModel? data = await viewModel.LoadDataFile<IncomeViewModel>();
 
         if (!viewModel.HasInitialized)
         {
             if (data == null)
             {
                 //viewModel.InitializeViewData();
-                shouldAddDefaultValues = true;
                 viewModel.AddDefaultToExpenses();
             }
             else
@@ -61,74 +55,17 @@ public partial class LoanView : ContentPage
         else if (data == null)
         {
             viewModel.TransactionRecords.DeleteAll();
-            shouldAddDefaultValues = true;
-            viewModel.AddDefaultToExpenses();
         }
 
         viewModel.InitializeViewData();
         viewModel.InitializeBrushes();
-       
         viewModel.MarkInitializationComplete();
 
-        if (shouldAddDefaultValues)
-        {
-            viewModel.AddDefaultValues();
-        }
+        viewModel.IncomeExpenseEntry.Frequency = TimeFrequencyEnum.Monthly;
+        viewModel.IncomeExpenseFrequencySelectedIndex = TimeFrequencyEnum.Monthly.ToString();
+        viewModel.ExpenseSummary = SharedServices.ExpenseSummary;
 
         lstEntry.DataSource.SortDescriptors.Clear();
-
-        viewModel.ExpenseSummary = SharedServices.ExpenseSummary;
-        viewModel.IncomeSummary = SharedServices.IncomeSummary;
-
-        SegmentedRepaymentFrequency.SelectionChanged += SegmentedRepaymentFrequency_SelectionChanged;
-        AmortizationBreadDownFrequencySegmentCtrl.SelectionChanged += AmortizationBreadDownFrequencySegmentCtrlOnSelectionChanged;
-        SegmentedAustraliaStates.SelectionChanged += SegmentedAustraliaStatesOnSelectionChanged;
-    }
-
-    private void SegmentedAustraliaStatesOnSelectionChanged(object? sender, SelectionChangedEventArgs e)
-    {
-        if (e.NewIndex != null) viewModel.AustraliaStateSelectedIndex = e.NewIndex.Value;
-    }
-
-
-    private void AmortizationBreadDownFrequencySegmentCtrlOnSelectionChanged(object? sender, SelectionChangedEventArgs e)
-    {
-        if (e.NewIndex != null) viewModel.AmortizationBreakdownFrequencySelectedIndex = e.NewIndex.Value;
-    }
-
-    private void SegmentedRepaymentFrequency_SelectionChanged(object? sender, Syncfusion.Maui.Buttons.SelectionChangedEventArgs e)
-    {
-        if (e.NewIndex != null) viewModel.RepaymentFrequencySelectedIndex = e.NewIndex.Value;
-    }
-
-
-
-    private void Estimate_TabItem_Clicked(object sender, EventArgs e)
-    {
-        //tabView.SelectedIndex = 0;
-    }
-
-    private void OnTabSelectionChanged(object sender, Syncfusion.Maui.TabView.TabSelectionChangedEventArgs e)
-    {
-        if (e.NewIndex == 1)
-        {
-            viewModel.SyncAmortization();
-        }
-        else if (e.NewIndex == 2)
-        {
-            viewModel.RefreshExpenseTabPropertyChanged();
-        }
-        else if (e.NewIndex == 3)
-        {
-            viewModel.RefreshInsightsTabPropertyChanged();
-        }
-    }
-
-
-
-    private void autoComplete_Completed(object sender, EventArgs e)
-    {
-
     }
 
     private async Task RefreshListOfIncomeExpense()
@@ -189,6 +126,11 @@ public partial class LoanView : ContentPage
         }
     }
 
+    private void autoComplete_Completed(object sender, EventArgs e)
+    {
+
+    }
+
     private async void autoComplete_SelectionChanged(object sender, Syncfusion.Maui.Inputs.SelectionChangedEventArgs e)
     {
         try
@@ -237,9 +179,8 @@ public partial class LoanView : ContentPage
         lstEntry.DataSource.SortDescriptors.Add(new SortDescriptor() { PropertyName = "Name", Direction = ListSortDirection.Ascending });
 
         lstEntry.RefreshItem(canReload: true);
-        viewModel.RefreshExpenseTabPropertyChanged();
+        viewModel.RefreshIncomePropertyChanged();
     }
-
     private void ResetButton_Clicked(object sender, EventArgs e)
     {
         txtIncomeDescription.Unfocus();
@@ -249,7 +190,7 @@ public partial class LoanView : ContentPage
         viewModel.IncomeExpenseEntry.Amount = 0;
         viewModel.IncomeExpenseFrequencySelectedIndex = TimeFrequencyEnum.Monthly.ToString();
         viewModel.IncomeExpenseEntry.Id = Guid.Empty;
-        viewModel.RefreshExpenseTabPropertyChanged();
+        viewModel.RefreshIncomePropertyChanged();
     }
 
     private void btnEditEntry_Clicked(object sender, EventArgs e)
@@ -259,7 +200,7 @@ public partial class LoanView : ContentPage
         viewModel.IncomeExpenseEntry = viewModel.TransactionRecords.Get(Guid.Parse(button.AutomationId)).DeepClone();
         viewModel.IncomeExpenseFrequencySelectedIndex = viewModel.IncomeExpenseEntry.Frequency.ToString();
 
-        viewModel.RefreshExpenseTabPropertyChanged();
+        viewModel.RefreshIncomePropertyChanged();
     }
 
     private void btnDeleteEntry_Clicked(object sender, EventArgs e)
@@ -267,11 +208,6 @@ public partial class LoanView : ContentPage
         if (sender is not SfButton button || !button.AutomationId.HasValue()) return;
 
         viewModel.TransactionRecords.Delete(Guid.Parse(button.AutomationId));
-        viewModel.RefreshExpenseTabPropertyChanged();
-    }
-
-    private void LstEntry_OnSelectionChanged(object? sender, ItemSelectionChangedEventArgs e)
-    {
-
+        viewModel.RefreshIncomePropertyChanged();
     }
 }

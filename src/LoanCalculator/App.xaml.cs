@@ -13,6 +13,9 @@ namespace LoanCalculatorMaui
             
             Services = serviceProvider;
 
+            AppDomain.CurrentDomain.UnhandledException += HandleUnhandledException;
+            TaskScheduler.UnobservedTaskException += HandleTaskSchedulerException;
+
             Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense("Ngo9BigBOggjHTQxAR8/V1NMaF5cXmBCf1FpRmJGdld5fUVHYVZUTXxaS00DNHVRdkdnWH1ccXVSQ2dcV0Z0W0A=");
 
             DefaultStyleProvider.LoadDefaultStyle(AppThemes.Light);
@@ -27,6 +30,26 @@ namespace LoanCalculatorMaui
         protected override Window CreateWindow(IActivationState? activationState)
         {
             return new Window(new AppShell());
+        }
+
+        private void HandleUnhandledException(object sender, UnhandledExceptionEventArgs e)
+        {
+            LogException(e.ExceptionObject as Exception, "AppDomain Unhandled Exception");
+        }
+
+        private void HandleTaskSchedulerException(object sender, UnobservedTaskExceptionEventArgs e)
+        {
+            LogException(e.Exception, "TaskScheduler Unobserved Task Exception");
+            e.SetObserved();
+        }
+
+        private void LogException(Exception exception, string source)
+        {
+            if (exception != null)
+            {
+                Console.WriteLine($"[Exception] Source: {source}, Message: {exception.Message}");
+                // Add logging here (e.g., save to file, send to remote server)
+            }
         }
     }
 }

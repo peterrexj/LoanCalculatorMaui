@@ -5,8 +5,8 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:buttons="clr-namespace:Syncfusion.Maui.Buttons;assembly=Syncfusion.Maui.Buttons"
     xmlns:chart="clr-namespace:Syncfusion.Maui.Charts;assembly=Syncfusion.Maui.Charts"
-    xmlns:controls="clr-namespace:LoanCalculatorMaui.Controls"
     xmlns:core="http://schemas.syncfusion.com/maui"
+    xmlns:customControls="clr-namespace:LoanCalculatorMaui.Controls"
     xmlns:datagrid="clr-namespace:Syncfusion.Maui.DataGrid;assembly=Syncfusion.Maui.DataGrid"
     xmlns:editors="clr-namespace:Syncfusion.Maui.Inputs;assembly=Syncfusion.Maui.Inputs"
     xmlns:expander="clr-namespace:Syncfusion.Maui.Expander;assembly=Syncfusion.Maui.Expander"
@@ -22,31 +22,31 @@
     x:DataType="viewmodel:LoanViewModel">
     <ContentPage.Content>
         <Grid>
-            <controls:PopupDisclaimerView />
+            <customControls:PopupDisclaimerView />
 
             <tabView:SfTabView
                 x:Name="TabView"
                 HeaderHorizontalTextAlignment="Center"
                 SelectionChanged="OnTabSelectionChanged">
-                <tabView:SfTabItem x:Name="tabDefinitions" Header="Property">
+                <tabView:SfTabItem Header="Property">
                     <tabView:SfTabItem.Content>
                         <ScrollView>
                             <StackLayout>
-                                <controls:DisclaimerBannerView Text="This loan calculator app is intended for informational purposes only and should not be considered a substitute for professional financial advice. It is highly recommended that you consult with your financial adviser before making any financial decisions." />
+                                <customControls:DisclaimerBannerView Text="This loan calculator app is intended for informational purposes only and should not be considered a substitute for professional financial advice. It is highly recommended that you consult with your financial adviser before making any financial decisions." />
 
-                                <controls:ThreeColumnBorderedContentView>
-                                    <controls:ThreeColumnBorderedContentView.FormattedText1>
+                                <customControls:ThreeColumnBorderedContentView>
+                                    <customControls:ThreeColumnBorderedContentView.FormattedText1>
                                         <FormattedString>
                                             <Span
                                                 CharacterSpacing="1"
                                                 FontAttributes="Bold"
-                                                FontSize="{Binding DefaultStyle.BoxItemCurrencyFontSize}"
+                                                FontSize="17"
                                                 Text="{Binding CurrencySymbol}" />
                                             <!--<Span Text=" " />-->
                                             <Span
                                                 CharacterSpacing="-1"
                                                 FontAttributes="Bold"
-                                                FontSize="{Binding DefaultStyle.BoxItemHighlightNumberFontSize}"
+                                                FontSize="18"
                                                 Text="{Binding HomeLoanInfo.PaymentSummary.Payment.TermPaymentRoundedWithComma}" />
                                             <Span Text="{Binding NewLine}" />
                                             <Span FontSize="12" Text="{Binding RepaymentFrequencySelected}" />
@@ -59,8 +59,8 @@
                                             <Span Text=" " />
                                             <Span FontSize="12" Text=" years" />
                                         </FormattedString>
-                                    </controls:ThreeColumnBorderedContentView.FormattedText1>
-                                    <controls:ThreeColumnBorderedContentView.FormattedText2>
+                                    </customControls:ThreeColumnBorderedContentView.FormattedText1>
+                                    <customControls:ThreeColumnBorderedContentView.FormattedText2>
                                         <FormattedString>
                                             <Span
                                                 CharacterSpacing="1"
@@ -81,8 +81,8 @@
                                                 Text="{Binding LoanTermInYears}" />
                                             <Span FontSize="12" Text=" years" />
                                         </FormattedString>
-                                    </controls:ThreeColumnBorderedContentView.FormattedText2>
-                                    <controls:ThreeColumnBorderedContentView.FormattedText3>
+                                    </customControls:ThreeColumnBorderedContentView.FormattedText2>
+                                    <customControls:ThreeColumnBorderedContentView.FormattedText3>
                                         <FormattedString>
                                             <Span
                                                 CharacterSpacing="1"
@@ -97,8 +97,8 @@
                                                 Text="{Binding HomeLoanInfo.PaymentSummary.Payment.TotalPaymentRoundedWithComma}" />
                                             <Span FontSize="12" Text=" total repayment (principal + interest)" />
                                         </FormattedString>
-                                    </controls:ThreeColumnBorderedContentView.FormattedText3>
-                                </controls:ThreeColumnBorderedContentView>
+                                    </customControls:ThreeColumnBorderedContentView.FormattedText3>
+                                </customControls:ThreeColumnBorderedContentView>
 
                                 <FlexLayout>
                                     <Border Style="{DynamicResource BorderControlHighlightBox}">
@@ -141,7 +141,7 @@
                                                 </Label>
                                             </Grid>
 
-                                            <Grid Grid.Row="1" Margin="5,0,5,0">
+                                            <Grid Margin="5,0,5,0">
                                                 <Grid.ColumnDefinitions>
                                                     <ColumnDefinition Width="50*" />
                                                     <ColumnDefinition Width="50*" />
@@ -194,7 +194,6 @@
 
                                             <buttons:SfSegmentedControl
                                                 x:Name="SegmentedRepaymentFrequency"
-                                                Grid.Row="2"
                                                 Margin="15,0,15,10"
                                                 ItemsSource="{Binding RepaymentFrequencyCollection}"
                                                 SelectedIndex="{Binding RepaymentFrequencySelectedIndex}"
@@ -278,7 +277,7 @@
                                                     Grid.Column="0"
                                                     Grid.ColumnSpan="2"
                                                     BackgroundColor="Transparent">
-                                                    <Label FontFamily="{DynamicResource DefaultFontFamily}" Text="Deposit Percentage" />
+                                                    <Label Text="Deposit Percentage" />
                                                     <range:SfSlider
                                                         Margin="0,-17,0,0"
                                                         HeightRequest="70"
@@ -455,15 +454,7 @@
                                     AlignItems="Stretch"
                                     Direction="Column"
                                     JustifyContent="Center">
-                                    <Border
-                                        Margin="12,5,12,2"
-                                        Background="{DynamicResource ChartInnerBorderGradientBrush}"
-                                        HeightRequest="250"
-                                        HorizontalOptions="Fill"
-                                        Stroke="{DynamicResource ChartOuterBorderGradientBrush}"
-                                        StrokeShape="RoundRectangle 12,12,12,12"
-                                        StrokeThickness="2"
-                                        VerticalOptions="Center">
+                                    <Border Style="{DynamicResource ChartBorderStyle}">
                                         <!--  Stroke="{Binding DefaultStyle.ChartBorderColor, Converter={StaticResource StringToColorConverter}}"  -->
 
                                         <Border.Content>
@@ -610,15 +601,7 @@
                                     AlignItems="Stretch"
                                     Direction="Column"
                                     JustifyContent="Center">
-                                    <Border
-                                        Margin="12,5,12,2"
-                                        Background="{DynamicResource ChartInnerBorderGradientBrush}"
-                                        HeightRequest="250"
-                                        HorizontalOptions="Fill"
-                                        Stroke="{DynamicResource ChartOuterBorderGradientBrush}"
-                                        StrokeShape="RoundRectangle 12,12,12,12"
-                                        StrokeThickness="2"
-                                        VerticalOptions="Center">
+                                    <Border Style="{DynamicResource ChartBorderStyle}">
                                         <Border.Content>
                                             <Grid Padding="10" HorizontalOptions="Fill">
                                                 <chart:SfCartesianChart
@@ -664,7 +647,6 @@
                                                         <chart:NumericalAxis>
                                                             <chart:NumericalAxis.LabelStyle>
                                                                 <chart:ChartAxisLabelStyle
-                                                                    x:Name="amortYearSecondaryAxisLabelStyle"
                                                                     FontAttributes="Bold"
                                                                     FontFamily="{DynamicResource DefaultFontFamily}"
                                                                     FontSize="12"
@@ -743,7 +725,6 @@
                                                         <chart:NumericalAxis>
                                                             <chart:NumericalAxis.LabelStyle>
                                                                 <chart:ChartAxisLabelStyle
-                                                                    x:Name="amortTermSecondaryAxisLabelStyle"
                                                                     FontAttributes="Bold"
                                                                     FontFamily="{DynamicResource DefaultFontFamily}"
                                                                     FontSize="12"
@@ -797,6 +778,9 @@
                                         x:Name="dataPager"
                                         Grid.Row="0"
                                         NumericButtonsGenerateMode="Auto"
+                                        ButtonCornerRadius="3"
+                                        ButtonFontSize="12"
+                                        ButtonShape="Rectangle"
                                         PageSize="15"
                                         Source="{Binding PaymentAmortization}" />
 
@@ -951,68 +935,66 @@
                     <tabView:SfTabItem.Content>
                         <ScrollView>
                             <StackLayout>
-                                <controls:DisclaimerBannerView Text="Enter the anticipated ongoing costs for this property (such as maintenance, insurance, and taxes) after purchase, excluding mortgage payments." />
+                                <customControls:DisclaimerBannerView Text="Enter the anticipated ongoing costs for this property (such as maintenance, insurance, and taxes) after purchase, excluding mortgage payments." />
 
-                                <controls:ThreeColumnBorderedContentView>
-                                    <controls:ThreeColumnBorderedContentView.FormattedText1>
+                                <customControls:ThreeColumnBorderedContentView>
+                                    <customControls:ThreeColumnBorderedContentView.FormattedText1>
                                         <FormattedString>
                                             <Span
                                                 CharacterSpacing="1"
                                                 FontAttributes="Bold"
-                                                FontSize="{Binding DefaultStyle.BoxItemCurrencyFontSize}"
+                                                FontSize="17"
                                                 Text="{Binding CurrencySymbol}" />
                                             <Span
                                                 CharacterSpacing="-1"
                                                 FontAttributes="Bold"
-                                                FontSize="{Binding DefaultStyle.BoxItemHighlightNumberFontSize}"
+                                                FontSize="18"
                                                 Text="{Binding TotalMonthlyExpenseWithComma}" />
                                             <Span Text="{Binding NewLine}" />
                                             <Span
                                                 CharacterSpacing="-1"
                                                 FontAttributes="Bold"
-                                                FontSize="{Binding DefaultStyle.BoxItemHighlightNumberFontSize}"
-                                                Text="Monthly this property (expense)"
-                                                TextColor="Red" />
+                                                FontSize="12"
+                                                Text="Monthly this property (expense)" />
                                         </FormattedString>
-                                    </controls:ThreeColumnBorderedContentView.FormattedText1>
-                                    <controls:ThreeColumnBorderedContentView.FormattedText2>
+                                    </customControls:ThreeColumnBorderedContentView.FormattedText1>
+                                    <customControls:ThreeColumnBorderedContentView.FormattedText2>
                                         <FormattedString>
                                             <Span
                                                 CharacterSpacing="1"
                                                 FontAttributes="Bold"
-                                                FontSize="{Binding DefaultStyle.BoxItemCurrencyFontSize}"
+                                                FontSize="17"
                                                 Text="{Binding CurrencySymbol}" />
                                             <Span
                                                 CharacterSpacing="-1"
                                                 FontAttributes="Bold"
-                                                FontSize="{Binding DefaultStyle.BoxItemHighlightNumberFontSize}"
+                                                FontSize="18"
                                                 Text="{Binding TotalYearlyExpenseWithComma}" />
                                             <Span Text="{Binding NewLine}" />
                                             <Span
                                                 CharacterSpacing="-1"
                                                 FontAttributes="Bold"
-                                                FontSize="{Binding DefaultStyle.BoxItemHighlightNumberFontSize}"
-                                                Text="Yearly this property (expense)"
-                                                TextColor="Red" />
+                                                FontSize="12"
+                                                Text="Yearly this property (expense)" />
                                         </FormattedString>
-                                    </controls:ThreeColumnBorderedContentView.FormattedText2>
-                                    <controls:ThreeColumnBorderedContentView.FormattedText3>
+                                    </customControls:ThreeColumnBorderedContentView.FormattedText2>
+                                    <customControls:ThreeColumnBorderedContentView.FormattedText3>
                                         <FormattedString>
                                             <Span
                                                 CharacterSpacing="1"
                                                 FontAttributes="Bold"
-                                                FontSize="{Binding DefaultStyle.BoxItemCurrencyFontSize}"
+                                                FontSize="17"
                                                 Text="{Binding CurrencySymbol}" />
                                             <Span
                                                 CharacterSpacing="-1"
                                                 FontAttributes="Bold"
-                                                FontSize="{Binding DefaultStyle.BoxItemHighlightNumberFontSize}"
+                                                FontSize="18"
                                                 Text="{Binding TotalMonthlyOverallExpense}" />
                                             <Span Text="{Binding NewLine}" />
                                             <Span
                                                 CharacterSpacing="1"
                                                 FontAttributes="Bold"
-                                                FontSize="12"
+                                                FontSize="17"
                                                 Text="{Binding CurrencySymbol}" />
                                             <Span
                                                 CharacterSpacing="-1"
@@ -1022,12 +1004,12 @@
                                             <Span
                                                 CharacterSpacing="1"
                                                 FontAttributes="Bold"
-                                                FontSize="12"
+                                                FontSize="14"
                                                 Text=" + " />
                                             <Span
                                                 CharacterSpacing="1"
                                                 FontAttributes="Bold"
-                                                FontSize="12"
+                                                FontSize="17"
                                                 Text="{Binding CurrencySymbol}" />
                                             <Span
                                                 CharacterSpacing="-1"
@@ -1035,8 +1017,8 @@
                                                 FontSize="18"
                                                 Text="{Binding TotalMonthlyExistingExpense}" />
                                         </FormattedString>
-                                    </controls:ThreeColumnBorderedContentView.FormattedText3>
-                                </controls:ThreeColumnBorderedContentView>
+                                    </customControls:ThreeColumnBorderedContentView.FormattedText3>
+                                </customControls:ThreeColumnBorderedContentView>
 
                                 <FlexLayout>
                                     <Border Style="{DynamicResource BorderControlHighlightBox}">
@@ -1069,7 +1051,7 @@
                                                             <Entry
                                                                 x:Name="txtIncomeDescription"
                                                                 FontSize="14"
-                                                                Placeholder="Salaray Primary - Sample"
+                                                                Placeholder="Salary Primary - Sample"
                                                                 Text="{Binding IncomeEntryName}"
                                                                 TextColor="{DynamicResource InputTextFgColor}" />
 
@@ -1102,28 +1084,10 @@
                                                             Style="{DynamicResource CommonTextInputLayoutStyle}">
 
                                                             <editors:SfComboBox
-                                                                DropDownBackground="{DynamicResource ComboDropDownBackgroundColor}"
-                                                                DropDownItemFontFamily="{DynamicResource DefaultFontFamily}"
-                                                                DropDownItemTextColor="{DynamicResource ComboDropDownTextColor}"
-                                                                FontFamily="{DynamicResource DefaultFontFamily}"
-                                                                FontSize="14"
-                                                                HighlightedTextColor="{DynamicResource ComboHighlightedTextColor}"
-                                                                IsClearButtonVisible="False"
-                                                                IsFilteringEnabled="False"
+                                                                x:DataType="viewmodel:ExpenseEntryViewBaseModel"
                                                                 ItemsSource="{Binding IncomeFrequencyCollection}"
-                                                                SelectedDropDownItemBackground="{DynamicResource ComboSelectedDropDownItemColor}"
                                                                 SelectedItem="{Binding IncomeExpenseFrequencySelectedIndex, Mode=TwoWay}"
-                                                                TextColor="{DynamicResource ComboTextColor}"
-                                                                TextHighlightMode="MultipleOccurrence"
-                                                                TextSearchMode="Contains">
-                                                                <!--<editors:SfComboBox.HeightRequest>
-                                            <OnPlatform
-x:TypeArguments="x:Double"
-Android="60"
-WinPhone="32"
-iOS="30" />
-                                        </editors:SfComboBox.HeightRequest>-->
-                                                            </editors:SfComboBox>
+                                                                Style="{DynamicResource SfComboBoxStyle}" />
                                                         </core:SfTextInputLayout>
 
                                                         <core:SfButton
@@ -1157,44 +1121,11 @@ iOS="30" />
                                 <StackLayout>
                                     <editors:SfAutocomplete
                                         x:Name="autoComplete"
-                                        Grid.Column="0"
-                                        Margin="5,3,5,0"
-                                        BackgroundColor="{DynamicResource AutoCompleteBackgroundColor}"
-                                        ClearButtonIconColor="{DynamicResource AutoCompleteClearButtonColor}"
                                         Completed="autoComplete_Completed"
                                         DisplayMemberPath="Name"
-                                        DropDownBackground="{DynamicResource AutoCompleteDropdownBackgroundColor}"
-                                        DropDownItemFontFamily="{DynamicResource DefaultFontFamily}"
-                                        DropDownItemTextColor="{DynamicResource AutoCompleteDropdownTextColor}"
-                                        DropDownStroke="{DynamicResource AutoCompleteDropdownBorderColor}"
-                                        FontFamily="{DynamicResource DefaultFontFamily}"
-                                        HighlightedTextColor="{DynamicResource AutoCompleteHighlightedTextColor}"
-                                        HighlightedTextFontAttributes="Bold"
-                                        IsClearButtonVisible="True"
                                         ItemsSource="{Binding AutocompleteList}"
-                                        MinimumPrefixCharacters="2"
-                                        NoResultsFoundText="No Results Found"
-                                        Placeholder="Enter here to search"
-                                        PlaceholderColor="{DynamicResource AutoCompleteWaterColor}"
                                         SelectionChanged="autoComplete_SelectionChanged"
-                                        ShowBorder="False"
-                                        TextColor="{DynamicResource AutoCompleteTextColor}"
-                                        TextHighlightMode="MultipleOccurrence"
-                                        TextSearchMode="Contains">
-                                        <editors:SfAutocomplete.NoResultsFoundTemplate>
-                                            <DataTemplate>
-                                                <Label
-                                                    Margin="70,10,0,0"
-                                                    FontAttributes="Italic"
-                                                    FontFamily="{DynamicResource DefaultFontFamily}"
-                                                    FontSize="16"
-                                                    Text="Not Found"
-                                                    TextColor="{DynamicResource AutoCompleteNoResultsFoundTextColor}" />
-                                            </DataTemplate>
-                                        </editors:SfAutocomplete.NoResultsFoundTemplate>
-                                    </editors:SfAutocomplete>
-                                    <!--  ValueChanged="autoComplete_ValueChanged"  -->
-                                    <!--  SelectionChanging="autoComplete_SelectionChanging"  -->
+                                        Style="{DynamicResource SfAutocompleteStyle}" />
                                 </StackLayout>
 
                                 <Grid>
@@ -1205,16 +1136,11 @@ iOS="30" />
                                         x:Name="lstEntry"
                                         HeightRequest="300"
                                         ItemSize="60"
-                                        ItemsSource="{Binding ExpensesList}"
+                                        ItemsSource="{Binding Transactions}"
                                         SelectionMode="None">
                                         <sfList:SfListView.ItemTemplate>
                                             <DataTemplate x:DataType="income:IncomeExpense">
-                                                <Frame
-                                                    Margin="5,8,5,2"
-                                                    Padding="2"
-                                                    BackgroundColor="Transparent"
-                                                    CornerRadius="4"
-                                                    HasShadow="True">
+                                                <Border Style="{DynamicResource TransactionListItemBorderStyle}">
                                                     <Grid>
                                                         <Grid>
                                                             <Grid.ColumnDefinitions>
@@ -1272,7 +1198,7 @@ iOS="30" />
                                                             </buttons:SfButton>
                                                         </Grid>
                                                     </Grid>
-                                                </Frame>
+                                                </Border>
                                             </DataTemplate>
                                         </sfList:SfListView.ItemTemplate>
                                     </sfList:SfListView>
@@ -1287,7 +1213,7 @@ iOS="30" />
                     <tabView:SfTabItem.Content>
                         <ScrollView>
                             <StackLayout>
-                                <controls:DisclaimerBannerView Text="This loan calculator app is intended for informational purposes only and should not be considered a substitute for professional financial advice. It is highly recommended that you consult with your financial adviser before making any financial decisions." />
+                                <customControls:DisclaimerBannerView Text="This loan calculator app is intended for informational purposes only and should not be considered a substitute for professional financial advice. It is highly recommended that you consult with your financial adviser before making any financial decisions." />
 
                                 <Grid HorizontalOptions="Center" VerticalOptions="Center">
                                     <Grid.ColumnDefinitions>
@@ -1318,9 +1244,9 @@ iOS="30" />
                                             <Border Style="{DynamicResource BorderInsightsHighlightBox}">
                                                 <Grid>
                                                     <StackLayout Margin="0,0,0,5">
-                                                        <controls:InsightsItemView InsightItem="{Binding InsightsDetails.PropertyAmount}" TextColor="{DynamicResource LstForegroundColor}" />
-                                                        <controls:InsightsItemView InsightItem="{Binding InsightsDetails.PropertyEstimatedUpfront}" TextColor="{DynamicResource LstForegroundColor}" />
-                                                        <controls:InsightsItemView
+                                                        <customControls:InsightsItemView InsightItem="{Binding InsightsDetails.PropertyAmount}" TextColor="{DynamicResource LstForegroundColor}" />
+                                                        <customControls:InsightsItemView InsightItem="{Binding InsightsDetails.PropertyEstimatedUpfront}" TextColor="{DynamicResource LstForegroundColor}" />
+                                                        <customControls:InsightsItemView
                                                             Margin="0,0,0,20"
                                                             InsightItem="{Binding InsightsDetails.PropertyTotalAmount}"
                                                             TextColor="{DynamicResource LstForegroundColor}" />
@@ -1345,10 +1271,10 @@ iOS="30" />
                                             <Border Style="{DynamicResource BorderInsightsHighlightBox}">
                                                 <Grid>
                                                     <StackLayout Margin="0,0,0,5">
-                                                        <controls:InsightsItemView InsightItem="{Binding InsightsDetails.LoanAmount}" TextColor="{DynamicResource LstForegroundColor}" />
-                                                        <controls:InsightsItemView InsightItem="{Binding InsightsDetails.DepositAmount}" TextColor="{DynamicResource LstForegroundColor}" />
-                                                        <controls:InsightsItemView InsightItem="{Binding InsightsDetails.TotalRepaymentToBank}" TextColor="{DynamicResource LstForegroundColor}" />
-                                                        <controls:InsightsItemView InsightItem="{Binding InsightsDetails.TotalInterestToBank}" TextColor="{DynamicResource LstForegroundColor}" />
+                                                        <customControls:InsightsItemView InsightItem="{Binding InsightsDetails.LoanAmount}" TextColor="{DynamicResource LstForegroundColor}" />
+                                                        <customControls:InsightsItemView InsightItem="{Binding InsightsDetails.DepositAmount}" TextColor="{DynamicResource LstForegroundColor}" />
+                                                        <customControls:InsightsItemView InsightItem="{Binding InsightsDetails.TotalRepaymentToBank}" TextColor="{DynamicResource LstForegroundColor}" />
+                                                        <customControls:InsightsItemView InsightItem="{Binding InsightsDetails.TotalInterestToBank}" TextColor="{DynamicResource LstForegroundColor}" />
                                                         <chart:SfCartesianChart
                                                             x:Name="insightsChart"
                                                             Margin="10,0,20,0"
@@ -1455,11 +1381,11 @@ iOS="30" />
                                                             </chart:SfCartesianChart.Series>
                                                         </chart:SfCartesianChart>
 
-                                                        <controls:InsightsItemView InsightItem="{Binding InsightsDetails.LoanTerm}" TextColor="{DynamicResource LstForegroundColor}" />
-                                                        <controls:InsightsItemView InsightItem="{Binding InsightsDetails.InterestRate}" TextColor="{DynamicResource LstForegroundColor}" />
-                                                        <controls:InsightsItemView InsightItem="{Binding InsightsDetails.RepaymentFrequency}" TextColor="{DynamicResource LstForegroundColor}" />
-                                                        <controls:InsightsItemView InsightItem="{Binding InsightsDetails.RepaymentDetailSelectedFrequency}" TextColor="{DynamicResource LstForegroundColor}" />
-                                                        <controls:InsightsItemView
+                                                        <customControls:InsightsItemView InsightItem="{Binding InsightsDetails.LoanTerm}" TextColor="{DynamicResource LstForegroundColor}" />
+                                                        <customControls:InsightsItemView InsightItem="{Binding InsightsDetails.InterestRate}" TextColor="{DynamicResource LstForegroundColor}" />
+                                                        <customControls:InsightsItemView InsightItem="{Binding InsightsDetails.RepaymentFrequency}" TextColor="{DynamicResource LstForegroundColor}" />
+                                                        <customControls:InsightsItemView InsightItem="{Binding InsightsDetails.RepaymentDetailSelectedFrequency}" TextColor="{DynamicResource LstForegroundColor}" />
+                                                        <customControls:InsightsItemView
                                                             Margin="0,0,0,20"
                                                             InsightItem="{Binding InsightsDetails.RepaymentDetailYearly}"
                                                             TextColor="{DynamicResource LstForegroundColor}" />
@@ -1481,17 +1407,17 @@ iOS="30" />
                                             <Border Style="{DynamicResource BorderInsightsHighlightBox}">
                                                 <Grid>
                                                     <StackLayout Margin="0,0,0,5">
-                                                        <controls:InsightsItemView InsightItem="{Binding InsightsDetails.ExpenseExistingMonthly}" TextColor="{DynamicResource LstForegroundColor}" />
-                                                        <controls:InsightsItemView InsightItem="{Binding InsightsDetails.ExpenseExistingYearly}" TextColor="{DynamicResource LstForegroundColor}" />
-                                                        <controls:InsightsItemView InsightItem="{Binding InsightsDetails.ExpenseThisPropertyMonthly}" TextColor="{DynamicResource LstForegroundColor}" />
-                                                        <controls:InsightsItemView InsightItem="{Binding InsightsDetails.ExpenseThisPropertyYearly}" TextColor="{DynamicResource LstForegroundColor}" />
-                                                        <controls:InsightsItemView InsightItem="{Binding InsightsDetails.ExpenseTotalMonthly}" TextColor="{DynamicResource LstForegroundColor}" />
-                                                        <controls:InsightsItemView InsightItem="{Binding InsightsDetails.ExpenseTotalYearly}" TextColor="{DynamicResource LstForegroundColor}" />
+                                                        <customControls:InsightsItemView InsightItem="{Binding InsightsDetails.ExpenseExistingMonthly}" TextColor="{DynamicResource LstForegroundColor}" />
+                                                        <customControls:InsightsItemView InsightItem="{Binding InsightsDetails.ExpenseExistingYearly}" TextColor="{DynamicResource LstForegroundColor}" />
+                                                        <customControls:InsightsItemView InsightItem="{Binding InsightsDetails.ExpenseThisPropertyMonthly}" TextColor="{DynamicResource LstForegroundColor}" />
+                                                        <customControls:InsightsItemView InsightItem="{Binding InsightsDetails.ExpenseThisPropertyYearly}" TextColor="{DynamicResource LstForegroundColor}" />
+                                                        <customControls:InsightsItemView InsightItem="{Binding InsightsDetails.ExpenseTotalMonthly}" TextColor="{DynamicResource LstForegroundColor}" />
+                                                        <customControls:InsightsItemView InsightItem="{Binding InsightsDetails.ExpenseTotalYearly}" TextColor="{DynamicResource LstForegroundColor}" />
 
-                                                        <controls:InsightsItemView InsightItem="{Binding InsightsDetails.IncomeTotalMonthly}" TextColor="{DynamicResource LstForegroundColor}" />
-                                                        <controls:InsightsItemView InsightItem="{Binding InsightsDetails.IncomeTotalYearly}" TextColor="{DynamicResource LstForegroundColor}" />
-                                                        <controls:InsightsItemView InsightItem="{Binding InsightsDetails.SavingMonthly}" TextColor="{DynamicResource LstForegroundColor}" />
-                                                        <controls:InsightsItemView
+                                                        <customControls:InsightsItemView InsightItem="{Binding InsightsDetails.IncomeTotalMonthly}" TextColor="{DynamicResource LstForegroundColor}" />
+                                                        <customControls:InsightsItemView InsightItem="{Binding InsightsDetails.IncomeTotalYearly}" TextColor="{DynamicResource LstForegroundColor}" />
+                                                        <customControls:InsightsItemView InsightItem="{Binding InsightsDetails.SavingMonthly}" TextColor="{DynamicResource LstForegroundColor}" />
+                                                        <customControls:InsightsItemView
                                                             Margin="0,0,0,20"
                                                             InsightItem="{Binding InsightsDetails.SavingYearly}"
                                                             TextColor="{DynamicResource LstForegroundColor}" />

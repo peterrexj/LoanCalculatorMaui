@@ -34,11 +34,11 @@ namespace LoanCalculatorMaui.ViewModel
                 {
                     isUpdating = true;
                     selectedTheme = value;
-                    OnPropertyChanged("SelectedTheme");
+                    OnPropertyChanged(nameof(SelectedTheme));
                     SaveData();
                     //DefaultStyle = ThemeHelper.GetDefaultStyleTheme(SelectedAppTheme);
                     SharedServices.ThemeHelper.UpdateAppThemes(DefaultStyle);
-                    OnPropertyChanged("DefaultStyle");
+                    OnPropertyChanged(nameof(DefaultStyle));
                     isUpdating = false;
                 }
             }
@@ -79,7 +79,7 @@ namespace LoanCalculatorMaui.ViewModel
             set
             {
                 Themes = value;
-                OnPropertyChanged("Themes");
+                OnPropertyChanged(nameof(Themes));
             }
         }
 

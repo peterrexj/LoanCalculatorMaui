@@ -14,7 +14,7 @@ namespace LoanCalculator.Models
             set
             {
                 _stampDuty = value;
-                OnPropertyChanged("StampDuty");
+                OnPropertyChanged(nameof(StampDuty));
             }
         }
         public HomeLoanRepaymentInput HomeLoanRepaymentRequest { get; set; }
@@ -26,7 +26,7 @@ namespace LoanCalculator.Models
             set
             {
                 _paymentSummary = value;
-                OnPropertyChanged("PaymentSummary");
+                OnPropertyChanged(nameof(PaymentSummary));
             }
         }
 

@@ -13,7 +13,7 @@
     xmlns:tabView="clr-namespace:Syncfusion.Maui.TabView;assembly=Syncfusion.Maui.TabView">
 
     <!--  Font Families  -->
-    <x:String x:Key="DefaultFontFamily">Calibri</x:String>
+    <x:String x:Key="DefaultFontFamily">French</x:String>
     <!--  Global style for Label  -->
     <Style TargetType="Label">
         <Setter Property="FontFamily" Value="{StaticResource DefaultFontFamily}" />
@@ -55,6 +55,15 @@
         <Setter Property="HorizontalOptions" Value="FillAndExpand" />
         <Setter Property="StrokeShape" Value="RoundRectangle 12,12,12,12" />
         <Setter Property="VerticalOptions" Value="FillAndExpand" />
+    </Style>
+
+    <Style x:Key="BorderTopSingleHighlightBox" TargetType="Border">
+        <Setter Property="StrokeThickness" Value="2" />
+        <Setter Property="Stroke" Value="{DynamicResource BorderTopGradientBrush}" />
+        <Setter Property="Background" Value="{DynamicResource BorderTopBackgroundGradientBrush}" />
+        <Setter Property="HorizontalOptions" Value="Center" />
+        <Setter Property="StrokeShape" Value="RoundRectangle 12,12,12,12" />
+        <Setter Property="VerticalOptions" Value="Center" />
     </Style>
 
     <!--  Border controls box styles  -->
@@ -242,6 +251,18 @@
         </Setter>
     </Style>
 
+    <!-- Style for Chart border -->
+    <Style x:Key="ChartBorderStyle" TargetType="Border">
+        <Setter Property="Margin" Value="12,5,12,2" />
+        <Setter Property="Background" Value="{DynamicResource ChartInnerBorderGradientBrush}" />
+        <Setter Property="HeightRequest" Value="250" />
+        <Setter Property="HorizontalOptions" Value="Fill" />
+        <Setter Property="Stroke" Value="{DynamicResource ChartOuterBorderGradientBrush}" />
+        <Setter Property="StrokeShape" Value="RoundRectangle 12,12,12,12" />
+        <Setter Property="StrokeThickness" Value="2" />
+        <Setter Property="VerticalOptions" Value="Center" />
+    </Style>
+
     <!--  Chart Insights data marker style  -->
     <Style x:Key="InsightsChartDataLabelStyle" TargetType="chart:ChartDataLabelStyle">
         <Setter Property="FontAttributes" Value="Bold" />
@@ -282,17 +303,148 @@
 
     <Style x:Key="LabelInsideDataGridCell" TargetType="Label">
         <Setter Property="FontSize" Value="11" />
-        <Setter Property="HorizontalTextAlignment" Value="Center"></Setter>
-        <Setter Property="VerticalTextAlignment" Value="Center"></Setter>
+        <Setter Property="HorizontalTextAlignment" Value="Center" />
+        <Setter Property="VerticalTextAlignment" Value="Center" />
     </Style>
 
-    <!--  Notification background brush -->
+    <!--  Notification background brush  -->
     <RadialGradientBrush x:Key="NotificationBackgroundGradientBrush" Center="0.5,0.5" Radius="0.5">
         <GradientStop Offset="0.0" Color="{DynamicResource NotificationBgGradientStart}" />
         <GradientStop Offset="0.7" Color="{DynamicResource NotificationBgGradientStart}" />
         <GradientStop Offset="1.0" Color="{DynamicResource NotificationBgGradientEnd}" />
     </RadialGradientBrush>
 
+
+    <!--  Style for SfAutocomplete  -->
+    <Style x:Key="SfAutocompleteStyle" TargetType="editors:SfAutocomplete">
+        <Setter Property="Margin" Value="5,3,5,0" />
+        <Setter Property="BackgroundColor" Value="{DynamicResource AutoCompleteBackgroundColor}" />
+        <Setter Property="ClearButtonIconColor" Value="{DynamicResource AutoCompleteClearButtonColor}" />
+        <Setter Property="DropDownBackground" Value="{DynamicResource AutoCompleteDropdownBackgroundColor}" />
+        <Setter Property="DropDownItemFontFamily" Value="{DynamicResource DefaultFontFamily}" />
+        <Setter Property="DropDownItemTextColor" Value="{DynamicResource AutoCompleteDropdownTextColor}" />
+        <Setter Property="DropDownStroke" Value="{DynamicResource AutoCompleteDropdownBorderColor}" />
+        <Setter Property="FontFamily" Value="{DynamicResource DefaultFontFamily}" />
+        <Setter Property="HighlightedTextColor" Value="{DynamicResource AutoCompleteHighlightedTextColor}" />
+        <Setter Property="HighlightedTextFontAttributes" Value="Bold" />
+        <Setter Property="IsClearButtonVisible" Value="True" />
+        <Setter Property="MinimumPrefixCharacters" Value="2" />
+        <Setter Property="NoResultsFoundText" Value="No Results Found" />
+        <Setter Property="PlaceholderColor" Value="{DynamicResource AutoCompleteWaterColor}" />
+        <Setter Property="Placeholder" Value="Enter here to search" />
+        <Setter Property="ShowBorder" Value="False" />
+        <Setter Property="TextColor" Value="{DynamicResource AutoCompleteTextColor}" />
+        <Setter Property="TextHighlightMode" Value="MultipleOccurrence" />
+        <Setter Property="TextSearchMode" Value="Contains" />
+        <Setter Property="NoResultsFoundTemplate">
+            <Setter.Value>
+                <DataTemplate>
+                    <Label
+                        Margin="70,10,0,0"
+                        FontAttributes="Italic"
+                        FontFamily="{DynamicResource DefaultFontFamily}"
+                        FontSize="16"
+                        Text="Not Found"
+                        TextColor="{DynamicResource AutoCompleteNoResultsFoundTextColor}" />
+                </DataTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- Style for SfComboBox -->
+    <Style x:Key="SfComboBoxStyle" TargetType="editors:SfComboBox">
+        <Setter Property="DropDownBackground" Value="{DynamicResource ComboDropDownBackgroundColor}" />
+        <Setter Property="DropDownItemFontFamily" Value="{DynamicResource DefaultFontFamily}" />
+        <Setter Property="DropDownItemTextColor" Value="{DynamicResource ComboDropDownTextColor}" />
+        <Setter Property="FontFamily" Value="{DynamicResource DefaultFontFamily}" />
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="HighlightedTextColor" Value="{DynamicResource ComboHighlightedTextColor}" />
+        <Setter Property="IsClearButtonVisible" Value="False" />
+        <Setter Property="IsFilteringEnabled" Value="False" />
+        <Setter Property="SelectedDropDownItemBackground" Value="{DynamicResource ComboSelectedDropDownItemColor}" />
+        <Setter Property="TextColor" Value="{DynamicResource ComboTextColor}" />
+        <Setter Property="TextHighlightMode" Value="MultipleOccurrence" />
+        <Setter Property="TextSearchMode" Value="Contains" />
+    </Style>
+
+    <!-- Style for transaction expense income list item border -->
+    <Style x:Key="TransactionListItemBorderStyle" TargetType="Border">
+        <Setter Property="Margin" Value="12,5,12,2" />
+        <Setter Property="Background" Value="{DynamicResource ChartInnerBorderGradientBrush}" />
+        <Setter Property="HorizontalOptions" Value="Fill" />
+        <Setter Property="Stroke" Value="{DynamicResource ChartOuterBorderGradientBrush}" />
+        <Setter Property="StrokeShape" Value="RoundRectangle 8,8,8,8" />
+        <Setter Property="StrokeThickness" Value="2" />
+        <Setter Property="VerticalOptions" Value="Center" />
+    </Style>
+
+    <!--  DataTemplate for SfListView  -->
+    <!--<DataTemplate x:Key="IncomeExpenseTemplate" x:DataType="income:IncomeExpense">
+        <Frame
+        Margin="5,8,5,2"
+        Padding="2"
+        BackgroundColor="Transparent"
+        CornerRadius="4"
+        HasShadow="True">
+            <Grid>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="40*" />
+                        <ColumnDefinition Width="20*" />
+                        <ColumnDefinition Width="20*" />
+                        <ColumnDefinition Width="40" />
+                        <ColumnDefinition Width="40" />
+                    </Grid.ColumnDefinitions>
+
+                    <Label
+                    Grid.Column="0"
+                    Margin="5,0,0,0"
+                    FontSize="12"
+                    HorizontalOptions="Start"
+                    HorizontalTextAlignment="Start"
+                    Text="{Binding Name}"
+                    TextColor="{DynamicResource LstForegroundColor}"
+                    VerticalOptions="Center" />
+                    <Label
+                    Grid.Column="1"
+                    FontSize="12"
+                    HorizontalOptions="Start"
+                    HorizontalTextAlignment="Start"
+                    Text="{Binding AmountString}"
+                    TextColor="{DynamicResource LstForegroundColor}"
+                    VerticalOptions="Center" />
+                    <Label
+                    Grid.Column="2"
+                    FontSize="12"
+                    HorizontalOptions="End"
+                    Text="{Binding Frequency}"
+                    TextColor="{DynamicResource LstForegroundColor}"
+                    VerticalOptions="Center" />
+
+                    <buttons:SfButton
+                    x:Name="btnEditEntry"
+                    Grid.Column="3"
+                    AutomationId="{Binding Id}"
+                    Clicked="btnEditEntry_Clicked"
+                    Style="{DynamicResource ListIconButtonStyle}">
+                        <Grid>
+                            <Image Margin="10" Source="icon_edit.png" />
+                        </Grid>
+                    </buttons:SfButton>
+                    <buttons:SfButton
+                    x:Name="btnDeleteEntry"
+                    Grid.Column="4"
+                    AutomationId="{Binding Id}"
+                    Clicked="btnDeleteEntry_Clicked"
+                    Style="{DynamicResource ListIconButtonStyle}">
+                        <Grid>
+                            <Image Margin="10" Source="icon_delete.png" />
+                        </Grid>
+                    </buttons:SfButton>
+                </Grid>
+            </Grid>
+        </Frame>
+    </DataTemplate>-->
 
     <!--  Define ObservableCollection of Brushes  -->
     <!--

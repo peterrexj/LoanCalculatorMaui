@@ -11,10 +11,8 @@ using Syncfusion.Maui.Buttons;
 
 namespace LoanCalculatorMaui.ViewModel
 {
-    public class LoanViewModel : ViewModelUiBase
+    public class LoanViewModel : ExpenseEntryViewBaseModel
     {
-        [JsonIgnore]
-        public bool HasInitialized { get; private set; } = false;
 
         public void InitializeViewData()
         {
@@ -50,7 +48,7 @@ namespace LoanCalculatorMaui.ViewModel
             IncomeFrequencyCollection ??= new ObservableCollection<string>(IncomeExpenseHelper.TimeFrequencies.Select(f => f.ToString()));
 
             IncomeExpenseEntry ??= new IncomeExpense();
-            Expenses ??= new Incomes
+            TransactionRecords ??= new Incomes
             {
                 IncomeExpenseEntries = []
             };
@@ -59,28 +57,7 @@ namespace LoanCalculatorMaui.ViewModel
             IncomeExpenseFrequencySelectedIndex = TimeFrequencyEnum.Monthly.ToString();
         }
 
-        public void InitializeBrushes()
-        {
-            var appResources = Application.Current?.Resources;
-            if (appResources != null)
-            {
-                CustomChartColors =
-                [
-                    new SolidColorBrush((Color)appResources["ChartColor1"]),
-                    new SolidColorBrush((Color)appResources["ChartColor2"]),
-                    new SolidColorBrush((Color)appResources["ChartColor3"])
-                ];
-            }
-            else
-            {
-                CustomChartColors =
-                [
-                    new SolidColorBrush(Color.FromArgb("#d7bde2")),
-                    new SolidColorBrush(Color.FromArgb("#d6eaf8")),
-                    new SolidColorBrush(Color.FromArgb("#fdebd0"))
-                ];
-            }
-        }
+        
         public void AddDefaultValues()
         {
             PropertyAmount = 1000000;
@@ -90,24 +67,16 @@ namespace LoanCalculatorMaui.ViewModel
         }
         public void AddDefaultToExpenses()
         {
-            Expenses ??= new Incomes
+            TransactionRecords ??= new Incomes
             {
                 IncomeExpenseEntries = []
             };
-            Expenses?.Add("Maintenance cost", 0, TimeFrequencyEnum.Monthly, isCheckForExistingRequired: true);
-            Expenses?.Add("Water bills", 0, TimeFrequencyEnum.Monthly, isCheckForExistingRequired: true);
-            Expenses?.Add("Electricity bills", 0, TimeFrequencyEnum.Monthly, isCheckForExistingRequired: true);
-            Expenses?.Add("Gas bills", 0, TimeFrequencyEnum.Monthly, isCheckForExistingRequired: true);
-            Expenses?.Add("Council bills", 0, TimeFrequencyEnum.Monthly, isCheckForExistingRequired: true);
+            TransactionRecords?.Add("Maintenance cost", 0, TimeFrequencyEnum.Monthly, isCheckForExistingRequired: true);
+            TransactionRecords?.Add("Water bills", 0, TimeFrequencyEnum.Monthly, isCheckForExistingRequired: true);
+            TransactionRecords?.Add("Electricity bills", 0, TimeFrequencyEnum.Monthly, isCheckForExistingRequired: true);
+            TransactionRecords?.Add("Gas bills", 0, TimeFrequencyEnum.Monthly, isCheckForExistingRequired: true);
+            TransactionRecords?.Add("Council bills", 0, TimeFrequencyEnum.Monthly, isCheckForExistingRequired: true);
         }
-
-        public void MarkInitializationComplete()
-        {
-            HasInitialized = true;
-        }
-
-        [JsonIgnore]
-        public ObservableCollection<Brush> CustomChartColors { get; set; }
 
         [JsonIgnore]
         private HomeLoanInformation _homeLoanInfo;
@@ -131,7 +100,7 @@ namespace LoanCalculatorMaui.ViewModel
                 return ((IncomeSummary?.TotalMonthly ?? 0) -
                     (
                         (ExpenseSummary?.TotalMonthly ?? 0) +
-                        (Expenses?.IncomeExpenseSummary?.TotalMonthly ?? 0) +
+                        (TransactionRecords?.IncomeExpenseSummary?.TotalMonthly ?? 0) +
                         (HomeLoanInfo?.PaymentSummary?.Payment?.TermPaymentMonthly ?? 0)
                     )).Round0();
             }
@@ -197,17 +166,17 @@ namespace LoanCalculatorMaui.ViewModel
             InsightsDetails.ExpenseExistingYearly.Value = $"{CurrencySymbol}{Math.Round(ExpenseSummary?.TotalYearly ?? 0, 0):N0}";
             InsightsDetails.ExpenseThisPropertyMonthly.Value = $"{CurrencySymbol}{TotalMonthlyExpenseWithComma}";
             InsightsDetails.ExpenseThisPropertyYearly.Value = $"{CurrencySymbol}{TotalYearlyExpenseWithComma}";
-            InsightsDetails.ExpenseTotalMonthly.Value = $"{CurrencySymbol}{Math.Round((ExpenseSummary?.TotalMonthly ?? 0) + (Expenses?.IncomeExpenseSummary?.TotalMonthly ?? 0), 0)}";
-            InsightsDetails.ExpenseTotalYearly.Value = $"{CurrencySymbol}{Math.Round((ExpenseSummary?.TotalYearly ?? 0) + (Expenses?.IncomeExpenseSummary?.TotalYearly ?? 0), 0):N0}";
+            InsightsDetails.ExpenseTotalMonthly.Value = $"{CurrencySymbol}{Math.Round((ExpenseSummary?.TotalMonthly ?? 0) + (TransactionRecords?.IncomeExpenseSummary?.TotalMonthly ?? 0), 0)}";
+            InsightsDetails.ExpenseTotalYearly.Value = $"{CurrencySymbol}{Math.Round((ExpenseSummary?.TotalYearly ?? 0) + (TransactionRecords?.IncomeExpenseSummary?.TotalYearly ?? 0), 0):N0}";
             InsightsDetails.IncomeTotalMonthly.Value = $"{CurrencySymbol}{Math.Round(IncomeSummary?.TotalMonthly ?? 0, 0):N0}";
             InsightsDetails.IncomeTotalYearly.Value = $"{CurrencySymbol}{Math.Round(IncomeSummary?.TotalYearly ?? 0, 0):N0}";
             InsightsDetails.SavingMonthly.Value = $"{CurrencySymbol}{SavingsMonthlyWithComma}";
             InsightsDetails.SavingYearly.Value = $"{CurrencySymbol}{SavingsYearlyWithComma}";
             #endregion
 
-            OnPropertyChanged("InsightChartLoanDepositAxis");
-            OnPropertyChanged("InsightChartLoanAmountAxis");
-            OnPropertyChanged("InsightChartLoanInterestAxis");
+            OnPropertyChanged(nameof(InsightChartLoanDepositAxis));
+            OnPropertyChanged(nameof(InsightChartLoanAmountAxis));
+            OnPropertyChanged(nameof(InsightChartLoanInterestAxis));
         }
         #endregion
 
@@ -282,7 +251,7 @@ namespace LoanCalculatorMaui.ViewModel
             set
             {
                 _chartPropertyValueWithInterestPayment = value;
-                OnPropertyChanged("ChartPropertyValueWithInterestPayment");
+                OnPropertyChanged(nameof(ChartPropertyValueWithInterestPayment));
             }
         }
 
@@ -358,11 +327,9 @@ namespace LoanCalculatorMaui.ViewModel
             set
             {
                 styleModelDefault = value;
-                OnPropertyChanged("DefaultStyle");
+                OnPropertyChanged(nameof(DefaultStyle));
             }
         }
-        //[JsonIgnore]
-        public ObservableCollection<Color> CustomPaletteColors => DefaultStyle?.CustomPaletteColors;
 
         #endregion
 
@@ -696,26 +663,13 @@ namespace LoanCalculatorMaui.ViewModel
         #endregion
 
         #region Expense
-        [JsonIgnore]
-        public ObservableCollection<string> IncomeFrequencyCollection { get; set; }
-
-        [JsonIgnore]
-        public ObservableCollection<IncomeExpense>? ExpensesList => Expenses?.IncomeExpenseEntries;
-
-        #region AutoCompleteSearch
-        [JsonIgnore]
-        public IEnumerable<SearchAutoCompleteViewModel>? AutocompleteList
-            => ExpensesList?.Select(f => new SearchAutoCompleteViewModel { Id = 0, Name = f.Name });
-        [JsonIgnore]
-        public string SearchExpenseIncomeName { get; set; }
-
-        #endregion
+        
 
         #region Total Details
         [JsonIgnore]
-        public string TotalMonthlyExpenseWithComma => Expenses?.IncomeExpenseSummary?.TotalMonthlyWithComma;
+        public string TotalMonthlyExpenseWithComma => TransactionRecords?.IncomeExpenseSummary?.TotalMonthlyWithComma;
         [JsonIgnore]
-        public string TotalYearlyExpenseWithComma => Expenses?.IncomeExpenseSummary?.TotalYearlyWithComma;
+        public string TotalYearlyExpenseWithComma => TransactionRecords?.IncomeExpenseSummary?.TotalYearlyWithComma;
 
 
         [JsonIgnore]
@@ -727,7 +681,7 @@ namespace LoanCalculatorMaui.ViewModel
             set
             {
                 _incomeSummary = value;
-                OnPropertyChanged("IncomeSummary");
+                OnPropertyChanged(nameof(IncomeSummary));
             }
         }
         [JsonIgnore]
@@ -739,109 +693,13 @@ namespace LoanCalculatorMaui.ViewModel
             set
             {
                 _expenseSummary = value;
-                OnPropertyChanged("ExpenseSummary");
+                OnPropertyChanged(nameof(ExpenseSummary));
             }
         }
         [JsonIgnore]
         public string TotalMonthlyExistingExpense => $"{Math.Round(ExpenseSummary?.TotalMonthly ?? 0, 0):N0}";
         [JsonIgnore]
-        public string TotalMonthlyOverallExpense => $"{Math.Round(ExpenseSummary?.TotalMonthly + Expenses?.IncomeExpenseSummary?.TotalMonthly ?? 0, 0):N0}";
-
-        #endregion
-
-        #region Expense Entry
-        public Incomes Expenses { get; set; }
-
-        [JsonIgnore]
-        private IncomeExpense _incomeExpenseEntry;
-        [JsonIgnore]
-        public IncomeExpense IncomeExpenseEntry
-        {
-            get => _incomeExpenseEntry;
-            set
-            {
-                _incomeExpenseEntry = value;
-                OnPropertyChanged(nameof(IncomeExpenseEntry));
-            }
-        }
-
-        [JsonIgnore]
-        public bool HasErrorIncomeDescription
-        {
-            get => IncomeExpenseEntry == null || string.IsNullOrEmpty(IncomeExpenseEntry.Name);
-        }
-        [JsonIgnore]
-        public string IncomeEntryName
-        {
-            get => IncomeExpenseEntry?.Name;
-            set
-            {
-                if (value == null || IncomeExpenseEntry == null) return;
-                IncomeExpenseEntry.Name = value;
-                OnPropertyChanged("IncomeEntryName");
-                OnPropertyChanged("HasErrorIncomeDescription");
-                OnPropertyChanged("IsExpenseDataFormReadyToSubmit");
-            }
-        }
-
-        [JsonIgnore]
-        public bool HasErrorIncomeAmount
-        {
-            get => IncomeExpenseEntry == null || IncomeExpenseEntry.Amount <= 0;
-        }
-
-        [JsonIgnore]
-        public double IncomeEntryAmount
-        {
-            get => IncomeExpenseEntry?.Amount ?? 0;
-            set
-            {
-                if (IncomeExpenseEntry == null) return;
-                IncomeExpenseEntry.Amount = value;
-                OnPropertyChanged("IncomeEntryAmount");
-                OnPropertyChanged("HasErrorIncomeAmount");
-                OnPropertyChanged("IsExpenseDataFormReadyToSubmit");
-            }
-        }
-
-        private string _IncomeExpenseFrequencySelectedIndex;
-        [JsonIgnore]
-        public string IncomeExpenseFrequencySelectedIndex
-        {
-            get => _IncomeExpenseFrequencySelectedIndex;
-            set
-            {
-                if (value == null) return;
-                _IncomeExpenseFrequencySelectedIndex = value;
-                IncomeExpenseEntry.Frequency = IncomeExpenseHelper.TimeFrequencyFromString(value);
-                OnPropertyChanged(nameof(IncomeExpenseFrequencySelectedIndex));
-            }
-        }
-
-        [JsonIgnore]
-        public bool IsExpenseDataFormReadyToSubmit => HasErrorIncomeDescription == false && HasErrorIncomeAmount == false;
-
-        public bool AddOrUpdateEntryFromView()
-        {
-            if (IncomeExpenseEntry.Id != Guid.Empty && Expenses.Exists(IncomeExpenseEntry.Id))
-            {
-                Expenses.Delete(IncomeExpenseEntry.Id);
-            }
-            else if (Expenses.Exists(IncomeExpenseEntry.Name))
-            {
-                Expenses.Delete(Expenses.Get(IncomeExpenseEntry.Name).Id);
-            }
-
-            Expenses.Add(IncomeExpenseEntry.Name,
-                IncomeExpenseEntry.Amount,
-                IncomeExpenseEntry.Frequency, isCheckForExistingRequired: false);
-
-            IncomeExpenseEntry.Name = string.Empty;
-            IncomeExpenseEntry.Amount = 0;
-            IncomeExpenseFrequencySelectedIndex = TimeFrequencyEnum.Monthly.ToString();
-
-            return true;
-        }
+        public string TotalMonthlyOverallExpense => $"{Math.Round(ExpenseSummary?.TotalMonthly + TransactionRecords?.IncomeExpenseSummary?.TotalMonthly ?? 0, 0):N0}";
 
         #endregion
 
@@ -866,25 +724,25 @@ namespace LoanCalculatorMaui.ViewModel
         {
             IsBusy = false;
             EventsTriggerPriceUpdate();
-            OnPropertyChanged("PropertyAmount");
-            OnPropertyChanged("LoanTermInYears");
-            OnPropertyChanged("InterestRate");
-            OnPropertyChanged("StampDuty");
-            OnPropertyChanged("DepositAmountDirectInput");
-            OnPropertyChanged("LoanAmountDirectInput");
-            OnPropertyChanged("LoanAmountPercentage");
-            OnPropertyChanged("LoanAmountStrFormatted");
-            OnPropertyChanged("DepositPercentage");
-            OnPropertyChanged("LoanAmount");
-            OnPropertyChanged("PropertyTotalAmount");
-            OnPropertyChanged("DepositAmountStrFormatted");
-            OnPropertyChanged("OtherExpenseTotalAmount");
-            OnPropertyChanged("MortgageCharges");
-            OnPropertyChanged("ConveyancerFee");
-            OnPropertyChanged("BankFee");
-            OnPropertyChanged("InspectionFee");
-            OnPropertyChanged("OtherExpenses");
-            OnPropertyChanged("RepaymentFrequencySelected");
+            OnPropertyChanged(nameof(PropertyAmount));
+            OnPropertyChanged(nameof(LoanTermInYears));
+            OnPropertyChanged(nameof(InterestRate));
+            OnPropertyChanged(nameof(StampDuty));
+            OnPropertyChanged(nameof(DepositAmountDirectInput));
+            OnPropertyChanged(nameof(LoanAmountDirectInput));
+            OnPropertyChanged(nameof(LoanAmountPercentage));
+            OnPropertyChanged(nameof(LoanAmountStrFormatted));
+            OnPropertyChanged(nameof(DepositPercentage));
+            OnPropertyChanged(nameof(LoanAmount));
+            OnPropertyChanged(nameof(PropertyTotalAmount));
+            OnPropertyChanged(nameof(DepositAmountStrFormatted));
+            OnPropertyChanged(nameof(OtherExpenseTotalAmount));
+            OnPropertyChanged(nameof(MortgageCharges));
+            OnPropertyChanged(nameof(ConveyancerFee));
+            OnPropertyChanged(nameof(BankFee));
+            OnPropertyChanged(nameof(InspectionFee));
+            OnPropertyChanged(nameof(OtherExpenses));
+            OnPropertyChanged(nameof(RepaymentFrequencySelected));
             base.SaveData(this);
             IsBusy = true;
         }
@@ -893,15 +751,15 @@ namespace LoanCalculatorMaui.ViewModel
         {
             IsBusy = false;
 
-            OnPropertyChanged("PaymentAmortization");
-            OnPropertyChanged("AmortizationBreakdownFrequencyCollection");
-            OnPropertyChanged("AmortizationBreakdownFrequencySelectedIndex");
-            OnPropertyChanged("AmortizationChartPrincipalAmountAxis");
-            OnPropertyChanged("AmortizationChartAreaPrincipalAmountAxis");
-            OnPropertyChanged("AmortizationChartInterestAmountAxis");
-            OnPropertyChanged("AmortizationChartAreaInterestAmountAxis");
-            OnPropertyChanged("IsAmortizationTermBased");
-            OnPropertyChanged("IsAmortizationYearBased");
+            OnPropertyChanged(nameof(PaymentAmortization));
+            OnPropertyChanged(nameof(AmortizationBreakdownFrequencyCollection));
+            OnPropertyChanged(nameof(AmortizationBreakdownFrequencySelectedIndex));
+            OnPropertyChanged(nameof(AmortizationChartPrincipalAmountAxis));
+            OnPropertyChanged(nameof(AmortizationChartAreaPrincipalAmountAxis));
+            OnPropertyChanged(nameof(AmortizationChartInterestAmountAxis));
+            OnPropertyChanged(nameof(AmortizationChartAreaInterestAmountAxis));
+            OnPropertyChanged(nameof(IsAmortizationTermBased));
+            OnPropertyChanged(nameof(IsAmortizationYearBased));
 
             base.SaveData(this);
             IsBusy = true;
@@ -909,26 +767,20 @@ namespace LoanCalculatorMaui.ViewModel
 
         public void RefreshExpenseTabPropertyChanged()
         {
-            Expenses.SumUpData();
+            TransactionRecords.SumUpData();
 
-            OnPropertyChanged("IncomeEntryName");
-            OnPropertyChanged("HasErrorIncomeDescription");
-
-            OnPropertyChanged("IncomeEntryAmount");
-            OnPropertyChanged("HasErrorIncomeAmount");
-
-            OnPropertyChanged("IsExpenseDataFormReadyToSubmit");
-
-            OnPropertyChanged("TotalMonthlyExpenseWithComma");
-            OnPropertyChanged("TotalYearlyExpenseWithComma");
-            OnPropertyChanged("TotalIncomeMonthlyWithComma");
-            OnPropertyChanged("IncomeExpenseFrequencySelectedIndex");
-
-            OnPropertyChanged("ExpensesList");
-            OnPropertyChanged("AutocompleteList");
-            OnPropertyChanged("ShowIncomeAfterExpense");
-            OnPropertyChanged("TotalMonthlyOverallExpense");
-            OnPropertyChanged("TotalMonthlyExistingExpense");
+            OnPropertyChanged(nameof(IncomeEntryName));
+            OnPropertyChanged(nameof(HasErrorIncomeDescription));
+            OnPropertyChanged(nameof(IncomeEntryAmount));
+            OnPropertyChanged(nameof(HasErrorIncomeAmount));
+            OnPropertyChanged(nameof(IsExpenseDataFormReadyToSubmit));
+            OnPropertyChanged(nameof(TotalMonthlyExpenseWithComma));
+            OnPropertyChanged(nameof(TotalYearlyExpenseWithComma));
+            OnPropertyChanged(nameof(IncomeExpenseFrequencySelectedIndex));
+            OnPropertyChanged(nameof(Transactions));
+            OnPropertyChanged(nameof(AutocompleteList));
+            OnPropertyChanged(nameof(TotalMonthlyOverallExpense));
+            OnPropertyChanged(nameof(TotalMonthlyExistingExpense));
 
             base.SaveData(this);
         }
@@ -937,8 +789,7 @@ namespace LoanCalculatorMaui.ViewModel
         {
             BuildInsights();
 
-            OnPropertyChanged("InsightsCollection");
-            OnPropertyChanged("InsightsDetails");
+            OnPropertyChanged(nameof(InsightsDetails));
         }
 
         public void SyncAmortization()
@@ -970,7 +821,7 @@ namespace LoanCalculatorMaui.ViewModel
         {
             HomeLoanInfo.StampDuty = HomeLoanCalculator.StampDutyCalculator.CalculateStampDutyAustralia(HomeLoanInfo.StampDuty.AustraliaStateSelected, PropertyAmount);
             HomeLoanInfo.StampDuty.AutoUpdateMortgageCharges();
-            OnPropertyChanged("StampDuty");
+            OnPropertyChanged(nameof(StampDuty));
         }
         public void EventsTriggerPriceUpdate()
         {
@@ -980,8 +831,7 @@ namespace LoanCalculatorMaui.ViewModel
         }
         public void EventsTriggerStyleUpdate()
         {
-            OnPropertyChanged("DefaultStyle");
-            OnPropertyChanged("CustomPaletteColors");
+            OnPropertyChanged(nameof(DefaultStyle));
         }
         public void LiveEventsUpdate()
         {

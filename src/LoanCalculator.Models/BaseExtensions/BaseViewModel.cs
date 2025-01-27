@@ -16,8 +16,8 @@ namespace LoanCalculator.Models.BaseExtensions
             set
             {
                 _isBusy = !value;
-                OnPropertyChanged("IsBusy");
-                OnPropertyChanged("IsFree");
+                OnPropertyChanged(nameof(IsBusy));
+                OnPropertyChanged(nameof(IsFree));
             }
         }
         public bool IsFree => !IsBusy;
@@ -32,7 +32,7 @@ namespace LoanCalculator.Models.BaseExtensions
             set
             {
                 _isActive = value;
-                OnPropertyChanged("IsActive");
+                OnPropertyChanged(nameof(IsActive));
             }
         }
 

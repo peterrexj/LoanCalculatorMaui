@@ -1,0 +1,102 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ResourceDictionary
+    x:Class="LoanCalculatorMaui.Themes.CommonDataGridStyles"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
+
+    <Style x:Key="LabelHeaderDataGridCell" TargetType="Label">
+        <Setter Property="FontSize" Value="11" />
+        <Setter Property="HorizontalTextAlignment" Value="Center" />
+        <Setter Property="VerticalTextAlignment" Value="Center" />
+        <Setter Property="Background" Value="{DynamicResource DataGridHeaderBackgroundColor}" />
+        <Setter Property="TextColor" Value="{DynamicResource DataGridHeaderTextColor}" />
+    </Style>
+
+
+
+    <Style x:Key="LabelInsideDataGridCell" TargetType="Label">
+        <Setter Property="FontSize" Value="11" />
+        <Setter Property="HorizontalTextAlignment" Value="Center" />
+        <Setter Property="VerticalTextAlignment" Value="Center" />
+    </Style>
+    <Style
+        x:Key="LabelCellDefaultDataGrid"
+        BasedOn="{StaticResource LabelInsideDataGridCell}"
+        TargetType="Label">
+        <Setter Property="TextColor" Value="{DynamicResource DataGridCellTextColor}" />
+    </Style>
+    <Style
+        x:Key="LabelCellDataGrid01"
+        BasedOn="{StaticResource LabelInsideDataGridCell}"
+        TargetType="Label">
+        <Setter Property="TextColor" Value="{DynamicResource DataGridCellFg1}" />
+    </Style>
+    <Style
+        x:Key="LabelCellDataGrid02"
+        BasedOn="{StaticResource LabelInsideDataGridCell}"
+        TargetType="Label">
+        <Setter Property="TextColor" Value="{DynamicResource DataGridCellFg2}" />
+    </Style>
+    <Style
+        x:Key="LabelCellDataGrid03"
+        BasedOn="{StaticResource LabelInsideDataGridCell}"
+        TargetType="Label">
+        <Setter Property="TextColor" Value="{DynamicResource DataGridCellFg3}" />
+    </Style>
+    <Style
+        x:Key="LabelCellDataGrid04"
+        BasedOn="{StaticResource LabelInsideDataGridCell}"
+        TargetType="Label">
+        <Setter Property="TextColor" Value="{DynamicResource DataGridCellFg4}" />
+    </Style>
+    <Style
+        x:Key="LabelCellDataGrid05"
+        BasedOn="{StaticResource LabelInsideDataGridCell}"
+        TargetType="Label">
+        <Setter Property="TextColor" Value="{DynamicResource DataGridCellFg5}" />
+    </Style>
+
+
+    <Style x:Key="BorderDataGridDefaultCellSkeleton" TargetType="Border">
+        <Setter Property="Margin" Value="0" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="Stroke" Value="Transparent" />
+    </Style>
+    <Style
+        x:Key="BorderDataGridDefaultCell"
+        BasedOn="{StaticResource BorderDataGridDefaultCellSkeleton}"
+        TargetType="Border">
+        <Setter Property="BackgroundColor" Value="{DynamicResource DataGridCellBackgroundColor}" />
+    </Style>
+    <Style
+        x:Key="BorderDataGridCell01"
+        BasedOn="{StaticResource BorderDataGridDefaultCellSkeleton}"
+        TargetType="Border">
+        <Setter Property="BackgroundColor" Value="{DynamicResource DataGridCellBg1}" />
+    </Style>
+    <Style
+        x:Key="BorderDataGridCell02"
+        BasedOn="{StaticResource BorderDataGridDefaultCellSkeleton}"
+        TargetType="Border">
+        <Setter Property="BackgroundColor" Value="{DynamicResource DataGridCellBg2}" />
+    </Style>
+    <Style
+        x:Key="BorderDataGridCell03"
+        BasedOn="{StaticResource BorderDataGridDefaultCellSkeleton}"
+        TargetType="Border">
+        <Setter Property="BackgroundColor" Value="{DynamicResource DataGridCellBg3}" />
+    </Style>
+    <Style
+        x:Key="BorderDataGridCell04"
+        BasedOn="{StaticResource BorderDataGridDefaultCellSkeleton}"
+        TargetType="Border">
+        <Setter Property="BackgroundColor" Value="{DynamicResource DataGridCellBg4}" />
+    </Style>
+    <Style
+        x:Key="BorderDataGridCell05"
+        BasedOn="{StaticResource BorderDataGridDefaultCellSkeleton}"
+        TargetType="Border">
+        <Setter Property="BackgroundColor" Value="{DynamicResource DataGridCellBg5}" />
+    </Style>
+
+</ResourceDictionary>

@@ -27,22 +27,29 @@
     <Color x:Key="SegBgColor">#F7F9F9</Color>
     <Color x:Key="SegBorderColor">#34495E</Color>
     <Color x:Key="SegTextFgColor">#808B96</Color>
-    <Color x:Key="SegSelectedTextFgColor">#212F3C</Color>
-    <!--  Not used  -->
     <Color x:Key="SegSelectedBgColor">#AED6F1</Color>
 
-    <Color x:Key="SliderKnobColor">Red</Color>
-    <Color x:Key="RangeSliderTrackColor">#AED6F1</Color>
-    <Color x:Key="RangeSliderTrackSelectionColor">#2980B9</Color>
+    <Color x:Key="SliderKnobFillColor">#f7dc6f</Color>
+    <Color x:Key="SliderKnobBorderColor">#b7950b</Color>
+    <Color x:Key="SliderKnobOverlapColor">#f5cba7</Color>
+    <Color x:Key="RangeSliderTrackInActiveFillColor">#AED6F1</Color>
+    <Color x:Key="RangeSliderTrackActiveFillColor">#2980B9</Color>
     <Color x:Key="RangeSliderLabelTextColor">#17202A</Color>
 
-    <Color x:Key="DataGridHeaderBackgroundColor">Red</Color>
-    <Color x:Key="DataGridHeaderForegroundColor">Green</Color>
-    <Color x:Key="DataGridGridCellBorderColor">#7F8C8D</Color>
-    <!--  Not used  -->
-    <Color x:Key="DataGridRowBackgroundColor">LightPink</Color>
-    <Color x:Key="DataGridRowAlternateBackgroundColor">DarkGoldenrod</Color>
-    <Color x:Key="DataGridRowForegroundColor">DarkBlue</Color>
+    <Color x:Key="DataGridHeaderBackgroundColor">#154360</Color>
+    <Color x:Key="DataGridHeaderTextColor">#eaf2f8</Color>
+    <Color x:Key="DataGridCellTextColor">#154360</Color>
+    <Color x:Key="DataGridCellBackgroundColor">#d4e6f1</Color>
+    <Color x:Key="DataGridCellBg1">#ebf5fb</Color>
+    <Color x:Key="DataGridCellBg2">#d6eaf8</Color>
+    <Color x:Key="DataGridCellBg3">#aed6f1</Color>
+    <Color x:Key="DataGridCellBg4">#85c1e9</Color>
+    <Color x:Key="DataGridCellBg5">#5dade2</Color>
+    <Color x:Key="DataGridCellFg1">#154360</Color>
+    <Color x:Key="DataGridCellFg2">#1a5276</Color>
+    <Color x:Key="DataGridCellFg3">#1f618d</Color>
+    <Color x:Key="DataGridCellFg4">#2471a3</Color>
+    <Color x:Key="DataGridCellFg5">#2980b9</Color>
 
     <Color x:Key="ComboDropDownBackgroundColor">#BDC3C7</Color>
     <Color x:Key="ComboDropDownTextColor">#17202A</Color>
@@ -50,26 +57,14 @@
     <Color x:Key="ComboSelectedDropDownItemColor">#5D6D7E</Color>
     <Color x:Key="ComboTextColor">#17202A</Color>
 
-    <Color x:Key="SwitchBusyIndicatorColorON">Transparent</Color>
-    <!--  Not used  -->
-    <Color x:Key="SwitchThumbBorderColorON">Transparent</Color>
-    <!--  Not used  -->
-    <Color x:Key="SwitchThumbColorON">#D6EAF8</Color>
-    <!--  Not used  -->
-    <Color x:Key="SwitchTrackBorderColorON">Transparent</Color>
-    <!--  Not used  -->
-    <Color x:Key="SwitchTrackColorON">#1A5276</Color>
-    <!--  Not used  -->
-    <Color x:Key="SwitchBusyIndicatorColorOFF">Transparent</Color>
-    <!--  Not used  -->
-    <Color x:Key="SwitchThumbBorderColorOFF">Transparent</Color>
-    <!--  Not used  -->
-    <Color x:Key="SwitchThumbColorOFF">#1A5276</Color>
-    <!--  Not used  -->
-    <Color x:Key="SwitchTrackBorderColorOFF">Transparent</Color>
-    <!--  Not used  -->
-    <Color x:Key="SwitchTrackColorOFF">#D6EAF8</Color>
-    <!--  Not used  -->
+    <Color x:Key="SwitchThumbBorderColorOn">Transparent</Color>
+    <Color x:Key="SwitchThumbColorOn">#D6EAF8</Color>
+    <Color x:Key="SwitchTrackBorderColorOn">Transparent</Color>
+    <Color x:Key="SwitchTrackColorOn">#1A5276</Color>
+    <Color x:Key="SwitchThumbBorderColorOff">Transparent</Color>
+    <Color x:Key="SwitchThumbColorOff">#1A5276</Color>
+    <Color x:Key="SwitchTrackBorderColorOff">Transparent</Color>
+    <Color x:Key="SwitchTrackColorOff">#D6EAF8</Color>
 
     <Color x:Key="AppShellBgColor">#B3B6B7</Color>
     <Color x:Key="AppShellFgColor">#283747</Color>

@@ -10,10 +10,11 @@
     xmlns:core="http://schemas.syncfusion.com/maui"
     xmlns:editors="clr-namespace:Syncfusion.Maui.Inputs;assembly=Syncfusion.Maui.Inputs"
     xmlns:expander="clr-namespace:Syncfusion.Maui.Expander;assembly=Syncfusion.Maui.Expander"
+    xmlns:range="clr-namespace:Syncfusion.Maui.Sliders;assembly=Syncfusion.Maui.Sliders"
     xmlns:tabView="clr-namespace:Syncfusion.Maui.TabView;assembly=Syncfusion.Maui.TabView">
 
     <!--  Font Families  -->
-    <x:String x:Key="DefaultFontFamily">French</x:String>
+    <x:String x:Key="DefaultFontFamily">Calibri</x:String>
     <!--  Global style for Label  -->
     <Style TargetType="Label">
         <Setter Property="FontFamily" Value="{StaticResource DefaultFontFamily}" />
@@ -251,7 +252,7 @@
         </Setter>
     </Style>
 
-    <!-- Style for Chart border -->
+    <!--  Style for Chart border  -->
     <Style x:Key="ChartBorderStyle" TargetType="Border">
         <Setter Property="Margin" Value="12,5,12,2" />
         <Setter Property="Background" Value="{DynamicResource ChartInnerBorderGradientBrush}" />
@@ -301,12 +302,6 @@
         <Setter Property="ShowIcon" Value="True" />
     </Style>
 
-    <Style x:Key="LabelInsideDataGridCell" TargetType="Label">
-        <Setter Property="FontSize" Value="11" />
-        <Setter Property="HorizontalTextAlignment" Value="Center" />
-        <Setter Property="VerticalTextAlignment" Value="Center" />
-    </Style>
-
     <!--  Notification background brush  -->
     <RadialGradientBrush x:Key="NotificationBackgroundGradientBrush" Center="0.5,0.5" Radius="0.5">
         <GradientStop Offset="0.0" Color="{DynamicResource NotificationBgGradientStart}" />
@@ -351,7 +346,7 @@
         </Setter>
     </Style>
 
-    <!-- Style for SfComboBox -->
+    <!--  Style for SfComboBox  -->
     <Style x:Key="SfComboBoxStyle" TargetType="editors:SfComboBox">
         <Setter Property="DropDownBackground" Value="{DynamicResource ComboDropDownBackgroundColor}" />
         <Setter Property="DropDownItemFontFamily" Value="{DynamicResource DefaultFontFamily}" />
@@ -367,7 +362,7 @@
         <Setter Property="TextSearchMode" Value="Contains" />
     </Style>
 
-    <!-- Style for transaction expense income list item border -->
+    <!--  Style for transaction expense income list item border  -->
     <Style x:Key="TransactionListItemBorderStyle" TargetType="Border">
         <Setter Property="Margin" Value="12,5,12,2" />
         <Setter Property="Background" Value="{DynamicResource ChartInnerBorderGradientBrush}" />
@@ -377,6 +372,7 @@
         <Setter Property="StrokeThickness" Value="2" />
         <Setter Property="VerticalOptions" Value="Center" />
     </Style>
+
 
     <!--  DataTemplate for SfListView  -->
     <!--<DataTemplate x:Key="IncomeExpenseTemplate" x:DataType="income:IncomeExpense">

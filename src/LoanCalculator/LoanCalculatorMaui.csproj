@@ -98,6 +98,9 @@
 	  <MauiXaml Update="Controls\PopupDisclaimerView.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
+	  <MauiXaml Update="Themes\CommonDataGridStyles.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
 	  <MauiXaml Update="Themes\CommonStyles.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
@@ -130,6 +133,12 @@
 	<ItemGroup>
 	  <Folder Include="Platforms\MacCatalyst\Services\" />
 	  <Folder Include="Platforms\Tizen\Services\" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Compile Update="Themes\CommonDataGridStyles.xaml.cs">
+	    <DependentUpon>CommonDataGridStyles.xaml</DependentUpon>
+	  </Compile>
 	</ItemGroup>
 
 </Project>

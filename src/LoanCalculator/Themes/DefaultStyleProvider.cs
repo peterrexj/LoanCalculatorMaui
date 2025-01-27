@@ -27,6 +27,7 @@ namespace LoanCalculatorMaui.Themes
 
             // Load the common styles
             var commonStyles = LoadResourceDictionary("Themes/CommonStyles.xaml");
+            var commonDataGridStyles = LoadResourceDictionary("Themes/CommonDataGridStyles.xaml");
 
             // Load the theme-specific styles
             var themeStyles = LoadResourceDictionary(themeFile);
@@ -36,6 +37,7 @@ namespace LoanCalculatorMaui.Themes
 
             // Add the common styles and theme-specific styles
             Application.Current?.Resources.MergedDictionaries.Add(commonStyles);
+            Application.Current?.Resources.MergedDictionaries.Add(commonDataGridStyles);
             Application.Current?.Resources.MergedDictionaries.Add(themeStyles);
 
             return resourceDictionary;
@@ -57,54 +59,6 @@ namespace LoanCalculatorMaui.Themes
             resourceDictionary.LoadFromXaml(xaml);
 
             return resourceDictionary;
-        }
-
-        private static double BoxCurrencyFontSize
-        {
-            get
-            {
-                if (Device.RuntimePlatform == Device.Android)
-                {
-                    if (Device.Idiom == TargetIdiom.Phone)
-                    {
-                        return 18;
-                    }
-                    else { return 24; }
-                }
-                if (Device.RuntimePlatform == Device.iOS)
-                {
-                    if (Device.Idiom == TargetIdiom.Phone)
-                    {
-                        return 18;
-                    }
-                    else { return 24; }
-                }
-                return 24;
-            }
-        }
-
-        private static double BoxMainHighlightFontSize
-        {
-            get
-            {
-                if (Device.RuntimePlatform == Device.Android)
-                {
-                    if (Device.Idiom == TargetIdiom.Phone)
-                    {
-                        return 22;
-                    }
-                    else { return 30; }
-                }
-                if (Device.RuntimePlatform == Device.iOS)
-                {
-                    if (Device.Idiom == TargetIdiom.Phone)
-                    {
-                        return 22;
-                    }
-                    else { return 30; }
-                }
-                return 30;
-            }
         }
     }
 }

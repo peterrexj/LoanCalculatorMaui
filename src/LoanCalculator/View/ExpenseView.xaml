@@ -91,7 +91,6 @@
                                     FontSize="12"
                                     Text="Show income after expense"
                                     TextColor="{DynamicResource DefaultForegroundColor}" />
-                                <!--  BusyIndicatorColor="{Binding DefaultStyle.SwitchBusyIndicatorColorON, Converter={StaticResource stringToColorConverter}}"  -->
                                 <buttons:SfSwitch IsOn="{Binding ShowIncomeAfterExpense}">
                                     <VisualStateManager.VisualStateGroups>
                                         <VisualStateGroup x:Name="CommonStates">
@@ -100,10 +99,10 @@
                                                     <Setter Property="SwitchSettings">
                                                         <Setter.Value>
                                                             <buttons:SwitchSettings
-                                                                ThumbBackground="{DynamicResource SwitchThumbColorON}"
-                                                                ThumbStroke="{DynamicResource SwitchThumbBorderColorON}"
-                                                                TrackBackground="{DynamicResource SwitchTrackColorON}"
-                                                                TrackStroke="{DynamicResource SwitchTrackBorderColorON}" />
+                                                                ThumbBackground="{DynamicResource SwitchThumbColorOn}"
+                                                                ThumbStroke="{DynamicResource SwitchThumbBorderColorOn}"
+                                                                TrackBackground="{DynamicResource SwitchTrackColorOn}"
+                                                                TrackStroke="{DynamicResource SwitchTrackBorderColorOn}" />
                                                         </Setter.Value>
                                                     </Setter>
                                                 </VisualState.Setters>
@@ -114,10 +113,10 @@
                                                     <Setter Property="SwitchSettings">
                                                         <Setter.Value>
                                                             <buttons:SwitchSettings
-                                                                ThumbBackground="{DynamicResource SwitchThumbColorOFF}"
-                                                                ThumbStroke="{DynamicResource SwitchThumbBorderColorOFF}"
-                                                                TrackBackground="{DynamicResource SwitchTrackColorOFF}"
-                                                                TrackStroke="{DynamicResource SwitchTrackBorderColorOFF}" />
+                                                                ThumbBackground="{DynamicResource SwitchThumbColorOff}"
+                                                                ThumbStroke="{DynamicResource SwitchThumbBorderColorOff}"
+                                                                TrackBackground="{DynamicResource SwitchTrackColorOff}"
+                                                                TrackStroke="{DynamicResource SwitchTrackBorderColorOff}" />
                                                         </Setter.Value>
                                                     </Setter>
                                                 </VisualState.Setters>
@@ -392,10 +391,13 @@
                                             ShowTicks="True"
                                             StepSize="1"
                                             Value="{Binding TotalYearsToProject}">
-                                            <range:SliderThumbStyle
-                                                Fill="{DynamicResource RangeSliderKnobColor}"
-                                                Stroke="#EE3F3F"
-                                                StrokeThickness="2" />
+                                            <range:SfRangeSlider.ThumbStyle>
+                                                <range:SliderThumbStyle
+                                                    Fill="{DynamicResource SliderKnobFillColor}"
+                                                    OverlapStroke="{DynamicResource SliderKnobOverlapColor}"
+                                                    Stroke="{DynamicResource SliderKnobBorderColor}"
+                                                    StrokeThickness="2" />
+                                            </range:SfRangeSlider.ThumbStyle>
                                             <range:SfSlider.LabelStyle>
                                                 <range:SliderLabelStyle
                                                     ActiveFontFamily="{DynamicResource DefaultFontFamily}"
@@ -407,9 +409,9 @@
                                             </range:SfSlider.LabelStyle>
                                             <range:SfSlider.TrackStyle>
                                                 <range:SliderTrackStyle
-                                                    ActiveFill="{DynamicResource RangeSliderTrackSelectionColor}"
+                                                    ActiveFill="{DynamicResource RangeSliderTrackActiveFillColor}"
                                                     ActiveSize="5"
-                                                    InactiveFill="{DynamicResource RangeSliderTrackColor}"
+                                                    InactiveFill="{DynamicResource RangeSliderTrackInActiveFillColor}"
                                                     InactiveSize="1" />
                                             </range:SfSlider.TrackStyle>
                                         </range:SfSlider>
@@ -560,27 +562,17 @@
                                         <datagrid:DataGridTemplateColumn HeaderText="Period" MappingName="PaymentPeriod">
                                             <datagrid:DataGridTemplateColumn.HeaderTemplate>
                                                 <DataTemplate>
-                                                    <Label
-                                                        BackgroundColor="#154360"
-                                                        Style="{DynamicResource LabelInsideDataGridCell}"
-                                                        Text="Period"
-                                                        TextColor="#eaf2f8" />
+                                                    <Label Style="{DynamicResource LabelHeaderDataGridCell}" Text="Period" />
                                                 </DataTemplate>
                                             </datagrid:DataGridTemplateColumn.HeaderTemplate>
                                             <datagrid:DataGridTemplateColumn.CellTemplate>
                                                 <DataTemplate>
-                                                    <Frame
-                                                        Margin="0"
-                                                        Padding="0"
-                                                        BackgroundColor="#d4e6f1"
-                                                        BorderColor="Transparent"
-                                                        HasShadow="False">
+                                                    <Border Style="{DynamicResource BorderDataGridCell01}">
                                                         <Label
                                                             x:DataType="summary:IncomeExpenseProjectionOutput"
-                                                            Style="{DynamicResource LabelInsideDataGridCell}"
-                                                            Text="{Binding PaymentPeriod}"
-                                                            TextColor="#154360" />
-                                                    </Frame>
+                                                            Style="{DynamicResource LabelCellDataGrid01}"
+                                                            Text="{Binding PaymentPeriod}" />
+                                                    </Border>
                                                 </DataTemplate>
                                             </datagrid:DataGridTemplateColumn.CellTemplate>
                                         </datagrid:DataGridTemplateColumn>
@@ -588,27 +580,17 @@
                                         <datagrid:DataGridTemplateColumn HeaderText="Start" MappingName="TermStartAmountRounded">
                                             <datagrid:DataGridTemplateColumn.HeaderTemplate>
                                                 <DataTemplate>
-                                                    <Label
-                                                        BackgroundColor="#154360"
-                                                        Style="{DynamicResource LabelInsideDataGridCell}"
-                                                        Text="Start"
-                                                        TextColor="#eaf2f8" />
+                                                    <Label Style="{DynamicResource LabelHeaderDataGridCell}" Text="Start" />
                                                 </DataTemplate>
                                             </datagrid:DataGridTemplateColumn.HeaderTemplate>
                                             <datagrid:DataGridTemplateColumn.CellTemplate>
                                                 <DataTemplate>
-                                                    <Frame
-                                                        Margin="0"
-                                                        Padding="0"
-                                                        BackgroundColor="#d4e6f1"
-                                                        BorderColor="Transparent"
-                                                        HasShadow="False">
+                                                    <Border Style="{DynamicResource BorderDataGridCell02}">
                                                         <Label
                                                             x:DataType="summary:IncomeExpenseProjectionOutput"
-                                                            Style="{DynamicResource LabelInsideDataGridCell}"
-                                                            Text="{Binding TermStartAmountRounded}"
-                                                            TextColor="#154360" />
-                                                    </Frame>
+                                                            Style="{DynamicResource LabelCellDataGrid02}"
+                                                            Text="{Binding TermStartAmountRounded}" />
+                                                    </Border>
                                                 </DataTemplate>
                                             </datagrid:DataGridTemplateColumn.CellTemplate>
                                         </datagrid:DataGridTemplateColumn>
@@ -616,27 +598,17 @@
                                         <datagrid:DataGridTemplateColumn HeaderText="Growth" MappingName="TermGrowthAmountRounded">
                                             <datagrid:DataGridTemplateColumn.HeaderTemplate>
                                                 <DataTemplate>
-                                                    <Label
-                                                        BackgroundColor="#154360"
-                                                        Style="{DynamicResource LabelInsideDataGridCell}"
-                                                        Text="Growth"
-                                                        TextColor="#eaf2f8" />
+                                                    <Label Style="{DynamicResource LabelHeaderDataGridCell}" Text="Growth" />
                                                 </DataTemplate>
                                             </datagrid:DataGridTemplateColumn.HeaderTemplate>
                                             <datagrid:DataGridTemplateColumn.CellTemplate>
                                                 <DataTemplate>
-                                                    <Frame
-                                                        Margin="0"
-                                                        Padding="0"
-                                                        BackgroundColor="#d4e6f1"
-                                                        BorderColor="Transparent"
-                                                        HasShadow="False">
+                                                    <Border Style="{DynamicResource BorderDataGridCell03}">
                                                         <Label
                                                             x:DataType="summary:IncomeExpenseProjectionOutput"
-                                                            Style="{DynamicResource LabelInsideDataGridCell}"
-                                                            Text="{Binding TermGrowthAmountRounded}"
-                                                            TextColor="#154360" />
-                                                    </Frame>
+                                                            Style="{DynamicResource LabelCellDataGrid03}"
+                                                            Text="{Binding TermGrowthAmountRounded}" />
+                                                    </Border>
                                                 </DataTemplate>
                                             </datagrid:DataGridTemplateColumn.CellTemplate>
                                         </datagrid:DataGridTemplateColumn>
@@ -644,27 +616,17 @@
                                         <datagrid:DataGridTemplateColumn HeaderText="Total" MappingName="AccumulatedAmountRounded">
                                             <datagrid:DataGridTemplateColumn.HeaderTemplate>
                                                 <DataTemplate>
-                                                    <Label
-                                                        BackgroundColor="#154360"
-                                                        Style="{DynamicResource LabelInsideDataGridCell}"
-                                                        Text="Total"
-                                                        TextColor="#eaf2f8" />
+                                                    <Label Style="{DynamicResource LabelHeaderDataGridCell}" Text="Total" />
                                                 </DataTemplate>
                                             </datagrid:DataGridTemplateColumn.HeaderTemplate>
                                             <datagrid:DataGridTemplateColumn.CellTemplate>
                                                 <DataTemplate>
-                                                    <Frame
-                                                        Margin="0"
-                                                        Padding="0"
-                                                        BackgroundColor="#d4e6f1"
-                                                        BorderColor="Transparent"
-                                                        HasShadow="False">
+                                                    <Border Style="{DynamicResource BorderDataGridCell04}">
                                                         <Label
                                                             x:DataType="summary:IncomeExpenseProjectionOutput"
-                                                            Style="{DynamicResource LabelInsideDataGridCell}"
-                                                            Text="{Binding AccumulatedAmountRounded}"
-                                                            TextColor="#154360" />
-                                                    </Frame>
+                                                            Style="{DynamicResource LabelCellDataGrid04}"
+                                                            Text="{Binding AccumulatedAmountRounded}" />
+                                                    </Border>
                                                 </DataTemplate>
                                             </datagrid:DataGridTemplateColumn.CellTemplate>
                                         </datagrid:DataGridTemplateColumn>
@@ -672,27 +634,17 @@
                                         <datagrid:DataGridTemplateColumn HeaderText="Sum" MappingName="IncomeExpenseAmountRounded">
                                             <datagrid:DataGridTemplateColumn.HeaderTemplate>
                                                 <DataTemplate>
-                                                    <Label
-                                                        BackgroundColor="#154360"
-                                                        Style="{DynamicResource LabelInsideDataGridCell}"
-                                                        Text="Sum"
-                                                        TextColor="#eaf2f8" />
+                                                    <Label Style="{DynamicResource LabelHeaderDataGridCell}" Text="Sum" />
                                                 </DataTemplate>
                                             </datagrid:DataGridTemplateColumn.HeaderTemplate>
                                             <datagrid:DataGridTemplateColumn.CellTemplate>
                                                 <DataTemplate>
-                                                    <Frame
-                                                        Margin="0"
-                                                        Padding="0"
-                                                        BackgroundColor="#d4e6f1"
-                                                        BorderColor="Transparent"
-                                                        HasShadow="False">
+                                                    <Border Style="{DynamicResource BorderDataGridCell05}">
                                                         <Label
                                                             x:DataType="summary:IncomeExpenseProjectionOutput"
-                                                            Style="{DynamicResource LabelInsideDataGridCell}"
-                                                            Text="{Binding IncomeExpenseAmountRounded}"
-                                                            TextColor="#154360" />
-                                                    </Frame>
+                                                            Style="{DynamicResource LabelCellDataGrid05}"
+                                                            Text="{Binding IncomeExpenseAmountRounded}" />
+                                                    </Border>
                                                 </DataTemplate>
                                             </datagrid:DataGridTemplateColumn.CellTemplate>
                                         </datagrid:DataGridTemplateColumn>

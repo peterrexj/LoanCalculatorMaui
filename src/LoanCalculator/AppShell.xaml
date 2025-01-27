@@ -24,6 +24,11 @@
             </Style>
             <Style BasedOn="{StaticResource BaseStyle}" TargetType="TabBar" />
             <Style BasedOn="{StaticResource BaseStyle}" TargetType="FlyoutItem" />
+            <Style TargetType="ShellContent">
+                <Setter Property="Shell.TabBarTitleColor" Value="{DynamicResource AppShellTabBarTitleColor}" />
+                <Setter Property="Shell.TabBarUnselectedColor" Value="{DynamicResource AppShellTabBarUnselectedColor}" />
+                <Setter Property="Shell.TabBarForegroundColor" Value="{DynamicResource AppShellTabBarForegroundColor}" />
+            </Style>
         </ResourceDictionary>
     </Shell.Resources>
 

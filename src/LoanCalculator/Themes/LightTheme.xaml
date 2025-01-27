@@ -10,8 +10,9 @@
 
     <Color x:Key="TabBarBackgroundGradientStart">#a9cce3</Color>
     <Color x:Key="TabBarBackgroundGradientEnd">#7fb3d5</Color>
-    <Color x:Key="TabIndicatorStrokeColor">#2471a3</Color>
-
+    <Color x:Key="TabIndicatorStrokeColor">#154360</Color>
+    <Color x:Key="TabTextColorSelected">#154360</Color>
+    <Color x:Key="TabTextColorNormal">#5d6d7e</Color>
 
     <Color x:Key="ExpanderHeaderIconExpandColor">#EBF5FB</Color>
     <!--  Not used  -->

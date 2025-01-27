@@ -148,6 +148,7 @@
     <Style TargetType="tabView:SfTabView">
         <Setter Property="HeaderHorizontalTextAlignment" Value="Center" />
         <Setter Property="IndicatorCornerRadius" Value="1" />
+        <Setter Property="IndicatorStrokeThickness" Value="5" />
         <Setter Property="IndicatorPlacement" Value="Bottom" />
         <Setter Property="IndicatorWidthMode" Value="Stretch" />
         <Setter Property="IndicatorBackground" Value="{DynamicResource TabIndicatorStrokeColor}" />
@@ -165,12 +166,12 @@
                 <VisualStateGroup>
                     <VisualState x:Name="Normal">
                         <VisualState.Setters>
-                            <Setter Property="TextColor" Value="Black" />
+                            <Setter Property="TextColor" Value="{DynamicResource TabTextColorNormal}" />
                         </VisualState.Setters>
                     </VisualState>
                     <VisualState x:Name="Selected">
                         <VisualState.Setters>
-                            <Setter Property="TextColor" Value="Red" />
+                            <Setter Property="TextColor" Value="{DynamicResource TabTextColorSelected}" />
                         </VisualState.Setters>
                     </VisualState>
                 </VisualStateGroup>

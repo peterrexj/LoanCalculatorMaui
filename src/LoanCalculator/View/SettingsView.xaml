@@ -7,9 +7,9 @@
     xmlns:expander="clr-namespace:Syncfusion.Maui.Expander;assembly=Syncfusion.Maui.Expander"
     xmlns:inputs="http://schemas.syncfusion.com/maui"
     Title="SettingsView">
-    <Grid>
+    <Grid BackgroundColor="{DynamicResource DefaultBackgroundColor}">
         <!--  Main Content  -->
-        <VerticalStackLayout BackgroundColor="{DynamicResource DefaultBackgroundColor}">
+        <VerticalStackLayout >
             <!--  Top Section  -->
             <Grid Padding="20">
                 <Grid.ColumnDefinitions>
@@ -49,6 +49,7 @@
                     DropDownItemFontFamily="{DynamicResource DefaultFontFamily}"
                     FontFamily="{DynamicResource DefaultFontFamily}"
                     IsClearButtonVisible="False"
+                    BackgroundColor="{DynamicResource DefaultBackgroundColor}"
                     IsEditable="False"
                     ItemsSource="{Binding Themes}"
                     SelectedItem="{Binding SelectedTheme}">

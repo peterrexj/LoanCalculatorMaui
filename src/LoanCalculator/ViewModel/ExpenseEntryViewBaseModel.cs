@@ -9,6 +9,7 @@ using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using LoanCalculatorMaui.Services;
+using Syncfusion.Maui.Core.Carousel;
 
 namespace LoanCalculatorMaui.ViewModel
 {
@@ -137,6 +138,14 @@ namespace LoanCalculatorMaui.ViewModel
             IncomeExpenseFrequencySelectedIndex = TimeFrequencyEnum.Monthly.ToString();
 
             return true;
+        }
+
+        public void ResetTransactionEntryData()
+        {
+            IncomeExpenseEntry.Name = string.Empty;
+            IncomeExpenseEntry.Amount = 0;
+            IncomeExpenseFrequencySelectedIndex = TimeFrequencyEnum.Monthly.ToString();
+            IncomeExpenseEntry.Id = Guid.Empty;
         }
 
         public Incomes TransactionRecords { get; set; }

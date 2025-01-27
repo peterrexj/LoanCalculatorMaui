@@ -186,10 +186,7 @@ public partial class IncomeView : ContentPage
         txtIncomeDescription.Unfocus();
         txtInputAmount.Unfocus();
 
-        viewModel.IncomeExpenseEntry.Name = string.Empty;
-        viewModel.IncomeExpenseEntry.Amount = 0;
-        viewModel.IncomeExpenseFrequencySelectedIndex = TimeFrequencyEnum.Monthly.ToString();
-        viewModel.IncomeExpenseEntry.Id = Guid.Empty;
+        viewModel.ResetTransactionEntryData();
         viewModel.RefreshIncomePropertyChanged();
     }
 
@@ -208,6 +205,7 @@ public partial class IncomeView : ContentPage
         if (sender is not SfButton button || !button.AutomationId.HasValue()) return;
 
         viewModel.TransactionRecords.Delete(Guid.Parse(button.AutomationId));
+        viewModel.ResetTransactionEntryData();
         viewModel.RefreshIncomePropertyChanged();
     }
 }

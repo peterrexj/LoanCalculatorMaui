@@ -245,10 +245,7 @@ public partial class LoanView : ContentPage
         txtIncomeDescription.Unfocus();
         txtInputAmount.Unfocus();
 
-        viewModel.IncomeExpenseEntry.Name = string.Empty;
-        viewModel.IncomeExpenseEntry.Amount = 0;
-        viewModel.IncomeExpenseFrequencySelectedIndex = TimeFrequencyEnum.Monthly.ToString();
-        viewModel.IncomeExpenseEntry.Id = Guid.Empty;
+        viewModel.ResetTransactionEntryData();
         viewModel.RefreshExpenseTabPropertyChanged();
     }
 
@@ -267,6 +264,7 @@ public partial class LoanView : ContentPage
         if (sender is not SfButton button || !button.AutomationId.HasValue()) return;
 
         viewModel.TransactionRecords.Delete(Guid.Parse(button.AutomationId));
+        viewModel.ResetTransactionEntryData();
         viewModel.RefreshExpenseTabPropertyChanged();
     }
 

@@ -59,24 +59,6 @@ public class ExpenseViewModel : ExpenseEntryViewBaseModel
         IsBusy = true;
     }
 
-
-    #region Styles
-
-    [JsonIgnore] private StyleModelDefault styleModelDefault;
-
-    [JsonIgnore]
-    public StyleModelDefault DefaultStyle
-    {
-        get => styleModelDefault;
-        set
-        {
-            styleModelDefault = value;
-            OnPropertyChanged(nameof(DefaultStyle));
-        }
-    }
-
-    #endregion
-
     [JsonIgnore]
     public List<IncomeExpenseProjectionOutput> IncomeProjectList =>
         TransactionRecords.IncomeExpenseSummary.ProjectionTerms;

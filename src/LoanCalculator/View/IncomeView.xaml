@@ -322,7 +322,7 @@
                                         Padding="0,10,0,10"
                                         HorizontalOptions="Center"
                                         HorizontalTextAlignment="Center"
-                                        TextColor="{Binding DefaultStyle.HighlightFgColor, Converter={StaticResource stringToColorConverter}}"
+                                        TextColor="{DynamicResource HighlightFgColor}"
                                         VerticalOptions="Center"
                                         VerticalTextAlignment="Center">
                                         <Label.FormattedText>

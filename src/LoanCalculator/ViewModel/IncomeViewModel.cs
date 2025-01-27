@@ -41,23 +41,6 @@ public class IncomeViewModel : ExpenseEntryViewBaseModel
     public List<IncomeExpenseProjectionOutput> IncomeProjectList =>
         TransactionRecords.IncomeExpenseSummary.ProjectionTerms;
 
-    #region Styles
-
-    [JsonIgnore] private StyleModelDefault styleModelDefault;
-
-    [JsonIgnore]
-    public StyleModelDefault DefaultStyle
-    {
-        get => styleModelDefault;
-        set
-        {
-            styleModelDefault = value;
-            OnPropertyChanged(nameof(DefaultStyle));
-        }
-    }
-
-    #endregion
-
     #region Income after Expense
 
     private bool _showIncomeAfterExpense;
@@ -244,11 +227,6 @@ public class IncomeViewModel : ExpenseEntryViewBaseModel
     #endregion
 
     #region Live Updates
-
-    public void EventsTriggerStyleUpdate()
-    {
-        OnPropertyChanged(nameof(DefaultStyle));
-    }
 
     public void RefreshIncomePropertyChanged()
     {

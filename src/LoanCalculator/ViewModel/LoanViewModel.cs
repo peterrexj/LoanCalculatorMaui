@@ -347,23 +347,6 @@ public class LoanViewModel : ExpenseEntryViewBaseModel
 
     #endregion
 
-    #region Styles
-
-    [JsonIgnore] private StyleModelDefault styleModelDefault;
-
-    [JsonIgnore]
-    public StyleModelDefault DefaultStyle
-    {
-        get => styleModelDefault;
-        set
-        {
-            styleModelDefault = value;
-            OnPropertyChanged(nameof(DefaultStyle));
-        }
-    }
-
-    #endregion
-
     #region Loan Calculations
 
     [JsonIgnore]
@@ -888,11 +871,6 @@ public class LoanViewModel : ExpenseEntryViewBaseModel
                 HomeLoanInfo.HomeLoanRepaymentRequest);
 
         LiveEventsUpdate();
-    }
-
-    public void EventsTriggerStyleUpdate()
-    {
-        OnPropertyChanged(nameof(DefaultStyle));
     }
 
     public void LiveEventsUpdate()

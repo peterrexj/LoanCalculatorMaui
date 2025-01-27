@@ -453,32 +453,8 @@
                                     Direction="Column"
                                     JustifyContent="Center">
                                     <Border Style="{DynamicResource ChartBorderStyle}">
-                                        <!--  Stroke="{Binding DefaultStyle.ChartBorderColor, Converter={StaticResource StringToColorConverter}}"  -->
-
                                         <Border.Content>
-                                            <!--<Grid Padding="10" HorizontalOptions="Fill">-->
                                             <chart:SfCircularChart>
-
-                                                <!--<chart:SfCircularChart.Resources>
-                                                        <DataTemplate x:Key="labelTemplate">
-                                                            <StackLayout Orientation="Vertical">
-                                                                <Label>
-                                                                    <Label.FormattedText>
-                                                                        <FormattedString>
-                                                                            <Span
-                                                                                FontAttributes="Bold"
-                                                                                FontFamily="{DynamicResource DefaultFontFamily}"
-                                                                                FontSize="10"
-                                                                                Text="{Binding Converter={StaticResource doubleToMoneyConverter}}"
-                                                                                TextColor="{DynamicResource ChartDataMarkerColor}" />
-                                                                        </FormattedString>
-                                                                    </Label.FormattedText>
-                                                                </Label>
-                                                            </StackLayout>
-                                                        </DataTemplate>
-                                                    </chart:SfCircularChart.Resources>-->
-
-
                                                 <chart:SfCircularChart.Legend>
                                                     <chart:ChartLegend Placement="{OnPlatform Android={OnIdiom Phone=Bottom, Tablet=Left}, iOS={OnIdiom Phone=Bottom, Tablet=Left}, UWP=Left}" ToggleSeriesVisibility="True">
                                                         <chart:ChartLegend.LabelStyle>
@@ -541,36 +517,9 @@
                                                                 </Label>
                                                             </StackLayout>
                                                         </chart:DoughnutSeries.CenterView>
-
-
-
-                                                        <!--<chart:DoughnutSeries.DataMarker>
-                                                            <chart:ChartDataMarker ="True">
-                                                                <chart:ChartDataMarker.LabelTemplate>
-                                                                    <DataTemplate>
-                                                                        <StackLayout Orientation="Vertical">
-                                                                            <Label>
-                                                                                <Label.FormattedText>
-                                                                                    <FormattedString>
-                                                                                        <Span
-                                                                                            FontAttributes="Bold"
-                                                                                            FontFamily="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.DefaultStyle.DefaultFontFamily}"
-                                                                                            FontSize="10"
-                                                                                            Text="{Binding Converter={StaticResource doubleToMoneyConverter}}"
-                                                                                            TextColor="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.DefaultStyle.ChartDataMarkerColor, Converter={StaticResource StringToColorConverter}}" />
-                                                                                    </FormattedString>
-                                                                                </Label.FormattedText>
-                                                                            </Label>
-                                                                        </StackLayout>
-                                                                    </DataTemplate>
-                                                                </chart:ChartDataMarker.LabelTemplate>
-                                                            </chart:ChartDataMarker>
-                                                        </chart:DoughnutSeries.DataMarker>-->
                                                     </chart:DoughnutSeries>
                                                 </chart:SfCircularChart.Series>
                                             </chart:SfCircularChart>
-
-                                            <!--</Grid>-->
                                         </Border.Content>
 
 
@@ -863,24 +812,6 @@
                                                 </datagrid:DataGridTemplateColumn.CellTemplate>
                                             </datagrid:DataGridTemplateColumn>
                                         </datagrid:SfDataGrid.Columns>
-
-                                        <!--  AlternatingRowColor="Yellow"  -->
-                                        <!--<datagrid:SfDataGrid.DefaultStyle>
-                                            <core:DataGridStyle
-                                                AlternateRowBackground="{DynamicResource DataGridRowAlternateBackgroundColor}"
-                                                GridLineStrokeThickness="3"
-                                                HeaderRowBackground="{DynamicResource DataGridHeaderBackgroundColor}"
-                                                HeaderRowFontFamily="{DynamicResource DefaultFontFamily}"
-                                                HeaderRowFontSize="10"
-                                                HeaderRowTextColor="{DynamicResource DataGridHeaderForegroundColor}"
-                                                RowBackground="{DynamicResource DataGridRowBackgroundColor}"
-                                                RowFontFamily="{DynamicResource DefaultFontFamily}"
-                                                RowTextColor="{DynamicResource DataGridRowForegroundColor}" />
-                                        </datagrid:SfDataGrid.DefaultStyle>-->
-
-                                        <!--  GridCellBorderColor="{Binding DefaultStyle.DataGridGridCellBorderColor, Converter={StaticResource StringToColorConverter}}"  -->
-                                        <!--  GridCellBorderWidth="1"  -->
-                                        <!--  GridLinesVisibility="Horizontal"  -->
                                     </datagrid:SfDataGrid>
 
                                 </Grid>

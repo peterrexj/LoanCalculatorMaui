@@ -84,14 +84,23 @@
                                 </customControls:ThreeColumnBorderedContentView.FormattedText3>
                             </customControls:ThreeColumnBorderedContentView>
 
-                            <FlexLayout>
-                                <Label
-                                    Margin="12,5,12,2"
-                                    FontSize="12"
-                                    Text="Show income after expense"
-                                    TextColor="{DynamicResource DefaultForegroundColor}" />
+                            <Grid Margin="12,5,12,2" ColumnSpacing="10">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
 
-                                <buttons:SfSwitch IsOn="{Binding ShowIncomeAfterExpense}">
+                                <Label
+                                    Grid.Column="0"
+                                    FontSize="12"
+                                    HorizontalOptions="Center"
+                                    HorizontalTextAlignment="Center"
+                                    Text="Show income after expense"
+                                    TextColor="{DynamicResource DefaultForegroundColor}"
+                                    VerticalOptions="Center"
+                                    VerticalTextAlignment="Center" />
+
+                                <buttons:SfSwitch Grid.Column="1" IsOn="{Binding ShowIncomeAfterExpense}">
                                     <VisualStateManager.VisualStateGroups>
                                         <VisualStateGroup x:Name="CommonStates">
                                             <VisualState x:Name="On">
@@ -121,11 +130,11 @@
                                                     </Setter>
                                                 </VisualState.Setters>
                                             </VisualState>
-
                                         </VisualStateGroup>
                                     </VisualStateManager.VisualStateGroups>
                                 </buttons:SfSwitch>
-                            </FlexLayout>
+                            </Grid>
+
 
                             <FlexLayout>
                                 <Border Style="{DynamicResource BorderControlHighlightBox}">

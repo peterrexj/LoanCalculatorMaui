@@ -304,10 +304,16 @@
     </Style>
 
     <!--  Notification background brush  -->
-    <RadialGradientBrush x:Key="NotificationBackgroundGradientBrush" Center="0.5,0.5" Radius="0.5">
-        <GradientStop Offset="0.0" Color="{DynamicResource NotificationBgGradientStart}" />
-        <GradientStop Offset="0.7" Color="{DynamicResource NotificationBgGradientStart}" />
-        <GradientStop Offset="1.0" Color="{DynamicResource NotificationBgGradientEnd}" />
+    <RadialGradientBrush x:Key="InformationBackgroundGradientBrush" Center="0.5,0.5" Radius="0.5">
+        <GradientStop Offset="0.0" Color="{DynamicResource NotificationInformationBgGradientStart}" />
+        <GradientStop Offset="0.7" Color="{DynamicResource NotificationInformationBgGradientStart}" />
+        <GradientStop Offset="1.0" Color="{DynamicResource NotificationInformationBgGradientEnd}" />
+    </RadialGradientBrush>
+    <!--  Notification background brush  -->
+    <RadialGradientBrush x:Key="WarningBackgroundGradientBrush" Center="0.5,0.5" Radius="0.5">
+        <GradientStop Offset="0.0" Color="{DynamicResource NotificationWarningBgGradientStart}" />
+        <GradientStop Offset="0.7" Color="{DynamicResource NotificationWarningBgGradientStart}" />
+        <GradientStop Offset="1.0" Color="{DynamicResource NotificationWarningBgGradientEnd}" />
     </RadialGradientBrush>
 
 

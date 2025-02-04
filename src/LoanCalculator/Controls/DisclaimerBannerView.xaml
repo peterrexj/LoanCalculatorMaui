@@ -3,27 +3,46 @@
     x:Class="LoanCalculatorMaui.Controls.DisclaimerBannerView"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:expander="clr-namespace:Syncfusion.Maui.Expander;assembly=Syncfusion.Maui.Expander"
     x:Name="DisclaimerBannerContentView">
     <!--  Background="{DynamicResource NotificationBgColor}"  -->
-    <Grid
-        Background="{DynamicResource NotificationBackgroundGradientBrush}"
-        HorizontalOptions="Center"
-        VerticalOptions="Center">
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="100*" />
-        </Grid.ColumnDefinitions>
-        <Label
-            Grid.Row="0"
-            Grid.Column="0"
-            Margin="5"
-            FontAttributes="Italic, Bold"
-            FontAutoScalingEnabled="True"
-            FontFamily="{DynamicResource DefaultFontFamily}"
-            HorizontalOptions="Center"
-            HorizontalTextAlignment="Center"
-            Text="{Binding Text, Source={x:Reference Name=DisclaimerBannerContentView}}"
-            TextColor="{DynamicResource NotificationTextColor}"
-            VerticalOptions="Center"
-            VerticalTextAlignment="Center" />
-    </Grid>
+    <expander:SfExpander HeaderIconPosition="End" Style="{DynamicResource CommonExpanderStyle}">
+        <expander:SfExpander.Header>
+            <Label Style="{DynamicResource ExpanderHeaderLabelStyle}" Text="{Binding HeaderText, Source={x:Reference DisclaimerBannerContentView}}" />
+        </expander:SfExpander.Header>
+        <expander:SfExpander.Content>
+            <Grid
+                HorizontalOptions="Center"
+                VerticalOptions="Center">
+                <Grid.Style>
+                    <Style TargetType="Grid">
+                        <Style.Triggers>
+                            <DataTrigger TargetType="Grid" Binding="{Binding BannerType, Source={x:Reference DisclaimerBannerContentView}}" Value="Information">
+                                <Setter Property="Background" Value="{DynamicResource InformationBackgroundGradientBrush}" />
+                            </DataTrigger>
+                            <DataTrigger TargetType="Grid" Binding="{Binding BannerType, Source={x:Reference DisclaimerBannerContentView}}" Value="Warning">
+                                <Setter Property="Background" Value="{DynamicResource WarningBackgroundGradientBrush}" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Grid.Style>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="100*" />
+                </Grid.ColumnDefinitions>
+                <Label
+                    Grid.Row="0"
+                    Grid.Column="0"
+                    Margin="5"
+                    FontAttributes="Italic, Bold"
+                    FontAutoScalingEnabled="True"
+                    FontFamily="{DynamicResource DefaultFontFamily}"
+                    HorizontalOptions="Center"
+                    HorizontalTextAlignment="Center"
+                    Text="{Binding Text, Source={x:Reference Name=DisclaimerBannerContentView}}"
+                    TextColor="{DynamicResource NotificationTextColor}"
+                    VerticalOptions="Center"
+                    VerticalTextAlignment="Center" />
+            </Grid>
+        </expander:SfExpander.Content>
+    </expander:SfExpander>
 </ContentView>

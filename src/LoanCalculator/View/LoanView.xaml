@@ -32,7 +32,7 @@
                     <tabView:SfTabItem.Content>
                         <ScrollView>
                             <StackLayout>
-                                <customControls:DisclaimerBannerView Text="This loan calculator app is intended for informational purposes only and should not be considered a substitute for professional financial advice. It is highly recommended that you consult with your financial adviser before making any financial decisions." />
+                                <customControls:DisclaimerBannerView BannerType="Warning" HeaderText="Disclaimer" Text="This loan calculator app is intended for informational purposes only and should not be considered a substitute for professional financial advice. It is highly recommended that you consult with your financial adviser before making any financial decisions." />
 
                                 <customControls:ThreeColumnBorderedContentView>
                                     <customControls:ThreeColumnBorderedContentView.FormattedText1>
@@ -109,7 +109,7 @@
                                                     <ColumnDefinition Width="50*" />
                                                     <ColumnDefinition Width="50*" />
                                                 </Grid.ColumnDefinitions>
-                                               
+
 
                                                 <core:SfTextInputLayout
                                                     Grid.Column="0"
@@ -825,7 +825,7 @@
                     <tabView:SfTabItem.Content>
                         <ScrollView>
                             <StackLayout>
-                                <customControls:DisclaimerBannerView Text="Enter the anticipated ongoing costs for this property (such as maintenance, insurance, and taxes) after purchase, excluding mortgage payments." />
+                                <customControls:DisclaimerBannerView BannerType="Information" HeaderText="Instructions" Text="Enter the anticipated ongoing costs for this property (such as maintenance, insurance, and taxes) after purchase, excluding mortgage payments." />
 
                                 <customControls:ThreeColumnBorderedContentView>
                                     <customControls:ThreeColumnBorderedContentView.FormattedText1>
@@ -1103,7 +1103,7 @@
                     <tabView:SfTabItem.Content>
                         <ScrollView>
                             <StackLayout>
-                                <customControls:DisclaimerBannerView Text="This loan calculator app is intended for informational purposes only and should not be considered a substitute for professional financial advice. It is highly recommended that you consult with your financial adviser before making any financial decisions." />
+                                <customControls:DisclaimerBannerView BannerType="Warning" HeaderText="Disclaimer" Text="This loan calculator app is intended for informational purposes only and should not be considered a substitute for professional financial advice. It is highly recommended that you consult with your financial adviser before making any financial decisions." />
 
                                 <Grid HorizontalOptions="Center" VerticalOptions="Center">
                                     <Grid.ColumnDefinitions>

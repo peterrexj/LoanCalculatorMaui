@@ -81,8 +81,10 @@
     <Color x:Key="AppShellTabBarTitleColor">#21618C</Color>
 
     <!--  Notifications  -->
-    <Color x:Key="NotificationBgGradientStart">#e6b0aa</Color>
-    <Color x:Key="NotificationBgGradientEnd">#d98880</Color>
+    <Color x:Key="NotificationWarningBgGradientStart">#EDE8DC</Color>
+    <Color x:Key="NotificationWarningBgGradientEnd">#E7CCCC</Color>
+    <Color x:Key="NotificationInformationBgGradientStart">#EDE8DC</Color>
+    <Color x:Key="NotificationInformationBgGradientEnd">#E7CCCC</Color>
     <Color x:Key="NotificationTextColor">#641e16</Color>
 
 

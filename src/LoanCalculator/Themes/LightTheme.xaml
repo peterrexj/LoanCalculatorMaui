@@ -6,7 +6,7 @@
 
     <!--  Colors  -->
     <Color x:Key="DefaultForegroundColor">Black</Color>
-    <Color x:Key="DefaultBackgroundColor">LightGreen</Color>
+    <Color x:Key="DefaultBackgroundColor">#F5F5F7</Color>
 
     <Color x:Key="TabBarBackgroundGradientStart">#a9cce3</Color>
     <Color x:Key="TabBarBackgroundGradientEnd">#7fb3d5</Color>
@@ -81,8 +81,10 @@
     <Color x:Key="AppShellTabBarTitleColor">#21618C</Color>
 
     <!--  Notifications  -->
-    <Color x:Key="NotificationBgGradientStart">#e6b0aa</Color>
-    <Color x:Key="NotificationBgGradientEnd">#d98880</Color>
+    <Color x:Key="NotificationWarningBgGradientStart">#EDE8DC</Color>
+    <Color x:Key="NotificationWarningBgGradientEnd">#E7CCCC</Color>
+    <Color x:Key="NotificationInformationBgGradientStart">#CCD5AE</Color>
+    <Color x:Key="NotificationInformationBgGradientEnd">#E0E5B6</Color>
     <Color x:Key="NotificationTextColor">#641e16</Color>
 
 
@@ -108,8 +110,8 @@
     <!--  Borders  -->
     <Color x:Key="BorderTopGradientOuterLineStart">#566573</Color>
     <Color x:Key="BorderTopGradientOuterLineEnd">#34495e</Color>
-    <Color x:Key="BorderTopGradientBackgroundStart">#d7dbdd</Color>
-    <Color x:Key="BorderTopGradientBackgroundEnd">#a6acaf</Color>
+    <Color x:Key="BorderTopGradientBackgroundStart">#D0DDD0</Color>
+    <Color x:Key="BorderTopGradientBackgroundEnd">#AAB99A</Color>
 
     <!--  Border controls box styles  -->
     <Color x:Key="BorderControlGradientOuterLineStart">#d4e6f1</Color>

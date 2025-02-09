@@ -1,4 +1,5 @@
-﻿using LoanCalculatorMaui.Services;
+﻿using CommunityToolkit.Maui;
+using LoanCalculatorMaui.Services;
 using LoanCalculatorMaui.Themes;
 using LoanCalculatorMaui.View;
 using LoanCalculatorMaui.ViewModel;
@@ -14,6 +15,7 @@ namespace LoanCalculatorMaui
             var builder = MauiApp.CreateBuilder();
             builder
                 .UseMauiApp<App>()
+                .UseMauiCommunityToolkit()
                 .ConfigureSyncfusionCore()
                 .ConfigureFonts(fonts =>
                 {

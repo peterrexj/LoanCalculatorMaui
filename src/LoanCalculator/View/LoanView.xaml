@@ -17,6 +17,7 @@
     xmlns:sfList="clr-namespace:Syncfusion.Maui.ListView;assembly=Syncfusion.Maui.ListView"
     xmlns:system="clr-namespace:System;assembly=System.Runtime"
     xmlns:tabView="clr-namespace:Syncfusion.Maui.TabView;assembly=Syncfusion.Maui.TabView"
+    xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
     xmlns:viewmodel="clr-namespace:LoanCalculatorMaui.ViewModel"
     Title="LoanView"
     x:DataType="viewmodel:LoanViewModel">
@@ -84,7 +85,6 @@
                                                     <ColumnDefinition Width="50*" />
                                                 </Grid.ColumnDefinitions>
 
-
                                                 <core:SfTextInputLayout
                                                     Grid.Column="0"
                                                     Margin="0,0,0,-15"
@@ -98,23 +98,25 @@
                                                         Value="{Binding PropertyAmount}" />
                                                 </core:SfTextInputLayout>
 
-                                                <Label
+                                                <StackLayout
                                                     Grid.Column="1"
-                                                    Margin="0,0,0,0"
-                                                    HorizontalOptions="Start"
-                                                    TextColor="{DynamicResource InputTextFgColor}"
+                                                    HorizontalOptions="Center"
                                                     VerticalOptions="Center">
-                                                    <Label.FormattedText>
-                                                        <FormattedString>
-                                                            <Span FontSize="12" Text="Total property amount" />
-                                                            <Span Text="{x:Static system:Environment.NewLine}" />
-                                                            <Span
-                                                                FontAttributes="Bold"
-                                                                FontSize="16"
-                                                                Text="{Binding PropertyTotalAmount}" />
-                                                        </FormattedString>
-                                                    </Label.FormattedText>
-                                                </Label>
+                                                    <Label
+                                                        FontSize="12"
+                                                        HorizontalOptions="Start"
+                                                        Text="Total property amount"
+                                                        TextColor="{DynamicResource InputTextFgColor}"
+                                                        VerticalOptions="Center" />
+                                                    <Label
+                                                        FontAttributes="Bold"
+                                                        FontSize="16"
+                                                        HorizontalOptions="Start"
+                                                        Text="{Binding PropertyTotalAmount}"
+                                                        TextColor="{DynamicResource InputTextFgColor}"
+                                                        VerticalOptions="Center" />
+                                                </StackLayout>
+
                                             </Grid>
 
                                             <Grid Margin="5,0,5,0">
@@ -544,7 +546,7 @@
                                                     <chart:SfCartesianChart.Title>
                                                         <Label
                                                             BackgroundColor="Transparent"
-                                                            FontSize="9"
+                                                            FontSize="11"
                                                             Text="Loan repayment breakdown"
                                                             TextColor="{DynamicResource ChartTitleTextColor}" />
                                                     </chart:SfCartesianChart.Title>
@@ -621,7 +623,7 @@
                                                     <chart:SfCartesianChart.Title>
                                                         <Label
                                                             BackgroundColor="Transparent"
-                                                            FontSize="9"
+                                                            FontSize="11"
                                                             Text="Loan repayment breakdown"
                                                             TextColor="{DynamicResource ChartTitleTextColor}" />
 

@@ -380,7 +380,7 @@
         <Setter Property="VerticalOptions" Value="Center" />
     </Style>
 
-    <!--  Span Three Box on top -->
+    <!--  Span Three Box on top  -->
     <Style x:Key="SpanThreeBoxCurrencyStyle" TargetType="Span">
         <Setter Property="CharacterSpacing" Value="1" />
         <Setter Property="FontAttributes" Value="Bold" />

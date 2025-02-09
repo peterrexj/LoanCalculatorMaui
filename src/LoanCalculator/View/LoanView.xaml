@@ -1322,6 +1322,13 @@
                     </tabView:SfTabItem.Content>
                 </tabView:SfTabItem>
             </tabView:SfTabView>
+
+            <!--  Activity Indicator  -->
+            <ActivityIndicator
+                HorizontalOptions="Center"
+                IsRunning="{Binding IsBusy}"
+                VerticalOptions="Center"
+                Color="{DynamicResource AppShellFgColor}" />
         </Grid>
     </ContentPage.Content>
 </ContentPage>

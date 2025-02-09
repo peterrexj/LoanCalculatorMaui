@@ -18,7 +18,11 @@ public partial class LoanView : ContentPage
     public LoanView()
     {
         InitializeComponent();
-        viewModel = new LoanViewModel();
+        viewModel = new LoanViewModel
+        {
+            IsBusy = true,
+            IsUpdating = true
+        };
     }
 
     protected override async void OnAppearing()
@@ -35,6 +39,7 @@ public partial class LoanView : ContentPage
 
         base.OnAppearing();
 
+        viewModel.IsUpdating = false;
         viewModel.TriggerOneTimeUpdateOnPage();
         viewModel.TriggerPropertyChangedOnPropertyTab();
     }
@@ -56,6 +61,8 @@ public partial class LoanView : ContentPage
             else
             {
                 viewModel = data;
+                viewModel.IsUpdating = true;
+                viewModel.IsBusy = true;
             }
         }
         else if (data == null)

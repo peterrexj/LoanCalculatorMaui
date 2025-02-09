@@ -32,6 +32,7 @@ public partial class IncomeView : ContentPage
 
         base.OnAppearing();
 
+        viewModel.IsUpdating = false;
         viewModel.TriggerOneTimeUpdateOnPage();
         viewModel.RefreshIncomePropertyChanged();
     }

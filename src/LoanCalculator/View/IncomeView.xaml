@@ -45,7 +45,8 @@
                                 <customControls:ThreeColumnBorderedContentView.FormattedText3>
                                     <FormattedString>
                                         <Span Style="{DynamicResource SpanThreeBoxCurrencyStyle}" Text="{Binding CurrencySymbol}" />
-                                        <Span Style="{DynamicResource SpanThreeBoxAmountStyle}" Text="{Binding TotalIncomeMonthlyWithComma}" />
+                                        <Span Style="{DynamicResource SpanThreeBoxAmountStyle}" Text="{Binding ExpenseSummary.TotalMonthlyWithComma}" />
+                                        <Span Text="{Binding NewLine}" />
                                         <Span Style="{DynamicResource SpanThreeBoxTextStyle}" Text="Monthly Expense" />
                                     </FormattedString>
                                 </customControls:ThreeColumnBorderedContentView.FormattedText3>
@@ -101,7 +102,6 @@
                                     </VisualStateManager.VisualStateGroups>
                                 </buttons:SfSwitch>
                             </Grid>
-
 
                             <FlexLayout>
                                 <Border Style="{DynamicResource BorderControlHighlightBox}">

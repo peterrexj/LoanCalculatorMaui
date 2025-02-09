@@ -38,6 +38,7 @@ public partial class ExpenseView : ContentPage
 
         base.OnAppearing();
 
+        viewModel.IsUpdating = false;
         viewModel.TriggerOneTimeUpdateOnPage();
         viewModel.RefreshIncomePropertyChanged();
     }

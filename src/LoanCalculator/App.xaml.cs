@@ -1,4 +1,5 @@
 ﻿using LoanCalculator.Models.Enums;
+using LoanCalculatorMaui.Services;
 using LoanCalculatorMaui.Themes;
 
 namespace LoanCalculatorMaui
@@ -44,13 +45,12 @@ namespace LoanCalculatorMaui
             e.SetObserved();
         }
 
-        private void LogException(Exception exception, string source)
+        private void LogException(Exception? exception, string source)
         {
-            if (exception != null)
-            {
-                Console.WriteLine($"[Exception] Source: {source}, Message: {exception.Message}");
-                // Add logging here (e.g., save to file, send to remote server)
-            }
+            if (exception == null) return;
+
+            var errorHandlingService = Services.GetService<IErrorHandlingService>();
+            errorHandlingService?.HandleException(exception, "An unhandled exception occurred.");
         }
     }
 }

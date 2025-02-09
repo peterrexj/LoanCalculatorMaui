@@ -14,9 +14,13 @@ namespace LoanCalculatorMaui.View;
 
 public partial class LoanView : ContentPage
 {
+    private readonly IErrorHandlingService _errorHandlingService;
     private LoanViewModel viewModel;
-    public LoanView()
+
+    public LoanView(IErrorHandlingService errorHandlingService)
     {
+        _errorHandlingService = errorHandlingService;
+
         InitializeComponent();
         viewModel = new LoanViewModel
         {
@@ -27,71 +31,91 @@ public partial class LoanView : ContentPage
 
     protected override async void OnAppearing()
     {
-        PageHelper.PageIsLoading();
+        try
+        {
+            PageHelper.PageIsLoading();
 
-        await LoadDataSet();
+            await LoadDataSet();
 
-        PageHelper.PageLoadingComplete();
+            PageHelper.PageLoadingComplete();
 
-        BindingContext ??= viewModel;
+            BindingContext ??= viewModel;
 
-        lstEntry.DataSource.SortDescriptors.Add(new SortDescriptor() { PropertyName = "Name", Direction = ListSortDirection.Ascending });
+            lstEntry.DataSource?.SortDescriptors.Add(new SortDescriptor() { PropertyName = "Name", Direction = ListSortDirection.Ascending });
 
-        base.OnAppearing();
+            base.OnAppearing();
 
-        viewModel.IsUpdating = false;
-        viewModel.TriggerOneTimeUpdateOnPage();
-        viewModel.TriggerPropertyChangedOnPropertyTab();
+            viewModel.IsUpdating = false;
+            viewModel.TriggerOneTimeUpdateOnPage();
+            viewModel.TriggerPropertyChangedOnPropertyTab();
+        }
+        catch (Exception ex)
+        {
+            base.OnAppearing();
+            _errorHandlingService.HandleException(ex);
+        }
+        finally
+        {
+            PageHelper.PageLoadingComplete();
+            viewModel.IsUpdating = false;
+        }
     }
 
     private async Task LoadDataSet()
     {
-        LoanViewModel? data = await viewModel.LoadDataFile<LoanViewModel>();
-
-        bool shouldAddDefaultValues = false;
-
-        if (!viewModel.HasInitialized)
+        try
         {
-            if (data == null)
+            var data = await viewModel.LoadDataFile<LoanViewModel>();
+
+            var shouldAddDefaultValues = false;
+
+            if (!viewModel.HasInitialized)
             {
-                //viewModel.InitializeViewData();
+                if (data == null)
+                {
+                    //viewModel.InitializeViewData();
+                    shouldAddDefaultValues = true;
+                    viewModel.AddDefaultToExpenses();
+                }
+                else
+                {
+                    viewModel = data;
+                    viewModel.IsUpdating = true;
+                    viewModel.IsBusy = true;
+                }
+            }
+            else if (data == null)
+            {
+                viewModel.TransactionRecords.DeleteAll();
                 shouldAddDefaultValues = true;
                 viewModel.AddDefaultToExpenses();
             }
-            else
+
+            viewModel.InitializeViewData();
+            viewModel.InitializeBrushes();
+
+            viewModel.MarkInitializationComplete();
+
+            if (shouldAddDefaultValues)
             {
-                viewModel = data;
-                viewModel.IsUpdating = true;
-                viewModel.IsBusy = true;
+                viewModel.AddDefaultValues();
             }
+
+            lstEntry.DataSource?.SortDescriptors.Clear();
+
+            viewModel.ExpenseSummary = SharedServices.ExpenseSummary;
+            viewModel.IncomeSummary = SharedServices.IncomeSummary;
+
+            SegmentedRepaymentFrequency.SelectionChanged += SegmentedRepaymentFrequency_SelectionChanged;
+            AmortizationBreadDownFrequencySegmentCtrl.SelectionChanged += AmortizationBreadDownFrequencySegmentCtrlOnSelectionChanged;
+            SegmentedAustraliaStates.SelectionChanged += SegmentedAustraliaStatesOnSelectionChanged;
+
+            viewModel.SyncAmortization();
         }
-        else if (data == null)
+        catch (Exception ex)
         {
-            viewModel.TransactionRecords.DeleteAll();
-            shouldAddDefaultValues = true;
-            viewModel.AddDefaultToExpenses();
+            _errorHandlingService.HandleException(ex);
         }
-
-        viewModel.InitializeViewData();
-        viewModel.InitializeBrushes();
-       
-        viewModel.MarkInitializationComplete();
-
-        if (shouldAddDefaultValues)
-        {
-            viewModel.AddDefaultValues();
-        }
-
-        lstEntry.DataSource.SortDescriptors.Clear();
-
-        viewModel.ExpenseSummary = SharedServices.ExpenseSummary;
-        viewModel.IncomeSummary = SharedServices.IncomeSummary;
-
-        SegmentedRepaymentFrequency.SelectionChanged += SegmentedRepaymentFrequency_SelectionChanged;
-        AmortizationBreadDownFrequencySegmentCtrl.SelectionChanged += AmortizationBreadDownFrequencySegmentCtrlOnSelectionChanged;
-        SegmentedAustraliaStates.SelectionChanged += SegmentedAustraliaStatesOnSelectionChanged;
-
-        viewModel.SyncAmortization();
     }
 
     private void SegmentedAustraliaStatesOnSelectionChanged(object? sender, SelectionChangedEventArgs e)
@@ -108,13 +132,6 @@ public partial class LoanView : ContentPage
     private void SegmentedRepaymentFrequency_SelectionChanged(object? sender, Syncfusion.Maui.Buttons.SelectionChangedEventArgs e)
     {
         if (e.NewIndex != null) viewModel.RepaymentFrequencySelectedIndex = e.NewIndex.Value;
-    }
-
-
-
-    private void Estimate_TabItem_Clicked(object sender, EventArgs e)
-    {
-        //tabView.SelectedIndex = 0;
     }
 
     private void OnTabSelectionChanged(object sender, Syncfusion.Maui.TabView.TabSelectionChangedEventArgs e)

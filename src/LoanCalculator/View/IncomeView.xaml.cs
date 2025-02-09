@@ -13,60 +13,85 @@ namespace LoanCalculatorMaui.View;
 
 public partial class IncomeView : ContentPage
 {
+    private readonly IErrorHandlingService _errorHandlingService;
     private IncomeViewModel viewModel;
 
-    public IncomeView()
+    public IncomeView(IErrorHandlingService errorHandlingService)
     {
+        _errorHandlingService = errorHandlingService;
         InitializeComponent();
         viewModel = new IncomeViewModel();
     }
 
     protected override async void OnAppearing()
     {
-        PageHelper.PageIsLoading();
-        await LoadDataSet();
-        PageHelper.PageLoadingComplete();
+        try
+        {
+            PageHelper.PageIsLoading();
 
-        BindingContext ??= viewModel;
-        lstEntry.DataSource.SortDescriptors.Add(new SortDescriptor() { PropertyName = "Name", Direction = ListSortDirection.Ascending });
+            await LoadDataSet();
 
-        base.OnAppearing();
+            PageHelper.PageLoadingComplete();
 
-        viewModel.IsUpdating = false;
-        viewModel.TriggerOneTimeUpdateOnPage();
-        viewModel.RefreshIncomePropertyChanged();
+            BindingContext ??= viewModel;
+
+            lstEntry.DataSource?.SortDescriptors.Add(new SortDescriptor() { PropertyName = "Name", Direction = ListSortDirection.Ascending });
+
+            base.OnAppearing();
+
+            viewModel.IsUpdating = false;
+            viewModel.TriggerOneTimeUpdateOnPage();
+            viewModel.RefreshIncomePropertyChanged();
+        }
+        catch (Exception ex)
+        {
+            base.OnAppearing();
+            _errorHandlingService.HandleException(ex);
+        }
+        finally
+        {
+            PageHelper.PageLoadingComplete();
+            viewModel.IsUpdating = false;
+        }
     }
 
     private async Task LoadDataSet()
     {
-        IncomeViewModel? data = await viewModel.LoadDataFile<IncomeViewModel>();
-
-        if (!viewModel.HasInitialized)
+        try
         {
-            if (data == null)
+            var data = await viewModel.LoadDataFile<IncomeViewModel>();
+
+            if (!viewModel.HasInitialized)
             {
-                //viewModel.InitializeViewData();
-                viewModel.AddDefaultToExpenses();
+                if (data == null)
+                {
+                    //viewModel.InitializeViewData();
+                    viewModel.AddDefaultToExpenses();
+                }
+                else
+                {
+                    viewModel = data;
+                }
             }
-            else
+            else if (data == null)
             {
-                viewModel = data;
+                viewModel.TransactionRecords.DeleteAll();
             }
+
+            viewModel.InitializeViewData();
+            viewModel.InitializeBrushes();
+            viewModel.MarkInitializationComplete();
+
+            viewModel.IncomeExpenseEntry.Frequency = TimeFrequencyEnum.Monthly;
+            viewModel.IncomeExpenseFrequencySelectedIndex = TimeFrequencyEnum.Monthly.ToString();
+            viewModel.ExpenseSummary = SharedServices.ExpenseSummary;
+
+            lstEntry.DataSource?.SortDescriptors.Clear();
         }
-        else if (data == null)
+        catch (Exception ex)
         {
-            viewModel.TransactionRecords.DeleteAll();
+            _errorHandlingService.HandleException(ex);
         }
-
-        viewModel.InitializeViewData();
-        viewModel.InitializeBrushes();
-        viewModel.MarkInitializationComplete();
-
-        viewModel.IncomeExpenseEntry.Frequency = TimeFrequencyEnum.Monthly;
-        viewModel.IncomeExpenseFrequencySelectedIndex = TimeFrequencyEnum.Monthly.ToString();
-        viewModel.ExpenseSummary = SharedServices.ExpenseSummary;
-
-        lstEntry.DataSource.SortDescriptors.Clear();
     }
 
     private async Task RefreshListOfIncomeExpense()

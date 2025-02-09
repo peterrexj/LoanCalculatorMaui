@@ -11,69 +11,88 @@ namespace LoanCalculatorMaui.View;
 
 public partial class ExpenseView : ContentPage
 {
+    private readonly IErrorHandlingService _errorHandlingService;
     ExpenseViewModel viewModel;
-    public ExpenseView()
-    {
-        InitializeComponent();
-        viewModel = new ExpenseViewModel();
 
-        //if (Device.RuntimePlatform == Device.UWP || Device.RuntimePlatform == Device.WPF)
-        //{
-        //    amortYearSecondaryAxisLabelStyle.LabelFormat = "$0";
-        //}
-        //else
-        //{
-        //    amortYearSecondaryAxisLabelStyle.LabelFormat = "$##.##";
-        //}
+    public ExpenseView(IErrorHandlingService errorHandlingService)
+    {
+        _errorHandlingService = errorHandlingService;
+
+        InitializeComponent();
+
+        viewModel = new ExpenseViewModel();
     }
 
     protected override async void OnAppearing()
     {
-        PageHelper.PageIsLoading();
-        await LoadDataSet();
-        PageHelper.PageLoadingComplete();
+        try
+        {
+            PageHelper.PageIsLoading();
 
-        BindingContext ??= viewModel;
-        lstEntry.DataSource.SortDescriptors.Add(new SortDescriptor() { PropertyName = "Name", Direction = ListSortDirection.Ascending });
+            await LoadDataSet();
 
-        base.OnAppearing();
+            PageHelper.PageLoadingComplete();
 
-        viewModel.IsUpdating = false;
-        viewModel.TriggerOneTimeUpdateOnPage();
-        viewModel.RefreshIncomePropertyChanged();
+            BindingContext ??= viewModel;
+
+            lstEntry.DataSource?.SortDescriptors.Add(new SortDescriptor() { PropertyName = "Name", Direction = ListSortDirection.Ascending });
+
+            base.OnAppearing();
+
+            viewModel.IsUpdating = false;
+            viewModel.TriggerOneTimeUpdateOnPage();
+            viewModel.RefreshIncomePropertyChanged();
+        }
+        catch (Exception ex)
+        {
+            base.OnAppearing();
+            _errorHandlingService.HandleException(ex);
+        }
+        finally
+        {
+            PageHelper.PageLoadingComplete();
+            viewModel.IsUpdating = false;
+        }
     }
 
     private async Task LoadDataSet()
     {
-        var data = await viewModel.LoadDataFile<ExpenseViewModel>();
-
-        viewModel = data ?? viewModel;
-
-        if (!viewModel.HasInitialized)
+        try
         {
-            if (data == null)
+            var data = await viewModel.LoadDataFile<ExpenseViewModel>();
+
+            viewModel = data ?? viewModel;
+
+            if (!viewModel.HasInitialized)
             {
+                if (data == null)
+                {
+                    viewModel.AddDefaultToExpenses();
+                }
+            }
+            else if (data == null)
+            {
+                viewModel.TransactionRecords.DeleteAll();
                 viewModel.AddDefaultToExpenses();
             }
+
+            viewModel.InitializeViewData();
+            viewModel.InitializeBrushes();
+            viewModel.MarkInitializationComplete();
+
+            viewModel.IncomeExpenseEntry.Frequency = TimeFrequencyEnum.Monthly;
+            viewModel.IncomeExpenseFrequencySelectedIndex = TimeFrequencyEnum.Monthly.ToString();
+            viewModel.ExpenseSummary = SharedServices.IncomeSummary;
+
+            lstEntry.DataSource?.SortDescriptors.Clear();
         }
-        else if (data == null)
+        catch (Exception ex)
         {
-            viewModel.TransactionRecords.DeleteAll();
-            viewModel.AddDefaultToExpenses();
+            _errorHandlingService.HandleException(ex);
         }
-
-        viewModel.InitializeViewData();
-        viewModel.InitializeBrushes();
-        viewModel.MarkInitializationComplete();
-
-        viewModel.IncomeExpenseEntry.Frequency = TimeFrequencyEnum.Monthly;
-        viewModel.IncomeExpenseFrequencySelectedIndex = TimeFrequencyEnum.Monthly.ToString();
-        viewModel.ExpenseSummary = SharedServices.IncomeSummary;
-
-        lstEntry.DataSource.SortDescriptors.Clear();
     }
 
-    
+
 
     private async Task RefreshListOfIncomeExpense()
     {

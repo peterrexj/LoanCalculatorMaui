@@ -1,13 +1,17 @@
 using LoanCalculatorMaui.Extensions;
+using LoanCalculatorMaui.Services;
 using LoanCalculatorMaui.ViewModel;
 
 namespace LoanCalculatorMaui.View;
 
 public partial class SettingsView : ContentPage
 {
+    private readonly IErrorHandlingService _errorHandlingService;
     private SettingsViewModel viewModel;
-    public SettingsView()
+
+    public SettingsView(IErrorHandlingService errorHandlingService)
     {
+        _errorHandlingService = errorHandlingService;
         InitializeComponent();
         viewModel = new SettingsViewModel
         {
@@ -18,26 +22,43 @@ public partial class SettingsView : ContentPage
 
     protected override async void OnAppearing()
     {
-        PageHelper.PageIsLoading();
+        try
+        {
+            PageHelper.PageIsLoading();
 
-        await LoadDataSet();
+            await LoadDataSet();
 
-        base.OnAppearing();
-        
-        PageHelper.PageLoadingComplete();
+            base.OnAppearing();
+        }
+        catch (Exception ex)
+        {
+            base.OnAppearing();
+            _errorHandlingService.HandleException(ex);
+        }
+        finally
+        {
+            PageHelper.PageLoadingComplete();
+        }
     }
 
     private async Task LoadDataSet()
     {
-        SettingsViewModel? data = await viewModel.LoadDataFile<SettingsViewModel>();
+        try
+        {
+            var data = await viewModel.LoadDataFile<SettingsViewModel>();
 
-        if (data == null)
-        {
-            viewModel.SelectedTheme = viewModel.Themes.First(f => f.Name == AppTheme.Light.ToString());
+            if (data == null)
+            {
+                viewModel.SelectedTheme = viewModel.Themes.First(f => f.Name == AppTheme.Light.ToString());
+            }
+            else
+            {
+                viewModel.SelectedTheme = data.SelectedTheme;
+            }
         }
-        else
+        catch (Exception ex)
         {
-            viewModel.SelectedTheme = data.SelectedTheme;
+            _errorHandlingService.HandleException(ex);
         }
     }
 }

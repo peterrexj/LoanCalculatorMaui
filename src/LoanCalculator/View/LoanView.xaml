@@ -32,70 +32,44 @@
                     <tabView:SfTabItem.Content>
                         <ScrollView>
                             <StackLayout>
-                                <customControls:DisclaimerBannerView BannerType="Warning" HeaderText="Disclaimer" Text="This loan calculator app is intended for informational purposes only and should not be considered a substitute for professional financial advice. It is highly recommended that you consult with your financial adviser before making any financial decisions." />
+                                <customControls:DisclaimerBannerView
+                                    BannerType="Warning"
+                                    HeaderText="Disclaimer"
+                                    Text="This loan calculator app is intended for informational purposes only and should not be considered a substitute for professional financial advice. It is highly recommended that you consult with your financial adviser before making any financial decisions." />
 
                                 <customControls:ThreeColumnBorderedContentView>
                                     <customControls:ThreeColumnBorderedContentView.FormattedText1>
                                         <FormattedString>
-                                            <Span
-                                                CharacterSpacing="1"
-                                                FontAttributes="Bold"
-                                                FontSize="17"
-                                                Text="{Binding CurrencySymbol}" />
-                                            <!--<Span Text=" " />-->
-                                            <Span
-                                                CharacterSpacing="-1"
-                                                FontAttributes="Bold"
-                                                FontSize="18"
-                                                Text="{Binding HomeLoanInfo.PaymentSummary.Payment.TermPaymentRoundedWithComma}" />
+                                            <Span Style="{DynamicResource SpanThreeBoxCurrencyStyle}" Text="{Binding CurrencySymbol}" />
+                                            <Span Style="{DynamicResource SpanThreeBoxAmountStyle}" Text="{Binding HomeLoanInfo.PaymentSummary.Payment.TermPaymentRoundedWithComma}" />
                                             <Span Text="{Binding NewLine}" />
-                                            <Span FontSize="12" Text="{Binding RepaymentFrequencySelected}" />
+                                            <Span Style="{DynamicResource SpanThreeBoxTextStyle}" Text="{Binding RepaymentFrequencySelected}" />
                                             <Span Text=" " />
                                             <Span
-                                                CharacterSpacing="-1"
-                                                FontAttributes="Bold"
-                                                FontSize="16"
+                                                FontSize="15"
+                                                Style="{DynamicResource SpanThreeBoxAmountStyle}"
                                                 Text="{Binding LoanTermInYears}" />
                                             <Span Text=" " />
-                                            <Span FontSize="12" Text=" years" />
+                                            <Span Style="{DynamicResource SpanThreeBoxTextStyle}" Text=" years" />
                                         </FormattedString>
                                     </customControls:ThreeColumnBorderedContentView.FormattedText1>
                                     <customControls:ThreeColumnBorderedContentView.FormattedText2>
                                         <FormattedString>
+                                            <Span Style="{DynamicResource SpanThreeBoxCurrencyStyle}" Text="{Binding CurrencySymbol}" />
+                                            <Span Style="{DynamicResource SpanThreeBoxAmountStyle}" Text="{Binding HomeLoanInfo.PaymentSummary.Payment.TotalInterestPaymentRoundedWithComma}" />
+                                            <Span Style="{DynamicResource SpanThreeBoxTextStyle}" Text=" total interest payable over " />
                                             <Span
-                                                CharacterSpacing="1"
-                                                FontAttributes="Bold"
-                                                FontSize="17"
-                                                Text="{Binding CurrencySymbol}" />
-                                            <Span Text="" />
-                                            <Span
-                                                CharacterSpacing="-1"
-                                                FontAttributes="Bold"
-                                                FontSize="18"
-                                                Text="{Binding HomeLoanInfo.PaymentSummary.Payment.TotalInterestPaymentRoundedWithComma}" />
-                                            <Span FontSize="12" Text=" total interest payable over " />
-                                            <Span
-                                                CharacterSpacing="-1"
-                                                FontAttributes="Bold"
                                                 FontSize="15"
+                                                Style="{DynamicResource SpanThreeBoxAmountStyle}"
                                                 Text="{Binding LoanTermInYears}" />
-                                            <Span FontSize="12" Text=" years" />
+                                            <Span Style="{DynamicResource SpanThreeBoxTextStyle}" Text=" years" />
                                         </FormattedString>
                                     </customControls:ThreeColumnBorderedContentView.FormattedText2>
                                     <customControls:ThreeColumnBorderedContentView.FormattedText3>
                                         <FormattedString>
-                                            <Span
-                                                CharacterSpacing="1"
-                                                FontAttributes="Bold"
-                                                FontSize="17"
-                                                Text="{Binding CurrencySymbol}" />
-                                            <Span Text="" />
-                                            <Span
-                                                CharacterSpacing="-1"
-                                                FontAttributes="Bold"
-                                                FontSize="18"
-                                                Text="{Binding HomeLoanInfo.PaymentSummary.Payment.TotalPaymentRoundedWithComma}" />
-                                            <Span FontSize="12" Text=" total repayment (principal + interest)" />
+                                            <Span Style="{DynamicResource SpanThreeBoxCurrencyStyle}" Text="{Binding CurrencySymbol}" />
+                                            <Span Style="{DynamicResource SpanThreeBoxAmountStyle}" Text="{Binding HomeLoanInfo.PaymentSummary.Payment.TotalPaymentRoundedWithComma}" />
+                                            <Span Style="{DynamicResource SpanThreeBoxTextStyle}" Text=" total repayment (principal + interest)" />
                                         </FormattedString>
                                     </customControls:ThreeColumnBorderedContentView.FormattedText3>
                                 </customControls:ThreeColumnBorderedContentView>
@@ -825,86 +799,53 @@
                     <tabView:SfTabItem.Content>
                         <ScrollView>
                             <StackLayout>
-                                <customControls:DisclaimerBannerView BannerType="Information" HeaderText="Instructions" Text="Enter the anticipated ongoing costs for this property (such as maintenance, insurance, and taxes) after purchase, excluding mortgage payments." />
+                                <customControls:DisclaimerBannerView
+                                    BannerType="Information"
+                                    HeaderText="Instructions"
+                                    Text="Enter the anticipated ongoing costs for this property (such as maintenance, insurance, and taxes) after purchase, excluding mortgage payments." />
 
-                                <customControls:ThreeColumnBorderedContentView>
+                                <customControls:ThreeColumnBorderedContentView LineHeightBox3="2.0">
                                     <customControls:ThreeColumnBorderedContentView.FormattedText1>
                                         <FormattedString>
-                                            <Span
-                                                CharacterSpacing="1"
-                                                FontAttributes="Bold"
-                                                FontSize="17"
-                                                Text="{Binding CurrencySymbol}" />
-                                            <Span
-                                                CharacterSpacing="-1"
-                                                FontAttributes="Bold"
-                                                FontSize="18"
-                                                Text="{Binding TotalMonthlyExpenseWithComma}" />
+                                            <Span Style="{DynamicResource SpanThreeBoxCurrencyStyle}" Text="{Binding CurrencySymbol}" />
+                                            <Span Style="{DynamicResource SpanThreeBoxAmountStyle}" Text="{Binding TotalMonthlyExpenseWithComma}" />
                                             <Span Text="{Binding NewLine}" />
-                                            <Span
-                                                CharacterSpacing="-1"
-                                                FontAttributes="Bold"
-                                                FontSize="12"
-                                                Text="Monthly this property (expense)" />
+                                            <Span Style="{DynamicResource SpanThreeBoxTextStyle}" Text="Monthly this property (expense)" />
                                         </FormattedString>
                                     </customControls:ThreeColumnBorderedContentView.FormattedText1>
                                     <customControls:ThreeColumnBorderedContentView.FormattedText2>
                                         <FormattedString>
-                                            <Span
-                                                CharacterSpacing="1"
-                                                FontAttributes="Bold"
-                                                FontSize="17"
-                                                Text="{Binding CurrencySymbol}" />
-                                            <Span
-                                                CharacterSpacing="-1"
-                                                FontAttributes="Bold"
-                                                FontSize="18"
-                                                Text="{Binding TotalYearlyExpenseWithComma}" />
+                                            <Span Style="{DynamicResource SpanThreeBoxCurrencyStyle}" Text="{Binding CurrencySymbol}" />
+                                            <Span Style="{DynamicResource SpanThreeBoxAmountStyle}" Text="{Binding TotalYearlyExpenseWithComma}" />
                                             <Span Text="{Binding NewLine}" />
-                                            <Span
-                                                CharacterSpacing="-1"
-                                                FontAttributes="Bold"
-                                                FontSize="12"
-                                                Text="Yearly this property (expense)" />
+                                            <Span Style="{DynamicResource SpanThreeBoxTextStyle}" Text="Yearly this property (expense)" />
                                         </FormattedString>
                                     </customControls:ThreeColumnBorderedContentView.FormattedText2>
                                     <customControls:ThreeColumnBorderedContentView.FormattedText3>
                                         <FormattedString>
-                                            <Span
-                                                CharacterSpacing="1"
-                                                FontAttributes="Bold"
-                                                FontSize="17"
-                                                Text="{Binding CurrencySymbol}" />
-                                            <Span
-                                                CharacterSpacing="-1"
-                                                FontAttributes="Bold"
-                                                FontSize="18"
-                                                Text="{Binding TotalMonthlyOverallExpense}" />
+                                            <Span Style="{DynamicResource SpanThreeBoxCurrencyStyle}" Text="{Binding CurrencySymbol}" />
+                                            <Span Style="{DynamicResource SpanThreeBoxAmountStyle}" Text="{Binding TotalMonthlyOverallExpense}" />
                                             <Span Text="{Binding NewLine}" />
+
                                             <Span
-                                                CharacterSpacing="1"
-                                                FontAttributes="Bold"
-                                                FontSize="17"
+                                                FontSize="13"
+                                                Style="{DynamicResource SpanThreeBoxCurrencyStyle}"
                                                 Text="{Binding CurrencySymbol}" />
                                             <Span
-                                                CharacterSpacing="-1"
-                                                FontAttributes="Bold"
-                                                FontSize="18"
+                                                FontSize="15"
+                                                Style="{DynamicResource SpanThreeBoxAmountStyle}"
                                                 Text="{Binding TotalMonthlyExpenseWithComma}" />
                                             <Span
-                                                CharacterSpacing="1"
-                                                FontAttributes="Bold"
-                                                FontSize="14"
+                                                FontSize="13"
+                                                Style="{DynamicResource SpanThreeBoxAmountStyle}"
                                                 Text=" + " />
                                             <Span
-                                                CharacterSpacing="1"
-                                                FontAttributes="Bold"
-                                                FontSize="17"
+                                                FontSize="13"
+                                                Style="{DynamicResource SpanThreeBoxCurrencyStyle}"
                                                 Text="{Binding CurrencySymbol}" />
                                             <Span
-                                                CharacterSpacing="-1"
-                                                FontAttributes="Bold"
-                                                FontSize="18"
+                                                FontSize="15"
+                                                Style="{DynamicResource SpanThreeBoxAmountStyle}"
                                                 Text="{Binding TotalMonthlyExistingExpense}" />
                                         </FormattedString>
                                     </customControls:ThreeColumnBorderedContentView.FormattedText3>
@@ -1103,7 +1044,10 @@
                     <tabView:SfTabItem.Content>
                         <ScrollView>
                             <StackLayout>
-                                <customControls:DisclaimerBannerView BannerType="Warning" HeaderText="Disclaimer" Text="This loan calculator app is intended for informational purposes only and should not be considered a substitute for professional financial advice. It is highly recommended that you consult with your financial adviser before making any financial decisions." />
+                                <customControls:DisclaimerBannerView
+                                    BannerType="Warning"
+                                    HeaderText="Disclaimer"
+                                    Text="This loan calculator app is intended for informational purposes only and should not be considered a substitute for professional financial advice. It is highly recommended that you consult with your financial adviser before making any financial decisions." />
 
                                 <Grid HorizontalOptions="Center" VerticalOptions="Center">
                                     <Grid.ColumnDefinitions>

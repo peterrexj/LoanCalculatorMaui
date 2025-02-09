@@ -28,59 +28,26 @@
                             <customControls:ThreeColumnBorderedContentView>
                                 <customControls:ThreeColumnBorderedContentView.FormattedText1>
                                     <FormattedString>
-                                        <Span
-                                            CharacterSpacing="1"
-                                            FontAttributes="Bold"
-                                            FontSize="17"
-                                            Text="{Binding CurrencySymbol}" />
-                                        <Span
-                                            CharacterSpacing="-1"
-                                            FontAttributes="Bold"
-                                            FontSize="18"
-                                            Text="{Binding TotalMonthlyIncomeWithComma}" />
+                                        <Span Style="{DynamicResource SpanThreeBoxCurrencyStyle}" Text="{Binding CurrencySymbol}" />
+                                        <Span Style="{DynamicResource SpanThreeBoxAmountStyle}" Text="{Binding TotalMonthlyIncomeWithComma}" />
                                         <Span Text="{Binding NewLine}" />
-                                        <Span
-                                            FontAttributes="Bold"
-                                            FontSize="12"
-                                            Text="Monthly Expense" />
+                                        <Span Style="{DynamicResource SpanThreeBoxTextStyle}" Text="Monthly Expense" />
                                     </FormattedString>
                                 </customControls:ThreeColumnBorderedContentView.FormattedText1>
                                 <customControls:ThreeColumnBorderedContentView.FormattedText2>
                                     <FormattedString>
-                                        <Span
-                                            CharacterSpacing="1"
-                                            FontAttributes="Bold"
-                                            FontSize="17"
-                                            Text="{Binding CurrencySymbol}" />
-                                        <Span
-                                            CharacterSpacing="-1"
-                                            FontAttributes="Bold"
-                                            FontSize="18"
-                                            Text="{Binding TotalYearlyIncomeWithComma}" />
+                                        <Span Style="{DynamicResource SpanThreeBoxCurrencyStyle}" Text="{Binding CurrencySymbol}" />
+                                        <Span Style="{DynamicResource SpanThreeBoxAmountStyle}" Text="{Binding TotalYearlyIncomeWithComma}" />
                                         <Span Text="{Binding NewLine}" />
-                                        <Span
-                                            FontAttributes="Bold"
-                                            FontSize="12"
-                                            Text="Yearly Expense" />
+                                        <Span Style="{DynamicResource SpanThreeBoxTextStyle}" Text="Yearly Expense" />
                                     </FormattedString>
                                 </customControls:ThreeColumnBorderedContentView.FormattedText2>
                                 <customControls:ThreeColumnBorderedContentView.FormattedText3>
                                     <FormattedString>
-                                        <Span
-                                            CharacterSpacing="1"
-                                            FontAttributes="Bold"
-                                            FontSize="17"
-                                            Text="{Binding CurrencySymbol}" />
-                                        <Span
-                                            CharacterSpacing="-1"
-                                            FontAttributes="Bold"
-                                            FontSize="18"
-                                            Text="{Binding TotalIncomeMonthlyWithComma}" />
+                                        <Span Style="{DynamicResource SpanThreeBoxCurrencyStyle}" Text="{Binding CurrencySymbol}" />
+                                        <Span Style="{DynamicResource SpanThreeBoxAmountStyle}" Text="{Binding TotalIncomeMonthlyWithComma}" />
                                         <Span Text="{Binding NewLine}" />
-                                        <Span
-                                            FontAttributes="Bold"
-                                            FontSize="12"
-                                            Text="Monthly Income" />
+                                        <Span Style="{DynamicResource SpanThreeBoxTextStyle}" Text="Monthly Income" />
                                     </FormattedString>
                                 </customControls:ThreeColumnBorderedContentView.FormattedText3>
                             </customControls:ThreeColumnBorderedContentView>

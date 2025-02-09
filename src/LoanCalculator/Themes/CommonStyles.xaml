@@ -380,6 +380,22 @@
         <Setter Property="VerticalOptions" Value="Center" />
     </Style>
 
+    <!--  Span Three Box on top -->
+    <Style x:Key="SpanThreeBoxCurrencyStyle" TargetType="Span">
+        <Setter Property="CharacterSpacing" Value="1" />
+        <Setter Property="FontAttributes" Value="Bold" />
+        <Setter Property="FontSize" Value="15" />
+    </Style>
+    <Style x:Key="SpanThreeBoxAmountStyle" TargetType="Span">
+        <Setter Property="CharacterSpacing" Value="-1" />
+        <Setter Property="FontAttributes" Value="Bold" />
+        <Setter Property="FontSize" Value="18" />
+    </Style>
+    <Style x:Key="SpanThreeBoxTextStyle" TargetType="Span">
+        <Setter Property="CharacterSpacing" Value="-0.2" />
+        <Setter Property="FontSize" Value="12" />
+    </Style>
+
 
     <!--  DataTemplate for SfListView  -->
     <!--<DataTemplate x:Key="IncomeExpenseTemplate" x:DataType="income:IncomeExpense">

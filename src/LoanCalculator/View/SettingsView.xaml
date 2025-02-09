@@ -9,7 +9,7 @@
     Title="SettingsView">
     <Grid BackgroundColor="{DynamicResource DefaultBackgroundColor}">
         <!--  Main Content  -->
-        <VerticalStackLayout >
+        <VerticalStackLayout>
             <!--  Top Section  -->
             <Grid Padding="20">
                 <Grid.ColumnDefinitions>
@@ -44,12 +44,12 @@
                 <inputs:SfComboBox
                     x:Name="ThemeComboBox"
                     Margin="0,10,0,0"
+                    BackgroundColor="{DynamicResource DefaultBackgroundColor}"
                     DisplayMemberPath="Name"
                     DropDownBackground="Transparent"
                     DropDownItemFontFamily="{DynamicResource DefaultFontFamily}"
                     FontFamily="{DynamicResource DefaultFontFamily}"
                     IsClearButtonVisible="False"
-                    BackgroundColor="{DynamicResource DefaultBackgroundColor}"
                     IsEditable="False"
                     ItemsSource="{Binding Themes}"
                     SelectedItem="{Binding SelectedTheme}">

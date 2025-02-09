@@ -11,16 +11,20 @@
             <Label Style="{DynamicResource ExpanderHeaderLabelStyle}" Text="{Binding HeaderText, Source={x:Reference DisclaimerBannerContentView}}" />
         </expander:SfExpander.Header>
         <expander:SfExpander.Content>
-            <Grid
-                HorizontalOptions="Center"
-                VerticalOptions="Center">
+            <Grid HorizontalOptions="Center" VerticalOptions="Center">
                 <Grid.Style>
                     <Style TargetType="Grid">
                         <Style.Triggers>
-                            <DataTrigger TargetType="Grid" Binding="{Binding BannerType, Source={x:Reference DisclaimerBannerContentView}}" Value="Information">
+                            <DataTrigger
+                                Binding="{Binding BannerType, Source={x:Reference DisclaimerBannerContentView}}"
+                                TargetType="Grid"
+                                Value="Information">
                                 <Setter Property="Background" Value="{DynamicResource InformationBackgroundGradientBrush}" />
                             </DataTrigger>
-                            <DataTrigger TargetType="Grid" Binding="{Binding BannerType, Source={x:Reference DisclaimerBannerContentView}}" Value="Warning">
+                            <DataTrigger
+                                Binding="{Binding BannerType, Source={x:Reference DisclaimerBannerContentView}}"
+                                TargetType="Grid"
+                                Value="Warning">
                                 <Setter Property="Background" Value="{DynamicResource WarningBackgroundGradientBrush}" />
                             </DataTrigger>
                         </Style.Triggers>

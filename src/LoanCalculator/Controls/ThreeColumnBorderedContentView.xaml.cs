@@ -59,5 +59,32 @@ namespace LoanCalculatorMaui.Controls
                 control.Label3.FormattedText = newFormattedText;
             }
         }
+
+        public static readonly BindableProperty LineHeightBox1Property =
+            BindableProperty.Create(nameof(LineHeightBox1), typeof(double), typeof(ThreeColumnBorderedContentView), 1.0);
+
+        public double LineHeightBox1
+        {
+            get => (double)GetValue(LineHeightBox1Property);
+            set => SetValue(LineHeightBox1Property, value);
+        }
+
+        public static readonly BindableProperty LineHeightBox2Property =
+            BindableProperty.Create(nameof(LineHeightBox2), typeof(double), typeof(ThreeColumnBorderedContentView), 1.0);
+
+        public double LineHeightBox2
+        {
+            get => (double)GetValue(LineHeightBox2Property);
+            set => SetValue(LineHeightBox2Property, value);
+        }
+
+        public static readonly BindableProperty LineHeightBox3Property =
+            BindableProperty.Create(nameof(LineHeightBox3), typeof(double), typeof(ThreeColumnBorderedContentView), 1.0);
+
+        public double LineHeightBox3
+        {
+            get => (double)GetValue(LineHeightBox3Property);
+            set => SetValue(LineHeightBox3Property, value);
+        }
     }
 }

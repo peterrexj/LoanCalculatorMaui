@@ -15,6 +15,21 @@ namespace LoanCalculatorMaui
             var builder = MauiApp.CreateBuilder();
             builder
                 .UseMauiApp<App>()
+                .UseSentry(options =>
+                {
+                    // The DSN is the only required setting.
+                    options.Dsn = "https://16ef66602415c605019107b0a5bd0978@o4508789158445056.ingest.de.sentry.io/4508789160280144";
+
+                    // Use debug mode if you want to see what the SDK is doing.
+                    // Debug messages are written to stdout with Console.Writeline,
+                    // and are viewable in your IDE's debug console or with 'adb logcat', etc.
+                    // This option is not recommended when deploying your application.
+                    options.Debug = true;
+
+                    // Set TracesSampleRate to 1.0 to capture 100% of transactions for tracing.
+                    // We recommend adjusting this value in production.
+                    options.TracesSampleRate = 1.0F;
+                })
                 .UseMauiCommunityToolkit()
                 .ConfigureSyncfusionCore()
                 .ConfigureFonts(fonts =>

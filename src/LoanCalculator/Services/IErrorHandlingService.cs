@@ -9,24 +9,21 @@ namespace LoanCalculatorMaui.Services
         void HandleException(Exception? ex, string message = null);
     }
 
-    public class ErrorHandlingService : IErrorHandlingService
+    public class ErrorHandlingService(ILogger<ErrorHandlingService> logger) : IErrorHandlingService
     {
-        private readonly ILogger<ErrorHandlingService> _logger;
-
-        public ErrorHandlingService(ILogger<ErrorHandlingService> logger)
-        {
-            _logger = logger;
-        }
-
         public void HandleException(Exception? ex, string message = null)
         {
+            //enabling this will log the exception to the console & Sentry will capture and send the exception
             // Log the exception with detailed information
-            _logger.LogError(ex, message ?? ex.Message);
+            //logger.LogError(ex, message ?? ex.Message);
 
             // Display an alert to the user
             MainThread.BeginInvokeOnMainThread(async () =>
             {
-                await Application.Current.MainPage.DisplayAlert("Error", message ?? "An unexpected error occurred.", "OK");
+#if !DEBUG
+                SentrySdk.CaptureException(ex);
+#endif
+                await Application.Current?.MainPage.DisplayAlert("Error", message ?? "An unexpected error occurred.", "OK");
             });
         }
     }

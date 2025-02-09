@@ -96,9 +96,9 @@ public partial class IncomeView : ContentPage
 
     private async Task RefreshListOfIncomeExpense()
     {
-        await Task.Run(() =>
+        try
         {
-            try
+            await Task.Run(() =>
             {
                 ViewHelper.RunOnAppDispatcherAsync(() =>
                 {
@@ -108,12 +108,12 @@ public partial class IncomeView : ContentPage
                         lstEntry.DataSource.RefreshFilter();
                     }
                 });
-            }
-            catch (Exception ex)
-            {
-                //ExceptionHandler.CaptureException(ex);
-            }
-        });
+            });
+        }
+        catch (Exception ex)
+        {
+            _errorHandlingService.HandleException(ex);
+        }
     }
     private bool FilterExpenseIncome(object obj)
     {
@@ -173,65 +173,93 @@ public partial class IncomeView : ContentPage
             }
             else
             {
+                if (lstEntry.DataSource == null) return;
+
                 lstEntry.DataSource.Filter = FilterExpenseIncome;
                 lstEntry.DataSource.RefreshFilter();
             }
         }
         catch (Exception ex)
         {
-            //ExceptionHandler.CaptureException(ex);
+            _errorHandlingService.HandleException(ex);
         }
     }
 
     private void AddNewIncome_Clicked(object sender, EventArgs e)
     {
-        txtIncomeDescription.Unfocus();
-        txtInputAmount.Unfocus();
-
-        if (viewModel.HasErrorIncomeDescription)
+        try
         {
-            txtIncomeDescription.Focus();
-            return;
+            txtIncomeDescription.Unfocus();
+            txtInputAmount.Unfocus();
+
+            if (viewModel.HasErrorIncomeDescription)
+            {
+                txtIncomeDescription.Focus();
+                return;
+            }
+            if (viewModel.HasErrorIncomeAmount)
+            {
+                txtInputAmount.Focus();
+                return;
+            }
+
+            if (viewModel.AddOrUpdateEntryFromView() == false) return;
+
+            lstEntry.DataSource?.SortDescriptors.Clear();
+            lstEntry.DataSource?.SortDescriptors.Add(new SortDescriptor() { PropertyName = "Name", Direction = ListSortDirection.Ascending });
+
+            lstEntry.RefreshItem(canReload: true);
+            viewModel.RefreshIncomePropertyChanged();
         }
-        if (viewModel.HasErrorIncomeAmount)
+        catch (Exception ex)
         {
-            txtInputAmount.Focus();
-            return;
+            _errorHandlingService.HandleException(ex);
         }
-
-        if (viewModel.AddOrUpdateEntryFromView() == false) return;
-
-        lstEntry.DataSource.SortDescriptors.Clear();
-        lstEntry.DataSource.SortDescriptors.Add(new SortDescriptor() { PropertyName = "Name", Direction = ListSortDirection.Ascending });
-
-        lstEntry.RefreshItem(canReload: true);
-        viewModel.RefreshIncomePropertyChanged();
     }
     private void ResetButton_Clicked(object sender, EventArgs e)
     {
-        txtIncomeDescription.Unfocus();
-        txtInputAmount.Unfocus();
+        try
+        {
+            txtIncomeDescription.Unfocus();
+            txtInputAmount.Unfocus();
 
-        viewModel.ResetTransactionEntryData();
-        viewModel.RefreshIncomePropertyChanged();
+            viewModel.ResetTransactionEntryData();
+            viewModel.RefreshIncomePropertyChanged();
+        }
+        catch (Exception ex)
+        {
+            _errorHandlingService.HandleException(ex);
+        }
     }
-
     private void btnEditEntry_Clicked(object sender, EventArgs e)
     {
-        if (sender is not SfButton button || !button.AutomationId.HasValue()) return;
+        try
+        {
+            if (sender is not SfButton button || !button.AutomationId.HasValue()) return;
 
-        viewModel.IncomeExpenseEntry = viewModel.TransactionRecords.Get(Guid.Parse(button.AutomationId)).DeepClone();
-        viewModel.IncomeExpenseFrequencySelectedIndex = viewModel.IncomeExpenseEntry.Frequency.ToString();
+            viewModel.IncomeExpenseEntry = viewModel.TransactionRecords.Get(Guid.Parse(button.AutomationId)).DeepClone();
+            viewModel.IncomeExpenseFrequencySelectedIndex = viewModel.IncomeExpenseEntry.Frequency.ToString();
 
-        viewModel.RefreshIncomePropertyChanged();
+            viewModel.RefreshIncomePropertyChanged();
+        }
+        catch (Exception ex)
+        {
+            _errorHandlingService.HandleException(ex);
+        }
     }
-
     private void btnDeleteEntry_Clicked(object sender, EventArgs e)
     {
-        if (sender is not SfButton button || !button.AutomationId.HasValue()) return;
+        try
+        {
+            if (sender is not SfButton button || !button.AutomationId.HasValue()) return;
 
-        viewModel.TransactionRecords.Delete(Guid.Parse(button.AutomationId));
-        viewModel.ResetTransactionEntryData();
-        viewModel.RefreshIncomePropertyChanged();
+            viewModel.TransactionRecords.Delete(Guid.Parse(button.AutomationId));
+            viewModel.ResetTransactionEntryData();
+            viewModel.RefreshIncomePropertyChanged();
+        }
+        catch (Exception ex)
+        {
+            _errorHandlingService.HandleException(ex);
+        }
     }
 }

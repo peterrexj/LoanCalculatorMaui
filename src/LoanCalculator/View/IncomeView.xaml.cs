@@ -27,19 +27,12 @@ public partial class IncomeView : ContentPage
     {
         try
         {
-            PageHelper.PageIsLoading();
+            
 
             await LoadDataSet();
 
-            PageHelper.PageLoadingComplete();
-
-            BindingContext ??= viewModel;
-
-            lstEntry.DataSource?.SortDescriptors.Add(new SortDescriptor() { PropertyName = "Name", Direction = ListSortDirection.Ascending });
-
             base.OnAppearing();
 
-            viewModel.IsUpdating = false;
             viewModel.TriggerOneTimeUpdateOnPage();
             viewModel.RefreshIncomePropertyChanged();
         }
@@ -59,6 +52,8 @@ public partial class IncomeView : ContentPage
     {
         try
         {
+            PageHelper.PageIsLoading();
+
             var data = await viewModel.LoadDataFile<IncomeViewModel>();
 
             if (!viewModel.HasInitialized)
@@ -87,6 +82,14 @@ public partial class IncomeView : ContentPage
             viewModel.ExpenseSummary = SharedServices.ExpenseSummary;
 
             lstEntry.DataSource?.SortDescriptors.Clear();
+
+            PageHelper.PageLoadingComplete();
+
+            BindingContext ??= viewModel;
+
+            lstEntry.DataSource?.SortDescriptors.Add(new SortDescriptor() { PropertyName = "Name", Direction = ListSortDirection.Ascending });
+
+            viewModel.IsUpdating = false;
         }
         catch (Exception ex)
         {

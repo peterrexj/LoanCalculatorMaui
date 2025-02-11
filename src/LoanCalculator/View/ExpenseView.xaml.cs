@@ -27,19 +27,10 @@ public partial class ExpenseView : ContentPage
     {
         try
         {
-            PageHelper.PageIsLoading();
-
             await LoadDataSet();
-
-            PageHelper.PageLoadingComplete();
-
-            BindingContext ??= viewModel;
-
-            lstEntry.DataSource?.SortDescriptors.Add(new SortDescriptor() { PropertyName = "Name", Direction = ListSortDirection.Ascending });
 
             base.OnAppearing();
 
-            viewModel.IsUpdating = false;
             viewModel.TriggerOneTimeUpdateOnPage();
             viewModel.RefreshIncomePropertyChanged();
         }
@@ -59,6 +50,8 @@ public partial class ExpenseView : ContentPage
     {
         try
         {
+            PageHelper.PageIsLoading();
+
             var data = await viewModel.LoadDataFile<ExpenseViewModel>();
 
             viewModel = data ?? viewModel;
@@ -85,6 +78,14 @@ public partial class ExpenseView : ContentPage
             viewModel.ExpenseSummary = SharedServices.IncomeSummary;
 
             lstEntry.DataSource?.SortDescriptors.Clear();
+
+            PageHelper.PageLoadingComplete();
+
+            BindingContext ??= viewModel;
+
+            lstEntry.DataSource?.SortDescriptors.Add(new SortDescriptor() { PropertyName = "Name", Direction = ListSortDirection.Ascending });
+
+            viewModel.IsUpdating = false;
         }
         catch (Exception ex)
         {

@@ -33,19 +33,10 @@ public partial class LoanView : ContentPage
     {
         try
         {
-            PageHelper.PageIsLoading();
-
             await LoadDataSet();
-
-            PageHelper.PageLoadingComplete();
-
-            BindingContext ??= viewModel;
-
-            lstEntry.DataSource?.SortDescriptors.Add(new SortDescriptor() { PropertyName = "Name", Direction = ListSortDirection.Ascending });
 
             base.OnAppearing();
 
-            viewModel.IsUpdating = false;
             viewModel.TriggerOneTimeUpdateOnPage();
             viewModel.TriggerPropertyChangedOnPropertyTab();
         }
@@ -65,6 +56,8 @@ public partial class LoanView : ContentPage
     {
         try
         {
+            PageHelper.PageIsLoading();
+
             var data = await viewModel.LoadDataFile<LoanViewModel>();
 
             var shouldAddDefaultValues = false;
@@ -98,6 +91,8 @@ public partial class LoanView : ContentPage
 
             if (shouldAddDefaultValues)
             {
+                viewModel.IsUpdating = false;
+
                 viewModel.AddDefaultValues();
             }
 
@@ -111,6 +106,14 @@ public partial class LoanView : ContentPage
             SegmentedAustraliaStates.SelectionChanged += SegmentedAustraliaStatesOnSelectionChanged;
 
             viewModel.SyncAmortization();
+
+            PageHelper.PageLoadingComplete();
+
+            BindingContext ??= viewModel;
+
+            lstEntry.DataSource?.SortDescriptors.Add(new SortDescriptor() { PropertyName = "Name", Direction = ListSortDirection.Ascending });
+
+            viewModel.IsUpdating = false;
         }
         catch (Exception ex)
         {

@@ -51,7 +51,8 @@
                                                 Style="{DynamicResource SpanThreeBoxAmountStyle}"
                                                 Text="{Binding LoanTermInYears}" />
                                             <Span Text=" " />
-                                            <Span Style="{DynamicResource SpanThreeBoxTextStyle}" Text=" years" />
+                                            <Span Style="{DynamicResource SpanThreeBoxTextStyle}" Text=" years with a deposit of " />
+                                            <Span FontSize="14" Style="{DynamicResource SpanThreeBoxAmountStyle}" Text="{Binding DepositAmountStrFormatted}" />
                                         </FormattedString>
                                     </customControls:ThreeColumnBorderedContentView.FormattedText1>
                                     <customControls:ThreeColumnBorderedContentView.FormattedText2>

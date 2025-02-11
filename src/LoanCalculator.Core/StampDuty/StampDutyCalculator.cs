@@ -1,8 +1,8 @@
-﻿using Calculator.StampDuty.AustralianStates;
+﻿using LoanCalculator.Core.StampDuty.AustralianStates;
 using LoanCalculator.Models;
 using LoanCalculator.Models.Enums;
 
-namespace Calculator.StampDuty
+namespace LoanCalculator.Core.StampDuty
 {
     public class StampDutyCalculator
     {

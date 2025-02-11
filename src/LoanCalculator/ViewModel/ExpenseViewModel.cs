@@ -1,10 +1,10 @@
-﻿using Calculator;
-using LoanCalculator.Models;
+﻿using LoanCalculator.Models;
 using LoanCalculator.Models.Enums;
 using LoanCalculator.Models.Income;
 using LoanCalculator.Models.Income.Summary;
 using System.Collections.ObjectModel;
 using System.Text.Json.Serialization;
+using LoanCalculator.Core;
 
 namespace LoanCalculatorMaui.ViewModel;
 

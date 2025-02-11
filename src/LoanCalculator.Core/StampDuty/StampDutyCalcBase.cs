@@ -1,8 +1,6 @@
 ﻿using LoanCalculator.Models;
-using System.Collections.Generic;
-using System.Linq;
 
-namespace Calculator.StampDuty
+namespace LoanCalculator.Core.StampDuty
 {
     public class StampDutyCalcBase
     {
@@ -21,7 +19,7 @@ namespace Calculator.StampDuty
                     total += (item.EndRange - item.StartRange) * item.PercentageCalc;
                 }
             }
-            return total;
+            return Math.Round(total, 0, MidpointRounding.AwayFromZero);
         }
     }
 }

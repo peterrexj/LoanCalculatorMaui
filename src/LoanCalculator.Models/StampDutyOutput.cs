@@ -1,8 +1,5 @@
 ﻿using LoanCalculator.Models.AdditionalExpense;
 using LoanCalculator.Models.Enums;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace LoanCalculator.Models
 {

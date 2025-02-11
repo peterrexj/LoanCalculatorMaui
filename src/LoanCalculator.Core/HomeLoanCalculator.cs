@@ -1,9 +1,9 @@
-﻿using Calculator.StampDuty;
+﻿using System.Globalization;
+using LoanCalculator.Core.StampDuty;
 using LoanCalculator.Models;
 using LoanCalculator.Models.Income.Summary;
-using System.Globalization;
 
-namespace Calculator
+namespace LoanCalculator.Core
 {
     public class HomeLoanCalculator
     {

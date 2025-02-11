@@ -1,10 +1,7 @@
-﻿using LoanCalculator.Models.AdditionalExpense;
-using LoanCalculator.Models;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using LoanCalculator.Models;
+using LoanCalculator.Models.AdditionalExpense;
 
-namespace Calculator.StampDuty
+namespace LoanCalculator.Core.StampDuty.AustralianStates
 {
     public class StampDutyNt : StampDutyCalcBase
     {

@@ -96,7 +96,7 @@
                                                     HorizontalOptions="Start"
                                                     Style="{DynamicResource CommonTextInputLayoutStyle}">
                                                     <editors:SfNumericEntry
-                                                        CustomFormat="c"
+                                                        CustomFormat="c0"
                                                         MaximumNumberDecimalDigits="0"
                                                         TextColor="{DynamicResource InputTextFgColor}"
                                                         Value="{Binding PropertyAmount}" />
@@ -232,7 +232,7 @@
                                                     Hint="Deposit value (direct)"
                                                     Style="{DynamicResource CommonTextInputLayoutStyle}">
                                                     <editors:SfNumericEntry
-                                                        CustomFormat="c2"
+                                                        CustomFormat="c0"
                                                         MaximumNumberDecimalDigits="0"
                                                         ShowClearButton="False"
                                                         TextColor="{DynamicResource InputTextFgColor}"
@@ -249,7 +249,6 @@
                                                     <editors:SfNumericEntry
                                                         CustomFormat="C0"
                                                         MaximumNumberDecimalDigits="0"
-                                                        
                                                         ShowClearButton="False"
                                                         TextColor="{DynamicResource InputTextFgColor}"
                                                         Value="{Binding LoanAmountDirectInput}" />
@@ -367,7 +366,7 @@
                                                     Hint="Property stamp duty (estimate)"
                                                     Style="{DynamicResource CommonTextInputLayoutStyle}">
                                                     <editors:SfNumericEntry
-                                                        CustomFormat="c"
+                                                        CustomFormat="c0"
                                                         MaximumNumberDecimalDigits="0"
                                                         ShowClearButton="False"
                                                         TextColor="{DynamicResource InputTextFgColor}"
@@ -381,7 +380,7 @@
                                                     Hint="Mortgage charges"
                                                     Style="{DynamicResource CommonTextInputLayoutStyle}">
                                                     <editors:SfNumericEntry
-                                                        CustomFormat="c"
+                                                        CustomFormat="c0"
                                                         MaximumNumberDecimalDigits="0"
                                                         ShowClearButton="False"
                                                         TextColor="{DynamicResource InputTextFgColor}"
@@ -395,7 +394,7 @@
                                                     Hint="Conveyance / solicitor fee"
                                                     Style="{DynamicResource CommonTextInputLayoutStyle}">
                                                     <editors:SfNumericEntry
-                                                        CustomFormat="c"
+                                                        CustomFormat="c0"
                                                         MaximumNumberDecimalDigits="0"
                                                         ShowClearButton="False"
                                                         TextColor="{DynamicResource InputTextFgColor}"
@@ -411,7 +410,7 @@
                                                     Hint="Bank fees"
                                                     Style="{DynamicResource CommonTextInputLayoutStyle}">
                                                     <editors:SfNumericEntry
-                                                        CustomFormat="c"
+                                                        CustomFormat="c0"
                                                         MaximumNumberDecimalDigits="0"
                                                         ShowClearButton="False"
                                                         TextColor="{DynamicResource InputTextFgColor}"
@@ -425,7 +424,7 @@
                                                     Hint="Inspection fee"
                                                     Style="{DynamicResource CommonTextInputLayoutStyle}">
                                                     <editors:SfNumericEntry
-                                                        CustomFormat="c"
+                                                        CustomFormat="c0"
                                                         MaximumNumberDecimalDigits="0"
                                                         ShowClearButton="False"
                                                         TextColor="{DynamicResource InputTextFgColor}"
@@ -439,7 +438,7 @@
                                                     Hint="Other expenses"
                                                     Style="{DynamicResource CommonTextInputLayoutStyle}">
                                                     <editors:SfNumericEntry
-                                                        CustomFormat="c"
+                                                        CustomFormat="c0"
                                                         MaximumNumberDecimalDigits="0"
                                                         ShowClearButton="False"
                                                         TextColor="{DynamicResource InputTextFgColor}"

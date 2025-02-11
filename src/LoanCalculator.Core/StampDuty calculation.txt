@@ -1,0 +1,8 @@
+﻿NSW - https://www.revenue.nsw.gov.au/taxes-duties-levies-royalties/transfer-duty
+VIC - https://www.sro.vic.gov.au/land-transfer-duty
+QLD - https://www.qld.gov.au/housing/buying-owning-home/advice-buying-home/transfer-duty
+WA - https://www.wa.gov.au/service/financial-management/taxes-and-duties/transfer-duty
+SA - https://www.revenuesa.sa.gov.au/taxes-and-duties/stamp-duties/transfer-of-land-or-business
+TAS - https://www.sro.tas.gov.au/land-transfer-duty
+NT - https://nt.gov.au/property/buying-and-selling-a-home/transfer-duty
+ACT - https://www.revenue.act.gov.au/duties-and-taxes/transfer-duty

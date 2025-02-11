@@ -19,8 +19,8 @@ namespace LoanCalculator.Models
         }
         public HomeLoanRepaymentInput HomeLoanRepaymentRequest { get; set; }
 
-        PaymentSummary _paymentSummary;
-        public PaymentSummary PaymentSummary
+        PaymentSummary? _paymentSummary;
+        public PaymentSummary? PaymentSummary
         {
             get => _paymentSummary;
             set

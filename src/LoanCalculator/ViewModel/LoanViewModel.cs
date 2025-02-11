@@ -595,7 +595,7 @@ public class LoanViewModel : ExpenseEntryViewBaseModel
     [JsonIgnore] public bool IsAmortizationYearBased => AmortizationBreakdownFrequencySelectedIndex == 0;
 
     [JsonIgnore]
-    public List<PaymentAmortisationOutput> PaymentAmortization
+    public List<PaymentAmortisationOutput>? PaymentAmortization
     {
         get { return HomeLoanInfo.PaymentSummary.PaymentAmortizationTerms; }
     }

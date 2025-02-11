@@ -10,9 +10,9 @@ namespace Calculator
         private static StampDutyCalculator _stampDutyCalculator;
         public static StampDutyCalculator StampDutyCalculator => _stampDutyCalculator ?? new StampDutyCalculator();
 
-        public static PaymentOutput CalculateHomeLoan(double principal, HomeLoanRepaymentInput repaymentInput)
+        public static PaymentOutput? CalculateHomeLoan(double principal, HomeLoanRepaymentInput repaymentInput)
         {
-            PaymentOutput paymentOutput = new PaymentOutput();
+            PaymentOutput? paymentOutput = new PaymentOutput();
 
             if (repaymentInput.InterestRate == 0)
             {
@@ -50,9 +50,9 @@ namespace Calculator
 
             return paymentOutput;
         }
-        public static PaymentSummary CalculateHomeLoanPayments(double principal, HomeLoanRepaymentInput repaymentInput)
+        public static PaymentSummary? CalculateHomeLoanPayments(double principal, HomeLoanRepaymentInput repaymentInput)
         {
-            PaymentSummary paymentSummary = new PaymentSummary();
+            PaymentSummary? paymentSummary = new PaymentSummary();
             paymentSummary.PaymentTerms = new List<PaymentPerTermOutput>();
 
             paymentSummary.Payment = CalculateHomeLoan(principal, repaymentInput);
@@ -85,8 +85,10 @@ namespace Calculator
             return paymentSummary;
         }
 
-        public static void UpdateLoanPaymentAmortizationDataByYear(PaymentSummary paymentSummary)
+        public static void UpdateLoanPaymentAmortizationDataByYear(PaymentSummary? paymentSummary)
         {
+            if (paymentSummary == null || paymentSummary.Payment == null || paymentSummary.PaymentTerms == null || paymentSummary.PaymentTerms.Count == 0) return;
+
             var inYearData = paymentSummary.PaymentTerms.Chunk(paymentSummary.Payment.TotalNumberPaymentPerYear).ToList();
             paymentSummary.PaymentAmortizationTerms = new List<PaymentAmortisationOutput>();
             var incrementDate = new DateTime(DateTime.Now.Year, 01, 01);
@@ -119,7 +121,7 @@ namespace Calculator
             }
             paymentSummary.PaymentAmortizationTerms.Last().BalanceAmount = 0;
         }
-        public static void UpdateLoanPaymentAmortizationDataByTerm(PaymentSummary paymentSummary)
+        public static void UpdateLoanPaymentAmortizationDataByTerm(PaymentSummary? paymentSummary)
         {
             paymentSummary.PaymentAmortizationTerms = new List<PaymentAmortisationOutput>();
             var incrementDate = new DateTime(DateTime.Now.Year, 01, 01);

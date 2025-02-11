@@ -247,8 +247,9 @@
                                                     Hint="Loan Amount (direct)"
                                                     Style="{DynamicResource CommonTextInputLayoutStyle}">
                                                     <editors:SfNumericEntry
-                                                        CustomFormat="c2"
+                                                        CustomFormat="C0"
                                                         MaximumNumberDecimalDigits="0"
+                                                        
                                                         ShowClearButton="False"
                                                         TextColor="{DynamicResource InputTextFgColor}"
                                                         Value="{Binding LoanAmountDirectInput}" />

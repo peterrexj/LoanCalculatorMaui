@@ -67,9 +67,9 @@ namespace LoanCalculator.Models
 
                 if (LoanAmountPercentage == 0 && DepositPercentage == 0) return PropertyTotalAmount;
 
-                if (LoanAmountPercentage > 0) return (PropertyTotalAmount * LoanAmountPercentage) / 100;
+                if (LoanAmountPercentage > 0) return Math.Round((PropertyTotalAmount * LoanAmountPercentage) / 100, MidpointRounding.AwayFromZero);
 
-                if (DepositPercentage > 0) return PropertyTotalAmount - ((PropertyTotalAmount * DepositPercentage) / 100);
+                if (DepositPercentage > 0) return Math.Round(PropertyTotalAmount - ((PropertyTotalAmount * DepositPercentage) / 100), MidpointRounding.AwayFromZero);
 
                 return PropertyTotalAmount;
             }
@@ -135,7 +135,7 @@ namespace LoanCalculator.Models
             get
             {
                 if (LoanAmount == 0 || PropertyTotalAmount == 0) return 0;
-                return Math.Round(LoanAmount / PropertyTotalAmount * 100, 2);
+                return Math.Round(LoanAmount / PropertyTotalAmount * 100, MidpointRounding.AwayFromZero);
             }
         }
 
@@ -223,31 +223,31 @@ namespace LoanCalculator.Models
                 _depositPercentage = depositPercent;
                 _loanAmountPercentage = 100 - _depositPercentage;
 
-                _loanAmountDirectInput = PropertyTotalAmount - ((PropertyTotalAmount * _depositPercentage) / 100);
-                _depositAmountDirectInput = PropertyTotalAmount - _loanAmountDirectInput;
+                _loanAmountDirectInput = Math.Round(PropertyTotalAmount - ((PropertyTotalAmount * _depositPercentage) / 100), MidpointRounding.AwayFromZero);
+                _depositAmountDirectInput = Math.Round(PropertyTotalAmount - _loanAmountDirectInput, MidpointRounding.AwayFromZero);
             }
             else if (loanPercent > 0 || byLoanPercentOnZero)
             {
                 _loanAmountPercentage = loanPercent;
                 _depositPercentage = 100 - loanPercent;
 
-                _loanAmountDirectInput = PropertyTotalAmount - ((PropertyTotalAmount * _depositPercentage) / 100);
-                _depositAmountDirectInput = PropertyTotalAmount - _loanAmountDirectInput;
+                _loanAmountDirectInput = Math.Round(PropertyTotalAmount - ((PropertyTotalAmount * _depositPercentage) / 100), MidpointRounding.AwayFromZero);
+                _depositAmountDirectInput = Math.Round(PropertyTotalAmount - _loanAmountDirectInput, MidpointRounding.AwayFromZero);
             }
             else if (loanDirect > 0 || byLoanDirectOnZero)
             {
                 _loanAmountDirectInput = loanDirect;
-                _depositAmountDirectInput = PropertyTotalAmount - _loanAmountDirectInput;
+                _depositAmountDirectInput = Math.Round(PropertyTotalAmount - _loanAmountDirectInput, MidpointRounding.AwayFromZero);
 
-                _depositPercentage = (_depositAmountDirectInput / PropertyTotalAmount) * 100;
+                _depositPercentage = Math.Round((_depositAmountDirectInput / PropertyTotalAmount) * 100, MidpointRounding.AwayFromZero);
                 _loanAmountPercentage = 100 - _depositPercentage;
             }
             else if (depositDirect > 0 || byDepositDirectOnZero)
             {
                 _depositAmountDirectInput = depositDirect;
-                _loanAmountDirectInput = PropertyTotalAmount - _depositAmountDirectInput;
+                _loanAmountDirectInput = Math.Round(PropertyTotalAmount - _depositAmountDirectInput, MidpointRounding.AwayFromZero);
 
-                _depositPercentage = (_depositAmountDirectInput / PropertyTotalAmount) * 100;
+                _depositPercentage = Math.Round((_depositAmountDirectInput / PropertyTotalAmount) * 100, MidpointRounding.AwayFromZero);
                 _loanAmountPercentage = 100 - _depositPercentage;
             }
         }
@@ -262,11 +262,11 @@ namespace LoanCalculator.Models
                 BankExpense.SumUpData();
                 ConveyanceExpense.SumUpData();
                 OtherExpense.SumUpData();
-                return StampDuty.Total + BankExpense.Total + ConveyanceExpense.Total + OtherExpense.Total;
+                return Math.Round(StampDuty.Total + BankExpense.Total + ConveyanceExpense.Total + OtherExpense.Total, MidpointRounding.AwayFromZero);
             }
         }
         [JsonIgnore]
-        public double PropertyTotalAmount => PropertyAmount + OtherExpenseTotalAmount;
+        public double PropertyTotalAmount => Math.Round(PropertyAmount + OtherExpenseTotalAmount, MidpointRounding.AwayFromZero);
 
         public double MonthlyTotalRepayment { get; set; }
     }

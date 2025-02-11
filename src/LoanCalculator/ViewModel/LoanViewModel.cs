@@ -270,6 +270,18 @@ public class LoanViewModel : ExpenseEntryViewBaseModel
 
     [JsonIgnore] public string PropertyTotalAmount => $"{CurrencySymbol}{HomeLoanInfo.PropertyTotalAmount:N0}";
 
+    [JsonIgnore]
+    private bool _isDepositPercentageSliderEnabled;
+    public bool IsDepositPercentageSliderEnabled
+    {
+        get => _isDepositPercentageSliderEnabled;
+        set
+        {
+            _isDepositPercentageSliderEnabled = value;
+            OnPropertyChanged(nameof(IsDepositPercentageSliderEnabled));
+        }
+    }
+
     #endregion
 
     [JsonIgnore] private ObservableCollection<DataModel> _chartPropertyValueWithInterestPayment;

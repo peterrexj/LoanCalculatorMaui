@@ -78,7 +78,7 @@ namespace LoanCalculator.Models
         private double _loanAmountDirectInput;
         public double LoanAmountDirectInput
         {
-            get { return _loanAmountDirectInput; }
+            get => _loanAmountDirectInput;
             set
             {
                 if (value <= 0)

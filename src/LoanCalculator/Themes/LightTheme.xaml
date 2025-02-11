@@ -106,7 +106,6 @@
     <Color x:Key="ChartColor2">#73C6B6</Color>
     <Color x:Key="ChartColor3">#BB8FCE</Color>
 
-
     <!--  Borders  -->
     <Color x:Key="BorderTopGradientOuterLineStart">#566573</Color>
     <Color x:Key="BorderTopGradientOuterLineEnd">#34495e</Color>
@@ -142,5 +141,7 @@
         <GradientStop Offset="1.0" Color="{StaticResource ExpanderCollapsedGradientEnd}" />
     </LinearGradientBrush>
 
+    <!--  Checkbox styles  -->
+    <Color x:Key="CheckboxBackColor">#C1CFA1</Color>
 
 </ResourceDictionary>

@@ -351,4 +351,9 @@ public partial class LoanView : ContentPage
             _errorHandlingService.HandleException(ex);
         }
     }
+
+    private void OnLabelTapped(object sender, TappedEventArgs e)
+    {
+        EnableSliderCheckBox.IsChecked = !EnableSliderCheckBox.IsChecked;
+    }
 }

@@ -52,7 +52,10 @@
                                                 Text="{Binding LoanTermInYears}" />
                                             <Span Text=" " />
                                             <Span Style="{DynamicResource SpanThreeBoxTextStyle}" Text=" years with a deposit of " />
-                                            <Span FontSize="14" Style="{DynamicResource SpanThreeBoxAmountStyle}" Text="{Binding DepositAmountStrFormatted}" />
+                                            <Span
+                                                FontSize="14"
+                                                Style="{DynamicResource SpanThreeBoxAmountStyle}"
+                                                Text="{Binding DepositAmountStrFormatted}" />
                                         </FormattedString>
                                     </customControls:ThreeColumnBorderedContentView.FormattedText1>
                                     <customControls:ThreeColumnBorderedContentView.FormattedText2>
@@ -256,10 +259,31 @@
                                                     Grid.Column="0"
                                                     Grid.ColumnSpan="2"
                                                     BackgroundColor="Transparent">
-                                                    <Label Text="Deposit Percentage" />
+                                                    <HorizontalStackLayout HorizontalOptions="Start" VerticalOptions="Start">
+                                                        <CheckBox
+                                                            x:Name="EnableSliderCheckBox"
+                                                            Color="{DynamicResource CheckboxBackColor}"
+                                                            IsChecked="{Binding IsDepositPercentageSliderEnabled}"
+                                                            VerticalOptions="Center" />
+                                                        <Label
+                                                            Margin="0,0,0,0"
+                                                            FontSize="12"
+                                                            Text="Enable"
+                                                            VerticalOptions="Center">
+                                                            <Label.GestureRecognizers>
+                                                                <TapGestureRecognizer Tapped="OnLabelTapped" />
+                                                            </Label.GestureRecognizers>
+                                                        </Label>
+                                                    </HorizontalStackLayout>
+                                                    <Label
+                                                        FontSize="12"
+                                                        Text="Deposit Percentage"
+                                                        VerticalOptions="Center" />
+
                                                     <range:SfSlider
                                                         Margin="0,-17,0,0"
                                                         HeightRequest="70"
+                                                        IsEnabled="{Binding IsDepositPercentageSliderEnabled}"
                                                         Maximum="100"
                                                         Minimum="0"
                                                         ShowLabels="True"

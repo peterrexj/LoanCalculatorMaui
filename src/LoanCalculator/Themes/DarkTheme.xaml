@@ -141,4 +141,7 @@
         <GradientStop Offset="0.0" Color="{StaticResource ExpanderCollapsedGradientStart}" />
         <GradientStop Offset="1.0" Color="{StaticResource ExpanderCollapsedGradientEnd}" />
     </LinearGradientBrush>
+
+    <!--  Checkbox styles  -->
+    <Color x:Key="CheckboxBackColor">#C1CFA1</Color>
 </ResourceDictionary>

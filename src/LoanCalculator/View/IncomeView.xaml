@@ -20,7 +20,10 @@
     <ContentPage.Content>
         <Grid BackgroundColor="{DynamicResource DefaultBackgroundColor}">
             <customControls:PopupDisclaimerView />
-            <tabView:SfTabView x:Name="tabView" HeaderHorizontalTextAlignment="Center" SelectionChanged="OnTabSelectionChanged">
+            <tabView:SfTabView
+                x:Name="tabView"
+                HeaderHorizontalTextAlignment="Center"
+                SelectionChanged="OnTabSelectionChanged">
                 <tabView:SfTabItem x:Name="tabIncomeDetails" Header="Income">
                     <tabView:SfTabItem.Content>
                         <StackLayout>
@@ -292,7 +295,7 @@
                 <tabView:SfTabItem x:Name="tabIncomeProjection" Header="Projection">
                     <tabView:SfTabItem.Content>
                         <StackLayout>
-                            <Border Margin="0,5,0,0" Style="{DynamicResource BorderTopSingleHighlightBox}">
+                            <Border Margin="5,5,5,5" Style="{DynamicResource BorderTopSingleHighlightBox}">
                                 <ContentView>
                                     <Label
                                         Margin="10,5,10,5"
@@ -337,70 +340,71 @@
                                 </ContentView>
                             </Border>
 
-                            <FlexLayout>
-                                <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="30*" />
-                                        <ColumnDefinition Width="70*" />
-                                    </Grid.ColumnDefinitions>
-                                    <core:SfTextInputLayout
-                                        Grid.Row="0"
-                                        Grid.Column="0"
-                                        HelperText="{Binding AnnualGrowthRatePercentage}"
-                                        Hint="Expense growth rate percentage"
-                                        HorizontalOptions="Start"
-                                        Style="{DynamicResource CommonTextInputLayoutStyle}">
-                                        <editors:SfNumericEntry
-                                            CustomFormat="%"
-                                            Maximum="100"
-                                            MaximumNumberDecimalDigits="0"
-                                            Minimum="0"
-                                            TextColor="{DynamicResource InputTextFgColor}"
-                                            Value="{Binding AnnualGrowthRate}" />
-                                    </core:SfTextInputLayout>
-                                    <StackLayout
-                                        Grid.Row="0"
-                                        Grid.Column="1"
-                                        BackgroundColor="Transparent">
-                                        <Label Text="Years to project" TextColor="{DynamicResource InputTextFgColor}" />
-                                        <range:SfSlider
-                                            Margin="10,-17,20,0"
-                                            HeightRequest="70"
-                                            Interval="5"
-                                            Maximum="25"
-                                            Minimum="1"
-                                            MinorTicksPerInterval="3"
-                                            ShowLabels="True"
-                                            ShowTicks="True"
-                                            StepSize="1"
-                                            Value="{Binding TotalYearsToProject}">
-                                            <range:SfRangeSlider.ThumbStyle>
-                                                <range:SliderThumbStyle
-                                                    Fill="{DynamicResource SliderKnobFillColor}"
-                                                    OverlapStroke="{DynamicResource SliderKnobOverlapColor}"
-                                                    Stroke="{DynamicResource SliderKnobBorderColor}"
-                                                    StrokeThickness="2" />
-                                            </range:SfRangeSlider.ThumbStyle>
-                                            <range:SfSlider.LabelStyle>
-                                                <range:SliderLabelStyle
-                                                    ActiveFontFamily="{DynamicResource DefaultFontFamily}"
-                                                    ActiveFontSize="12"
-                                                    ActiveTextColor="{DynamicResource RangeSliderLabelTextColor}"
-                                                    InactiveFontFamily="{DynamicResource DefaultFontFamily}"
-                                                    InactiveFontSize="12"
-                                                    InactiveTextColor="{DynamicResource RangeSliderLabelTextColor}" />
-                                            </range:SfSlider.LabelStyle>
-                                            <range:SfSlider.TrackStyle>
-                                                <range:SliderTrackStyle
-                                                    ActiveFill="{DynamicResource RangeSliderTrackActiveFillColor}"
-                                                    ActiveSize="5"
-                                                    InactiveFill="{DynamicResource RangeSliderTrackInActiveFillColor}"
-                                                    InactiveSize="1" />
-                                            </range:SfSlider.TrackStyle>
-                                        </range:SfSlider>
-                                    </StackLayout>
-                                </Grid>
-                            </FlexLayout>
+                            <Grid Margin="8,0,0,0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="30*" />
+                                    <ColumnDefinition Width="70*" />
+                                </Grid.ColumnDefinitions>
+                                <core:SfTextInputLayout
+                                    Grid.Row="0"
+                                    Grid.Column="0"
+                                    HelperText="{Binding AnnualGrowthRatePercentage}"
+                                    Hint="Expense growth rate percentage"
+                                    HorizontalOptions="Start"
+                                    Style="{DynamicResource CommonTextInputLayoutStyle}">
+                                    <editors:SfNumericEntry
+                                        CustomFormat="%"
+                                        Maximum="100"
+                                        MaximumNumberDecimalDigits="0"
+                                        Minimum="0"
+                                        TextColor="{DynamicResource InputTextFgColor}"
+                                        Value="{Binding AnnualGrowthRate}" />
+                                </core:SfTextInputLayout>
+                                <StackLayout
+                                    Grid.Row="0"
+                                    Grid.Column="1"
+                                    BackgroundColor="Transparent">
+                                    <Label
+                                        FontSize="12"
+                                        Text="Years to project"
+                                        TextColor="{DynamicResource InputTextFgColor}" />
+                                    <range:SfSlider
+                                        Margin="10,-17,20,0"
+                                        HeightRequest="70"
+                                        Interval="4"
+                                        Maximum="25"
+                                        Minimum="1"
+                                        MinorTicksPerInterval="3"
+                                        ShowLabels="True"
+                                        ShowTicks="True"
+                                        StepSize="1"
+                                        Value="{Binding TotalYearsToProject}">
+                                        <range:SfRangeSlider.ThumbStyle>
+                                            <range:SliderThumbStyle
+                                                Fill="{DynamicResource SliderKnobFillColor}"
+                                                OverlapStroke="{DynamicResource SliderKnobOverlapColor}"
+                                                Stroke="{DynamicResource SliderKnobBorderColor}"
+                                                StrokeThickness="2" />
+                                        </range:SfRangeSlider.ThumbStyle>
+                                        <range:SfSlider.LabelStyle>
+                                            <range:SliderLabelStyle
+                                                ActiveFontFamily="{DynamicResource DefaultFontFamily}"
+                                                ActiveFontSize="12"
+                                                ActiveTextColor="{DynamicResource RangeSliderLabelTextColor}"
+                                                InactiveFontFamily="{DynamicResource DefaultFontFamily}"
+                                                InactiveFontSize="12"
+                                                InactiveTextColor="{DynamicResource RangeSliderLabelTextColor}" />
+                                        </range:SfSlider.LabelStyle>
+                                        <range:SfSlider.TrackStyle>
+                                            <range:SliderTrackStyle
+                                                ActiveFill="{DynamicResource RangeSliderTrackActiveFillColor}"
+                                                ActiveSize="5"
+                                                InactiveFill="{DynamicResource RangeSliderTrackInActiveFillColor}"
+                                                InactiveSize="1" />
+                                        </range:SfSlider.TrackStyle>
+                                    </range:SfSlider>
+                                </StackLayout>
+                            </Grid>
 
                             <Border Style="{DynamicResource ChartBorderStyle}">
                                 <Border.Content>

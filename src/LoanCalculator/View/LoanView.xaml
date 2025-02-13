@@ -262,9 +262,9 @@
                                                     <HorizontalStackLayout HorizontalOptions="Start" VerticalOptions="Start">
                                                         <CheckBox
                                                             x:Name="EnableSliderCheckBox"
-                                                            Color="{DynamicResource CheckboxBackColor}"
                                                             IsChecked="{Binding IsDepositPercentageSliderEnabled}"
-                                                            VerticalOptions="Center" />
+                                                            VerticalOptions="Center"
+                                                            Color="{DynamicResource CheckboxBackColor}" />
                                                         <Label
                                                             Margin="0,0,0,0"
                                                             FontSize="12"
@@ -874,6 +874,7 @@
                                                 FontSize="15"
                                                 Style="{DynamicResource SpanThreeBoxAmountStyle}"
                                                 Text="{Binding TotalMonthlyExistingExpense}" />
+                                            <Span Style="{DynamicResource SpanThreeBoxTextStyle}" Text=" monthly total expense" />
                                         </FormattedString>
                                     </customControls:ThreeColumnBorderedContentView.FormattedText3>
                                 </customControls:ThreeColumnBorderedContentView>
@@ -926,9 +927,9 @@
                                                             Style="{DynamicResource CommonTextInputLayoutStyle}">
                                                             <core:SfNumericEntry
                                                                 x:Name="txtInputAmount"
-                                                                CustomFormat="c"
+                                                                CustomFormat="c0"
                                                                 FontSize="14"
-                                                                MaximumNumberDecimalDigits="2"
+                                                                MaximumNumberDecimalDigits="0"
                                                                 TextColor="{DynamicResource InputTextFgColor}"
                                                                 Value="{Binding IncomeEntryAmount}" />
                                                         </core:SfTextInputLayout>
@@ -1028,6 +1029,7 @@
                                                                 VerticalOptions="Center" />
                                                             <Label
                                                                 Grid.Column="2"
+                                                                Margin="0,0,5,0"
                                                                 FontSize="12"
                                                                 HorizontalOptions="End"
                                                                 Text="{Binding Frequency}"

@@ -39,6 +39,7 @@ public partial class LoanView : ContentPage
 
             viewModel.TriggerOneTimeUpdateOnPage();
             viewModel.TriggerPropertyChangedOnPropertyTab();
+            viewModel.RefreshExpenseTabPropertyChanged();
         }
         catch (Exception ex)
         {

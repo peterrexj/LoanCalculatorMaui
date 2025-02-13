@@ -134,7 +134,6 @@ public partial class LoanView : ContentPage
         }
     }
 
-
     private void AmortizationBreadDownFrequencySegmentCtrlOnSelectionChanged(object? sender, SelectionChangedEventArgs e)
     {
         try
@@ -180,11 +179,6 @@ public partial class LoanView : ContentPage
         {
             _errorHandlingService.HandleException(ex);
         }
-    }
-
-    private void autoComplete_Completed(object sender, EventArgs e)
-    {
-
     }
 
     private async Task RefreshListOfIncomeExpense()
@@ -271,6 +265,10 @@ public partial class LoanView : ContentPage
             _errorHandlingService.HandleException(ex);
         }
     }
+    private void autoComplete_Completed(object sender, EventArgs e)
+    {
+
+    }
 
     private void AddNewIncome_Clicked(object sender, EventArgs e)
     {
@@ -303,7 +301,6 @@ public partial class LoanView : ContentPage
             _errorHandlingService.HandleException(ex);
         }
     }
-
     private void ResetButton_Clicked(object sender, EventArgs e)
     {
         try
@@ -319,7 +316,6 @@ public partial class LoanView : ContentPage
             _errorHandlingService.HandleException(ex);
         }
     }
-
     private void btnEditEntry_Clicked(object sender, EventArgs e)
     {
         try
@@ -336,7 +332,6 @@ public partial class LoanView : ContentPage
             _errorHandlingService.HandleException(ex);
         }
     }
-
     private void btnDeleteEntry_Clicked(object sender, EventArgs e)
     {
         try

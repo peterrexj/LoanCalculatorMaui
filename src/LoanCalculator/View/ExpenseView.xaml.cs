@@ -184,6 +184,7 @@ public partial class ExpenseView : ContentPage
         }
     }
 
+    #region Transaction Entry
     private void AddNewIncome_Clicked(object sender, EventArgs e)
     {
         try
@@ -209,6 +210,7 @@ public partial class ExpenseView : ContentPage
 
             lstEntry.RefreshItem(canReload: true);
             viewModel.RefreshIncomePropertyChanged();
+            viewModel.UpdateProjectionData();
         }
         catch (Exception ex)
         {
@@ -255,6 +257,22 @@ public partial class ExpenseView : ContentPage
             viewModel.TransactionRecords.Delete(Guid.Parse(button.AutomationId));
             viewModel.ResetTransactionEntryData();
             viewModel.RefreshIncomePropertyChanged();
+        }
+        catch (Exception ex)
+        {
+            _errorHandlingService.HandleException(ex);
+        }
+    }
+    #endregion
+
+    private void OnTabSelectionChanged(object sender, Syncfusion.Maui.TabView.TabSelectionChangedEventArgs e)
+    {
+        try
+        {
+            if (e.NewIndex == 1)
+            {
+                viewModel.TriggerPropertyChangedOnProjectionTab();
+            }
         }
         catch (Exception ex)
         {

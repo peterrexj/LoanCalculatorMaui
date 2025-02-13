@@ -27,8 +27,6 @@ public partial class IncomeView : ContentPage
     {
         try
         {
-            
-
             await LoadDataSet();
 
             base.OnAppearing();
@@ -155,11 +153,11 @@ public partial class IncomeView : ContentPage
         }
     }
 
+
     private void autoComplete_Completed(object sender, EventArgs e)
     {
 
     }
-
     private async void autoComplete_SelectionChanged(object sender, Syncfusion.Maui.Inputs.SelectionChangedEventArgs e)
     {
         try
@@ -188,6 +186,8 @@ public partial class IncomeView : ContentPage
         }
     }
 
+
+    #region Transaction Entry
     private void AddNewIncome_Clicked(object sender, EventArgs e)
     {
         try
@@ -213,6 +213,7 @@ public partial class IncomeView : ContentPage
 
             lstEntry.RefreshItem(canReload: true);
             viewModel.RefreshIncomePropertyChanged();
+            viewModel.UpdateProjectionData();
         }
         catch (Exception ex)
         {
@@ -259,6 +260,22 @@ public partial class IncomeView : ContentPage
             viewModel.TransactionRecords.Delete(Guid.Parse(button.AutomationId));
             viewModel.ResetTransactionEntryData();
             viewModel.RefreshIncomePropertyChanged();
+        }
+        catch (Exception ex)
+        {
+            _errorHandlingService.HandleException(ex);
+        }
+    }
+    #endregion
+
+    private void OnTabSelectionChanged(object sender, Syncfusion.Maui.TabView.TabSelectionChangedEventArgs e)
+    {
+        try
+        {
+            if (e.NewIndex == 1)
+            {
+                viewModel.TriggerPropertyChangedOnProjectionTab();
+            }
         }
         catch (Exception ex)
         {

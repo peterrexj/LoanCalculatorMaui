@@ -20,7 +20,7 @@
     <ContentPage.Content>
         <Grid BackgroundColor="{DynamicResource DefaultBackgroundColor}">
             <customControls:PopupDisclaimerView />
-            <tabView:SfTabView x:Name="tabView" HeaderHorizontalTextAlignment="Center">
+            <tabView:SfTabView x:Name="tabView" HeaderHorizontalTextAlignment="Center" SelectionChanged="OnTabSelectionChanged">
                 <tabView:SfTabItem x:Name="tabIncomeDetails" Header="Expense">
                     <tabView:SfTabItem.Content>
                         <StackLayout>

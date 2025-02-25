@@ -852,29 +852,11 @@
                                         <FormattedString>
                                             <Span Style="{DynamicResource SpanThreeBoxCurrencyStyle}" Text="{Binding CurrencySymbol}" />
                                             <Span Style="{DynamicResource SpanThreeBoxAmountStyle}" Text="{Binding TotalMonthlyOverallExpense}" />
-                                            <Span Text="{Binding NewLine}" />
-
                                             <Span
-                                                FontSize="13"
-                                                Style="{DynamicResource SpanThreeBoxCurrencyStyle}"
-                                                Text="{Binding CurrencySymbol}" />
-                                            <Span
-                                                FontSize="15"
+                                                FontSize="10"
                                                 Style="{DynamicResource SpanThreeBoxAmountStyle}"
-                                                Text="{Binding TotalMonthlyExpenseWithComma}" />
-                                            <Span
-                                                FontSize="13"
-                                                Style="{DynamicResource SpanThreeBoxAmountStyle}"
-                                                Text=" + " />
-                                            <Span
-                                                FontSize="13"
-                                                Style="{DynamicResource SpanThreeBoxCurrencyStyle}"
-                                                Text="{Binding CurrencySymbol}" />
-                                            <Span
-                                                FontSize="15"
-                                                Style="{DynamicResource SpanThreeBoxAmountStyle}"
-                                                Text="{Binding TotalMonthlyExistingExpense}" />
-                                            <Span Style="{DynamicResource SpanThreeBoxTextStyle}" Text=" monthly total expense" />
+                                                Text="{Binding TotalMonthlyOverallExpenseBreakdownWithComma}"/>
+                                            <Span Style="{DynamicResource SpanThreeBoxTextStyle}" Text=" monthly new property overall expense" />
                                         </FormattedString>
                                     </customControls:ThreeColumnBorderedContentView.FormattedText3>
                                 </customControls:ThreeColumnBorderedContentView>

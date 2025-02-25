@@ -1,15 +1,8 @@
 ﻿using LoanCalculator.Models.Enums;
 using LoanCalculator.Models.Income;
 using Pj.Library;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
 using System.Text.Json.Serialization;
-using System.Threading.Tasks;
-using LoanCalculatorMaui.Services;
-using Syncfusion.Maui.Core.Carousel;
 
 namespace LoanCalculatorMaui.ViewModel
 {

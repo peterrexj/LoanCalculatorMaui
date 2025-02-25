@@ -208,43 +208,120 @@ namespace LoanCalculator.Core
         }
 
 
-        /// <summary>
-        /// Refer: Reference_IncomeExpenseProjectionCalculation.xlsx
-        /// </summary>
-        /// <param name="incomeExpenseSummary"></param>
-        /// <param name="summaryAdditionalDataNotRequired"></param>
-        public static void UpdateIncomeExpenseProjectionDataByYear(IncomeExpenseSummary incomeExpenseSummary, IncomeExpenseSummary summaryAdditionalDataNotRequired = null)
+        public static void UpdateExpenseProjectionDataByYear(IncomeExpenseSummary expenseSummary,
+            double additionalExpensesFromNewProperty
+            )
         {
-            if (summaryAdditionalDataNotRequired == null) summaryAdditionalDataNotRequired = new IncomeExpenseSummary();
-
-            incomeExpenseSummary.ProjectionTerms = new List<IncomeExpenseProjectionOutput>();
+            expenseSummary.ProjectionTerms = new List<IncomeExpenseProjectionOutput>();
 
             var incrementDate = new DateTime(DateTime.Now.Year, 01, 01);
 
-            incomeExpenseSummary.ProjectionTerms.Add(new IncomeExpenseProjectionOutput
+            expenseSummary.ProjectionTerms.Add(new IncomeExpenseProjectionOutput
             {
                 TermNumber = 0,
-                GrowthPercentage = incomeExpenseSummary.AnnualGrowthRatePercentage,
-                TermStartAmount = incomeExpenseSummary.TotalYearly - summaryAdditionalDataNotRequired.TotalYearly,
                 DateTimeOfPayment = incrementDate,
                 PaymentPeriod = incrementDate.Year.ToString(),
+
+                GrowthPercentage = 0,
+                TermGrowthAmount = 0,
+                TermStartAmount = expenseSummary.TotalYearly ,
+                TermAdjustments = expenseSummary.TotalYearly + additionalExpensesFromNewProperty,
+                TermEndAmount = expenseSummary.TotalYearly,
             });
 
-            incomeExpenseSummary.ProjectionTerms.Last().IncomeExpenseAmount = incomeExpenseSummary.ProjectionTerms.Sum(f => f.TermEndAmount);
+            expenseSummary.ProjectionTerms.Last().IncomeExpenseAmount = expenseSummary.ProjectionTerms.Sum(f => f.TermAdjustments);
 
-            for (int year = 0; year < incomeExpenseSummary.NumberOfYearsProjection; year++)
+            for (int year = 0; year <= expenseSummary.NumberOfYearsProjection; year++)
             {
-                IncomeExpenseProjectionOutput amortizationOutput = new IncomeExpenseProjectionOutput();
+                IncomeExpenseProjectionOutput amortizationOutput = new IncomeExpenseProjectionOutput
+                {
+                    TermNumber = year + 1,
+                    DateTimeOfPayment = incrementDate.AddYears(year + 1),
+                    PaymentPeriod = incrementDate.AddYears(year + 1).Year.ToString(),
 
-                amortizationOutput.TermNumber = year + 1;
-                amortizationOutput.DateTimeOfPayment = incrementDate.AddYears(year + 1);
-                amortizationOutput.GrowthPercentage = incomeExpenseSummary.AnnualGrowthRatePercentage;
-                amortizationOutput.TermStartAmount = incomeExpenseSummary.ProjectionTerms.Last().TermEndAmount;
-                amortizationOutput.PaymentPeriod = amortizationOutput.DateTimeOfPayment.Year.ToString();
-                incomeExpenseSummary.ProjectionTerms.Add(amortizationOutput);
+                    GrowthPercentage = expenseSummary.AnnualGrowthRatePercentage,
+                    TermStartAmount = expenseSummary.ProjectionTerms.Last().TermEndAmount,
+                };
 
-                incomeExpenseSummary.ProjectionTerms.Last().IncomeExpenseAmount = incomeExpenseSummary.ProjectionTerms.Sum(f => f.TermEndAmount);
+                if (amortizationOutput.GrowthPercentage != 0)
+                {
+                    amortizationOutput.TermGrowthAmount = amortizationOutput.TermStartAmount * amortizationOutput.GrowthPercentage;
+                    amortizationOutput.TermEndAmount = amortizationOutput.TermStartAmount + amortizationOutput.TermGrowthAmount;
+                }
+                else
+                {
+                    amortizationOutput.TermGrowthAmount = 0;
+                    amortizationOutput.TermEndAmount = amortizationOutput.TermStartAmount;
+                }
+
+                amortizationOutput.TermAdjustments = amortizationOutput.TermEndAmount + additionalExpensesFromNewProperty;
+
+                expenseSummary.ProjectionTerms.Add(amortizationOutput);
+
+                expenseSummary.ProjectionTerms.Last().IncomeExpenseAmount = expenseSummary.ProjectionTerms.Sum(f => f.TermAdjustments);
             }
         }
+
+        /// <summary>
+        /// Refer: Reference_IncomeExpenseProjectionCalculation.xlsx
+        /// </summary>
+        /// <param name="incomeSummary"></param>
+        /// <param name="summaryAdditionalDataNotRequired"></param>
+        /// <param name="personalExpense"></param>
+        /// <param name="propertyExpense"></param>
+        public static void UpdateIncomeExpenseProjectionDataByYear(
+            IncomeExpenseSummary incomeSummary,
+            double personalExpense = 0)
+        {
+            incomeSummary.ProjectionTerms = new List<IncomeExpenseProjectionOutput>();
+
+            var incrementDate = new DateTime(DateTime.Now.Year, 01, 01);
+
+            incomeSummary.ProjectionTerms.Add(new IncomeExpenseProjectionOutput
+            {
+                TermNumber = 0,
+                DateTimeOfPayment = incrementDate,
+                PaymentPeriod = incrementDate.Year.ToString(),
+
+                GrowthPercentage = 0,
+                TermGrowthAmount = 0,
+                TermStartAmount = incomeSummary.TotalYearly,
+                TermAdjustments = incomeSummary.TotalYearly - personalExpense,
+                TermEndAmount = incomeSummary.TotalYearly,
+            });
+
+            incomeSummary.ProjectionTerms.Last().IncomeExpenseAmount = incomeSummary.ProjectionTerms.Sum(f => f.TermAdjustments);
+
+            for (int year = 0; year <= incomeSummary.NumberOfYearsProjection; year++)
+            {
+                IncomeExpenseProjectionOutput amortizationOutput = new IncomeExpenseProjectionOutput
+                {
+                    TermNumber = year + 1,
+                    DateTimeOfPayment = incrementDate.AddYears(year + 1),
+                    PaymentPeriod = incrementDate.AddYears(year + 1).Year.ToString(),
+
+                    GrowthPercentage = incomeSummary.AnnualGrowthRatePercentage,
+                    TermStartAmount = incomeSummary.ProjectionTerms.Last().TermEndAmount,
+                };
+
+                if (amortizationOutput.GrowthPercentage != 0)
+                {
+                    amortizationOutput.TermGrowthAmount = amortizationOutput.TermStartAmount * amortizationOutput.GrowthPercentage;
+                    amortizationOutput.TermEndAmount = amortizationOutput.TermStartAmount + amortizationOutput.TermGrowthAmount;
+                }
+                else
+                {
+                    amortizationOutput.TermGrowthAmount = 0;
+                    amortizationOutput.TermEndAmount = amortizationOutput.TermStartAmount;
+                }
+                
+                amortizationOutput.TermAdjustments = amortizationOutput.TermEndAmount - personalExpense;
+                
+                incomeSummary.ProjectionTerms.Add(amortizationOutput);
+
+                incomeSummary.ProjectionTerms.Last().IncomeExpenseAmount = incomeSummary.ProjectionTerms.Sum(f => f.TermAdjustments);
+            }
+        }
+
     }
 }

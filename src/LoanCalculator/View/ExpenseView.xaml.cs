@@ -12,15 +12,17 @@ namespace LoanCalculatorMaui.View;
 public partial class ExpenseView : ContentPage
 {
     private readonly IErrorHandlingService _errorHandlingService;
+    private readonly IAlertService _alertService;
     ExpenseViewModel viewModel;
 
-    public ExpenseView(IErrorHandlingService errorHandlingService)
+    public ExpenseView(IErrorHandlingService errorHandlingService, IAlertService alertService)
     {
         _errorHandlingService = errorHandlingService;
+        _alertService = alertService;
 
         InitializeComponent();
 
-        viewModel = new ExpenseViewModel();
+        viewModel = new ExpenseViewModel(_errorHandlingService, _alertService);
     }
 
     protected override async void OnAppearing()
@@ -52,30 +54,39 @@ public partial class ExpenseView : ContentPage
         {
             PageHelper.PageIsLoading();
 
-            var data = await viewModel.LoadDataFile<ExpenseViewModel>();
-
-            viewModel = data ?? viewModel;
-
             if (!viewModel.HasInitialized)
             {
+                var data = await viewModel.LoadDataFile<ExpenseViewModel>();
+
                 if (data == null)
                 {
                     viewModel.AddDefaultToExpenses();
                 }
+                else if (data is { TransactionRecords: null })
+                {
+                    viewModel.AddDefaultToExpenses();
+                }
+                else
+                {
+                    viewModel = data;
+                }
             }
-            else if (data == null)
+            if (viewModel?.TransactionRecords == null)
             {
-                viewModel.TransactionRecords.DeleteAll();
-                viewModel.AddDefaultToExpenses();
+                viewModel!.AddDefaultToExpenses();
             }
-
+            
             viewModel.InitializeViewData();
             viewModel.InitializeBrushes();
             viewModel.MarkInitializationComplete();
 
             viewModel.IncomeExpenseEntry.Frequency = TimeFrequencyEnum.Monthly;
             viewModel.IncomeExpenseFrequencySelectedIndex = TimeFrequencyEnum.Monthly.ToString();
-            viewModel.ExpenseSummary = SharedServices.IncomeSummary;
+            viewModel.IncomeSummary = SharedServices.IncomeSummary;
+
+            var loanData = SharedServices.GetLoanViewModel();
+            viewModel.PropertyExpenseSummary = loanData.Item1;
+            viewModel.PropertyPayment = loanData.Item2;
 
             lstEntry.DataSource?.SortDescriptors.Clear();
 
@@ -225,23 +236,31 @@ public partial class ExpenseView : ContentPage
             txtInputAmount.Unfocus();
 
             viewModel.ResetTransactionEntryData();
-            viewModel.RefreshIncomePropertyChanged();
+            viewModel.RefreshTransactionEntry();
         }
         catch (Exception ex)
         {
             _errorHandlingService.HandleException(ex);
         }
     }
-    private void btnEditEntry_Clicked(object sender, EventArgs e)
+    private async void btnEditEntry_Clicked(object sender, EventArgs e)
     {
         try
         {
             if (sender is not SfButton button || !button.AutomationId.HasValue()) return;
 
-            viewModel.IncomeExpenseEntry = viewModel.TransactionRecords.Get(Guid.Parse(button.AutomationId)).DeepClone();
-            viewModel.IncomeExpenseFrequencySelectedIndex = viewModel.IncomeExpenseEntry.Frequency.ToString();
+            var entryData = viewModel.TransactionRecords?.Get(Guid.Parse(button.AutomationId))?.DeepClone();
+            if (entryData == null)
+            {
+                await _alertService.ShowAlertAsync("Error", "Unable to find the entry to edit.", "OK");
+                return;
+            }
 
-            viewModel.RefreshIncomePropertyChanged();
+            viewModel.IncomeExpenseEntry = entryData;
+
+            viewModel.IncomeExpenseFrequencySelectedIndex = entryData.Frequency.ToString();
+
+            viewModel.RefreshTransactionEntry();
         }
         catch (Exception ex)
         {
@@ -271,6 +290,7 @@ public partial class ExpenseView : ContentPage
         {
             if (e.NewIndex == 1)
             {
+                viewModel.UpdateProjectionData();
                 viewModel.TriggerPropertyChangedOnProjectionTab();
             }
         }

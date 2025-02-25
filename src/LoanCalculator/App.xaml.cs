@@ -6,13 +6,11 @@ namespace LoanCalculatorMaui
 {
     public partial class App : Application
     {
-        public static IServiceProvider Services { get; private set; }
-
         public App(IServiceProvider serviceProvider)
         {
             InitializeComponent();
-            
-            Services = serviceProvider;
+
+            ServiceLocator.ServiceProvider = serviceProvider;
 
             AppDomain.CurrentDomain.UnhandledException += HandleUnhandledException;
             TaskScheduler.UnobservedTaskException += HandleTaskSchedulerException;
@@ -49,7 +47,7 @@ namespace LoanCalculatorMaui
         {
             if (exception == null) return;
 
-            var errorHandlingService = Services.GetService<IErrorHandlingService>();
+            var errorHandlingService = ServiceLocator.GetService<IErrorHandlingService>();
             errorHandlingService?.HandleException(exception, "An unhandled exception occurred.");
         }
     }

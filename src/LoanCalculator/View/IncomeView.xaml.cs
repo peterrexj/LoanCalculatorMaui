@@ -14,13 +14,15 @@ namespace LoanCalculatorMaui.View;
 public partial class IncomeView : ContentPage
 {
     private readonly IErrorHandlingService _errorHandlingService;
+    private readonly IAlertService _alertService;
     private IncomeViewModel viewModel;
 
-    public IncomeView(IErrorHandlingService errorHandlingService)
+    public IncomeView(IErrorHandlingService errorHandlingService, IAlertService alertService)
     {
         _errorHandlingService = errorHandlingService;
+        _alertService = alertService;
         InitializeComponent();
-        viewModel = new IncomeViewModel();
+        viewModel = new IncomeViewModel(_errorHandlingService, _alertService);
     }
 
     protected override async void OnAppearing()
@@ -52,13 +54,16 @@ public partial class IncomeView : ContentPage
         {
             PageHelper.PageIsLoading();
 
-            var data = await viewModel.LoadDataFile<IncomeViewModel>();
-
             if (!viewModel.HasInitialized)
             {
+                var data = await viewModel.LoadDataFile<IncomeViewModel>();
+
                 if (data == null)
                 {
-                    //viewModel.InitializeViewData();
+                    viewModel.AddDefaultToExpenses();
+                }
+                else if (data is { TransactionRecords: null })
+                {
                     viewModel.AddDefaultToExpenses();
                 }
                 else
@@ -66,9 +71,9 @@ public partial class IncomeView : ContentPage
                     viewModel = data;
                 }
             }
-            else if (data == null)
+            if (viewModel?.TransactionRecords == null)
             {
-                viewModel.TransactionRecords.DeleteAll();
+                viewModel.AddDefaultToExpenses();
             }
 
             viewModel.InitializeViewData();
@@ -78,6 +83,11 @@ public partial class IncomeView : ContentPage
             viewModel.IncomeExpenseEntry.Frequency = TimeFrequencyEnum.Monthly;
             viewModel.IncomeExpenseFrequencySelectedIndex = TimeFrequencyEnum.Monthly.ToString();
             viewModel.ExpenseSummary = SharedServices.ExpenseSummary;
+
+            var loanData = SharedServices.GetLoanViewModel();
+            viewModel.PropertyExpenseSummary = loanData.Item1;
+            viewModel.PropertyPayment = loanData.Item2;
+
 
             lstEntry.DataSource?.SortDescriptors.Clear();
 
@@ -274,6 +284,7 @@ public partial class IncomeView : ContentPage
         {
             if (e.NewIndex == 1)
             {
+                viewModel.UpdateProjectionData();
                 viewModel.TriggerPropertyChangedOnProjectionTab();
             }
         }

@@ -1,74 +1,71 @@
-﻿using LoanCalculator.Models.Income.Summary;
+﻿using LoanCalculator.Models;
+using LoanCalculator.Models.Income.Summary;
 using LoanCalculatorMaui.Themes;
 using LoanCalculatorMaui.ViewModel;
 using Pj.Library;
 
 namespace LoanCalculatorMaui.Services
 {
-    //public interface ISharedServices
-    //{
-    //    IAppInformation AppInformation { get; }
-    //    ILocalStorage LocalStorage { get; }
-    //    INameValueDataService NameValueDataService { get; }
-    //    IThemeHelper ThemeHelper { get; }
-    //    IncomeExpenseSummary ExpenseSummary { get; }
-    //    IncomeExpenseSummary IncomeSummary { get; }
-    //    bool ShouldShowAppLaunchDisclaimer();
-    //    string GetAppLaunchDisclaimerData();
-    //}
-
     public static class SharedServices
     {
-        // Properties to hold dependencies
-        public static ILocalStorage? LocalStorage { get; private set; }
-        public static INameValueDataService? NameValueDataService { get; private set; }
-        public static IAppInformation? AppInformation { get; private set; }
-        public static IThemeHelper? ThemeHelper { get; private set; }
+        private static ILocalStorage? _localStorage;
+        public static ILocalStorage? LocalStorage => _localStorage ??= ServiceLocator.GetService<ILocalStorage>();
 
-        // Initialization method for dependency injection
-        public static void Initialize(
-            ILocalStorage? localStorage,
-            INameValueDataService? nameValueDataService,
-            IAppInformation? appInformation,
-            IThemeHelper? themeHelper)
-        {
-            LocalStorage = localStorage ?? throw new ArgumentNullException(nameof(localStorage));
-            NameValueDataService = nameValueDataService ?? throw new ArgumentNullException(nameof(nameValueDataService));
-            AppInformation = appInformation ?? throw new ArgumentNullException(nameof(appInformation));
-            ThemeHelper = themeHelper ?? throw new ArgumentNullException(nameof(themeHelper));
-        }
+        private static INameValueDataService? _nameValueDataService;
+        public static INameValueDataService? NameValueDataService => _nameValueDataService ??= ServiceLocator.GetService<INameValueDataService>();
 
-        public static IncomeExpenseSummary ExpenseSummary
+        private static IAppInformation? _appInformation;
+        public static IAppInformation? AppInformation => _appInformation ??= ServiceLocator.GetService<IAppInformation>();
+
+        private static IThemeHelper? _themeHelper;
+        public static IThemeHelper? ThemeHelper => _themeHelper ??= ServiceLocator.GetService<IThemeHelper>();
+
+
+        //// Initialization method for dependency injection
+        //public static void Initialize(
+        //    INameValueDataService? nameValueDataService,
+        //    IAppInformation? appInformation,
+        //    IThemeHelper? themeHelper)
+        //{
+        //    //LocalStorage = localStorage ?? throw new ArgumentNullException(nameof(localStorage));
+        //    NameValueDataService = nameValueDataService ?? throw new ArgumentNullException(nameof(nameValueDataService));
+        //    AppInformation = appInformation ?? throw new ArgumentNullException(nameof(appInformation));
+        //    ThemeHelper = themeHelper ?? throw new ArgumentNullException(nameof(themeHelper));
+        //}
+
+        private static IncomeExpenseSummary GetIncomeExpenseSummary<TViewModel>() where TViewModel : class
         {
-            get
+            TViewModel? temp = null;
+            Task.Run(async () => temp = await LocalStorage?.GetData<TViewModel>()).Wait();
+
+            if (temp == null)
             {
-                ExpenseViewModel temp = null;
-                Task.Run(async () => temp = await LocalStorage?.GetData<ExpenseViewModel>()).Wait();
-
-                if (temp == null)
-                {
-                    return new IncomeExpenseSummary();
-                }
-
-                temp?.TransactionRecords?.SumUpData();
-                return temp?.TransactionRecords?.IncomeExpenseSummary;
+                return new IncomeExpenseSummary();
             }
+
+            var transactionRecords = (temp as dynamic)?.TransactionRecords;
+            transactionRecords?.SumUpData();
+            return transactionRecords?.IncomeExpenseSummary;
         }
 
-        public static IncomeExpenseSummary IncomeSummary
+        public static IncomeExpenseSummary ExpenseSummary => GetIncomeExpenseSummary<ExpenseViewModel>();
+
+        public static IncomeExpenseSummary IncomeSummary => GetIncomeExpenseSummary<IncomeViewModel>();
+
+        public static IncomeExpenseSummary LoanPropertyExpenseSummary => GetIncomeExpenseSummary<LoanViewModel>();
+
+        public static (IncomeExpenseSummary?, PaymentOutput?)  GetLoanViewModel()
         {
-            get
+            LoanViewModel? temp = null;
+            Task.Run(async () => temp = await LocalStorage?.GetData<LoanViewModel>()).Wait();
+            if (temp == null)
             {
-                IncomeViewModel temp = null;
-                Task.Run(async () => temp = await LocalStorage.GetData<IncomeViewModel>()).Wait();
-
-                if (temp == null)
-                {
-                    return new IncomeExpenseSummary();
-                }
-
+                return (new IncomeExpenseSummary(), new PaymentOutput());
+            }
+            else
+            {
                 temp?.TransactionRecords?.SumUpData();
-                return temp?.TransactionRecords?.IncomeExpenseSummary;
+                return (temp?.TransactionRecords?.IncomeExpenseSummary, temp?.HomeLoanInfo?.PaymentSummary?.Payment);
             }
         }
 
@@ -83,74 +80,11 @@ namespace LoanCalculatorMaui.Services
         {
             if (disclaimerData.IsEmpty())
             {
-                disclaimerData = PjUtility.Runtime.GetAssembly("LoanCalculatorMaui").GetEmbeddedResourceAsText("LoanCalculatorMaui.Extensions.DisclaimerData.AppLaunchDisclaimerData.txt");
+                disclaimerData = PjUtility.Runtime.GetAssembly("LoanCalculatorMaui").GetEmbeddedResourceAsText("LoanCalculatorMaui.Extensions.DisclaimerData.AppLaunchDisclaimerData.html")
+                    .Replace("{{AppName}}", "LoanCalcPro");
             }
             return disclaimerData;
 
         }
     }
-
-
-
-
-    //public class SharedServices1(ILocalStorage localStorage, INameValueDataService nameValueDataService, IAppInformation appInformation) 
-    //    : ISharedServices
-    //{
-    //    public ILocalStorage LocalStorage { get; } = localStorage;
-    //    public INameValueDataService NameValueDataService { get; } = nameValueDataService;
-    //    public IAppInformation AppInformation { get; } = appInformation;
-
-
-    //    public IncomeExpenseSummary ExpenseSummary
-    //    {
-    //        get
-    //        {
-    //            ExpenseViewModel temp = null;
-    //            Task.Run(async () => temp = await LocalStorage.GetData<ExpenseViewModel>()).Wait();
-
-
-    //            if (temp == null)
-    //            {
-    //                return new IncomeExpenseSummary();
-    //            }
-
-    //            temp?.Expenses?.SumUpData();
-    //            return temp?.Expenses?.IncomeExpenseSummary;
-    //        }
-    //    }
-
-    //    public IncomeExpenseSummary IncomeSummary
-    //    {
-    //        get
-    //        {
-    //            IncomeViewModel temp = null;
-    //            Task.Run(async () => temp = await LocalStorage.GetData<IncomeViewModel>()).Wait();
-
-    //            if (temp == null)
-    //            {
-    //                return new IncomeExpenseSummary();
-    //            }
-
-    //            temp?.Incomes?.SumUpData();
-    //            return temp?.Incomes?.IncomeExpenseSummary;
-    //        }
-    //    }
-
-    //    public bool ShouldShowAppLaunchDisclaimer()
-    //    {
-    //        return NameValueDataService.NameValueDataModel.HasShowAppLaunchDisclaimer != true;
-    //    }
-
-
-    //    private static string disclaimerData;
-    //    public string GetAppLaunchDisclaimerData()
-    //    {
-    //        if (disclaimerData.IsEmpty())
-    //        {
-    //            disclaimerData = PjUtility.Runtime.GetAssembly("LoanCalculatorMaui").GetEmbeddedResourceAsText("LoanCalculatorMaui.Extensions.DisclaimerData.AppLaunchDisclaimerData.txt");
-    //        }
-    //        return disclaimerData;
-
-    //    }
-    //}
 }

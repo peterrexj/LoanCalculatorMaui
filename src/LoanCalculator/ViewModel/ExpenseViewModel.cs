@@ -1,15 +1,26 @@
-﻿using LoanCalculator.Models;
+﻿using LoanCalculator.Core;
+using LoanCalculator.Models;
 using LoanCalculator.Models.Enums;
 using LoanCalculator.Models.Income;
 using LoanCalculator.Models.Income.Summary;
+using LoanCalculatorMaui.Services;
 using System.Collections.ObjectModel;
 using System.Text.Json.Serialization;
-using LoanCalculator.Core;
+using LoanCalculatorMaui.Extensions;
 
 namespace LoanCalculatorMaui.ViewModel;
 
-public class ExpenseViewModel : ExpenseEntryViewBaseModel
+public class ExpenseViewModel(IErrorHandlingService errorHandlingService, IAlertService alertService)
+    : ExpenseEntryViewBaseModel
 {
+    [JsonIgnore]
+    private readonly IErrorHandlingService _errorHandlingService = errorHandlingService;
+    [JsonIgnore]
+    private readonly IAlertService _alertService = alertService;
+
+    public ExpenseViewModel() : this(ServiceLocator.GetService<IErrorHandlingService>(), ServiceLocator.GetService<IAlertService>())
+    {
+    }
     public void InitializeViewData()
     {
         CurrencySymbol = Helper.CurrencySymbol;
@@ -66,7 +77,6 @@ public class ExpenseViewModel : ExpenseEntryViewBaseModel
     #region Income after Expense
 
     private bool _showIncomeAfterExpense;
-
     public bool ShowIncomeAfterExpense
     {
         get => _showIncomeAfterExpense;
@@ -74,31 +84,193 @@ public class ExpenseViewModel : ExpenseEntryViewBaseModel
         {
             _showIncomeAfterExpense = value;
 
-            if (isUpdating == false)
+            if (isUpdating == false && PageHelper.IsFormLoading == false)
             {
                 isUpdating = true;
-                RefreshIncomePropertyChanged();
+                OnPropertyChanged(nameof(ShowIncomeAfterExpense)); //TODO: required to call this as the refreshincomeproperty is called anyways
+                RefreshIncomePropertyChangedAsync();
                 isUpdating = false;
             }
-
         }
     }
 
-    [JsonIgnore] private IncomeExpenseSummary _expenseSummary;
-
-    [JsonIgnore]
-    public IncomeExpenseSummary ExpenseSummary
+    private bool _showPropertyExpense;
+    public bool ShowPropertyExpense
     {
-        get => _expenseSummary;
+        get => _showPropertyExpense;
         set
         {
-            _expenseSummary = value;
-            OnPropertyChanged(nameof(ExpenseSummary));
+            _showPropertyExpense = value;
+
+            if (isUpdating == false && PageHelper.IsFormLoading == false)
+            {
+                isUpdating = true;
+                OnPropertyChanged(nameof(ShowPropertyExpense));
+                RefreshIncomePropertyChangedAsync();
+                isUpdating = false;
+            }
         }
     }
 
-    public string StringIncomeTextOnTopBox =>
-        ShowIncomeAfterExpense ? "Monthly Income (after expense)" : "Monthly Income";
+    private bool _includeIncomeInProjection;
+    public bool IncludeIncomeInProjection
+    {
+        get => _includeIncomeInProjection;
+        set
+        {
+            _includeIncomeInProjection = value;
+
+            if (isUpdating == false && PageHelper.IsFormLoading == false)
+            {
+                isUpdating = true;
+                OnPropertyChanged(nameof(IncludeIncomeInProjection));
+                UpdateProjectionDataAsync();
+                isUpdating = false;
+            }
+        }
+    }
+
+    private bool _includePropertyExpensesInProjection;
+    public bool IncludePropertyExpenses
+    {
+        get => _includePropertyExpensesInProjection;
+        set
+        {
+            _includePropertyExpensesInProjection = value;
+
+            if (isUpdating == false && PageHelper.IsFormLoading == false)
+            {
+                isUpdating = true;
+                OnPropertyChanged(nameof(IncludePropertyExpenses));
+                UpdateProjectionDataAsync();
+                isUpdating = false;
+            }
+        }
+    }
+
+    [JsonIgnore] private IncomeExpenseSummary? _incomeSummary;
+
+    [JsonIgnore]
+    public IncomeExpenseSummary? IncomeSummary
+    {
+        get => _incomeSummary;
+        set
+        {
+            _incomeSummary = value;
+            OnPropertyChanged(nameof(IncomeSummary));
+        }
+    }
+
+    [JsonIgnore] private IncomeExpenseSummary? _propertyExpenseSummary;
+
+    [JsonIgnore]
+    public IncomeExpenseSummary? PropertyExpenseSummary
+    {
+        get => _propertyExpenseSummary;
+        set
+        {
+            _propertyExpenseSummary = value;
+            OnPropertyChanged(nameof(PropertyExpenseSummary));
+        }
+    }
+    [JsonIgnore] private PaymentOutput? _propertyPayment;
+
+    [JsonIgnore]
+    public PaymentOutput? PropertyPayment
+    {
+        get => _propertyPayment;
+        set
+        {
+            _propertyPayment = value;
+            OnPropertyChanged(nameof(PropertyPayment));
+        }
+    }
+
+    //[JsonIgnore]
+    //public bool IsExpenseBreakdownVisible => ShowPropertyExpense ? true : false;
+    //[JsonIgnore]
+    //public int FontOnExpenseToxBox => ShowPropertyExpense ? 14 : 18;
+
+    [JsonIgnore]
+    public string StringMonthlyExpenseOnTopBox => ShowPropertyExpense ? "Monthly and Property loan & expense" : "Monthly expenses";
+
+    [JsonIgnore]
+    public string TotalMonthlySumExpenseWithComma
+    {
+        get
+        {
+            double expenses = TransactionRecords?.IncomeExpenseSummary?.TotalMonthly ?? 0;
+
+            if (ShowPropertyExpense)
+            {
+                expenses += PropertyExpenseSummary?.TotalMonthly ?? 0;
+                expenses += PropertyPayment?.TermPaymentMonthly ?? 0;
+            }
+
+            return $"{Math.Round(expenses, 0):N0}";
+        }
+    }
+    [JsonIgnore]
+    public string TotalMonthlyExpenseBreakdownWithComma
+    {
+        get
+        {
+            if (ShowPropertyExpense)
+            {
+                var expenses = System.Environment.NewLine;
+
+                expenses += $"(${Math.Round(TransactionRecords?.IncomeExpenseSummary?.TotalMonthly ?? 0, 0):N0}";
+
+                expenses += $" + ${Math.Round(PropertyExpenseSummary?.TotalMonthly ?? 0, 0):N0}";
+                expenses += $" + ${Math.Round(PropertyPayment?.TermPaymentMonthly ?? 0, 0):N0})";
+
+                return expenses;
+            }
+            else
+            {
+                return string.Empty;
+            }
+        }
+    }
+
+    [JsonIgnore]
+    public double TotalMonthlyExpense
+    {
+        get
+        {
+            double expenses = 0;
+            expenses = TransactionRecords?.IncomeExpenseSummary?.TotalMonthly ?? 0;
+
+            if (ShowPropertyExpense)
+            {
+                expenses += PropertyExpenseSummary?.TotalMonthly ?? 0;
+                expenses += PropertyPayment?.TermPaymentMonthly ?? 0;
+            }
+
+            return expenses;
+        }
+    }
+
+    [JsonIgnore]
+    public double TotalYearlyExpense
+    {
+        get
+        {
+            double expenses = 0;
+            expenses = TransactionRecords?.IncomeExpenseSummary?.TotalYearly ?? 0;
+
+            if (ShowPropertyExpense)
+            {
+                expenses += PropertyExpenseSummary?.TotalYearly ?? 0;
+                expenses += PropertyPayment?.TermPaymentYearly ?? 0;
+            }
+
+            return expenses;
+        }
+    }
+
+    [JsonIgnore]
+    public string StringIncomeTextOnTopBox => ShowIncomeAfterExpense ? "Monthly Income (after expenses)" : "Monthly Income";
 
     #endregion
 
@@ -108,22 +280,40 @@ public class ExpenseViewModel : ExpenseEntryViewBaseModel
     public string TotalMonthlyIncomeWithComma => TransactionRecords.IncomeExpenseSummary.TotalMonthlyWithComma;
 
     [JsonIgnore]
-    public string TotalYearlyIncomeWithComma => TransactionRecords.IncomeExpenseSummary.TotalYearlyWithComma;
+    public string TotalYearlyIncomeWithComma => $"{TotalYearlyExpense:N0}";
 
     [JsonIgnore]
-    public string TotalProjectedYearlyIncomeWithComma =>
-        TransactionRecords.IncomeExpenseSummary.ProjectTotalYearlyWithComma;
+    public string TotalProjectedYearlyIncomeWithComma => TransactionRecords.IncomeExpenseSummary.ProjectTotalYearlyWithComma;
 
     [JsonIgnore]
-    public string TotalIncomeMonthlyWithComma =>
-        $"{Math.Round(ShowIncomeAfterExpense ? (ExpenseSummary?.TotalMonthly ?? 0) - (TransactionRecords?.IncomeExpenseSummary?.TotalMonthly ?? 0) : (ExpenseSummary?.TotalMonthly ?? 0), 0):N0}";
+    public string TotalIncomeMonthlyWithComma
+    {
+        get
+        {
+            double income = IncomeSummary?.TotalMonthly ?? 0;
+
+            if (ShowIncomeAfterExpense)
+            {
+                income -= (TransactionRecords?.IncomeExpenseSummary?.TotalMonthly ?? 0);
+
+                if (ShowPropertyExpense)
+                {
+                    income -= PropertyExpenseSummary?.TotalMonthly ?? 0;
+                    income -= PropertyPayment?.TermPaymentMonthly ?? 0;
+                }
+            }
+
+            return $"{Math.Round(income, 0):N0}";
+        }
+    }
+
 
     #endregion
 
     #region Charts
 
     [JsonIgnore]
-    public ObservableCollection<ChartDataModel> ChartIncomeExpenseProjectionAmountAxis
+    public ObservableCollection<ChartDataModel> ChartProjectionTermStartAmountAxis
     {
         get
         {
@@ -135,13 +325,13 @@ public class ExpenseViewModel : ExpenseEntryViewBaseModel
             {
                 return new ObservableCollection<ChartDataModel>(
                     TransactionRecords.IncomeExpenseSummary.ProjectionTerms.Select(f => new ChartDataModel
-                        { Name = f.YearOfPayment.ToString(), Value = f.IncomeExpenseAmount }));
+                    { Name = f.YearOfPayment.ToString(), Value = f.TermStartAmount }));
             }
         }
     }
 
     [JsonIgnore]
-    public ObservableCollection<ChartDataModel> ChartIncomeExpenseProjectionTermStartAxis
+    public ObservableCollection<ChartDataModel> ChartProjectionIncomeExpenseAmountAxis
     {
         get
         {
@@ -153,13 +343,13 @@ public class ExpenseViewModel : ExpenseEntryViewBaseModel
             {
                 return new ObservableCollection<ChartDataModel>(
                     TransactionRecords.IncomeExpenseSummary.ProjectionTerms.Select(f => new ChartDataModel
-                        { Name = f.YearOfPayment.ToString(), Value = f.TermStartAmount }));
+                    { Name = f.YearOfPayment.ToString(), Value = f.IncomeExpenseAmount }));
             }
         }
     }
 
     [JsonIgnore]
-    public ObservableCollection<ChartDataModel> ChartIncomeExpenseProjectionGrowthAmountAxis
+    public ObservableCollection<ChartDataModel> ChartProjectionDeductionAmountAxis
     {
         get
         {
@@ -171,25 +361,7 @@ public class ExpenseViewModel : ExpenseEntryViewBaseModel
             {
                 return new ObservableCollection<ChartDataModel>(
                     TransactionRecords.IncomeExpenseSummary.ProjectionTerms.Select(f => new ChartDataModel
-                        { Name = f.YearOfPayment.ToString(), Value = f.TermGrowthAmount }));
-            }
-        }
-    }
-
-    [JsonIgnore]
-    public ObservableCollection<ChartDataModel> ChartIncomeExpenseProjectionAccumulatedAmountAxis
-    {
-        get
-        {
-            if (TransactionRecords.IncomeExpenseSummary.ProjectionTerms?.ToList() == null)
-            {
-                return new ObservableCollection<ChartDataModel>();
-            }
-            else
-            {
-                return new ObservableCollection<ChartDataModel>(
-                    TransactionRecords.IncomeExpenseSummary.ProjectionTerms.Select(f => new ChartDataModel
-                        { Name = f.YearOfPayment.ToString(), Value = f.AccumulatedAmount }));
+                    { Name = f.YearOfPayment.ToString(), Value = f.TermAdjustments }));
             }
         }
     }
@@ -239,15 +411,48 @@ public class ExpenseViewModel : ExpenseEntryViewBaseModel
 
     #region Live Updates
 
+    private async void UpdateProjectionDataAsync()
+    {
+        try
+        {
+            await Task.Run(() =>
+            {
+                UpdateProjectionData();
+                TriggerPropertyChangedOnProjectionTab();
+            });
+        }
+        catch (Exception e)
+        {
+            _errorHandlingService.HandleException(e);
+        }
+    }
+    private async void RefreshIncomePropertyChangedAsync()
+    {
+        try
+        {
+            await Task.Run(RefreshIncomePropertyChanged);
+        }
+        catch (Exception e)
+        {
+            _errorHandlingService.HandleException(e);
+        }
+    }
+
     public void RefreshIncomePropertyChanged()
     {
         TransactionRecords?.SumUpData();
+
+        OnPropertyChanged(nameof(StringMonthlyExpenseOnTopBox));
+        OnPropertyChanged(nameof(TotalMonthlyExpenseBreakdownWithComma));
+        OnPropertyChanged(nameof(TotalMonthlyExpense));
+        OnPropertyChanged(nameof(TotalYearlyExpense));
         OnPropertyChanged(nameof(IncomeEntryName));
         OnPropertyChanged(nameof(HasErrorIncomeDescription));
         OnPropertyChanged(nameof(IncomeEntryAmount));
         OnPropertyChanged(nameof(HasErrorIncomeAmount));
         OnPropertyChanged(nameof(IsExpenseDataFormReadyToSubmit));
         OnPropertyChanged(nameof(TotalMonthlyIncomeWithComma));
+        OnPropertyChanged(nameof(TotalMonthlySumExpenseWithComma));
         OnPropertyChanged(nameof(TotalYearlyIncomeWithComma));
         OnPropertyChanged(nameof(TotalIncomeMonthlyWithComma));
         OnPropertyChanged(nameof(IncomeExpenseFrequencySelectedIndex));
@@ -258,18 +463,42 @@ public class ExpenseViewModel : ExpenseEntryViewBaseModel
         base.SaveData(this);
     }
 
+    public void RefreshTransactionEntry()
+    {
+        OnPropertyChanged(nameof(IncomeEntryName));
+        OnPropertyChanged(nameof(HasErrorIncomeDescription));
+        OnPropertyChanged(nameof(IncomeEntryAmount));
+        OnPropertyChanged(nameof(HasErrorIncomeAmount));
+        OnPropertyChanged(nameof(IsExpenseDataFormReadyToSubmit));
+    }
+
     public void UpdateProjectionData()
     {
+        double propertyExpenses = 0;
+
+        if (IncludePropertyExpenses)
+        {
+            if (PropertyExpenseSummary != null)
+            {
+                propertyExpenses += PropertyExpenseSummary?.TotalYearly ?? 0;
+            }
+            if (PropertyPayment != null)
+            {
+                propertyExpenses += PropertyPayment?.TermPaymentYearly ?? 0;
+            }
+        }
+
         TransactionRecords.SumUpData();
-        HomeLoanCalculator.UpdateIncomeExpenseProjectionDataByYear(TransactionRecords.IncomeExpenseSummary);
+        HomeLoanCalculator.UpdateExpenseProjectionDataByYear(TransactionRecords.IncomeExpenseSummary,
+            additionalExpensesFromNewProperty: propertyExpenses
+            );
     }
 
     public void TriggerPropertyChangedOnProjectionTab()
     {
-        OnPropertyChanged(nameof(ChartIncomeExpenseProjectionAmountAxis));
-        OnPropertyChanged(nameof(ChartIncomeExpenseProjectionTermStartAxis));
-        OnPropertyChanged(nameof(ChartIncomeExpenseProjectionGrowthAmountAxis));
-        OnPropertyChanged(nameof(ChartIncomeExpenseProjectionAccumulatedAmountAxis));
+        OnPropertyChanged(nameof(ChartProjectionTermStartAmountAxis));
+        OnPropertyChanged(nameof(ChartProjectionIncomeExpenseAmountAxis));
+        OnPropertyChanged(nameof(ChartProjectionDeductionAmountAxis));
         OnPropertyChanged(nameof(TotalYearsToProject));
         OnPropertyChanged(nameof(TotalProjectedYearlyIncomeWithComma));
         OnPropertyChanged(nameof(AnnualGrowthRatePercentage));

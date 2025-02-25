@@ -13,6 +13,7 @@
         AcceptButtonText="Accept"
         AnimationMode="Zoom"
         AppearanceMode="OneButton"
+        BackgroundColor="{DynamicResource DefaultBackgroundColor}"
         IsFullScreen="True"
         IsOpen="{Binding IsPopupRequired}"
         ShowCloseButton="False"
@@ -21,7 +22,7 @@
         StaysOpen="True">
         <sfPopup:SfPopup.HeaderTemplate>
             <DataTemplate>
-                <Grid>
+                <Grid BackgroundColor="{DynamicResource DefaultBackgroundColor}">
                     <Label
                         BackgroundColor="Transparent"
                         FontAttributes="Bold"
@@ -35,14 +36,15 @@
         </sfPopup:SfPopup.HeaderTemplate>
         <sfPopup:SfPopup.FooterTemplate>
             <DataTemplate>
-                <Grid>
+                <Grid BackgroundColor="{DynamicResource DefaultBackgroundColor}">
                     <Button
                         BackgroundColor="Transparent"
                         Command="{Binding PopupAcceptCommand}"
                         FontAttributes="Bold"
                         FontFamily="{DynamicResource DefaultFontFamily}"
                         FontSize="16"
-                        Text="Accept" />
+                        Text="Accept"
+                        TextColor="{DynamicResource HighlightFgColor}" />
                 </Grid>
             </DataTemplate>
         </sfPopup:SfPopup.FooterTemplate>
@@ -50,14 +52,19 @@
             <DataTemplate>
                 <Grid>
                     <ScrollView>
-                        <Label
+                        <WebView>
+                            <WebView.Source>
+                                <HtmlWebViewSource Html="{Binding AppLaunchDisclaimerData}" />
+                            </WebView.Source>
+                        </WebView>
+                        <!--<Label
                             Padding="10"
                             BackgroundColor="Transparent"
                             FontFamily="{DynamicResource DefaultFontFamily}"
                             FontSize="18"
                             HorizontalTextAlignment="Start"
                             Text="{Binding AppLaunchDisclaimerData}"
-                            TextColor="{DynamicResource NotificationBgColor}" />
+                            TextColor="{DynamicResource NotificationBgColor}" />-->
                     </ScrollView>
                 </Grid>
             </DataTemplate>

@@ -41,6 +41,7 @@ namespace LoanCalculatorMaui
                 });
 
             builder.Services.AddSingleton<IErrorHandlingService, ErrorHandlingService>();
+            builder.Services.AddSingleton<IAlertService, AlertService>();
 
 #if ANDROID
             builder.Services.AddSingleton<IAppInformation, LoanCalculatorMaui.Platforms.Android.Services.AndroidAppInformation>();
@@ -65,12 +66,11 @@ namespace LoanCalculatorMaui
 #endif
             var serviceProvider = builder.Build();
 
-            SharedServices.Initialize(
-                serviceProvider.Services?.GetService<ILocalStorage>() ?? null,
-                serviceProvider.Services?.GetService<INameValueDataService>(),
-                serviceProvider.Services?.GetService<IAppInformation>(),
-                serviceProvider.Services?.GetService<IThemeHelper>()
-            );
+            //SharedServices.Initialize(
+            //    serviceProvider.Services?.GetService<INameValueDataService>(),
+            //    serviceProvider.Services?.GetService<IAppInformation>(),
+            //    serviceProvider.Services?.GetService<IThemeHelper>()
+            //);
 
             return serviceProvider;
 

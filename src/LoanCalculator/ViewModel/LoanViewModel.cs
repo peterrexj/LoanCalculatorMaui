@@ -11,8 +11,17 @@ using Syncfusion.Maui.Buttons;
 
 namespace LoanCalculatorMaui.ViewModel;
 
-public class LoanViewModel : ExpenseEntryViewBaseModel
+public class LoanViewModel(IErrorHandlingService errorHandlingService, IAlertService alertService)
+    : ExpenseEntryViewBaseModel
 {
+    [JsonIgnore]
+    private readonly IErrorHandlingService _errorHandlingService = errorHandlingService;
+    [JsonIgnore]
+    private readonly IAlertService _alertService = alertService;
+
+    public LoanViewModel() : this(ServiceLocator.GetService<IErrorHandlingService>(), ServiceLocator.GetService<IAlertService>())
+    {
+    }
 
     public void InitializeViewData()
     {
@@ -59,7 +68,6 @@ public class LoanViewModel : ExpenseEntryViewBaseModel
         IncomeExpenseEntry.Frequency = TimeFrequencyEnum.Monthly;
         IncomeExpenseFrequencySelectedIndex = TimeFrequencyEnum.Monthly.ToString();
     }
-
 
     public void AddDefaultValues()
     {
@@ -747,7 +755,28 @@ public class LoanViewModel : ExpenseEntryViewBaseModel
 
     [JsonIgnore]
     public string TotalMonthlyOverallExpense =>
-        $"{Math.Round(ExpenseSummary?.TotalMonthly + TransactionRecords?.IncomeExpenseSummary?.TotalMonthly ?? 0, 0):N0}";
+        $"{Math.Round(TransactionRecords?.IncomeExpenseSummary?.TotalMonthly + HomeLoanInfo?.PaymentSummary?.Payment?.TermPaymentMonthly ?? 0, 0):N0}";
+
+    [JsonIgnore]
+    public string TotalMonthlyOverallExpenseBreakdownWithComma
+    {
+        get
+        {
+            string expenses = System.Environment.NewLine;
+
+            expenses += $"(${TransactionRecords?.IncomeExpenseSummary?.TotalMonthly.ToString("N0") ?? "0"}";
+
+            if (HomeLoanInfo?.PaymentSummary?.Payment?.TermPaymentMonthly != null)
+            {
+                expenses += $" + ${HomeLoanInfo.PaymentSummary.Payment.TermPaymentMonthly.ToString("N0")}";
+            }
+
+            expenses += ")";
+
+            return expenses;
+        }
+    }
+
 
     #endregion
 
@@ -824,6 +853,7 @@ public class LoanViewModel : ExpenseEntryViewBaseModel
         OnPropertyChanged(nameof(AutocompleteList));
         OnPropertyChanged(nameof(TotalMonthlyOverallExpense));
         OnPropertyChanged(nameof(TotalMonthlyExistingExpense));
+        OnPropertyChanged(nameof(TotalMonthlyOverallExpenseBreakdownWithComma));
 
         base.SaveData(this);
     }

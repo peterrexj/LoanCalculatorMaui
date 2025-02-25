@@ -1,11 +1,9 @@
-﻿using LoanCalculator.Models.BaseExtensions;
-using System.Collections.ObjectModel;
-using System.Windows.Input;
+﻿using LoanCalculator.Models.Enums;
 using LoanCalculatorMaui.Services;
-using LoanCalculator.Models.Enums;
-using LoanCalculatorMaui.Extensions;
 using LoanCalculatorMaui.Themes;
-using Microsoft.Maui.ApplicationModel;
+using System.Collections.ObjectModel;
+using System.Text.Json.Serialization;
+using System.Windows.Input;
 
 namespace LoanCalculatorMaui.ViewModel
 {
@@ -18,14 +16,19 @@ namespace LoanCalculatorMaui.ViewModel
         public Color TextBackground { get; set; }
     }
 
-    public class SettingsViewModel : ViewModelUiBase
+    public class SettingsViewModel(IErrorHandlingService errorHandlingService, IAlertService alertService) : ViewModelUiBase
     {
+        [JsonIgnore]
+        private readonly IErrorHandlingService _errorHandlingService = errorHandlingService;
+        [JsonIgnore]
+        private readonly IAlertService _alertService = alertService;
+
         public ICommand ClearLoanDataCommand { get; }
         public ICommand ClearExpenseDataCommand { get; }
         public ICommand ClearIncomeDataCommand { get; }
         public ICommand ClearAllDataCommand { get; }
 
-        public SettingsViewModel()
+        public SettingsViewModel() : this(ServiceLocator.GetService<IErrorHandlingService>(), ServiceLocator.GetService<IAlertService>())
         {
             Themes = new ObservableCollection<Theme>
             {
@@ -62,7 +65,7 @@ namespace LoanCalculatorMaui.ViewModel
                     catch (Exception ex)
                     {
                         // Handle the exception (e.g., log it, show a message to the user, etc.)
-                        Console.WriteLine($"Error applying theme: {ex.Message}");
+                        _errorHandlingService.HandleException(ex);
                     }
                     finally
                     {
@@ -99,9 +102,9 @@ namespace LoanCalculatorMaui.ViewModel
         {
             await Task.Run(() =>
             {
-                new PdfGenerator().GeneratePdf();
-                //SharedServices.NameValueDataService.NameValueDataModel.HasShowAppLaunchDisclaimer = false;
-                //SharedServices.NameValueDataService.SaveNameValueData();
+                //new PdfGenerator().GeneratePdf();
+                SharedServices.NameValueDataService.NameValueDataModel.HasShowAppLaunchDisclaimer = false;
+                SharedServices.NameValueDataService.SaveNameValueData();
             });
         }
     }

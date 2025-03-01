@@ -7,7 +7,7 @@
     xmlns:expander="clr-namespace:Syncfusion.Maui.Expander;assembly=Syncfusion.Maui.Expander"
     xmlns:inputs="http://schemas.syncfusion.com/maui"
     Title="SettingsView">
-    <Grid BackgroundColor="{DynamicResource DefaultBackgroundColor}">
+    <Grid BackgroundColor="{DynamicResource LoanAppDefaultBackgroundColor}">
         <!--  Main Content  -->
         <VerticalStackLayout>
             <!--  Top Section  -->
@@ -44,7 +44,7 @@
                 <inputs:SfComboBox
                     x:Name="ThemeComboBox"
                     Margin="0,10,0,0"
-                    BackgroundColor="{DynamicResource DefaultBackgroundColor}"
+                    BackgroundColor="{DynamicResource LoanAppDefaultBackgroundColor}"
                     DisplayMemberPath="Name"
                     DropDownBackground="Transparent"
                     DropDownItemFontFamily="{DynamicResource DefaultFontFamily}"

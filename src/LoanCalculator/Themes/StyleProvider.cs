@@ -49,12 +49,57 @@ namespace LoanCalculatorMaui.Themes
             // Clear existing merged dictionaries
             Application.Current?.Resources.MergedDictionaries.Clear();
 
-            // Add the common styles and theme-specific styles
+            ClearAllResources("LoanApp");
+
+            // Add the common styles and theme-specific styles to the application's merged dictionaries
             Application.Current?.Resources.MergedDictionaries.Add(commonStyles);
             Application.Current?.Resources.MergedDictionaries.Add(commonDataGridStyles);
             Application.Current?.Resources.MergedDictionaries.Add(themeStyles);
 
+            UpdateResources("LoanApp");
+
             return resourceDictionary;
+        }
+
+        static void ClearAllResources(string prefix)
+        {
+            try
+            {
+                var resourceKeys = Application.Current?.Resources.Keys.Cast<string>().Where(k => k.StartsWith(prefix)).ToList() ?? new List<string>();
+                var mergedDictionaryKeys = Application.Current?.Resources.MergedDictionaries.SelectMany(f => f.Keys.Cast<string>()).Where(k => k.StartsWith(prefix)).ToList() ?? new List<string>();
+
+                var keys = resourceKeys.Union(mergedDictionaryKeys).ToList();
+
+                foreach (var key in keys)
+                {
+                    Application.Current.Resources[key] = null;
+                    Application.Current.Resources.Remove(key);
+                }
+            }
+            catch (Exception e)
+            {
+            }
+        }
+
+        static void UpdateResources(string prefix)
+        {
+            try
+            {
+                var resourceKeys = Application.Current?.Resources.Keys.Cast<string>().Where(k => k.StartsWith(prefix)).ToList() ?? new List<string>();
+                var mergedDictionaryKeys = Application.Current?.Resources.MergedDictionaries.SelectMany(f => f.Keys.Cast<string>()).Where(k => k.StartsWith(prefix)).ToList() ?? new List<string>();
+
+                var keys = resourceKeys.Union(mergedDictionaryKeys).ToList();
+
+                foreach (var key in keys)
+                {
+                    var temp = Application.Current.Resources[key];
+                    Application.Current.Resources[key] = null;
+                    Application.Current.Resources[key] = temp;
+                }
+            }
+            catch (Exception ex)
+            {
+            }
         }
 
         private static ResourceDictionary LoadResourceDictionary(string resourcePath)

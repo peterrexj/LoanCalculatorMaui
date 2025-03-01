@@ -8,11 +8,9 @@
         <Setter Property="FontSize" Value="11" />
         <Setter Property="HorizontalTextAlignment" Value="Center" />
         <Setter Property="VerticalTextAlignment" Value="Center" />
-        <Setter Property="Background" Value="{DynamicResource DataGridHeaderBackgroundColor}" />
-        <Setter Property="TextColor" Value="{DynamicResource DataGridHeaderTextColor}" />
+        <Setter Property="Background" Value="{DynamicResource LoanAppDataGridHeaderBackgroundColor}" />
+        <Setter Property="TextColor" Value="{DynamicResource LoanAppDataGridHeaderTextColor}" />
     </Style>
-
-
 
     <Style x:Key="LabelInsideDataGridCell" TargetType="Label">
         <Setter Property="FontSize" Value="11" />
@@ -23,37 +21,37 @@
         x:Key="LabelCellDefaultDataGrid"
         BasedOn="{StaticResource LabelInsideDataGridCell}"
         TargetType="Label">
-        <Setter Property="TextColor" Value="{DynamicResource DataGridCellTextColor}" />
+        <Setter Property="TextColor" Value="{DynamicResource LoanAppDataGridCellTextColor}" />
     </Style>
     <Style
         x:Key="LabelCellDataGrid01"
         BasedOn="{StaticResource LabelInsideDataGridCell}"
         TargetType="Label">
-        <Setter Property="TextColor" Value="{DynamicResource DataGridCellFg1}" />
+        <Setter Property="TextColor" Value="{DynamicResource LoanAppDataGridCellFg1}" />
     </Style>
     <Style
         x:Key="LabelCellDataGrid02"
         BasedOn="{StaticResource LabelInsideDataGridCell}"
         TargetType="Label">
-        <Setter Property="TextColor" Value="{DynamicResource DataGridCellFg2}" />
+        <Setter Property="TextColor" Value="{DynamicResource LoanAppDataGridCellFg2}" />
     </Style>
     <Style
         x:Key="LabelCellDataGrid03"
         BasedOn="{StaticResource LabelInsideDataGridCell}"
         TargetType="Label">
-        <Setter Property="TextColor" Value="{DynamicResource DataGridCellFg3}" />
+        <Setter Property="TextColor" Value="{DynamicResource LoanAppDataGridCellFg3}" />
     </Style>
     <Style
         x:Key="LabelCellDataGrid04"
         BasedOn="{StaticResource LabelInsideDataGridCell}"
         TargetType="Label">
-        <Setter Property="TextColor" Value="{DynamicResource DataGridCellFg4}" />
+        <Setter Property="TextColor" Value="{DynamicResource LoanAppDataGridCellFg4}" />
     </Style>
     <Style
         x:Key="LabelCellDataGrid05"
         BasedOn="{StaticResource LabelInsideDataGridCell}"
         TargetType="Label">
-        <Setter Property="TextColor" Value="{DynamicResource DataGridCellFg5}" />
+        <Setter Property="TextColor" Value="{DynamicResource LoanAppDataGridCellFg5}" />
     </Style>
 
 
@@ -66,37 +64,37 @@
         x:Key="BorderDataGridDefaultCell"
         BasedOn="{StaticResource BorderDataGridDefaultCellSkeleton}"
         TargetType="Border">
-        <Setter Property="BackgroundColor" Value="{DynamicResource DataGridCellBackgroundColor}" />
+        <Setter Property="BackgroundColor" Value="{DynamicResource LoanAppDataGridCellBackgroundColor}" />
     </Style>
     <Style
         x:Key="BorderDataGridCell01"
         BasedOn="{StaticResource BorderDataGridDefaultCellSkeleton}"
         TargetType="Border">
-        <Setter Property="BackgroundColor" Value="{DynamicResource DataGridCellBg1}" />
+        <Setter Property="BackgroundColor" Value="{DynamicResource LoanAppDataGridCellBg1}" />
     </Style>
     <Style
         x:Key="BorderDataGridCell02"
         BasedOn="{StaticResource BorderDataGridDefaultCellSkeleton}"
         TargetType="Border">
-        <Setter Property="BackgroundColor" Value="{DynamicResource DataGridCellBg2}" />
+        <Setter Property="BackgroundColor" Value="{DynamicResource LoanAppDataGridCellBg2}" />
     </Style>
     <Style
         x:Key="BorderDataGridCell03"
         BasedOn="{StaticResource BorderDataGridDefaultCellSkeleton}"
         TargetType="Border">
-        <Setter Property="BackgroundColor" Value="{DynamicResource DataGridCellBg3}" />
+        <Setter Property="BackgroundColor" Value="{DynamicResource LoanAppDataGridCellBg3}" />
     </Style>
     <Style
         x:Key="BorderDataGridCell04"
         BasedOn="{StaticResource BorderDataGridDefaultCellSkeleton}"
         TargetType="Border">
-        <Setter Property="BackgroundColor" Value="{DynamicResource DataGridCellBg4}" />
+        <Setter Property="BackgroundColor" Value="{DynamicResource LoanAppDataGridCellBg4}" />
     </Style>
     <Style
         x:Key="BorderDataGridCell05"
         BasedOn="{StaticResource BorderDataGridDefaultCellSkeleton}"
         TargetType="Border">
-        <Setter Property="BackgroundColor" Value="{DynamicResource DataGridCellBg5}" />
+        <Setter Property="BackgroundColor" Value="{DynamicResource LoanAppDataGridCellBg5}" />
     </Style>
 
 </ResourceDictionary>

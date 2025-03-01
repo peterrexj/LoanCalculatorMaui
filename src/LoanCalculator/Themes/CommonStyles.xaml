@@ -5,12 +5,9 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:buttons="clr-namespace:Syncfusion.Maui.Buttons;assembly=Syncfusion.Maui.Buttons"
     xmlns:chart="clr-namespace:Syncfusion.Maui.Charts;assembly=Syncfusion.Maui.Charts"
-    xmlns:collections="clr-namespace:System.Collections.ObjectModel;assembly=System.ObjectModel"
-    xmlns:controls="clr-namespace:LoanCalculatorMaui.Controls"
     xmlns:core="http://schemas.syncfusion.com/maui"
     xmlns:editors="clr-namespace:Syncfusion.Maui.Inputs;assembly=Syncfusion.Maui.Inputs"
     xmlns:expander="clr-namespace:Syncfusion.Maui.Expander;assembly=Syncfusion.Maui.Expander"
-    xmlns:range="clr-namespace:Syncfusion.Maui.Sliders;assembly=Syncfusion.Maui.Sliders"
     xmlns:tabView="clr-namespace:Syncfusion.Maui.TabView;assembly=Syncfusion.Maui.TabView">
 
     <!--  Font Families  -->
@@ -69,12 +66,12 @@
 
     <!--  Border controls box styles  -->
     <LinearGradientBrush x:Key="BorderControlGradientBrush" StartPoint="0,0" EndPoint="1,1">
-        <GradientStop Offset="0.0" Color="{DynamicResource BorderControlGradientOuterLineStart}" />
-        <GradientStop Offset="1.0" Color="{DynamicResource BorderControlGradientOuterLineEnd}" />
+        <GradientStop Offset="0.0" Color="{DynamicResource LoanAppBorderControlGradientBorderLineStart}" />
+        <GradientStop Offset="1.0" Color="{DynamicResource LoanAppBorderControlGradientBorderLineEnd}" />
     </LinearGradientBrush>
     <LinearGradientBrush x:Key="BorderControlBackgroundGradientBrush" StartPoint="0,0" EndPoint="1,1">
-        <GradientStop Offset="0.0" Color="{DynamicResource BorderControlGradientBackgroundStart}" />
-        <GradientStop Offset="1.0" Color="{DynamicResource BorderControlGradientBackgroundEnd}" />
+        <GradientStop Offset="0.0" Color="{DynamicResource LoanAppBorderControlGradientBackgroundStart}" />
+        <GradientStop Offset="1.0" Color="{DynamicResource LoanAppBorderControlGradientBackgroundEnd}" />
     </LinearGradientBrush>
     <Style x:Key="BorderControlHighlightBox" TargetType="Border">
         <Setter Property="StrokeShape" Value="RoundRectangle 3,3,3,3" />
@@ -131,7 +128,7 @@
     <Style x:Key="ExpanderHeaderLabelStyle" TargetType="Label">
         <Setter Property="Margin" Value="15,0,0,0" />
         <Setter Property="HeightRequest" Value="30" />
-        <Setter Property="TextColor" Value="{DynamicResource ExpanderHeaderTextColor}" />
+        <Setter Property="TextColor" Value="{DynamicResource LoanAppExpanderHeaderTextColor}" />
         <Setter Property="VerticalOptions" Value="Center" />
         <Setter Property="VerticalTextAlignment" Value="Center" />
         <Setter Property="FontFamily" Value="{DynamicResource DefaultFontFamily}" />
@@ -140,9 +137,9 @@
 
     <!--  Tab View  -->
     <RadialGradientBrush x:Key="TabBarBackgroundGradientBrush" Center="0.5,0.5" Radius="0.5">
-        <GradientStop Offset="0.0" Color="{DynamicResource TabBarBackgroundGradientStart}" />
-        <GradientStop Offset="0.7" Color="{DynamicResource TabBarBackgroundGradientStart}" />
-        <GradientStop Offset="1.0" Color="{DynamicResource TabBarBackgroundGradientEnd}" />
+        <GradientStop Offset="0.0" Color="{DynamicResource LoanAppTabBarBackgroundGradientStart}" />
+        <GradientStop Offset="0.7" Color="{DynamicResource LoanAppTabBarBackgroundGradientStart}" />
+        <GradientStop Offset="1.0" Color="{DynamicResource LoanAppTabBarBackgroundGradientEnd}" />
     </RadialGradientBrush>
 
     <Style TargetType="tabView:SfTabView">
@@ -151,7 +148,7 @@
         <Setter Property="IndicatorStrokeThickness" Value="5" />
         <Setter Property="IndicatorPlacement" Value="Bottom" />
         <Setter Property="IndicatorWidthMode" Value="Stretch" />
-        <Setter Property="IndicatorBackground" Value="{DynamicResource TabIndicatorStrokeColor}" />
+        <Setter Property="IndicatorBackground" Value="{DynamicResource LoanAppTabIndicatorStrokeColor}" />
         <Setter Property="TabBarBackground" Value="{DynamicResource TabBarBackgroundGradientBrush}" />
     </Style>
 
@@ -166,12 +163,12 @@
                 <VisualStateGroup>
                     <VisualState x:Name="Normal">
                         <VisualState.Setters>
-                            <Setter Property="TextColor" Value="{DynamicResource TabTextColorNormal}" />
+                            <Setter Property="TextColor" Value="{DynamicResource LoanAppTabTextColorNormal}" />
                         </VisualState.Setters>
                     </VisualState>
                     <VisualState x:Name="Selected">
                         <VisualState.Setters>
-                            <Setter Property="TextColor" Value="{DynamicResource TabTextColorSelected}" />
+                            <Setter Property="TextColor" Value="{DynamicResource LoanAppTabTextColorSelected}" />
                         </VisualState.Setters>
                     </VisualState>
                 </VisualStateGroup>
@@ -189,10 +186,10 @@
         <Setter Property="UnfocusedStrokeThickness" Value="0" />
         <!--<Setter Property="OutlineCornerRadius" Value="8" />-->
         <!--<Setter Property="Margin" Value="5" />-->
-        <Setter Property="Stroke" Value="{DynamicResource InputTextWhenFocusedColor}" />
+        <Setter Property="Stroke" Value="{DynamicResource LoanAppInputTextWhenFocusedColor}" />
         <Setter Property="HintLabelStyle">
             <Setter.Value>
-                <core:LabelStyle FontFamily="{DynamicResource DefaultFontFamily}" />
+                <core:LabelStyle FontFamily="{DynamicResource DefaultFontFamily}" TextColor="{DynamicResource LoanAppInputTextFgColor}" />
             </Setter.Value>
         </Setter>
         <Setter Property="ErrorLabelStyle">
@@ -202,7 +199,7 @@
         </Setter>
         <Setter Property="HelperLabelStyle">
             <Setter.Value>
-                <core:LabelStyle FontFamily="{DynamicResource DefaultFontFamily}" />
+                <core:LabelStyle FontFamily="{DynamicResource DefaultFontFamily}" TextColor="{DynamicResource LoanAppInputTextFgColor}"/>
             </Setter.Value>
         </Setter>
         <Setter Property="VisualStateManager.VisualStateGroups">
@@ -211,17 +208,17 @@
                     <VisualStateGroup x:Name="CommonStates">
                         <VisualState Name="Normal">
                             <VisualState.Setters>
-                                <Setter Property="Stroke" Value="{DynamicResource InputTextWhenUnFocusedColor}" />
+                                <Setter Property="Stroke" Value="{DynamicResource LoanAppInputTextWhenUnFocusedColor}" />
                             </VisualState.Setters>
                         </VisualState>
                         <VisualState Name="Focused">
                             <VisualState.Setters>
-                                <Setter Property="Stroke" Value="{DynamicResource InputTextWhenFocusedColor}" />
+                                <Setter Property="Stroke" Value="{DynamicResource LoanAppInputTextWhenFocusedColor}" />
                             </VisualState.Setters>
                         </VisualState>
                         <VisualState Name="Error">
                             <VisualState.Setters>
-                                <Setter Property="Stroke" Value="{DynamicResource InputErrorTextFgColor}" />
+                                <Setter Property="Stroke" Value="{DynamicResource LoanAppInputErrorTextFgColor}" />
                             </VisualState.Setters>
                         </VisualState>
                     </VisualStateGroup>
@@ -236,30 +233,62 @@
         <!--  SelectionTextColor="{Binding DefaultStyle.SegSelectedTextFgColor, Converter={StaticResource StringToColorConverter}}"  -->
         <Setter Property="StrokeThickness" Value="2" />
         <Setter Property="CornerRadius" Value="15" />
-        <Setter Property="Stroke" Value="{DynamicResource SegBorderColor}" />
-        <Setter Property="Background" Value="{DynamicResource SegBgColor}" />
+        <Setter Property="Stroke" Value="{DynamicResource LoanAppSegBorderColor}" />
+        <Setter Property="Background" Value="{DynamicResource LoanAppSegBgColor}" />
         <Setter Property="buttons:SfSegmentedControl.TextStyle">
             <Setter.Value>
                 <buttons:SegmentTextStyle
                     FontFamily="{DynamicResource DefaultFontFamily}"
                     FontSize="12"
-                    TextColor="{DynamicResource SegTextFgColor}" />
+                    TextColor="{DynamicResource LoanAppSegTextFgColor}" />
             </Setter.Value>
         </Setter>
         <Setter Property="buttons:SfSegmentedControl.SelectionIndicatorSettings">
             <Setter.Value>
-                <buttons:SelectionIndicatorSettings Background="{DynamicResource SegSelectedBgColor}" SelectionIndicatorPlacement="Fill" />
+                <buttons:SelectionIndicatorSettings Background="{DynamicResource LoanAppSegSelectedBgColor}" SelectionIndicatorPlacement="Fill" />
             </Setter.Value>
         </Setter>
     </Style>
 
-    <!--  Style for Chart border  -->
-    <Style x:Key="ChartBorderStyle" TargetType="Border">
+    <!--  Style for Lists  -->
+    <LinearGradientBrush x:Key="LoanAppLstBgBrush" StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Offset="0.0" Color="{DynamicResource LoanAppLstBgGradientStart}" />
+        <GradientStop Offset="1.0" Color="{DynamicResource LoanAppLstBgGradientEnd}" />
+    </LinearGradientBrush>
+    <RadialGradientBrush x:Key="LoanAppLstBorderBrush" Center="0.5,0.5" Radius="0.5">
+        <GradientStop Offset="0.0" Color="{DynamicResource LoanAppLstBorderGradientStart}" />
+        <GradientStop Offset="0.7" Color="{DynamicResource LoanAppLstBorderGradientStart}" />
+        <GradientStop Offset="1.0" Color="{DynamicResource LoanAppLstBorderGradientEnd}" />
+    </RadialGradientBrush>
+
+    <!--  Style for transaction expense income list item border  -->
+    <Style x:Key="TransactionListItemBorderStyle" TargetType="Border">
         <Setter Property="Margin" Value="12,5,12,2" />
-        <Setter Property="Background" Value="{DynamicResource ChartInnerBorderGradientBrush}" />
+        <Setter Property="Background" Value="{DynamicResource LoanAppLstBgBrush}" />
+        <Setter Property="HorizontalOptions" Value="Fill" />
+        <Setter Property="Stroke" Value="{DynamicResource LoanAppLstBorderBrush}" />
+        <Setter Property="StrokeShape" Value="RoundRectangle 8,8,8,8" />
+        <Setter Property="StrokeThickness" Value="2" />
+        <Setter Property="VerticalOptions" Value="Center" />
+    </Style>
+
+    <!--  Style for Chart border  -->
+    <LinearGradientBrush x:Key="LoanAppChartOuterBorderGradientBrush" StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Offset="0.0" Color="{DynamicResource LoanAppChartOuterBorderGradientStart}" />
+        <GradientStop Offset="1.0" Color="{DynamicResource LoanAppChartOuterBorderGradientEnd}" />
+    </LinearGradientBrush>
+    <RadialGradientBrush x:Key="LoanAppChartInnerBorderGradientBrush" Center="0.5,0.5" Radius="0.5">
+        <GradientStop Offset="0.0" Color="{DynamicResource LoanAppChartInnerBorderGradientStart}" />
+        <GradientStop Offset="0.7" Color="{DynamicResource LoanAppChartInnerBorderGradientStart}" />
+        <GradientStop Offset="1.0" Color="{DynamicResource LoanAppChartInnerBorderGradientEnd}" />
+    </RadialGradientBrush>
+
+    <Style x:Key="LoanAppChartBorderStyle" TargetType="Border">
+        <Setter Property="Margin" Value="12,5,12,2" />
+        <Setter Property="Background" Value="{DynamicResource LoanAppChartInnerBorderGradientBrush}" />
         <Setter Property="HeightRequest" Value="250" />
         <Setter Property="HorizontalOptions" Value="Fill" />
-        <Setter Property="Stroke" Value="{DynamicResource ChartOuterBorderGradientBrush}" />
+        <Setter Property="Stroke" Value="{DynamicResource LoanAppChartOuterBorderGradientBrush}" />
         <Setter Property="StrokeShape" Value="RoundRectangle 12,12,12,12" />
         <Setter Property="StrokeThickness" Value="2" />
         <Setter Property="VerticalOptions" Value="Center" />
@@ -271,18 +300,8 @@
         <Setter Property="FontFamily" Value="{DynamicResource DefaultFontFamily}" />
         <Setter Property="FontSize" Value="10" />
         <Setter Property="LabelFormat" Value="c" />
-        <Setter Property="TextColor" Value="{DynamicResource ChartDataMarkerTextColor}" />
+        <Setter Property="TextColor" Value="{DynamicResource LoanAppChartDataMarkerTextColor}" />
     </Style>
-    <LinearGradientBrush x:Key="ChartOuterBorderGradientBrush" StartPoint="0,0" EndPoint="1,1">
-        <GradientStop Offset="0.0" Color="{DynamicResource ChartOuterBorderGradientStart}" />
-        <GradientStop Offset="1.0" Color="{DynamicResource ChartOuterBorderGradientEnd}" />
-    </LinearGradientBrush>
-    <RadialGradientBrush x:Key="ChartInnerBorderGradientBrush" Center="0.5,0.5" Radius="0.5">
-        <GradientStop Offset="0.0" Color="{DynamicResource ChartInnerBorderGradientStart}" />
-        <GradientStop Offset="0.7" Color="{DynamicResource ChartInnerBorderGradientStart}" />
-        <GradientStop Offset="1.0" Color="{DynamicResource ChartInnerBorderGradientEnd}" />
-    </RadialGradientBrush>
-
     <Style x:Key="ButtonStyle" TargetType="core:SfButton">
         <Setter Property="Background" Value="{DynamicResource ButtonBgColor}" />
         <Setter Property="CornerRadius" Value="1" />
@@ -355,29 +374,18 @@
 
     <!--  Style for SfComboBox  -->
     <Style x:Key="SfComboBoxStyle" TargetType="editors:SfComboBox">
-        <Setter Property="DropDownBackground" Value="{DynamicResource ComboDropDownBackgroundColor}" />
+        <Setter Property="DropDownBackground" Value="{DynamicResource LoanAppComboDropDownBackgroundColor}" />
         <Setter Property="DropDownItemFontFamily" Value="{DynamicResource DefaultFontFamily}" />
-        <Setter Property="DropDownItemTextColor" Value="{DynamicResource ComboDropDownTextColor}" />
+        <Setter Property="DropDownItemTextColor" Value="{DynamicResource LoanAppComboDropDownTextColor}" />
         <Setter Property="FontFamily" Value="{DynamicResource DefaultFontFamily}" />
         <Setter Property="FontSize" Value="14" />
-        <Setter Property="HighlightedTextColor" Value="{DynamicResource ComboHighlightedTextColor}" />
+        <Setter Property="HighlightedTextColor" Value="{DynamicResource LoanAppComboHighlightedTextColor}" />
         <Setter Property="IsClearButtonVisible" Value="False" />
         <Setter Property="IsFilteringEnabled" Value="False" />
-        <Setter Property="SelectedDropDownItemBackground" Value="{DynamicResource ComboSelectedDropDownItemColor}" />
-        <Setter Property="TextColor" Value="{DynamicResource ComboTextColor}" />
+        <Setter Property="SelectedDropDownItemBackground" Value="{DynamicResource LoanAppComboSelectedDropDownItemColor}" />
+        <Setter Property="TextColor" Value="{DynamicResource LoanAppComboTextColor}" />
         <Setter Property="TextHighlightMode" Value="MultipleOccurrence" />
         <Setter Property="TextSearchMode" Value="Contains" />
-    </Style>
-
-    <!--  Style for transaction expense income list item border  -->
-    <Style x:Key="TransactionListItemBorderStyle" TargetType="Border">
-        <Setter Property="Margin" Value="12,5,12,2" />
-        <Setter Property="Background" Value="{DynamicResource ChartInnerBorderGradientBrush}" />
-        <Setter Property="HorizontalOptions" Value="Fill" />
-        <Setter Property="Stroke" Value="{DynamicResource ChartOuterBorderGradientBrush}" />
-        <Setter Property="StrokeShape" Value="RoundRectangle 8,8,8,8" />
-        <Setter Property="StrokeThickness" Value="2" />
-        <Setter Property="VerticalOptions" Value="Center" />
     </Style>
 
     <!--  Span Three Box on top  -->

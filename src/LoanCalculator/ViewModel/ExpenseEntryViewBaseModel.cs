@@ -26,9 +26,9 @@ namespace LoanCalculatorMaui.ViewModel
             {
                 CustomChartColors =
                 [
-                    new SolidColorBrush((Color)appResources["ChartColor1"]),
-                    new SolidColorBrush((Color)appResources["ChartColor2"]),
-                    new SolidColorBrush((Color)appResources["ChartColor3"])
+                    new SolidColorBrush((Color)appResources["LoanAppChartColor1"]),
+                    new SolidColorBrush((Color)appResources["LoanAppChartColor2"]),
+                    new SolidColorBrush((Color)appResources["LoanAppChartColor3"])
                 ];
             }
             else

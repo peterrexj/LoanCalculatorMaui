@@ -13,7 +13,7 @@
         AcceptButtonText="Accept"
         AnimationMode="Zoom"
         AppearanceMode="OneButton"
-        BackgroundColor="{DynamicResource DefaultBackgroundColor}"
+        BackgroundColor="{DynamicResource LoanAppDefaultBackgroundColor}"
         IsFullScreen="True"
         IsOpen="{Binding IsPopupRequired}"
         ShowCloseButton="False"
@@ -22,7 +22,7 @@
         StaysOpen="True">
         <sfPopup:SfPopup.HeaderTemplate>
             <DataTemplate>
-                <Grid BackgroundColor="{DynamicResource DefaultBackgroundColor}">
+                <Grid BackgroundColor="{DynamicResource LoanAppDefaultBackgroundColor}">
                     <Label
                         BackgroundColor="Transparent"
                         FontAttributes="Bold"
@@ -36,7 +36,7 @@
         </sfPopup:SfPopup.HeaderTemplate>
         <sfPopup:SfPopup.FooterTemplate>
             <DataTemplate>
-                <Grid BackgroundColor="{DynamicResource DefaultBackgroundColor}">
+                <Grid BackgroundColor="{DynamicResource LoanAppDefaultBackgroundColor}">
                     <Button
                         BackgroundColor="Transparent"
                         Command="{Binding PopupAcceptCommand}"
@@ -44,7 +44,7 @@
                         FontFamily="{DynamicResource DefaultFontFamily}"
                         FontSize="16"
                         Text="Accept"
-                        TextColor="{DynamicResource HighlightFgColor}" />
+                        TextColor="{DynamicResource LoanAppHighlightFgColor}" />
                 </Grid>
             </DataTemplate>
         </sfPopup:SfPopup.FooterTemplate>

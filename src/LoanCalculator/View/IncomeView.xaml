@@ -18,7 +18,7 @@
     xmlns:viewModel="clr-namespace:LoanCalculatorMaui.ViewModel"
     Title="IncomeView">
     <ContentPage.Content>
-        <Grid BackgroundColor="{DynamicResource DefaultBackgroundColor}">
+        <Grid BackgroundColor="{DynamicResource LoanAppDefaultBackgroundColor}">
             <customControls:PopupDisclaimerView />
             <tabView:SfTabView
                 x:Name="tabView"
@@ -115,7 +115,7 @@
                                         HorizontalTextAlignment="Start"
                                         LineBreakMode="WordWrap"
                                         Text="Show income after expense"
-                                        TextColor="{DynamicResource DefaultForegroundColor}"
+                                        TextColor="{DynamicResource LoanAppDefaultForegroundColor}"
                                         VerticalOptions="Fill"
                                         VerticalTextAlignment="Center" />
                                 </Grid>
@@ -170,7 +170,7 @@
                                         HorizontalTextAlignment="Start"
                                         LineBreakMode="WordWrap"
                                         Text="Income after new property expense"
-                                        TextColor="{DynamicResource DefaultForegroundColor}"
+                                        TextColor="{DynamicResource LoanAppDefaultForegroundColor}"
                                         VerticalOptions="Fill"
                                         VerticalTextAlignment="Center" />
                                 </Grid>
@@ -208,7 +208,7 @@
                                                     FontSize="14"
                                                     Placeholder="Salary - Sample"
                                                     Text="{Binding IncomeEntryName}"
-                                                    TextColor="{DynamicResource InputTextFgColor}" />
+                                                    TextColor="{DynamicResource LoanAppInputTextFgColor}" />
 
                                             </core:SfTextInputLayout>
 
@@ -226,7 +226,7 @@
                                                     CustomFormat="c0"
                                                     FontSize="14"
                                                     MaximumNumberDecimalDigits="0"
-                                                    TextColor="{DynamicResource InputTextFgColor}"
+                                                    TextColor="{DynamicResource LoanAppInputTextFgColor}"
                                                     Value="{Binding IncomeEntryAmount}" />
                                             </core:SfTextInputLayout>
 
@@ -374,7 +374,7 @@
                                             Padding="0,10,0,10"
                                             HorizontalOptions="Center"
                                             HorizontalTextAlignment="Center"
-                                            TextColor="{DynamicResource HighlightFgColor}"
+                                            TextColor="{DynamicResource LoanAppHighlightFgColor}"
                                             VerticalOptions="Center"
                                             VerticalTextAlignment="Center">
                                             <Label.FormattedText>
@@ -431,7 +431,7 @@
                                             Maximum="100"
                                             MaximumNumberDecimalDigits="0"
                                             Minimum="0"
-                                            TextColor="{DynamicResource InputTextFgColor}"
+                                            TextColor="{DynamicResource LoanAppInputTextFgColor}"
                                             Value="{Binding AnnualGrowthRate}" />
                                     </core:SfTextInputLayout>
 
@@ -478,7 +478,7 @@
                                             HorizontalTextAlignment="Start"
                                             LineBreakMode="WordWrap"
                                             Text="Include expenses"
-                                            TextColor="{DynamicResource DefaultForegroundColor}"
+                                            TextColor="{DynamicResource LoanAppDefaultForegroundColor}"
                                             VerticalOptions="Start"
                                             VerticalTextAlignment="Start" />
                                     </VerticalStackLayout>
@@ -526,7 +526,7 @@
                                             HorizontalTextAlignment="Start"
                                             LineBreakMode="WordWrap"
                                             Text="Include expenses (new property)"
-                                            TextColor="{DynamicResource DefaultForegroundColor}"
+                                            TextColor="{DynamicResource LoanAppDefaultForegroundColor}"
                                             VerticalOptions="Start"
                                             VerticalTextAlignment="Start" />
                                     </VerticalStackLayout>
@@ -543,7 +543,7 @@
                                         FontSize="12"
                                         HorizontalOptions="Start"
                                         Text="Years to project"
-                                        TextColor="{DynamicResource InputTextFgColor}"
+                                        TextColor="{DynamicResource LoanAppInputTextFgColor}"
                                         VerticalOptions="Center" />
 
                                     <range:SfSlider
@@ -562,31 +562,31 @@
                                         Value="{Binding TotalYearsToProject}">
                                         <range:SfRangeSlider.ThumbStyle>
                                             <range:SliderThumbStyle
-                                                Fill="{DynamicResource SliderKnobFillColor}"
-                                                OverlapStroke="{DynamicResource SliderKnobOverlapColor}"
-                                                Stroke="{DynamicResource SliderKnobBorderColor}"
+                                                Fill="{DynamicResource LoanAppSliderKnobFillColor}"
+                                                OverlapStroke="{DynamicResource LoanAppSliderKnobOverlapColor}"
+                                                Stroke="{DynamicResource LoanAppSliderKnobBorderColor}"
                                                 StrokeThickness="2" />
                                         </range:SfRangeSlider.ThumbStyle>
                                         <range:SfSlider.LabelStyle>
                                             <range:SliderLabelStyle
                                                 ActiveFontFamily="{DynamicResource DefaultFontFamily}"
                                                 ActiveFontSize="12"
-                                                ActiveTextColor="{DynamicResource RangeSliderLabelTextColor}"
+                                                ActiveTextColor="{DynamicResource LoanAppRangeSliderLabelTextColor}"
                                                 InactiveFontFamily="{DynamicResource DefaultFontFamily}"
                                                 InactiveFontSize="12"
-                                                InactiveTextColor="{DynamicResource RangeSliderLabelTextColor}" />
+                                                InactiveTextColor="{DynamicResource LoanAppRangeSliderLabelTextColor}" />
                                         </range:SfSlider.LabelStyle>
                                         <range:SfSlider.TrackStyle>
                                             <range:SliderTrackStyle
-                                                ActiveFill="{DynamicResource RangeSliderTrackActiveFillColor}"
+                                                ActiveFill="{DynamicResource LoanAppRangeSliderTrackActiveFillColor}"
                                                 ActiveSize="5"
-                                                InactiveFill="{DynamicResource RangeSliderTrackInActiveFillColor}"
+                                                InactiveFill="{DynamicResource LoanAppRangeSliderTrackInActiveFillColor}"
                                                 InactiveSize="1" />
                                         </range:SfSlider.TrackStyle>
                                     </range:SfSlider>
                                 </Grid>
 
-                                <Border Style="{DynamicResource ChartBorderStyle}">
+                                <Border Style="{DynamicResource LoanAppChartBorderStyle}">
                                     <Border.Content>
                                         <chart:SfCartesianChart
                                             BackgroundColor="Transparent"
@@ -607,7 +607,7 @@
                                                     BackgroundColor="Transparent"
                                                     FontSize="10"
                                                     Text="{Binding StringChartTitleText}"
-                                                    TextColor="{DynamicResource ChartTitleTextColor}" />
+                                                    TextColor="{DynamicResource LoanAppChartTitleTextColor}" />
                                             </chart:SfCartesianChart.Title>
 
                                             <chart:SfCartesianChart.XAxes>
@@ -620,7 +620,7 @@
                                                             FontAttributes="Bold"
                                                             FontFamily="{DynamicResource DefaultFontFamily}"
                                                             FontSize="12"
-                                                            TextColor="{DynamicResource ChartAxisTextColor}" />
+                                                            TextColor="{DynamicResource LoanAppChartAxisTextColor}" />
                                                     </chart:CategoryAxis.LabelStyle>
                                                     <chart:CategoryAxis.MajorTickStyle>
                                                         <chart:ChartAxisTickStyle TickSize="8" />
@@ -636,7 +636,7 @@
                                                             FontAttributes="Bold"
                                                             FontFamily="{DynamicResource DefaultFontFamily}"
                                                             FontSize="12"
-                                                            TextColor="{DynamicResource ChartAxisTextColor}" />
+                                                            TextColor="{DynamicResource LoanAppChartAxisTextColor}" />
                                                     </chart:NumericalAxis.LabelStyle>
                                                     <chart:NumericalAxis.AxisLineStyle>
                                                         <chart:ChartLineStyle StrokeWidth="0" />
@@ -661,7 +661,7 @@
                                                     ItemsSource="{Binding ChartProjectionTermStartAmountAxis}"
                                                     Label="Start"
                                                     LegendIcon="Rectangle"
-                                                    Stroke="{DynamicResource ChartColor1}"
+                                                    Stroke="{DynamicResource LoanAppChartColor1}"
                                                     XBindingPath="Name"
                                                     YBindingPath="Value" />
                                                 <chart:StackingColumnSeries
@@ -669,7 +669,7 @@
                                                     ItemsSource="{Binding ChartProjectionDeductionAmountAxis}"
                                                     Label="After Expense"
                                                     LegendIcon="Rectangle"
-                                                    Stroke="{DynamicResource ChartColor2}"
+                                                    Stroke="{DynamicResource LoanAppChartColor2}"
                                                     XBindingPath="Name"
                                                     YBindingPath="Value" />
                                                 <chart:StackingColumnSeries
@@ -677,7 +677,7 @@
                                                     ItemsSource="{Binding ChartProjectionIncomeExpenseAmountAxis}"
                                                     Label="Sum"
                                                     LegendIcon="Rectangle"
-                                                    Stroke="{DynamicResource ChartColor3}"
+                                                    Stroke="{DynamicResource LoanAppChartColor3}"
                                                     XBindingPath="Name"
                                                     YBindingPath="Value" />
                                             </chart:SfCartesianChart.Series>
@@ -694,16 +694,25 @@
                                     <pager:SfDataPager
                                         x:Name="dataPager"
                                         Grid.Row="0"
-                                        ButtonCornerRadius="3"
-                                        ButtonFontSize="12"
-                                        ButtonShape="Rectangle"
+                                        Margin="0,3,0,3"
+                                        ButtonFontSize="11"
+                                        ButtonShape="Circle"
+                                        HorizontalOptions="Center"
                                         NumericButtonsGenerateMode="Auto"
-                                        PageSize="11"
-                                        Source="{Binding IncomeProjectList}" />
-                                    <!--
-                                        SelectionMode="None"
-                                        ShowRowHeader="True"
-                                    -->
+                                        PageSize="15"
+                                        Source="{Binding IncomeProjectList}"    Style="{DynamicResource LoanAppDataGridPagerStyle}">
+                                        <pager:SfDataPager.DefaultStyle>
+                                            <pager:DataPagerStyle
+                                                NavigationButtonBackgroundColor="{DynamicResource LoanAppNavigationButtonBackgroundColor}"
+                                                NavigationButtonDisableBackgroundColor="{DynamicResource LoanAppNavigationButtonDisableBackgroundColor}"
+                                                NavigationButtonDisableIconColor="{DynamicResource LoanAppNavigationButtonDisableIconColor}"
+                                                NavigationButtonIconColor="{DynamicResource LoanAppNavigationButtonIconColor}"
+                                                NumericButtonBackgroundColor="{DynamicResource LoanAppNumericButtonBackgroundColor}"
+                                                NumericButtonSelectionBackgroundColor="{DynamicResource LoanAppNumericButtonSelectionBackgroundColor}"
+                                                NumericButtonSelectionTextColor="{DynamicResource LoanAppNumericButtonSelectionTextColor}"
+                                                NumericButtonTextColor="{DynamicResource LoanAppNumericButtonTextColor}" />
+                                        </pager:SfDataPager.DefaultStyle>
+                                    </pager:SfDataPager>
                                     <datagrid:SfDataGrid
                                         x:Name="dataGrid"
                                         Grid.Row="1"

@@ -640,19 +640,13 @@
                                                 </chart:NumericalAxis>
                                             </chart:SfCartesianChart.YAxes>
                                             <chart:SfCartesianChart.Legend>
-                                                <chart:ChartLegend Placement="{OnPlatform Android={OnIdiom Phone=Bottom, Tablet=Left}, iOS={OnIdiom Phone=Bottom, Tablet=Left}, UWP=Left}" ToggleSeriesVisibility="True">
+                                                <chart:ChartLegend Placement="Bottom" ToggleSeriesVisibility="True">
                                                     <chart:ChartLegend.LabelStyle>
                                                         <chart:ChartLegendLabelStyle
-                                                            FontAttributes="Bold"
                                                             FontFamily="{DynamicResource DefaultFontFamily}"
                                                             TextColor="{DynamicResource LoanAppChartLegendTextColor}" />
                                                     </chart:ChartLegend.LabelStyle>
                                                 </chart:ChartLegend>
-
-                                                <!--
-                                                    IconHeight="14"
-                                                    IconWidth="14"
-                                                -->
                                             </chart:SfCartesianChart.Legend>
                                             <chart:SfCartesianChart.Series>
                                                 <chart:StackingColumnSeries

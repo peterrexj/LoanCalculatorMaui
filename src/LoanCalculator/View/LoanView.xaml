@@ -462,7 +462,6 @@
                                                     <chart:ChartLegend Placement="{OnPlatform Android={OnIdiom Phone=Bottom, Tablet=Left}, iOS={OnIdiom Phone=Bottom, Tablet=Left}, UWP=Left}" ToggleSeriesVisibility="True">
                                                         <chart:ChartLegend.LabelStyle>
                                                             <chart:ChartLegendLabelStyle
-                                                                FontAttributes="Bold"
                                                                 FontFamily="{DynamicResource DefaultFontFamily}"
                                                                 TextColor="{DynamicResource LoanAppChartLegendTextColor}" />
                                                         </chart:ChartLegend.LabelStyle>
@@ -479,17 +478,8 @@
                                                         ShowDataLabels="True"
                                                         XBindingPath="Category"
                                                         YBindingPath="Value">
-                                                        <!--<chart:DoughnutSeries.SelectionBehavior>
-                                                                <chart:DataPointSelectionBehavior SelectionBrush="#314A6E" />
-                                                            </chart:DoughnutSeries.SelectionBehavior>-->
                                                         <chart:DoughnutSeries.DataLabelSettings>
                                                             <chart:CircularDataLabelSettings LabelPosition="Inside" UseSeriesPalette="True">
-                                                                <!--<chart:CircularDataLabelSettings.ConnectorLineSettings>
-                                                                        <chart:ConnectorLineStyle
-                                                                            ConnectorType="Curve"
-                                                                            Stroke="DarkGray"
-                                                                            StrokeWidth="3" />
-                                                                    </chart:CircularDataLabelSettings.ConnectorLineSettings>-->
                                                                 <chart:CircularDataLabelSettings.LabelStyle>
                                                                     <chart:ChartDataLabelStyle
                                                                         FontFamily="{DynamicResource DefaultFontFamily}"
@@ -498,7 +488,6 @@
                                                                 </chart:CircularDataLabelSettings.LabelStyle>
                                                             </chart:CircularDataLabelSettings>
                                                         </chart:DoughnutSeries.DataLabelSettings>
-
 
                                                         <chart:DoughnutSeries.CenterView>
                                                             <StackLayout HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
@@ -524,9 +513,6 @@
                                                 </chart:SfCircularChart.Series>
                                             </chart:SfCircularChart>
                                         </Border.Content>
-
-
-
                                     </Border>
                                 </FlexLayout>
                             </StackLayout>
@@ -572,7 +558,7 @@
                                                     <chart:SfCartesianChart.Title>
                                                         <Label
                                                             BackgroundColor="Transparent"
-                                                            FontSize="11"
+                                                            FontSize="12"
                                                             Text="Loan repayment breakdown"
                                                             TextColor="{DynamicResource LoanAppChartTitleTextColor}" />
                                                     </chart:SfCartesianChart.Title>
@@ -611,26 +597,27 @@
                                                         </chart:NumericalAxis>
                                                     </chart:SfCartesianChart.YAxes>
                                                     <chart:SfCartesianChart.Legend>
-                                                        <chart:ChartLegend Placement="{OnPlatform Android={OnIdiom Phone=Bottom, Tablet=Left}, iOS={OnIdiom Phone=Bottom, Tablet=Left}, UWP=Left}" ToggleSeriesVisibility="True" />
-                                                        <!--
-                                                            IconHeight="14"
-                                                            IconWidth="14"
-                                                        -->
+                                                        <chart:ChartLegend Placement="Bottom" ToggleSeriesVisibility="True">
+                                                            <chart:ChartLegend.LabelStyle>
+                                                                <chart:ChartLegendLabelStyle
+                                                                    FontFamily="{DynamicResource DefaultFontFamily}"
+                                                                    TextColor="{DynamicResource LoanAppChartLegendTextColor}" />
+                                                            </chart:ChartLegend.LabelStyle>
+                                                        </chart:ChartLegend>
                                                     </chart:SfCartesianChart.Legend>
                                                     <chart:SfCartesianChart.Series>
                                                         <chart:StackingColumnSeries
                                                             EnableAnimation="True"
-                                                            ItemsSource="{Binding AmortizationChartInterestAmountAxis}"
+                                                            ItemsSource="{Binding AmortizationChartPrincipalAmountAxis}"
+                                                            Label="Principal"
                                                             LegendIcon="Rectangle"
-                                                            Stroke="{DynamicResource LoanAppChartColor1}"
                                                             XBindingPath="Name"
                                                             YBindingPath="Value" />
-
                                                         <chart:StackingColumnSeries
                                                             EnableAnimation="True"
-                                                            ItemsSource="{Binding AmortizationChartPrincipalAmountAxis}"
+                                                            ItemsSource="{Binding AmortizationChartInterestAmountAxis}"
+                                                            Label="Interest"
                                                             LegendIcon="Rectangle"
-                                                            Stroke="{DynamicResource LoanAppChartColor2}"
                                                             XBindingPath="Name"
                                                             YBindingPath="Value" />
                                                     </chart:SfCartesianChart.Series>
@@ -689,33 +676,34 @@
                                                         </chart:NumericalAxis>
                                                     </chart:SfCartesianChart.YAxes>
                                                     <chart:SfCartesianChart.Legend>
-                                                        <chart:ChartLegend Placement="{OnPlatform Android={OnIdiom Phone=Bottom, Tablet=Left}, iOS={OnIdiom Phone=Bottom, Tablet=Left}, UWP=Left}" ToggleSeriesVisibility="True" />
+                                                        <chart:ChartLegend Placement="Bottom" ToggleSeriesVisibility="True">
+                                                            <chart:ChartLegend.LabelStyle>
+                                                                <chart:ChartLegendLabelStyle
+                                                                    FontFamily="{DynamicResource DefaultFontFamily}"
+                                                                    TextColor="{DynamicResource LoanAppChartLegendTextColor}" />
+                                                            </chart:ChartLegend.LabelStyle>
+                                                        </chart:ChartLegend>
                                                     </chart:SfCartesianChart.Legend>
                                                     <chart:SfCartesianChart.Series>
-
-                                                        <chart:StackingAreaSeries
-                                                            EnableAnimation="True"
-                                                            ItemsSource="{Binding AmortizationChartAreaInterestAmountAxis}"
-                                                            LegendIcon="Rectangle"
-                                                            Stroke="{DynamicResource LoanAppChartColor1}"
-                                                            XBindingPath="Name"
-                                                            YBindingPath="Value" />
                                                         <chart:StackingAreaSeries
                                                             EnableAnimation="True"
                                                             ItemsSource="{Binding AmortizationChartAreaPrincipalAmountAxis}"
+                                                            Label="Principal"
                                                             LegendIcon="Rectangle"
-                                                            Stroke="{DynamicResource LoanAppChartColor2}"
                                                             XBindingPath="Name"
                                                             YBindingPath="Value" />
-
+                                                        <chart:StackingAreaSeries
+                                                            EnableAnimation="True"
+                                                            ItemsSource="{Binding AmortizationChartAreaInterestAmountAxis}"
+                                                            Label="Interest"
+                                                            LegendIcon="Rectangle"
+                                                            XBindingPath="Name"
+                                                            YBindingPath="Value" />
                                                     </chart:SfCartesianChart.Series>
                                                 </chart:SfCartesianChart>
                                             </Grid>
                                         </Border.Content>
                                     </Border>
-
-
-
                                 </FlexLayout>
 
                                 <Grid HorizontalOptions="Fill" VerticalOptions="Fill">

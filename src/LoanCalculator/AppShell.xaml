@@ -11,23 +11,23 @@
     <Shell.Resources>
         <ResourceDictionary>
             <Style x:Key="BaseStyle" TargetType="Element">
-                <Setter Property="Shell.BackgroundColor" Value="{DynamicResource AppShellBgColor}" />
-                <Setter Property="Shell.ForegroundColor" Value="{DynamicResource AppShellFgColor}" />
-                <Setter Property="Shell.TitleColor" Value="{DynamicResource AppShellTitleColor}" />
-                <Setter Property="Shell.DisabledColor" Value="{DynamicResource AppShellDisabledColor}" />
-                <Setter Property="Shell.UnselectedColor" Value="{DynamicResource AppShellUnselectedColor}" />
-                <Setter Property="Shell.TabBarBackgroundColor" Value="{DynamicResource AppShellTabBarBackgroundColor}" />
-                <Setter Property="Shell.TabBarForegroundColor" Value="{DynamicResource AppShellTabBarForegroundColor}" />
-                <Setter Property="Shell.TabBarUnselectedColor" Value="{DynamicResource AppShellTabBarUnselectedColor}" />
-                <Setter Property="Shell.TabBarDisabledColor" Value="{DynamicResource AppShellTabBarDisabledColor}" />
-                <Setter Property="Shell.TabBarTitleColor" Value="{DynamicResource AppShellTabBarTitleColor}" />
+                <Setter Property="Shell.BackgroundColor" Value="{DynamicResource LoanAppAppShellBgColor}" />
+                <Setter Property="Shell.ForegroundColor" Value="{DynamicResource LoanAppAppShellFgColor}" />
+                <Setter Property="Shell.TitleColor" Value="{DynamicResource LoanAppAppShellTitleColor}" />
+                <Setter Property="Shell.DisabledColor" Value="{DynamicResource LoanAppAppShellDisabledColor}" />
+                <Setter Property="Shell.UnselectedColor" Value="{DynamicResource LoanAppAppShellUnselectedColor}" />
+                <Setter Property="Shell.TabBarBackgroundColor" Value="{DynamicResource LoanAppAppShellTabBarBackgroundColor}" />
+                <Setter Property="Shell.TabBarForegroundColor" Value="{DynamicResource LoanAppAppShellTabBarForegroundColor}" />
+                <Setter Property="Shell.TabBarUnselectedColor" Value="{DynamicResource LoanAppAppShellTabBarUnselectedColor}" />
+                <Setter Property="Shell.TabBarDisabledColor" Value="{DynamicResource LoanAppAppShellTabBarDisabledColor}" />
+                <Setter Property="Shell.TabBarTitleColor" Value="{DynamicResource LoanAppAppShellTabBarTitleColor}" />
             </Style>
             <Style BasedOn="{StaticResource BaseStyle}" TargetType="TabBar" />
             <Style BasedOn="{StaticResource BaseStyle}" TargetType="FlyoutItem" />
             <Style TargetType="ShellContent">
-                <Setter Property="Shell.TabBarTitleColor" Value="{DynamicResource AppShellTabBarTitleColor}" />
-                <Setter Property="Shell.TabBarUnselectedColor" Value="{DynamicResource AppShellTabBarUnselectedColor}" />
-                <Setter Property="Shell.TabBarForegroundColor" Value="{DynamicResource AppShellTabBarForegroundColor}" />
+                <Setter Property="Shell.TabBarTitleColor" Value="{DynamicResource LoanAppAppShellTabBarTitleColor}" />
+                <Setter Property="Shell.TabBarUnselectedColor" Value="{DynamicResource LoanAppAppShellTabBarUnselectedColor}" />
+                <Setter Property="Shell.TabBarForegroundColor" Value="{DynamicResource LoanAppAppShellTabBarForegroundColor}" />
             </Style>
         </ResourceDictionary>
     </Shell.Resources>

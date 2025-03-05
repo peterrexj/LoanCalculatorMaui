@@ -26,11 +26,11 @@
                         FontAttributes="Bold"
                         FontSize="24"
                         Text="Settings"
-                        TextColor="{DynamicResource AppShellFgColor}" />
+                        TextColor="{DynamicResource LoanAppAppShellFgColor}" />
                     <Label
                         FontSize="14"
                         Text="Manage your preferences"
-                        TextColor="{DynamicResource AppShellFgColor}" />
+                        TextColor="{DynamicResource LoanAppAppShellFgColor}" />
                 </StackLayout>
             </Grid>
 
@@ -150,6 +150,6 @@
             HorizontalOptions="Center"
             IsRunning="{Binding IsBusy}"
             VerticalOptions="Center"
-            Color="{DynamicResource AppShellFgColor}" />
+            Color="{DynamicResource LoanAppAppShellFgColor}" />
     </Grid>
 </ContentPage>

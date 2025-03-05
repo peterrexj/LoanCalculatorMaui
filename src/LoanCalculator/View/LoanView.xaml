@@ -1299,7 +1299,7 @@
                 HorizontalOptions="Center"
                 IsRunning="{Binding IsBusy}"
                 VerticalOptions="Center"
-                Color="{DynamicResource AppShellFgColor}" />
+                Color="{DynamicResource LoanAppAppShellFgColor}" />
         </Grid>
     </ContentPage.Content>
 </ContentPage>

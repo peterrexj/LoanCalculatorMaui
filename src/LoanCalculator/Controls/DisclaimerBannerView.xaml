@@ -43,7 +43,7 @@
                     HorizontalOptions="Center"
                     HorizontalTextAlignment="Center"
                     Text="{Binding Text, Source={x:Reference Name=DisclaimerBannerContentView}}"
-                    TextColor="{DynamicResource NotificationTextColor}"
+                    TextColor="{DynamicResource LoanAppNotificationTextColor}"
                     VerticalOptions="Center"
                     VerticalTextAlignment="Center" />
             </Grid>

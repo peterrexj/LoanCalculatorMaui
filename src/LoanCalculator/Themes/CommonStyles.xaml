@@ -39,12 +39,12 @@
 
     <!--  Border top highlight box styles  -->
     <LinearGradientBrush x:Key="BorderTopGradientBrush" StartPoint="0,0" EndPoint="1,1">
-        <GradientStop Offset="0.0" Color="{DynamicResource BorderTopGradientOuterLineStart}" />
-        <GradientStop Offset="1.0" Color="{DynamicResource BorderTopGradientOuterLineEnd}" />
+        <GradientStop Offset="0.0" Color="{DynamicResource LoanAppBorderTopGradientOuterLineStart}" />
+        <GradientStop Offset="1.0" Color="{DynamicResource LoanAppBorderTopGradientOuterLineEnd}" />
     </LinearGradientBrush>
     <LinearGradientBrush x:Key="BorderTopBackgroundGradientBrush" StartPoint="0,0" EndPoint="1,1">
-        <GradientStop Offset="0.0" Color="{DynamicResource BorderTopGradientBackgroundStart}" />
-        <GradientStop Offset="1.0" Color="{DynamicResource BorderTopGradientBackgroundEnd}" />
+        <GradientStop Offset="0.0" Color="{DynamicResource LoanAppBorderTopGradientBackgroundStart}" />
+        <GradientStop Offset="1.0" Color="{DynamicResource LoanAppBorderTopGradientBackgroundEnd}" />
     </LinearGradientBrush>
     <Style x:Key="BorderTopHighlightBox" TargetType="Border">
         <Setter Property="StrokeThickness" Value="2" />
@@ -85,12 +85,12 @@
 
     <!--  Border insights box styles  -->
     <LinearGradientBrush x:Key="BorderInsightsGradientBrush" StartPoint="0,0" EndPoint="1,1">
-        <GradientStop Offset="0.0" Color="{DynamicResource BorderInsightsGradientOuterLineStart}" />
-        <GradientStop Offset="1.0" Color="{DynamicResource BorderInsightsGradientOuterLineEnd}" />
+        <GradientStop Offset="0.0" Color="{DynamicResource LoanAppBorderInsightsGradientOuterLineStart}" />
+        <GradientStop Offset="1.0" Color="{DynamicResource LoanAppBorderInsightsGradientOuterLineEnd}" />
     </LinearGradientBrush>
     <LinearGradientBrush x:Key="BorderInsightsBackgroundGradientBrush" StartPoint="0,0" EndPoint="1,1">
-        <GradientStop Offset="0.0" Color="{DynamicResource BorderInsightsGradientBackgroundStart}" />
-        <GradientStop Offset="1.0" Color="{DynamicResource BorderInsightsGradientBackgroundEnd}" />
+        <GradientStop Offset="0.0" Color="{DynamicResource LoanAppBorderInsightsGradientBackgroundStart}" />
+        <GradientStop Offset="1.0" Color="{DynamicResource LoanAppBorderInsightsGradientBackgroundEnd}" />
     </LinearGradientBrush>
     <Style x:Key="BorderInsightsHighlightBox" TargetType="Border">
         <Setter Property="StrokeShape" Value="RoundRectangle 3,3,3,3" />
@@ -110,12 +110,12 @@
                     <VisualStateGroup>
                         <VisualState Name="Expanded">
                             <VisualState.Setters>
-                                <Setter Property="HeaderBackground" Value="{DynamicResource ExpanderExpandedGradientBrush}" />
+                                <Setter Property="HeaderBackground" Value="{DynamicResource LoanAppExpanderExpandedGradientBrush}" />
                             </VisualState.Setters>
                         </VisualState>
                         <VisualState Name="Collapsed">
                             <VisualState.Setters>
-                                <Setter Property="HeaderBackground" Value="{DynamicResource ExpanderCollapsedGradientBrush}" />
+                                <Setter Property="HeaderBackground" Value="{DynamicResource LoanAppExpanderCollapsedGradientBrush}" />
                             </VisualState.Setters>
                         </VisualState>
                     </VisualStateGroup>
@@ -303,7 +303,7 @@
         <Setter Property="TextColor" Value="{DynamicResource LoanAppChartDataMarkerTextColor}" />
     </Style>
     <Style x:Key="ButtonStyle" TargetType="core:SfButton">
-        <Setter Property="Background" Value="{DynamicResource ButtonBgColor}" />
+        <Setter Property="Background" Value="{DynamicResource LoanAppButtonBgColor}" />
         <Setter Property="CornerRadius" Value="1" />
         <Setter Property="Margin" Value="4" />
         <Setter Property="MaximumHeightRequest" Value="50" />
@@ -311,12 +311,12 @@
     <Style x:Key="ButtonLabelStyle" TargetType="Label">
         <Setter Property="HorizontalOptions" Value="Center" />
         <Setter Property="VerticalOptions" Value="Center" />
-        <Setter Property="TextColor" Value="{DynamicResource ButtonFgColor}" />
+        <Setter Property="TextColor" Value="{DynamicResource LoanAppButtonFgColor}" />
         <Setter Property="FontFamily" Value="{DynamicResource DefaultFontFamily}" />
         <Setter Property="FontSize" Value="14" />
     </Style>
     <Style x:Key="ListIconButtonStyle" TargetType="core:SfButton">
-        <Setter Property="Background" Value="{DynamicResource ButtonBgColor}" />
+        <Setter Property="Background" Value="{DynamicResource LoanAppButtonBgColor}" />
         <Setter Property="CornerRadius" Value="1" />
         <Setter Property="Margin" Value="3,0,0,0" />
         <Setter Property="ShowIcon" Value="True" />
@@ -324,37 +324,38 @@
 
     <!--  Notification background brush  -->
     <RadialGradientBrush x:Key="InformationBackgroundGradientBrush" Center="0.5,0.5" Radius="0.5">
-        <GradientStop Offset="0.0" Color="{DynamicResource NotificationInformationBgGradientStart}" />
-        <GradientStop Offset="0.7" Color="{DynamicResource NotificationInformationBgGradientStart}" />
-        <GradientStop Offset="1.0" Color="{DynamicResource NotificationInformationBgGradientEnd}" />
+        <GradientStop Offset="0.0" Color="{DynamicResource LoanAppNotificationInformationBgGradientStart}" />
+        <GradientStop Offset="0.7" Color="{DynamicResource LoanAppNotificationInformationBgGradientStart}" />
+        <GradientStop Offset="1.0" Color="{DynamicResource LoanAppNotificationInformationBgGradientEnd}" />
     </RadialGradientBrush>
     <!--  Notification background brush  -->
     <RadialGradientBrush x:Key="WarningBackgroundGradientBrush" Center="0.5,0.5" Radius="0.5">
-        <GradientStop Offset="0.0" Color="{DynamicResource NotificationWarningBgGradientStart}" />
-        <GradientStop Offset="0.7" Color="{DynamicResource NotificationWarningBgGradientStart}" />
-        <GradientStop Offset="1.0" Color="{DynamicResource NotificationWarningBgGradientEnd}" />
+        <GradientStop Offset="0.0" Color="{DynamicResource LoanAppNotificationWarningBgGradientStart}" />
+        <GradientStop Offset="0.7" Color="{DynamicResource LoanAppNotificationWarningBgGradientStart}" />
+        <GradientStop Offset="1.0" Color="{DynamicResource LoanAppNotificationWarningBgGradientEnd}" />
     </RadialGradientBrush>
 
 
     <!--  Style for SfAutocomplete  -->
     <Style x:Key="SfAutocompleteStyle" TargetType="editors:SfAutocomplete">
         <Setter Property="Margin" Value="5,3,5,0" />
-        <Setter Property="BackgroundColor" Value="{DynamicResource AutoCompleteBackgroundColor}" />
-        <Setter Property="ClearButtonIconColor" Value="{DynamicResource AutoCompleteClearButtonColor}" />
-        <Setter Property="DropDownBackground" Value="{DynamicResource AutoCompleteDropdownBackgroundColor}" />
+        <Setter Property="SelectionTextHighlightColor" Value="{DynamicResource LoanAppAutoCompleteSelectionTextHighlightColor}" />
+        <Setter Property="SelectedDropDownItemBackground" Value="{DynamicResource LoanAppAutoCompleteSelectedDropDownItemBackground}" />
+        <Setter Property="ClearButtonIconColor" Value="{DynamicResource LoanAppAutoCompleteClearButtonColor}" />
+        <Setter Property="DropDownBackground" Value="{DynamicResource LoanAppAutoCompleteDropdownBackgroundColor}" />
         <Setter Property="DropDownItemFontFamily" Value="{DynamicResource DefaultFontFamily}" />
-        <Setter Property="DropDownItemTextColor" Value="{DynamicResource AutoCompleteDropdownTextColor}" />
-        <Setter Property="DropDownStroke" Value="{DynamicResource AutoCompleteDropdownBorderColor}" />
+        <Setter Property="DropDownItemTextColor" Value="{DynamicResource LoanAppAutoCompleteDropdownTextColor}" />
+        <Setter Property="DropDownStroke" Value="{DynamicResource LoanAppAutoCompleteDropdownBorderColor}" />
         <Setter Property="FontFamily" Value="{DynamicResource DefaultFontFamily}" />
-        <Setter Property="HighlightedTextColor" Value="{DynamicResource AutoCompleteHighlightedTextColor}" />
+        <Setter Property="HighlightedTextColor" Value="{DynamicResource LoanAppAutoCompleteHighlightedTextColor}" />
         <Setter Property="HighlightedTextFontAttributes" Value="Bold" />
         <Setter Property="IsClearButtonVisible" Value="True" />
         <Setter Property="MinimumPrefixCharacters" Value="2" />
         <Setter Property="NoResultsFoundText" Value="No Results Found" />
-        <Setter Property="PlaceholderColor" Value="{DynamicResource AutoCompleteWaterColor}" />
+        <Setter Property="PlaceholderColor" Value="{DynamicResource LoanAppAutoCompleteWaterColor}" />
         <Setter Property="Placeholder" Value="Enter here to search" />
         <Setter Property="ShowBorder" Value="False" />
-        <Setter Property="TextColor" Value="{DynamicResource AutoCompleteTextColor}" />
+        <Setter Property="TextColor" Value="{DynamicResource LoanAppAutoCompleteTextColor}" />
         <Setter Property="TextHighlightMode" Value="MultipleOccurrence" />
         <Setter Property="TextSearchMode" Value="Contains" />
         <Setter Property="NoResultsFoundTemplate">
@@ -366,7 +367,7 @@
                         FontFamily="{DynamicResource DefaultFontFamily}"
                         FontSize="16"
                         Text="Not Found"
-                        TextColor="{DynamicResource AutoCompleteNoResultsFoundTextColor}" />
+                        TextColor="{DynamicResource LoanAppAutoCompleteNoResultsFoundTextColor}" />
                 </DataTemplate>
             </Setter.Value>
         </Setter>

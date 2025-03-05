@@ -82,10 +82,10 @@
                                                         <Setter Property="SwitchSettings">
                                                             <Setter.Value>
                                                                 <buttons:SwitchSettings
-                                                                    ThumbBackground="{DynamicResource SwitchThumbColorOn}"
-                                                                    ThumbStroke="{DynamicResource SwitchThumbBorderColorOn}"
-                                                                    TrackBackground="{DynamicResource SwitchTrackColorOn}"
-                                                                    TrackStroke="{DynamicResource SwitchTrackBorderColorOn}" />
+                                                                    ThumbBackground="{DynamicResource LoanAppSwitchThumbColorOn}"
+                                                                    ThumbStroke="{DynamicResource LoanAppSwitchThumbBorderColorOn}"
+                                                                    TrackBackground="{DynamicResource LoanAppSwitchTrackColorOn}"
+                                                                    TrackStroke="{DynamicResource LoanAppSwitchTrackBorderColorOn}" />
                                                             </Setter.Value>
                                                         </Setter>
                                                     </VisualState.Setters>
@@ -96,10 +96,10 @@
                                                         <Setter Property="SwitchSettings">
                                                             <Setter.Value>
                                                                 <buttons:SwitchSettings
-                                                                    ThumbBackground="{DynamicResource SwitchThumbColorOff}"
-                                                                    ThumbStroke="{DynamicResource SwitchThumbBorderColorOff}"
-                                                                    TrackBackground="{DynamicResource SwitchTrackColorOff}"
-                                                                    TrackStroke="{DynamicResource SwitchTrackBorderColorOff}" />
+                                                                    ThumbBackground="{DynamicResource LoanAppSwitchThumbColorOff}"
+                                                                    ThumbStroke="{DynamicResource LoanAppSwitchThumbBorderColorOff}"
+                                                                    TrackBackground="{DynamicResource LoanAppSwitchTrackColorOff}"
+                                                                    TrackStroke="{DynamicResource LoanAppSwitchTrackBorderColorOff}" />
                                                             </Setter.Value>
                                                         </Setter>
                                                     </VisualState.Setters>
@@ -137,10 +137,10 @@
                                                         <Setter Property="SwitchSettings">
                                                             <Setter.Value>
                                                                 <buttons:SwitchSettings
-                                                                    ThumbBackground="{DynamicResource SwitchThumbColorOn}"
-                                                                    ThumbStroke="{DynamicResource SwitchThumbBorderColorOn}"
-                                                                    TrackBackground="{DynamicResource SwitchTrackColorOn}"
-                                                                    TrackStroke="{DynamicResource SwitchTrackBorderColorOn}" />
+                                                                    ThumbBackground="{DynamicResource LoanAppSwitchThumbColorOn}"
+                                                                    ThumbStroke="{DynamicResource LoanAppSwitchThumbBorderColorOn}"
+                                                                    TrackBackground="{DynamicResource LoanAppSwitchTrackColorOn}"
+                                                                    TrackStroke="{DynamicResource LoanAppSwitchTrackBorderColorOn}" />
                                                             </Setter.Value>
                                                         </Setter>
                                                     </VisualState.Setters>
@@ -151,10 +151,10 @@
                                                         <Setter Property="SwitchSettings">
                                                             <Setter.Value>
                                                                 <buttons:SwitchSettings
-                                                                    ThumbBackground="{DynamicResource SwitchThumbColorOff}"
-                                                                    ThumbStroke="{DynamicResource SwitchThumbBorderColorOff}"
-                                                                    TrackBackground="{DynamicResource SwitchTrackColorOff}"
-                                                                    TrackStroke="{DynamicResource SwitchTrackBorderColorOff}" />
+                                                                    ThumbBackground="{DynamicResource LoanAppSwitchThumbColorOff}"
+                                                                    ThumbStroke="{DynamicResource LoanAppSwitchThumbBorderColorOff}"
+                                                                    TrackBackground="{DynamicResource LoanAppSwitchTrackColorOff}"
+                                                                    TrackStroke="{DynamicResource LoanAppSwitchTrackBorderColorOff}" />
                                                             </Setter.Value>
                                                         </Setter>
                                                     </VisualState.Setters>
@@ -441,10 +441,10 @@
                                                             <Setter Property="SwitchSettings">
                                                                 <Setter.Value>
                                                                     <buttons:SwitchSettings
-                                                                        ThumbBackground="{DynamicResource SwitchThumbColorOn}"
-                                                                        ThumbStroke="{DynamicResource SwitchThumbBorderColorOn}"
-                                                                        TrackBackground="{DynamicResource SwitchTrackColorOn}"
-                                                                        TrackStroke="{DynamicResource SwitchTrackBorderColorOn}" />
+                                                                        ThumbBackground="{DynamicResource LoanAppSwitchThumbColorOn}"
+                                                                        ThumbStroke="{DynamicResource LoanAppSwitchThumbBorderColorOn}"
+                                                                        TrackBackground="{DynamicResource LoanAppSwitchTrackColorOn}"
+                                                                        TrackStroke="{DynamicResource LoanAppSwitchTrackBorderColorOn}" />
                                                                 </Setter.Value>
                                                             </Setter>
                                                         </VisualState.Setters>
@@ -454,10 +454,10 @@
                                                             <Setter Property="SwitchSettings">
                                                                 <Setter.Value>
                                                                     <buttons:SwitchSettings
-                                                                        ThumbBackground="{DynamicResource SwitchThumbColorOff}"
-                                                                        ThumbStroke="{DynamicResource SwitchThumbBorderColorOff}"
-                                                                        TrackBackground="{DynamicResource SwitchTrackColorOff}"
-                                                                        TrackStroke="{DynamicResource SwitchTrackBorderColorOff}" />
+                                                                        ThumbBackground="{DynamicResource LoanAppSwitchThumbColorOff}"
+                                                                        ThumbStroke="{DynamicResource LoanAppSwitchThumbBorderColorOff}"
+                                                                        TrackBackground="{DynamicResource LoanAppSwitchTrackColorOff}"
+                                                                        TrackStroke="{DynamicResource LoanAppSwitchTrackBorderColorOff}" />
                                                                 </Setter.Value>
                                                             </Setter>
                                                         </VisualState.Setters>
@@ -489,10 +489,10 @@
                                                             <Setter Property="SwitchSettings">
                                                                 <Setter.Value>
                                                                     <buttons:SwitchSettings
-                                                                        ThumbBackground="{DynamicResource SwitchThumbColorOn}"
-                                                                        ThumbStroke="{DynamicResource SwitchThumbBorderColorOn}"
-                                                                        TrackBackground="{DynamicResource SwitchTrackColorOn}"
-                                                                        TrackStroke="{DynamicResource SwitchTrackBorderColorOn}" />
+                                                                        ThumbBackground="{DynamicResource LoanAppSwitchThumbColorOn}"
+                                                                        ThumbStroke="{DynamicResource LoanAppSwitchThumbBorderColorOn}"
+                                                                        TrackBackground="{DynamicResource LoanAppSwitchTrackColorOn}"
+                                                                        TrackStroke="{DynamicResource LoanAppSwitchTrackBorderColorOn}" />
                                                                 </Setter.Value>
                                                             </Setter>
                                                         </VisualState.Setters>
@@ -502,10 +502,10 @@
                                                             <Setter Property="SwitchSettings">
                                                                 <Setter.Value>
                                                                     <buttons:SwitchSettings
-                                                                        ThumbBackground="{DynamicResource SwitchThumbColorOff}"
-                                                                        ThumbStroke="{DynamicResource SwitchThumbBorderColorOff}"
-                                                                        TrackBackground="{DynamicResource SwitchTrackColorOff}"
-                                                                        TrackStroke="{DynamicResource SwitchTrackBorderColorOff}" />
+                                                                        ThumbBackground="{DynamicResource LoanAppSwitchThumbColorOff}"
+                                                                        ThumbStroke="{DynamicResource LoanAppSwitchThumbBorderColorOff}"
+                                                                        TrackBackground="{DynamicResource LoanAppSwitchTrackColorOff}"
+                                                                        TrackStroke="{DynamicResource LoanAppSwitchTrackBorderColorOff}" />
                                                                 </Setter.Value>
                                                             </Setter>
                                                         </VisualState.Setters>

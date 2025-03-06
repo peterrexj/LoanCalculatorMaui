@@ -587,7 +587,7 @@
                                             HorizontalOptions="FillAndExpand"
                                             PaletteBrushes="{Binding CustomChartColors}"
                                             VerticalOptions="FillAndExpand">
-                                            <chart:SfCartesianChart.Margin>
+                                            <!--<chart:SfCartesianChart.Margin>
                                                 <OnPlatform x:TypeArguments="Thickness">
                                                     <On Platform="Windows" Value="0,0,20,0" />
                                                     <On Platform="Android" Value="0,0,20,0" />
@@ -601,7 +601,7 @@
                                                     FontSize="10"
                                                     Text="Expense Projection Over Time"
                                                     TextColor="{DynamicResource LoanAppChartTitleTextColor}" />
-                                            </chart:SfCartesianChart.Title>
+                                            </chart:SfCartesianChart.Title>-->
 
                                             <chart:SfCartesianChart.XAxes>
                                                 <chart:CategoryAxis

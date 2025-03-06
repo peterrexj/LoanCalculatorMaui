@@ -37,11 +37,11 @@
     <Color x:Key="LoanAppDataGridHeaderTextColor">#d0d8d8</Color>
     <Color x:Key="LoanAppDataGridCellTextColor">#154360</Color>
     <Color x:Key="LoanAppDataGridCellBackgroundColor">#d4e6f1</Color>
-    <Color x:Key="LoanAppDataGridCellBg1">#183d3d</Color>
-    <Color x:Key="LoanAppDataGridCellBg2">#153636</Color>
-    <Color x:Key="LoanAppDataGridCellBg3">#133030</Color>
-    <Color x:Key="LoanAppDataGridCellBg4">#102a2a</Color>
-    <Color x:Key="LoanAppDataGridCellBg5">#0e2424</Color>
+    <Color x:Key="LoanAppDataGridCellBg1">#2f5050</Color>
+    <Color x:Key="LoanAppDataGridCellBg2">#183d3d</Color>
+    <Color x:Key="LoanAppDataGridCellBg3">#153636</Color>
+    <Color x:Key="LoanAppDataGridCellBg4">#133030</Color>
+    <Color x:Key="LoanAppDataGridCellBg5">#102a2a</Color>
     <Color x:Key="LoanAppDataGridCellFg1">#b9c4c4</Color>
     <Color x:Key="LoanAppDataGridCellFg2">#a2b1b1</Color>
     <Color x:Key="LoanAppDataGridCellFg3">#8b9e9e</Color>
@@ -72,7 +72,7 @@
     <Color x:Key="LoanAppSwitchTrackBorderColorOff">#1b2722</Color>
     <Color x:Key="LoanAppSwitchTrackColorOff">#5c8374</Color>
 
-    <!-- AutoComplete  -->
+    <!--  AutoComplete  -->
     <Color x:Key="LoanAppAutoCompleteSelectionTextHighlightColor">#b3c8c0</Color>
     <Color x:Key="LoanAppAutoCompleteSelectedDropDownItemBackground">#405b51</Color>
     <Color x:Key="LoanAppAutoCompleteClearButtonColor">#153636</Color>
@@ -84,7 +84,7 @@
     <Color x:Key="LoanAppAutoCompleteTextColor">#183d3d</Color>
     <Color x:Key="LoanAppAutoCompleteNoResultsFoundTextColor">#183d3d</Color>
 
-    <!-- AppShell -->
+    <!--  AppShell  -->
     <Color x:Key="LoanAppAppShellBgColor">#0e2424</Color>
     <Color x:Key="LoanAppAppShellFgColor">#93B1A6</Color>
     <Color x:Key="LoanAppAppShellTitleColor">#283747</Color>

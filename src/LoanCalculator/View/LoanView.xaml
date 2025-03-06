@@ -461,9 +461,7 @@
                                                 <chart:SfCircularChart.Legend>
                                                     <chart:ChartLegend Placement="{OnPlatform Android={OnIdiom Phone=Bottom, Tablet=Left}, iOS={OnIdiom Phone=Bottom, Tablet=Left}, UWP=Left}" ToggleSeriesVisibility="True">
                                                         <chart:ChartLegend.LabelStyle>
-                                                            <chart:ChartLegendLabelStyle
-                                                                FontFamily="{DynamicResource DefaultFontFamily}"
-                                                                TextColor="{DynamicResource LoanAppChartLegendTextColor}" />
+                                                            <chart:ChartLegendLabelStyle FontFamily="{DynamicResource DefaultFontFamily}" TextColor="{DynamicResource LoanAppChartLegendTextColor}" />
                                                         </chart:ChartLegend.LabelStyle>
                                                     </chart:ChartLegend>
                                                 </chart:SfCircularChart.Legend>
@@ -555,13 +553,17 @@
                                                         </OnPlatform>
                                                     </chart:SfCartesianChart.Margin>
 
-                                                    <chart:SfCartesianChart.Title>
+                                                    <!--<chart:SfCartesianChart.Title>
                                                         <Label
+                                                            Margin="0,-10,0,0"
                                                             BackgroundColor="Transparent"
-                                                            FontSize="12"
+                                                            FontSize="16"
+                                                            HorizontalOptions="Fill"
+                                                            HorizontalTextAlignment="Center"
                                                             Text="Loan repayment breakdown"
-                                                            TextColor="{DynamicResource LoanAppChartTitleTextColor}" />
-                                                    </chart:SfCartesianChart.Title>
+                                                            TextColor="{DynamicResource LoanAppChartTitleTextColor}"
+                                                            VerticalOptions="Center" />
+                                                    </chart:SfCartesianChart.Title>-->
                                                     <chart:SfCartesianChart.XAxes>
                                                         <chart:CategoryAxis
                                                             EdgeLabelsDrawingMode="Fit"
@@ -594,14 +596,13 @@
                                                             <chart:NumericalAxis.MajorTickStyle>
                                                                 <chart:ChartAxisTickStyle TickSize="0" />
                                                             </chart:NumericalAxis.MajorTickStyle>
+
                                                         </chart:NumericalAxis>
                                                     </chart:SfCartesianChart.YAxes>
                                                     <chart:SfCartesianChart.Legend>
                                                         <chart:ChartLegend Placement="Bottom" ToggleSeriesVisibility="True">
                                                             <chart:ChartLegend.LabelStyle>
-                                                                <chart:ChartLegendLabelStyle
-                                                                    FontFamily="{DynamicResource DefaultFontFamily}"
-                                                                    TextColor="{DynamicResource LoanAppChartLegendTextColor}" />
+                                                                <chart:ChartLegendLabelStyle FontFamily="{DynamicResource DefaultFontFamily}" TextColor="{DynamicResource LoanAppChartLegendTextColor}" />
                                                             </chart:ChartLegend.LabelStyle>
                                                         </chart:ChartLegend>
                                                     </chart:SfCartesianChart.Legend>
@@ -630,17 +631,13 @@
                                                     IsVisible="{Binding IsAmortizationTermBased}"
                                                     PaletteBrushes="{Binding CustomChartColors}"
                                                     VerticalOptions="FillAndExpand">
-                                                    <!--<chart:SfCartesianChart.Margin>
-                                                    <OnPlatform x:TypeArguments="Thickness" WinPhone="0,0,20,0" />
-                                                </chart:SfCartesianChart.Margin>-->
-                                                    <chart:SfCartesianChart.Title>
+                                                    <!--<chart:SfCartesianChart.Title>
                                                         <Label
                                                             BackgroundColor="Transparent"
                                                             FontSize="11"
                                                             Text="Loan repayment breakdown"
                                                             TextColor="{DynamicResource LoanAppChartTitleTextColor}" />
-
-                                                    </chart:SfCartesianChart.Title>
+                                                    </chart:SfCartesianChart.Title>-->
                                                     <chart:SfCartesianChart.XAxes>
                                                         <chart:CategoryAxis
                                                             EdgeLabelsDrawingMode="Shift"
@@ -678,9 +675,7 @@
                                                     <chart:SfCartesianChart.Legend>
                                                         <chart:ChartLegend Placement="Bottom" ToggleSeriesVisibility="True">
                                                             <chart:ChartLegend.LabelStyle>
-                                                                <chart:ChartLegendLabelStyle
-                                                                    FontFamily="{DynamicResource DefaultFontFamily}"
-                                                                    TextColor="{DynamicResource LoanAppChartLegendTextColor}" />
+                                                                <chart:ChartLegendLabelStyle FontFamily="{DynamicResource DefaultFontFamily}" TextColor="{DynamicResource LoanAppChartLegendTextColor}" />
                                                             </chart:ChartLegend.LabelStyle>
                                                         </chart:ChartLegend>
                                                     </chart:SfCartesianChart.Legend>

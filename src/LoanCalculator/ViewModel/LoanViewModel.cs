@@ -818,7 +818,7 @@ public class LoanViewModel(IErrorHandlingService errorHandlingService, IAlertSer
         OnPropertyChanged(nameof(InspectionFee));
         OnPropertyChanged(nameof(OtherExpenses));
         OnPropertyChanged(nameof(RepaymentFrequencySelected));
-        base.SaveData(this);
+        SharedServices.SaveData(this);
         IsBusy = false;
     }
 
@@ -834,7 +834,7 @@ public class LoanViewModel(IErrorHandlingService errorHandlingService, IAlertSer
         OnPropertyChanged(nameof(IsAmortizationTermBased));
         OnPropertyChanged(nameof(IsAmortizationYearBased));
 
-        base.SaveData(this);
+        SharedServices.SaveData(this);
     }
 
     public void RefreshExpenseTabPropertyChanged()
@@ -855,7 +855,7 @@ public class LoanViewModel(IErrorHandlingService errorHandlingService, IAlertSer
         OnPropertyChanged(nameof(TotalMonthlyExistingExpense));
         OnPropertyChanged(nameof(TotalMonthlyOverallExpenseBreakdownWithComma));
 
-        base.SaveData(this);
+        SharedServices.SaveData(this);
     }
 
     public void RefreshInsightsTabPropertyChanged()

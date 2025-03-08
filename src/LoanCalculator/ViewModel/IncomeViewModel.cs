@@ -434,7 +434,7 @@ public class IncomeViewModel(IErrorHandlingService errorHandlingService, IAlertS
         OnPropertyChanged(nameof(StringChartTitleText));
         OnPropertyChanged(nameof(StringProjectionInfoText));
 
-        base.SaveData(this);
+        SharedServices.SaveData(this);
     }
 
     public void UpdateProjectionData()
@@ -475,7 +475,7 @@ public class IncomeViewModel(IErrorHandlingService errorHandlingService, IAlertS
         OnPropertyChanged(nameof(IncomeProjectList));
         OnPropertyChanged(nameof(StringChartTitleText));
 
-        base.SaveData(this);
+        SharedServices.SaveData(this);
     }
 
     #endregion

@@ -642,9 +642,7 @@
                                             <chart:SfCartesianChart.Legend>
                                                 <chart:ChartLegend Placement="Bottom" ToggleSeriesVisibility="True">
                                                     <chart:ChartLegend.LabelStyle>
-                                                        <chart:ChartLegendLabelStyle
-                                                            FontFamily="{DynamicResource DefaultFontFamily}"
-                                                            TextColor="{DynamicResource LoanAppChartLegendTextColor}" />
+                                                        <chart:ChartLegendLabelStyle FontFamily="{DynamicResource DefaultFontFamily}" TextColor="{DynamicResource LoanAppChartLegendTextColor}" />
                                                     </chart:ChartLegend.LabelStyle>
                                                 </chart:ChartLegend>
                                             </chart:SfCartesianChart.Legend>

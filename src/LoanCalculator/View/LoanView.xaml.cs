@@ -59,7 +59,7 @@ public partial class LoanView : ContentPage
         {
             PageHelper.PageIsLoading();
 
-            var data = await viewModel.LoadDataFile<LoanViewModel>();
+            var data = await SharedServices.LoadDataFile<LoanViewModel>();
 
             var shouldAddDefaultValues = false;
 

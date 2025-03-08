@@ -72,7 +72,7 @@
     <Color x:Key="LoanAppSwitchTrackBorderColorOff">Transparent</Color>
     <Color x:Key="LoanAppSwitchTrackColorOff">#D6EAF8</Color>
 
-    <!-- AutoComplete  -->
+    <!--  AutoComplete  -->
     <Color x:Key="LoanAppAutoCompleteSelectionTextHighlightColor">#b3c8c0</Color>
     <Color x:Key="LoanAppAutoCompleteSelectedDropDownItemBackground">#405b51</Color>
     <Color x:Key="LoanAppAutoCompleteClearButtonColor">#153636</Color>
@@ -84,7 +84,7 @@
     <Color x:Key="LoanAppAutoCompleteTextColor">#183d3d</Color>
     <Color x:Key="LoanAppAutoCompleteNoResultsFoundTextColor">#183d3d</Color>
 
-    <!-- AppShell -->
+    <!--  AppShell  -->
     <Color x:Key="LoanAppAppShellBgColor">#B3B6B7</Color>
     <Color x:Key="LoanAppAppShellFgColor">#283747</Color>
     <Color x:Key="LoanAppAppShellTitleColor">#283747</Color>
@@ -166,6 +166,14 @@
     </LinearGradientBrush>
 
     <!--  Checkbox styles  -->
-    <Color x:Key="CheckboxBackColor">#C1CFA1</Color>
+    <Color x:Key="LoanAppCheckboxBackColor">#C1CFA1</Color>
 
+    <!--  Disclaimer -->
+    <Color x:Key="LoanAppDisclaimerBodyBackgroundColor">#758d84</Color>
+    <Color x:Key="LoanAppDisclaimerHeaderBackgroundColor">#091818</Color>
+    <Color x:Key="LoanAppDisclaimerHeaderTextColor">#b9c4c4</Color>
+    <Color x:Key="LoanAppDisclaimerHeaderBorderColor">#0E8388</Color>
+    <Color x:Key="LoanAppDisclaimerContentBackgroundColor">#dee7e4</Color>
+    <Color x:Key="LoanAppDisclaimerContentBoxShadowColor">#2c3531</Color>
+    <Color x:Key="LoanAppDisclaimerHeader2TextColor">#091818</Color>
 </ResourceDictionary>

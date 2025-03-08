@@ -1,22 +1,33 @@
 ﻿using System.Reflection;
 using LoanCalculator.Models.Enums;
+using LoanCalculatorMaui.Services;
 using LoanCalculatorMaui.ViewModel;
 
 namespace LoanCalculatorMaui.Themes
 {
     public class StyleProvider
     {
-        public async Task<AppThemes> GetCurrentThemeAsync()
+        public static async Task<AppThemes?> GetCurrentThemeAsync()
         {
-            var data = await new ViewModelUiBase().LoadDataFile<SettingsViewModel>();
-            return data == null || data.SelectedTheme == null ? AppThemes.Light : EnumHelper<AppThemes>.FromString(data.SelectedTheme.Name);
+            try
+            {
+                var data = await SharedServices.LoadDataFile<ThemeSelect>();
+                return data == null || data.Theme == null ? null : EnumHelper<AppThemes>.FromString(data.Theme.ToString());
+            }
+            catch (Exception e)
+            {
+                // ignored
+            }
+
+            return null;
         }
 
         public static ResourceDictionary LoadDefaultStyle()
         {
-            var currentTheme = AppThemes.Light;
-            Task.Run(async () => currentTheme = await new StyleProvider().GetCurrentThemeAsync()).Wait();
-            return LoadDefaultStyle(currentTheme);
+            AppThemes? currentTheme = null;
+            Task.Run(async () => currentTheme = await GetCurrentThemeAsync()).Wait();
+            currentTheme ??= AppThemes.Light;
+            return LoadDefaultStyle(currentTheme.Value);
         }
 
         public static ResourceDictionary LoadDefaultStyle(AppThemes appTheme)

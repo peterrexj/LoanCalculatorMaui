@@ -199,7 +199,7 @@
         </Setter>
         <Setter Property="HelperLabelStyle">
             <Setter.Value>
-                <core:LabelStyle FontFamily="{DynamicResource DefaultFontFamily}" TextColor="{DynamicResource LoanAppInputTextFgColor}"/>
+                <core:LabelStyle FontFamily="{DynamicResource DefaultFontFamily}" TextColor="{DynamicResource LoanAppInputTextFgColor}" />
             </Setter.Value>
         </Setter>
         <Setter Property="VisualStateManager.VisualStateGroups">

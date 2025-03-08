@@ -23,14 +23,18 @@ namespace LoanCalculatorMaui.ViewModel
         [JsonIgnore]
         private readonly IAlertService _alertService = alertService;
 
+        [JsonIgnore]
         public ICommand ClearLoanDataCommand { get; }
+        [JsonIgnore]
         public ICommand ClearExpenseDataCommand { get; }
+        [JsonIgnore]
         public ICommand ClearIncomeDataCommand { get; }
+        [JsonIgnore]
         public ICommand ClearAllDataCommand { get; }
 
         public SettingsViewModel() : this(ServiceLocator.GetService<IErrorHandlingService>(), ServiceLocator.GetService<IAlertService>())
         {
-            Themes = new ObservableCollection<Theme>
+            Themes = new ObservableCollection<Theme?>
             {
                 new Theme { Name = AppThemes.Dark.ToString(), BoxBackgroundGradientBrushStart = Color.FromArgb("#5d6d7e"), BoxBackgroundGradientBrushEnd = Color.FromArgb("#212f3c"), TextBackground = Color.FromArgb("#ebedef")},
                 new Theme { Name = AppThemes.Light.ToString(), BoxBackgroundGradientBrushStart = Color.FromArgb("#e5e7e9"), BoxBackgroundGradientBrushEnd = Color.FromArgb("#bdc3c7"), TextBackground = Color.FromArgb("#34495e")},
@@ -43,24 +47,46 @@ namespace LoanCalculatorMaui.ViewModel
             ClearAllDataCommand = new Command(async () => await ClearDisclaimerData());
         }
 
-        public ObservableCollection<Theme> Themes { get; }
+        [JsonIgnore]
+        public ObservableCollection<Theme?> Themes { get; }
 
-        private Theme _selectedTheme;
-        public Theme SelectedTheme
+        [JsonIgnore]
+        private Theme? _selectedTheme;
+        [JsonIgnore]
+        public Theme? SelectedTheme
         {
-            get => _selectedTheme;
+            get
+            {
+                if (_selectedTheme == null)
+                {
+                    StyleProvider.GetCurrentThemeAsync().ContinueWith(task =>
+                    {
+                        _selectedTheme = task.Result != null ? 
+                            Themes.FirstOrDefault(t => t.Name == task.Result.ToString()) : 
+                            Themes.FirstOrDefault(t => t.Name == AppThemes.Light.ToString());
+                    });
+                }
+                return _selectedTheme;
+            }
             set
             {
+                if (value == null) return;
+                if (_selectedTheme == value) return;
                 if (isUpdating) return;
+
                 IsBusy = true;
                 MainThread.InvokeOnMainThreadAsync(async () =>
                 {
                     try
                     {
                         isUpdating = true;
+
+                        var appTheme = EnumHelper<AppThemes>.FromString(_selectedTheme.Name);
+                        await SaveAndApplyApplicationThemeAsync(appTheme);
+
                         _selectedTheme = value;
+
                         OnPropertyChanged();
-                        await SaveAndApplyThemeAsync(_selectedTheme);
                     }
                     catch (Exception ex)
                     {
@@ -76,23 +102,16 @@ namespace LoanCalculatorMaui.ViewModel
             }
         }
 
-        private async Task SaveAndApplyThemeAsync(Theme theme)
+        private async Task SaveAndApplyApplicationThemeAsync(AppThemes theme)
         {
-            await SaveData(this);
-            await ApplyThemeAsync(theme);
+            SharedServices.ClearDisclaimerData();
+            await SharedServices.SaveData(new ThemeSelect { Theme = theme });
+            await ApplyApplicationThemeAsync(theme);
         }
 
-        private async Task ApplyThemeAsync(Theme theme)
+        private async Task ApplyApplicationThemeAsync(AppThemes theme)
         {
-            try
-            {
-                var appTheme = EnumHelper<AppThemes>.FromString(theme.Name);
-                await MainThread.InvokeOnMainThreadAsync(() => StyleProvider.LoadDefaultStyle(appTheme));
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-            }
+            await MainThread.InvokeOnMainThreadAsync(() => StyleProvider.LoadDefaultStyle(theme));
         }
 
         private async Task ClearLoanData() => await SharedServices.LocalStorage.ClearData<LoanViewModel>();

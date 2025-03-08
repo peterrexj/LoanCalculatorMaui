@@ -56,7 +56,7 @@ public partial class ExpenseView : ContentPage
 
             if (!viewModel.HasInitialized)
             {
-                var data = await viewModel.LoadDataFile<ExpenseViewModel>();
+                var data = await SharedServices.LoadDataFile<ExpenseViewModel>();
 
                 if (data == null)
                 {

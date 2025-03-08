@@ -1,5 +1,6 @@
 ﻿using LoanCalculator.Models;
 using LoanCalculator.Models.Income.Summary;
+using LoanCalculatorMaui.Extensions;
 using LoanCalculatorMaui.Themes;
 using LoanCalculatorMaui.ViewModel;
 using Pj.Library;
@@ -9,7 +10,7 @@ namespace LoanCalculatorMaui.Services
     public static class SharedServices
     {
         private static ILocalStorage? _localStorage;
-        public static ILocalStorage? LocalStorage => _localStorage ??= ServiceLocator.GetService<ILocalStorage>();
+        public static ILocalStorage LocalStorage => _localStorage ??= ServiceLocator.GetService<ILocalStorage>();
 
         private static INameValueDataService? _nameValueDataService;
         public static INameValueDataService? NameValueDataService => _nameValueDataService ??= ServiceLocator.GetService<INameValueDataService>();
@@ -20,6 +21,10 @@ namespace LoanCalculatorMaui.Services
         private static IThemeHelper? _themeHelper;
         public static IThemeHelper? ThemeHelper => _themeHelper ??= ServiceLocator.GetService<IThemeHelper>();
 
+        private static IErrorHandlingService? _errorHandlingService;
+
+        public static IErrorHandlingService ErrorHandlingService =>
+            _errorHandlingService ??= ServiceLocator.GetService<IErrorHandlingService>();
 
         //// Initialization method for dependency injection
         //public static void Initialize(
@@ -36,7 +41,7 @@ namespace LoanCalculatorMaui.Services
         private static IncomeExpenseSummary GetIncomeExpenseSummary<TViewModel>() where TViewModel : class
         {
             TViewModel? temp = null;
-            Task.Run(async () => temp = await LocalStorage?.GetData<TViewModel>()).Wait();
+            Task.Run(async () => temp = await LocalStorage.GetData<TViewModel>()).Wait();
 
             if (temp == null)
             {
@@ -57,7 +62,7 @@ namespace LoanCalculatorMaui.Services
         public static (IncomeExpenseSummary?, PaymentOutput?)  GetLoanViewModel()
         {
             LoanViewModel? temp = null;
-            Task.Run(async () => temp = await LocalStorage?.GetData<LoanViewModel>()).Wait();
+            Task.Run(async () => temp = await LocalStorage.GetData<LoanViewModel>()).Wait();
             if (temp == null)
             {
                 return (new IncomeExpenseSummary(), new PaymentOutput());
@@ -71,20 +76,74 @@ namespace LoanCalculatorMaui.Services
 
         public static bool ShouldShowAppLaunchDisclaimer()
         {
-            return NameValueDataService.NameValueDataModel.HasShowAppLaunchDisclaimer != true;
+            return NameValueDataService != null && NameValueDataService.NameValueDataModel.HasShowAppLaunchDisclaimer != true;
         }
 
-
-        private static string disclaimerData;
-        public static string GetAppLaunchDisclaimerData()
+        public static void SetAppLaunchDisclaimerShown()
         {
-            if (disclaimerData.IsEmpty())
+            if (NameValueDataService != null)
             {
-                disclaimerData = PjUtility.Runtime.GetAssembly("LoanCalculatorMaui").GetEmbeddedResourceAsText("LoanCalculatorMaui.Extensions.DisclaimerData.AppLaunchDisclaimerData.html")
-                    .Replace("{{AppName}}", "LoanCalcPro");
+                NameValueDataService.NameValueDataModel.HasShowAppLaunchDisclaimer = true;
+                NameValueDataService.SaveNameValueData();
             }
-            return disclaimerData;
+        }
 
+        public static void ClearDisclaimerData()
+        {
+            _disclaimerData = string.Empty;
+        }
+
+        private static string _disclaimerData = string.Empty;
+        public static string DisclaimerData
+        {
+            get
+            {
+                if (_disclaimerData.IsEmpty())
+                {
+                    _disclaimerData = PjUtility.Runtime.GetAssembly("LoanCalculatorMaui").GetEmbeddedResourceAsText("LoanCalculatorMaui.Extensions.DisclaimerData.AppLaunchDisclaimerData.html")
+                        .Replace("{{AppName}}", "LoanCalcPro");
+                }
+                return _disclaimerData;
+            }
+        }
+
+        public static async Task<T?> LoadDataFile<T>()
+        {
+            T? data = default;
+
+            try
+            {
+                LocalStorage.Initialize();
+                data = await LocalStorage.GetData<T>().ConfigureAwait(false);
+            }
+            catch (Exception e)
+            {
+                ErrorHandlingService.HandleException(e);
+            }
+
+            return data;
+        }
+
+        public static Task SaveData<T>(T data)
+        {
+            try
+            {
+                if (PageHelper.IsFormLoading)
+                {
+                    return Task.CompletedTask;
+                }
+
+                Task.Run(async () =>
+                {
+                    await LocalStorage.SaveData(data).ConfigureAwait(false);
+                }).Wait();
+            }
+            catch (Exception e)
+            {
+                ErrorHandlingService.HandleException(e);
+            }
+            
+            return Task.CompletedTask;
         }
     }
 }

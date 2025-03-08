@@ -38,6 +38,7 @@ public partial class SettingsView : ContentPage
         finally
         {
             PageHelper.PageLoadingComplete();
+            viewModel.IsBusy = false;
         }
     }
 
@@ -45,7 +46,7 @@ public partial class SettingsView : ContentPage
     {
         try
         {
-            var data = await viewModel.LoadDataFile<SettingsViewModel>();
+            var data = await SharedServices.LoadDataFile<SettingsViewModel>();
 
             if (data == null)
             {

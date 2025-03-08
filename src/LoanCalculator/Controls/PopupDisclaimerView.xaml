@@ -3,11 +3,7 @@
     x:Class="LoanCalculatorMaui.Controls.PopupDisclaimerView"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    xmlns:sfPopup="clr-namespace:Syncfusion.Maui.Popup;assembly=Syncfusion.Maui.Popup"
-    xmlns:viewModel="clr-namespace:LoanCalculatorMaui.ViewModel">
-    <ContentView.BindingContext>
-        <viewModel:PopupDisclaimerViewModel />
-    </ContentView.BindingContext>
+    xmlns:sfPopup="clr-namespace:Syncfusion.Maui.Popup;assembly=Syncfusion.Maui.Popup">
     <sfPopup:SfPopup
         Padding="10,25,10,20"
         AcceptButtonText="Accept"
@@ -30,6 +26,7 @@
                         FontSize="18"
                         HorizontalTextAlignment="Center"
                         Text="Disclaimer"
+                        TextColor="{DynamicResource LoanAppDefaultForegroundColor}"
                         VerticalTextAlignment="Center" />
                 </Grid>
             </DataTemplate>
@@ -43,8 +40,9 @@
                         FontAttributes="Bold"
                         FontFamily="{DynamicResource DefaultFontFamily}"
                         FontSize="16"
+                        IsVisible="{Binding IsActive}"
                         Text="Accept"
-                        TextColor="{DynamicResource LoanAppHighlightFgColor}" />
+                        TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
                 </Grid>
             </DataTemplate>
         </sfPopup:SfPopup.FooterTemplate>

@@ -56,7 +56,7 @@ public partial class IncomeView : ContentPage
 
             if (!viewModel.HasInitialized)
             {
-                var data = await viewModel.LoadDataFile<IncomeViewModel>();
+                var data = await SharedServices.LoadDataFile<IncomeViewModel>();
 
                 if (data == null)
                 {

@@ -20,6 +20,7 @@ public abstract class LocalStorageService
     public string DefaultDataFilePath => Path.Combine(RootFolder, "defaultdata.json");
     public string SettingsDataFilePath => Path.Combine(RootFolder, "settingsdata.json");
     public string NameValueDataFilePath => Path.Combine(RootFolder, "namevaluedata.json");
+    public string ThemeSelectDataFilePath => Path.Combine(RootFolder, "themeselectdata.json");
 
     public string FilePathBasedOnType<T>() =>
         typeof(T).Name switch
@@ -28,6 +29,8 @@ public abstract class LocalStorageService
             "LoanViewModel" => HomeLoanDataFilePath,
             "ExpenseViewModel" => ExpenseDataFilePath,
             "SettingsViewModel" => SettingsDataFilePath,
+            "NameValueDataModel" => NameValueDataFilePath,
+            "ThemeSelect" => ThemeSelectDataFilePath,
             _ => DefaultDataFilePath
         };
 

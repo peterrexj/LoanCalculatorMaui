@@ -649,9 +649,7 @@
                                             <chart:SfCartesianChart.Legend>
                                                 <chart:ChartLegend Placement="Bottom" ToggleSeriesVisibility="True">
                                                     <chart:ChartLegend.LabelStyle>
-                                                        <chart:ChartLegendLabelStyle
-                                                            FontFamily="{DynamicResource DefaultFontFamily}"
-                                                            TextColor="{DynamicResource LoanAppChartLegendTextColor}" />
+                                                        <chart:ChartLegendLabelStyle FontFamily="{DynamicResource DefaultFontFamily}" TextColor="{DynamicResource LoanAppChartLegendTextColor}" />
                                                     </chart:ChartLegend.LabelStyle>
                                                 </chart:ChartLegend>
                                             </chart:SfCartesianChart.Legend>
@@ -700,7 +698,8 @@
                                         HorizontalOptions="Center"
                                         NumericButtonsGenerateMode="Auto"
                                         PageSize="15"
-                                        Source="{Binding IncomeProjectList}"    Style="{DynamicResource LoanAppDataGridPagerStyle}">
+                                        Source="{Binding IncomeProjectList}"
+                                        Style="{DynamicResource LoanAppDataGridPagerStyle}">
                                         <pager:SfDataPager.DefaultStyle>
                                             <pager:DataPagerStyle
                                                 NavigationButtonBackgroundColor="{DynamicResource LoanAppNavigationButtonBackgroundColor}"

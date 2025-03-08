@@ -460,7 +460,7 @@ public class ExpenseViewModel(IErrorHandlingService errorHandlingService, IAlert
         OnPropertyChanged(nameof(ShowIncomeAfterExpense));
         OnPropertyChanged(nameof(StringIncomeTextOnTopBox));
 
-        base.SaveData(this);
+        SharedServices.SaveData(this);
     }
 
     public void RefreshTransactionEntry()
@@ -505,7 +505,7 @@ public class ExpenseViewModel(IErrorHandlingService errorHandlingService, IAlert
         OnPropertyChanged(nameof(AnnualGrowthRate));
         OnPropertyChanged(nameof(IncomeProjectList));
 
-        base.SaveData(this);
+        SharedServices.SaveData(this);
     }
 
     #endregion

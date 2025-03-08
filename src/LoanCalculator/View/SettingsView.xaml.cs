@@ -29,6 +29,8 @@ public partial class SettingsView : ContentPage
             await LoadDataSet();
 
             base.OnAppearing();
+
+            viewModel.RefreshProperties();
         }
         catch (Exception ex)
         {
@@ -50,7 +52,7 @@ public partial class SettingsView : ContentPage
 
             if (data == null)
             {
-                viewModel.SelectedTheme = viewModel.Themes.First(f => f.Name == AppTheme.Light.ToString());
+                viewModel.SelectedTheme = viewModel.Themes.First(f => f == AppTheme.Light.ToString());
             }
             else
             {

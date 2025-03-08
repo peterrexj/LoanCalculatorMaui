@@ -31,29 +31,30 @@ namespace LoanCalculatorMaui.ViewModel
         public ICommand ClearIncomeDataCommand { get; }
         [JsonIgnore]
         public ICommand ClearAllDataCommand { get; }
+        [JsonIgnore]
+        public ICommand ShowDisclaimerCommand { get; }
+        [JsonIgnore]
+        public ICommand PopupCloseCommand { get; }
 
         public SettingsViewModel() : this(ServiceLocator.GetService<IErrorHandlingService>(), ServiceLocator.GetService<IAlertService>())
         {
-            Themes = new ObservableCollection<Theme?>
-            {
-                new Theme { Name = AppThemes.Dark.ToString(), BoxBackgroundGradientBrushStart = Color.FromArgb("#5d6d7e"), BoxBackgroundGradientBrushEnd = Color.FromArgb("#212f3c"), TextBackground = Color.FromArgb("#ebedef")},
-                new Theme { Name = AppThemes.Light.ToString(), BoxBackgroundGradientBrushStart = Color.FromArgb("#e5e7e9"), BoxBackgroundGradientBrushEnd = Color.FromArgb("#bdc3c7"), TextBackground = Color.FromArgb("#34495e")},
-                new Theme { Name = AppThemes.FireBreather.ToString(), BoxBackgroundGradientBrushStart = Color.FromArgb("#f5cba7"), BoxBackgroundGradientBrushEnd = Color.FromArgb("#d68910"), TextBackground = Color.FromArgb("#6e2c00") } // Pastel Red
-            };
+            Themes = new ObservableCollection<string>(EnumHelper<AppThemes>.List);
 
             ClearLoanDataCommand = new Command(async () => await ClearLoanData());
             ClearIncomeDataCommand = new Command(async () => await ClearIncomeData());
             ClearExpenseDataCommand = new Command(async () => await ClearExpenseData());
             ClearAllDataCommand = new Command(async () => await ClearDisclaimerData());
+            ShowDisclaimerCommand = new Command( async () => await ShowDisclaimer());
+            PopupCloseCommand = new Command(() => IsPopupRequired = false);
         }
 
         [JsonIgnore]
-        public ObservableCollection<Theme?> Themes { get; }
-
+        public ObservableCollection<string> Themes { get; }
+        
         [JsonIgnore]
-        private Theme? _selectedTheme;
+        private string? _selectedTheme;
         [JsonIgnore]
-        public Theme? SelectedTheme
+        public string? SelectedTheme
         {
             get
             {
@@ -62,8 +63,8 @@ namespace LoanCalculatorMaui.ViewModel
                     StyleProvider.GetCurrentThemeAsync().ContinueWith(task =>
                     {
                         _selectedTheme = task.Result != null ? 
-                            Themes.FirstOrDefault(t => t.Name == task.Result.ToString()) : 
-                            Themes.FirstOrDefault(t => t.Name == AppThemes.Light.ToString());
+                            Themes.FirstOrDefault(t => t == task.Result.ToString()) : 
+                            Themes.FirstOrDefault(t => t == AppThemes.Light.ToString());
                     });
                 }
                 return _selectedTheme;
@@ -71,20 +72,20 @@ namespace LoanCalculatorMaui.ViewModel
             set
             {
                 if (value == null) return;
-                if (_selectedTheme == value) return;
                 if (isUpdating) return;
+                if (_selectedTheme == value) return;
 
+                _selectedTheme = value;
                 IsBusy = true;
+
                 MainThread.InvokeOnMainThreadAsync(async () =>
                 {
                     try
                     {
                         isUpdating = true;
 
-                        var appTheme = EnumHelper<AppThemes>.FromString(_selectedTheme.Name);
+                        var appTheme = EnumHelper<AppThemes>.FromString(_selectedTheme);
                         await SaveAndApplyApplicationThemeAsync(appTheme);
-
-                        _selectedTheme = value;
 
                         OnPropertyChanged();
                     }
@@ -125,6 +126,30 @@ namespace LoanCalculatorMaui.ViewModel
                 SharedServices.NameValueDataService.NameValueDataModel.HasShowAppLaunchDisclaimer = false;
                 SharedServices.NameValueDataService.SaveNameValueData();
             });
+        }
+        public string AppLaunchDisclaimerData => SharedServices.DisclaimerData;
+        private bool _isPopupRequired;
+        public bool IsPopupRequired
+        {
+            get => _isPopupRequired;
+            set
+            {
+                _isPopupRequired = value;
+                OnPropertyChanged(nameof(IsPopupRequired));
+            }
+        }
+        private async Task ShowDisclaimer()
+        {
+            IsPopupRequired = true;
+            IsActive = false;
+
+            await Task.Delay(3000);
+
+            IsActive = true;
+        }
+        public void RefreshProperties()
+        {
+            OnPropertyChanged(nameof(SelectedTheme));
         }
     }
 }

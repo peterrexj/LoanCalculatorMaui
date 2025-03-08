@@ -1,6 +1,6 @@
 ﻿// Services/ErrorHandlingService.cs
-using System;
 using Microsoft.Extensions.Logging;
+using System.Text.Json;
 
 namespace LoanCalculatorMaui.Services
 {
@@ -16,6 +16,11 @@ namespace LoanCalculatorMaui.Services
             //enabling this will log the exception to the console & Sentry will capture and send the exception
             // Log the exception with detailed information
             //logger.LogError(ex, message ?? ex.Message);
+
+            if (ex is JsonException)
+            {
+                //this usually happens when there are changes to model or the value of the type
+            }
 
             // Display an alert to the user
             MainThread.BeginInvokeOnMainThread(async () =>

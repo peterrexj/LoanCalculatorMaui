@@ -14,8 +14,8 @@ namespace LoanCalculatorMaui.ViewModel
     {
         public string CurrencySymbol { get; set; }
         public string NewLine { get; set; }
+        
         protected bool isUpdating = false;
-
         public bool IsUpdating
         {
             get => isUpdating;

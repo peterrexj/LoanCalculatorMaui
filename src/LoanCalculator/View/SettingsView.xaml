@@ -3,11 +3,69 @@
     x:Class="LoanCalculatorMaui.View.SettingsView"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    xmlns:baseExtensions="clr-namespace:LoanCalculator.Models.BaseExtensions;assembly=LoanCalculator.Models"
     xmlns:expander="clr-namespace:Syncfusion.Maui.Expander;assembly=Syncfusion.Maui.Expander"
     xmlns:inputs="http://schemas.syncfusion.com/maui"
+    xmlns:sfPopup="clr-namespace:Syncfusion.Maui.Popup;assembly=Syncfusion.Maui.Popup"
     Title="SettingsView">
     <Grid BackgroundColor="{DynamicResource LoanAppDefaultBackgroundColor}">
+        <sfPopup:SfPopup
+            x:Name="PopupDisclaimer"
+            Padding="10,25,10,20"
+            AcceptButtonText="Accept"
+            AnimationMode="Zoom"
+            AppearanceMode="OneButton"
+            BackgroundColor="{DynamicResource LoanAppDefaultBackgroundColor}"
+            IsFullScreen="True"
+            IsOpen="{Binding IsPopupRequired}"
+            ShowCloseButton="False"
+            ShowFooter="True"
+            ShowHeader="True"
+            StaysOpen="True">
+            <sfPopup:SfPopup.HeaderTemplate>
+                <DataTemplate>
+                    <Grid BackgroundColor="{DynamicResource LoanAppDefaultBackgroundColor}">
+                        <Label
+                            BackgroundColor="Transparent"
+                            FontAttributes="Bold"
+                            FontFamily="{DynamicResource DefaultFontFamily}"
+                            FontSize="18"
+                            HorizontalTextAlignment="Center"
+                            Text="Disclaimer"
+                            TextColor="{DynamicResource LoanAppDefaultForegroundColor}"
+                            VerticalTextAlignment="Center" />
+                    </Grid>
+                </DataTemplate>
+            </sfPopup:SfPopup.HeaderTemplate>
+            <sfPopup:SfPopup.FooterTemplate>
+                <DataTemplate>
+                    <Grid BackgroundColor="{DynamicResource LoanAppDefaultBackgroundColor}">
+                        <Button
+                            BackgroundColor="Transparent"
+                            Command="{Binding PopupCloseCommand}"
+                            FontAttributes="Bold"
+                            FontFamily="{DynamicResource DefaultFontFamily}"
+                            FontSize="16"
+                            IsVisible="{Binding IsActive}"
+                            Text="Close"
+                            TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                    </Grid>
+                </DataTemplate>
+            </sfPopup:SfPopup.FooterTemplate>
+            <sfPopup:SfPopup.ContentTemplate>
+                <DataTemplate>
+                    <Grid>
+                        <ScrollView>
+                            <WebView>
+                                <WebView.Source>
+                                    <HtmlWebViewSource Html="{Binding AppLaunchDisclaimerData}" />
+                                </WebView.Source>
+                            </WebView>
+                        </ScrollView>
+                    </Grid>
+                </DataTemplate>
+            </sfPopup:SfPopup.ContentTemplate>
+        </sfPopup:SfPopup>
+
         <!--  Main Content  -->
         <VerticalStackLayout>
             <!--  Top Section  -->
@@ -40,14 +98,38 @@
                 <Label
                     Margin="0,20,0,0"
                     FontSize="Small"
-                    Text="Select Theme" />
+                    Text="Select Theme"
+                    TextColor="{DynamicResource LoanAppAppShellFgColor}" />
                 <inputs:SfComboBox
+                    BackgroundColor="Transparent"
+                    ItemsSource="{Binding Themes}"
+                    SelectedItem="{Binding SelectedTheme, Mode=TwoWay}"
+                    Style="{DynamicResource SfComboBoxStyle}" />
+
+
+                <Label
+                    Margin="0,20,0,0"
+                    FontSize="Small"
+                    Text="Disclaimer"
+                    TextColor="{DynamicResource LoanAppAppShellFgColor}" />
+
+                <inputs:SfButton
+                    Margin="0,10,10,0"
+                    Command="{Binding ShowDisclaimerCommand}"
+                    CornerRadius="5"
+                    Style="{DynamicResource ButtonStyle}">
+                    <Grid>
+                        <Label Style="{DynamicResource ButtonLabelStyle}" Text="View" />
+                    </Grid>
+                </inputs:SfButton>
+                <!--<inputs:SfComboBox
                     x:Name="ThemeComboBox"
                     Margin="0,10,0,0"
                     BackgroundColor="{DynamicResource LoanAppDefaultBackgroundColor}"
                     DisplayMemberPath="Name"
                     DropDownBackground="Transparent"
                     DropDownItemFontFamily="{DynamicResource DefaultFontFamily}"
+
                     FontFamily="{DynamicResource DefaultFontFamily}"
                     IsClearButtonVisible="False"
                     IsEditable="False"
@@ -72,7 +154,7 @@
                             </Border>
                         </DataTemplate>
                     </inputs:SfComboBox.ItemTemplate>
-                </inputs:SfComboBox>
+                </inputs:SfComboBox>-->
 
                 <expander:SfExpander
                     Margin="0,15,0,0"

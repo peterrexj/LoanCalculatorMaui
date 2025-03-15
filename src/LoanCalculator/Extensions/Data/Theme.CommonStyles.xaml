@@ -1,6 +1,6 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+﻿<?xml version="1.0" encoding="UTF-8" ?>
+<?xaml-comp compile="true" ?>
 <ResourceDictionary
-    x:Class="LoanCalculatorMaui.Themes.CommonStyles"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:buttons="clr-namespace:Syncfusion.Maui.Buttons;assembly=Syncfusion.Maui.Buttons"
@@ -9,6 +9,7 @@
     xmlns:editors="clr-namespace:Syncfusion.Maui.Inputs;assembly=Syncfusion.Maui.Inputs"
     xmlns:expander="clr-namespace:Syncfusion.Maui.Expander;assembly=Syncfusion.Maui.Expander"
     xmlns:tabView="clr-namespace:Syncfusion.Maui.TabView;assembly=Syncfusion.Maui.TabView">
+
 
     <!--  Font Families  -->
     <x:String x:Key="DefaultFontFamily">Calibri</x:String>
@@ -302,11 +303,23 @@
         <Setter Property="LabelFormat" Value="c" />
         <Setter Property="TextColor" Value="{DynamicResource LoanAppChartDataMarkerTextColor}" />
     </Style>
+    <Style x:Key="MauiButtonStyle" TargetType="Button">
+        <Setter Property="CornerRadius" Value="5" />
+        <Setter Property="Margin" Value="4" />
+        <Setter Property="MaximumHeightRequest" Value="50" />
+        <Setter Property="Background" Value="{DynamicResource LoanAppButtonBgColor}" />
+        <Setter Property="TextColor" Value="{DynamicResource LoanAppButtonFgColor}" />
+        <Setter Property="FontFamily" Value="{DynamicResource DefaultFontFamily}" />
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="HorizontalOptions" Value="Fill" />
+        <Setter Property="VerticalOptions" Value="Fill" />
+    </Style>
     <Style x:Key="ButtonStyle" TargetType="core:SfButton">
         <Setter Property="Background" Value="{DynamicResource LoanAppButtonBgColor}" />
         <Setter Property="CornerRadius" Value="1" />
         <Setter Property="Margin" Value="4" />
         <Setter Property="MaximumHeightRequest" Value="50" />
+        <!--<Setter Property="HeightRequest" Value="50" />-->
     </Style>
     <Style x:Key="ButtonLabelStyle" TargetType="Label">
         <Setter Property="HorizontalOptions" Value="Center" />

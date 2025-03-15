@@ -1,8 +1,6 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
-<ResourceDictionary
-    x:Class="LoanCalculatorMaui.Themes.DarkTheme"
-    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
+﻿<?xml version="1.0" encoding="UTF-8" ?>
+<?xaml-comp compile="true" ?>
+<ResourceDictionary xmlns="http://schemas.microsoft.com/dotnet/2021/maui" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
 
     <!--  Colors  -->
     <Color x:Key="LoanAppDefaultForegroundColor">#bed0c9</Color>
@@ -177,7 +175,5 @@
     <Color x:Key="LoanAppDisclaimerContentBackgroundColor">#bed0c9</Color>
     <Color x:Key="LoanAppDisclaimerContentBoxShadowColor">#2c3531</Color>
     <Color x:Key="LoanAppDisclaimerHeader2TextColor">#091818</Color>
-
-
 
 </ResourceDictionary>

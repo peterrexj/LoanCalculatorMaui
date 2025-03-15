@@ -3,8 +3,8 @@
     x:Class="LoanCalculatorMaui.View.SettingsView"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:editors="clr-namespace:Syncfusion.Maui.Inputs;assembly=Syncfusion.Maui.Inputs"
     xmlns:expander="clr-namespace:Syncfusion.Maui.Expander;assembly=Syncfusion.Maui.Expander"
-    xmlns:inputs="http://schemas.syncfusion.com/maui"
     xmlns:sfPopup="clr-namespace:Syncfusion.Maui.Popup;assembly=Syncfusion.Maui.Popup"
     Title="SettingsView">
     <Grid BackgroundColor="{DynamicResource LoanAppDefaultBackgroundColor}">
@@ -100,7 +100,7 @@
                     FontSize="Small"
                     Text="Select Theme"
                     TextColor="{DynamicResource LoanAppAppShellFgColor}" />
-                <inputs:SfComboBox
+                <editors:SfComboBox
                     BackgroundColor="Transparent"
                     ItemsSource="{Binding Themes}"
                     SelectedItem="{Binding SelectedTheme, Mode=TwoWay}"
@@ -113,48 +113,11 @@
                     Text="Disclaimer"
                     TextColor="{DynamicResource LoanAppAppShellFgColor}" />
 
-                <inputs:SfButton
+                <Button
                     Margin="0,10,10,0"
                     Command="{Binding ShowDisclaimerCommand}"
-                    CornerRadius="5"
-                    Style="{DynamicResource ButtonStyle}">
-                    <Grid>
-                        <Label Style="{DynamicResource ButtonLabelStyle}" Text="View" />
-                    </Grid>
-                </inputs:SfButton>
-                <!--<inputs:SfComboBox
-                    x:Name="ThemeComboBox"
-                    Margin="0,10,0,0"
-                    BackgroundColor="{DynamicResource LoanAppDefaultBackgroundColor}"
-                    DisplayMemberPath="Name"
-                    DropDownBackground="Transparent"
-                    DropDownItemFontFamily="{DynamicResource DefaultFontFamily}"
-
-                    FontFamily="{DynamicResource DefaultFontFamily}"
-                    IsClearButtonVisible="False"
-                    IsEditable="False"
-                    ItemsSource="{Binding Themes}"
-                    SelectedItem="{Binding SelectedTheme}">
-                    <inputs:SfComboBox.ItemTemplate>
-                        <DataTemplate>
-                            <Border
-                                Padding="10"
-                                Stroke="{Binding BoxBackgroundGradientBrushStart}"
-                                StrokeThickness="1">
-                                <Border.Background>
-                                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                                        <GradientStop Offset="0.0" Color="{Binding BoxBackgroundGradientBrushStart}" />
-                                        <GradientStop Offset="1.0" Color="{Binding BoxBackgroundGradientBrushEnd}" />
-                                    </LinearGradientBrush>
-                                </Border.Background>
-                                <Label
-                                    Text="{Binding Name}"
-                                    TextColor="{Binding TextBackground}"
-                                    VerticalOptions="Center" />
-                            </Border>
-                        </DataTemplate>
-                    </inputs:SfComboBox.ItemTemplate>
-                </inputs:SfComboBox>-->
+                    Style="{DynamicResource MauiButtonStyle}"
+                    Text="View" />
 
                 <expander:SfExpander
                     Margin="0,15,0,0"
@@ -176,50 +139,40 @@
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="Auto" />
                             </Grid.RowDefinitions>
-                            <inputs:SfButton
+                            <Button
                                 Grid.Row="0"
                                 Grid.Column="0"
                                 Margin="0,10,10,0"
                                 Command="{Binding ClearLoanDataCommand}"
                                 CornerRadius="5"
-                                Style="{DynamicResource ButtonStyle}">
-                                <Grid>
-                                    <Label Style="{DynamicResource ButtonLabelStyle}" Text="Clear Loan Data" />
-                                </Grid>
-                            </inputs:SfButton>
-                            <inputs:SfButton
+                                Style="{DynamicResource MauiButtonStyle}"
+                                Text="Clear Loan Data" />
+
+                            <Button
                                 Grid.Row="0"
                                 Grid.Column="1"
-                                Margin="10,10,0,0"
+                                Margin="0,10,10,0"
                                 Command="{Binding ClearExpenseDataCommand}"
                                 CornerRadius="5"
-                                Style="{DynamicResource ButtonStyle}">
-                                <Grid>
-                                    <Label Style="{DynamicResource ButtonLabelStyle}" Text="Clear Expense Data" />
-                                </Grid>
-                            </inputs:SfButton>
-                            <inputs:SfButton
+                                Style="{DynamicResource MauiButtonStyle}"
+                                Text="Clear Expense Data" />
+                            <Button
                                 Grid.Row="1"
                                 Grid.Column="0"
                                 Margin="0,10,10,0"
                                 Command="{Binding ClearIncomeDataCommand}"
                                 CornerRadius="5"
-                                Style="{DynamicResource ButtonStyle}">
-                                <Grid>
-                                    <Label Style="{DynamicResource ButtonLabelStyle}" Text="Clear Income Data" />
-                                </Grid>
-                            </inputs:SfButton>
-                            <inputs:SfButton
+                                Style="{DynamicResource MauiButtonStyle}"
+                                Text="Clear Income Data" />
+
+                            <Button
                                 Grid.Row="1"
                                 Grid.Column="1"
-                                Margin="10,10,0,0"
+                                Margin="0,10,10,0"
                                 Command="{Binding ClearAllDataCommand}"
                                 CornerRadius="5"
-                                Style="{DynamicResource ButtonStyle}">
-                                <Grid>
-                                    <Label Style="{DynamicResource ButtonLabelStyle}" Text="Clear All Data" />
-                                </Grid>
-                            </inputs:SfButton>
+                                Style="{DynamicResource MauiButtonStyle}"
+                                Text="Clear All Data" />
                         </Grid>
 
                     </expander:SfExpander.Content>

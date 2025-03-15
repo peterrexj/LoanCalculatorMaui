@@ -25,6 +25,8 @@ namespace LoanCalculatorMaui
         {
             InitializeComponent();
             Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense("Ngo9BigBOggjHTQxAR8/V1NMaF5cXmBCf1FpR2JGfV5ycEVCallSTnVfUiweQnxTdEFiW35acHBQRWNcVEZ3WQ==");
+
+            StyleProvider.LoadDefaultStyle();
         }
 
         protected override Window CreateWindow(IActivationState? activationState)

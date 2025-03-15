@@ -42,17 +42,17 @@
             Title="Income"
             ContentTemplate="{DataTemplate localview:IncomeView}"
             Icon="icon_income.png"
-            Route="LoanView" />
+            Route="IncomeView" />
         <ShellContent
             Title="Expense"
             ContentTemplate="{DataTemplate localview:ExpenseView}"
             Icon="icon_expense.png"
-            Route="LoanView" />
+            Route="ExpenseView" />
         <ShellContent
             Title="Settings"
             ContentTemplate="{DataTemplate localview:SettingsView}"
             Icon="icon_settings.png"
-            Route="LoanView" />
+            Route="SettingsView" />
     </TabBar>
 
 </Shell>

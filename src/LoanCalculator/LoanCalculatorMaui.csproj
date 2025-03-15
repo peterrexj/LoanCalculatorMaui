@@ -24,7 +24,7 @@
 		<ApplicationTitle>LoanCalculatorMaui</ApplicationTitle>
 
 		<!-- App Identifier -->
-		<ApplicationId>com.companyname.loancalculatormaui</ApplicationId>
+		<ApplicationId>com.pj.loancalcpro</ApplicationId>
 
 		<!-- Versions -->
 		<ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
@@ -59,10 +59,29 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <MauiXaml Remove="Extensions\Data\Theme.CommonDataGridStyles.xaml" />
+	  <MauiXaml Remove="Extensions\Data\Theme.CommonStyles.xaml" />
+	  <MauiXaml Remove="Extensions\Data\Theme.Dark.xaml" />
+	  <MauiXaml Remove="Extensions\Data\Theme.Light.xaml" />
+	</ItemGroup>
+
+	<ItemGroup>
 	  <None Remove="Extensions\DisclaimerData\AppLaunchDisclaimerData.txt" />
 	</ItemGroup>
 
 	<ItemGroup>
+	  <EmbeddedResource Include="Extensions\Data\Theme.CommonDataGridStyles.xaml">
+	    <Generator></Generator>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="Extensions\Data\Theme.CommonStyles.xaml">
+	    <Generator></Generator>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="Extensions\Data\Theme.Dark.xaml">
+	    <Generator></Generator>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="Extensions\Data\Theme.Light.xaml">
+	    <Generator></Generator>
+	  </EmbeddedResource>
 	  <EmbeddedResource Include="Extensions\DisclaimerData\AppLaunchDisclaimerData.html" />
 	  <EmbeddedResource Include="Extensions\DisclaimerData\AppLaunchDisclaimerData.txt" />
 	</ItemGroup>
@@ -100,21 +119,6 @@
 	  <MauiXaml Update="Controls\PopupDisclaimerView.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="Themes\CommonDataGridStyles.xaml">
-	    <Generator>MSBuild:Compile</Generator>
-	  </MauiXaml>
-	  <MauiXaml Update="Themes\CommonStyles.xaml">
-	    <Generator>MSBuild:Compile</Generator>
-	  </MauiXaml>
-	  <MauiXaml Update="Themes\DarkTheme.xaml">
-	    <Generator>MSBuild:Compile</Generator>
-	  </MauiXaml>
-	  <MauiXaml Update="Themes\FireBreatherTheme.xaml">
-	    <Generator>MSBuild:Compile</Generator>
-	  </MauiXaml>
-	  <MauiXaml Update="Themes\LightTheme.xaml">
-	    <Generator>MSBuild:Compile</Generator>
-	  </MauiXaml>
 	  <MauiXaml Update="View\ExpenseView.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
@@ -137,10 +141,5 @@
 	  <Folder Include="Platforms\Tizen\Services\" />
 	</ItemGroup>
 
-	<ItemGroup>
-	  <Compile Update="Themes\CommonDataGridStyles.xaml.cs">
-	    <DependentUpon>CommonDataGridStyles.xaml</DependentUpon>
-	  </Compile>
-	</ItemGroup>
-
+	  
 </Project>

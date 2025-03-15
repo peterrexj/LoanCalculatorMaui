@@ -246,26 +246,20 @@
                                                     Style="{DynamicResource SfComboBoxStyle}" />
                                             </core:SfTextInputLayout>
 
-                                            <core:SfButton
+                                            <Button
                                                 x:Name="AddNewIncome"
                                                 Grid.Row="2"
                                                 Grid.Column="2"
                                                 Clicked="AddNewIncome_Clicked"
-                                                Style="{DynamicResource ButtonStyle}">
-                                                <Grid>
-                                                    <Label Style="{DynamicResource ButtonLabelStyle}" Text="Add" />
-                                                </Grid>
-                                            </core:SfButton>
+                                                Style="{DynamicResource MauiButtonStyle}"
+                                                Text="Add" />
 
-                                            <core:SfButton
+                                            <Button
                                                 Grid.Row="2"
                                                 Grid.Column="3"
                                                 Clicked="ResetButton_Clicked"
-                                                Style="{DynamicResource ButtonStyle}">
-                                                <Grid>
-                                                    <Label Style="{DynamicResource ButtonLabelStyle}" Text="Reset" />
-                                                </Grid>
-                                            </core:SfButton>
+                                                Style="{DynamicResource MauiButtonStyle}"
+                                                Text="Reset" />
                                         </Grid>
                                     </Border.Content>
                                 </Border>
@@ -337,19 +331,28 @@
                                                             AutomationId="{Binding Id}"
                                                             Clicked="btnEditEntry_Clicked"
                                                             Style="{DynamicResource ListIconButtonStyle}">
-                                                            <Grid>
-                                                                <Image Margin="10" Source="icon_edit.png" />
-                                                            </Grid>
+                                                            <core:SfButton.Content>
+                                                                <DataTemplate>
+                                                                    <Grid>
+                                                                        <Image Margin="10" Source="icon_edit.png" />
+                                                                    </Grid>
+                                                                </DataTemplate>
+                                                            </core:SfButton.Content>
                                                         </buttons:SfButton>
+
                                                         <buttons:SfButton
                                                             x:Name="btnDeleteEntry"
                                                             Grid.Column="4"
                                                             AutomationId="{Binding Id}"
                                                             Clicked="btnDeleteEntry_Clicked"
                                                             Style="{DynamicResource ListIconButtonStyle}">
-                                                            <Grid>
-                                                                <Image Margin="10" Source="icon_delete.png" />
-                                                            </Grid>
+                                                            <core:SfButton.Content>
+                                                                <DataTemplate>
+                                                                    <Grid>
+                                                                        <Image Margin="10" Source="icon_delete.png" />
+                                                                    </Grid>
+                                                                </DataTemplate>
+                                                            </core:SfButton.Content>
                                                         </buttons:SfButton>
                                                     </Grid>
                                                 </Grid>

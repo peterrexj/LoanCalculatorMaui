@@ -26,18 +26,6 @@ namespace LoanCalculatorMaui.Services
         public static IErrorHandlingService ErrorHandlingService =>
             _errorHandlingService ??= ServiceLocator.GetService<IErrorHandlingService>();
 
-        //// Initialization method for dependency injection
-        //public static void Initialize(
-        //    INameValueDataService? nameValueDataService,
-        //    IAppInformation? appInformation,
-        //    IThemeHelper? themeHelper)
-        //{
-        //    //LocalStorage = localStorage ?? throw new ArgumentNullException(nameof(localStorage));
-        //    NameValueDataService = nameValueDataService ?? throw new ArgumentNullException(nameof(nameValueDataService));
-        //    AppInformation = appInformation ?? throw new ArgumentNullException(nameof(appInformation));
-        //    ThemeHelper = themeHelper ?? throw new ArgumentNullException(nameof(themeHelper));
-        //}
-
         private static IncomeExpenseSummary GetIncomeExpenseSummary<TViewModel>() where TViewModel : class
         {
             TViewModel? temp = null;

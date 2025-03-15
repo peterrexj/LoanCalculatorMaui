@@ -1,7 +1,7 @@
-﻿using System.Reflection;
-using LoanCalculator.Models.Enums;
+﻿using LoanCalculator.Models.Enums;
 using LoanCalculatorMaui.Services;
 using LoanCalculatorMaui.ViewModel;
+using Pj.Library;
 
 namespace LoanCalculatorMaui.Themes
 {
@@ -12,7 +12,7 @@ namespace LoanCalculatorMaui.Themes
             try
             {
                 var data = await SharedServices.LoadDataFile<ThemeSelect>();
-                return data == null || data.Theme == null ? null : EnumHelper<AppThemes>.FromString(data.Theme.ToString());
+                return data == null || data.Theme == null ? null : LoanCalculator.Models.Enums.EnumHelper<AppThemes>.FromString(data.Theme.ToString());
             }
             catch (Exception e)
             {
@@ -22,54 +22,78 @@ namespace LoanCalculatorMaui.Themes
             return null;
         }
 
-        public static ResourceDictionary LoadDefaultStyle()
+        public static void LoadDefaultStyle()
         {
             AppThemes? currentTheme = null;
             Task.Run(async () => currentTheme = await GetCurrentThemeAsync()).Wait();
             currentTheme ??= AppThemes.Light;
-            return LoadDefaultStyle(currentTheme.Value);
+            LoadDefaultStyle(currentTheme.Value);
         }
 
-        public static ResourceDictionary LoadDefaultStyle(AppThemes appTheme)
+        public static void LoadDefaultStyle(AppThemes appTheme)
         {
-            var resourceDictionary = new ResourceDictionary();
-            string themeFile;
-
-            switch (appTheme)
+            try
             {
-                case AppThemes.Dark:
-                    themeFile = "Themes/DarkTheme.xaml";
-                    break;
-                case AppThemes.Light:
-                    themeFile = "Themes/LightTheme.xaml";
-                    break;
-                case AppThemes.FireBreather:
-                    themeFile = "Themes/FireBreatherTheme.xaml";
-                    break;
-                default:
-                    throw new ArgumentException("Unsupported theme");
+                string themeFile;
+
+                switch (appTheme)
+                {
+                    case AppThemes.Dark:
+                        themeFile = "Theme.Dark.xaml";
+                        break;
+                    case AppThemes.Light:
+                        themeFile = "Theme.Light.xaml";
+                        break;
+                    case AppThemes.FireBreather:
+                        themeFile = "Theme.FireBreather.xaml";
+                        break;
+                    default:
+                        throw new ArgumentException("Unsupported theme");
+                }
+
+                // Load the common styles
+                var commonStyles = LoadResourceDictionary("Theme.CommonStyles.xaml");
+                var commonDataGridStyles = LoadResourceDictionary("Theme.CommonDataGridStyles.xaml");
+
+                // Load the theme-specific styles
+                var themeStyles = LoadResourceDictionary(themeFile);
+
+                if (commonDataGridStyles == null || commonStyles == null || themeStyles == null)
+                {
+                    return;
+                }
+
+                #region Clear Dictionary
+                // This does not work in the release mode as the resources are empty and fails from native code
+                // Even though the null check is done, it still fails
+
+                // Clear existing merged dictionaries
+                //if (Application.Current?.Resources == null)
+                //{
+                //    Application.Current.Resources = new ResourceDictionary();
+                //}
+
+                //if (Application.Current?.Resources?.MergedDictionaries?.Any() == true)
+                //{
+                //    Application.Current.Resources.MergedDictionaries.Clear();
+                //}
+                //Application.Current?.Resources.MergedDictionaries.Clear();
+                #endregion
+
+                ClearAllResources("LoanApp");
+
+                // Add the common styles and theme-specific styles to the application's merged dictionaries
+                Application.Current?.Resources.MergedDictionaries.Add(commonStyles);
+                Application.Current?.Resources.MergedDictionaries.Add(commonDataGridStyles);
+                Application.Current?.Resources.MergedDictionaries.Add(themeStyles);
+
+                UpdateResources("LoanApp");
             }
-
-            // Load the common styles
-            var commonStyles = LoadResourceDictionary("Themes/CommonStyles.xaml");
-            var commonDataGridStyles = LoadResourceDictionary("Themes/CommonDataGridStyles.xaml");
-
-            // Load the theme-specific styles
-            var themeStyles = LoadResourceDictionary(themeFile);
-
-            // Clear existing merged dictionaries
-            Application.Current?.Resources.MergedDictionaries.Clear();
-
-            ClearAllResources("LoanApp");
-
-            // Add the common styles and theme-specific styles to the application's merged dictionaries
-            Application.Current?.Resources.MergedDictionaries.Add(commonStyles);
-            Application.Current?.Resources.MergedDictionaries.Add(commonDataGridStyles);
-            Application.Current?.Resources.MergedDictionaries.Add(themeStyles);
-
-            UpdateResources("LoanApp");
-
-            return resourceDictionary;
+            catch (Exception e)
+            {
+                throw new Exception($"Exception thrown from the style provider {e}");
+            }
+            
         }
 
         static void ClearAllResources(string prefix)
@@ -113,22 +137,36 @@ namespace LoanCalculatorMaui.Themes
             }
         }
 
-        private static ResourceDictionary LoadResourceDictionary(string resourcePath)
+        private static ResourceDictionary? LoadResourceDictionary(string resourcePath)
         {
-            var assembly = Assembly.GetExecutingAssembly();
-            var resourceName = $"{assembly.GetName().Name}.{resourcePath.Replace("/", ".")}";
-            using var stream = assembly.GetManifestResourceStream(resourceName);
-            if (stream == null)
+            try
             {
-                throw new FileNotFoundException("Resource not found", resourceName);
+                var xaml = PjUtility.Runtime.GetAssembly("LoanCalculatorMaui").GetEmbeddedResourceAsText($"LoanCalculatorMaui.Extensions.Data.{resourcePath}");
+
+                var resourceDictionary = new ResourceDictionary();
+                resourceDictionary.LoadFromXaml(xaml);
+
+                return resourceDictionary;
+            }
+            catch (Exception e)
+            {
+                return null;
             }
 
-            using var reader = new StreamReader(stream);
-            var xaml = reader.ReadToEnd();
-            var resourceDictionary = new ResourceDictionary();
-            resourceDictionary.LoadFromXaml(xaml);
+            #region Using resources
 
-            return resourceDictionary;
+            //var assembly = Assembly.GetExecutingAssembly();
+            //var resourceName = $"{assembly.GetName().Name}.{resourcePath.Replace("/", ".")}";
+            //using var stream = assembly.GetManifestResourceStream(resourceName);
+            //if (stream == null)
+            //{
+            //    throw new FileNotFoundException("Resource not found", resourceName);
+            //}
+
+            //using var reader = new StreamReader(stream);
+            //var xaml = reader.ReadToEnd();
+
+            #endregion
         }
     }
 }

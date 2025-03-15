@@ -48,15 +48,13 @@ public partial class SettingsView : ContentPage
     {
         try
         {
+            //placeholder for the data to be loaded
             var data = await SharedServices.LoadDataFile<SettingsViewModel>();
 
-            if (data == null)
+            var theme = viewModel.SelectedTheme;
+            if (theme == null)
             {
                 viewModel.SelectedTheme = viewModel.Themes.First(f => f == AppTheme.Light.ToString());
-            }
-            else
-            {
-                viewModel.SelectedTheme = data.SelectedTheme;
             }
         }
         catch (Exception ex)

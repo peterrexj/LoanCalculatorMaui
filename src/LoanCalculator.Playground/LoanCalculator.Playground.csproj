@@ -1,19 +1,25 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <OutputType>Exe</OutputType>
-    <TargetFramework>net9.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-  </PropertyGroup>
+	<PropertyGroup>
+		<OutputType>Exe</OutputType>
+		<TargetFramework>net9.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Syncfusion.Pdf.NET" Version="28.2.7" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.4" />
+		<PackageReference Include="Microsoft.Maui.Controls.Core" Version="9.0.60" />
+		<PackageReference Include="Microsoft.Maui.Essentials" Version="9.0.60" />
+		<PackageReference Include="Moq" Version="4.20.72" />
+		<PackageReference Include="Syncfusion.Pdf.NET" Version="28.2.7" />
+		<PackageReference Include="Syncfusion.Maui.Core" Version="28.2.7" />
+		<PackageReference Include="Syncfusion.Maui.Charts" Version="28.2.7" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\LoanCalculator.Core\LoanCalculator.Core.csproj" />
-    <ProjectReference Include="..\LoanCalculator.Models\LoanCalculator.Models.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\LoanCalculator.Core\LoanCalculator.Core.csproj" />
+		<ProjectReference Include="..\LoanCalculator.Models\LoanCalculator.Models.csproj" />
+	</ItemGroup>
 
 </Project>

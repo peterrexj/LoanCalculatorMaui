@@ -1,4 +1,5 @@
-﻿using LoanCalculatorMaui.Services;
+﻿using LoanCalculator.Core.Services;
+using LoanCalculatorMaui.Services;
 
 namespace LoanCalculatorMaui.Platforms.Android.Services;
 public class AndroidLocalStorageService()

@@ -314,6 +314,17 @@
         <Setter Property="HorizontalOptions" Value="Fill" />
         <Setter Property="VerticalOptions" Value="Fill" />
     </Style>
+    <Style x:Key="ExportButtonStyle" TargetType="Button">
+        <Setter Property="CornerRadius" Value="5" />
+        <Setter Property="Margin" Value="10,4,10,4" />
+        <Setter Property="MaximumHeightRequest" Value="50" />
+        <Setter Property="Background" Value="{DynamicResource LoanAppExportButtonBgColor}" />
+        <Setter Property="TextColor" Value="{DynamicResource LoanAppExportButtonFgColor}" />
+        <Setter Property="FontFamily" Value="{DynamicResource DefaultFontFamily}" />
+        <Setter Property="FontSize" Value="18" />
+        <Setter Property="HorizontalOptions" Value="Fill" />
+        <Setter Property="VerticalOptions" Value="Fill" />
+    </Style>
     <Style x:Key="ButtonStyle" TargetType="core:SfButton">
         <Setter Property="Background" Value="{DynamicResource LoanAppButtonBgColor}" />
         <Setter Property="CornerRadius" Value="1" />

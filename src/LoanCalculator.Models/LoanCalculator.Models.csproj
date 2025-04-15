@@ -1,9 +1,15 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net9.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net9.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+	</PropertyGroup>
 
+	<ItemGroup>
+		<PackageReference Include="Pj.Library" Version="1.0.4.33" />
+		<PackageReference Include="Microsoft.Maui.Controls" Version="9.0.30" />
+		<PackageReference Include="Syncfusion.Maui.Core" Version="28.2.7" />
+		<PackageReference Include="Syncfusion.Pdf.NET" Version="28.2.7" />
+	</ItemGroup>
 </Project>

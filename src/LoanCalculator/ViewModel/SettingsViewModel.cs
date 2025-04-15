@@ -1,21 +1,15 @@
-﻿using LoanCalculator.Models.Enums;
-using LoanCalculatorMaui.Services;
+﻿using LoanCalculatorMaui.Services;
 using LoanCalculatorMaui.Themes;
 using System.Collections.ObjectModel;
 using System.Text.Json.Serialization;
 using System.Windows.Input;
+using LoanCalculator.Core.Models.Enums;
+using LoanCalculator.Core.Models.ViewModels;
+using LoanCalculator.Core.Models.ViewModels.PrimaryModels;
+using LoanCalculator.Core.Services;
 
 namespace LoanCalculatorMaui.ViewModel
 {
-    public class Theme
-    {
-        public string Name { get; set; }
-        public Color BoxBackgroundGradientBrushStart { get; set; }
-        public Color BoxBackgroundGradientBrushEnd { get; set; }
-
-        public Color TextBackground { get; set; }
-    }
-
     public class SettingsViewModel(IErrorHandlingService errorHandlingService, IAlertService alertService) : ViewModelUiBase
     {
         [JsonIgnore]
@@ -40,6 +34,8 @@ namespace LoanCalculatorMaui.ViewModel
         {
             Themes = new ObservableCollection<string>(EnumHelper<AppThemes>.List);
 
+            InitializeSelectedTheme();
+
             ClearLoanDataCommand = new Command(async () => await ClearLoanData());
             ClearIncomeDataCommand = new Command(async () => await ClearIncomeData());
             ClearExpenseDataCommand = new Command(async () => await ClearExpenseData());
@@ -50,7 +46,15 @@ namespace LoanCalculatorMaui.ViewModel
 
         [JsonIgnore]
         public ObservableCollection<string> Themes { get; }
-        
+
+        private void InitializeSelectedTheme()
+        {
+            var currentTheme = Task.Run(() => StyleProvider.GetCurrentThemeAsync()).Result;
+            _selectedTheme = currentTheme != null
+                ? Themes.FirstOrDefault(t => t == currentTheme.ToString())
+                : Themes.FirstOrDefault(t => t == AppThemes.Light.ToString());
+        }
+
         [JsonIgnore]
         private string? _selectedTheme;
         [JsonIgnore]
@@ -62,8 +66,8 @@ namespace LoanCalculatorMaui.ViewModel
                 {
                     StyleProvider.GetCurrentThemeAsync().ContinueWith(task =>
                     {
-                        _selectedTheme = task.Result != null ? 
-                            Themes.FirstOrDefault(t => t == task.Result.ToString()) : 
+                        _selectedTheme = task.Result != null ?
+                            Themes.FirstOrDefault(t => t == task.Result.ToString()) :
                             Themes.FirstOrDefault(t => t == AppThemes.Light.ToString());
                     });
                 }
@@ -106,7 +110,7 @@ namespace LoanCalculatorMaui.ViewModel
         private async Task SaveAndApplyApplicationThemeAsync(AppThemes theme)
         {
             SharedServices.ClearDisclaimerData();
-            await SharedServices.SaveData(new ThemeSelect { Theme = theme });
+            await SharedServiceCore.SaveData(new ThemeSelect { Theme = theme });
             await ApplyApplicationThemeAsync(theme);
         }
 

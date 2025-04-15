@@ -1,13 +1,14 @@
-using LoanCalculator.Models.Enums;
-using LoanCalculator.Models.Income;
+using LoanCalculator.Core.Helper;
+using LoanCalculator.Core.Models.Income;
+using LoanCalculator.Core.Models.ViewModels;
+using LoanCalculator.Core.Models.ViewModels.PrimaryModels;
+using LoanCalculator.Core.Services;
 using LoanCalculatorMaui.Extensions;
 using LoanCalculatorMaui.Services;
-using LoanCalculatorMaui.ViewModel;
+using LoanCalculatorMaui.Themes;
 using Pj.Library;
 using Syncfusion.Maui.Buttons;
-using Syncfusion.Maui.DataGrid;
 using Syncfusion.Maui.DataSource;
-using Syncfusion.Maui.ListView;
 using SelectionChangedEventArgs = Syncfusion.Maui.Buttons.SelectionChangedEventArgs;
 
 namespace LoanCalculatorMaui.View;
@@ -15,17 +16,18 @@ namespace LoanCalculatorMaui.View;
 public partial class LoanView : ContentPage
 {
     private readonly IErrorHandlingService _errorHandlingService;
-    private LoanViewModel viewModel;
+    private LoanViewModel _viewModel;
 
     public LoanView(IErrorHandlingService errorHandlingService)
     {
         _errorHandlingService = errorHandlingService;
 
         InitializeComponent();
-        viewModel = new LoanViewModel
+        _viewModel = new LoanViewModel
         {
             IsBusy = true,
-            IsUpdating = true
+            IsUpdating = true,
+            IsActive = false
         };
     }
 
@@ -37,9 +39,9 @@ public partial class LoanView : ContentPage
 
             base.OnAppearing();
 
-            viewModel.TriggerOneTimeUpdateOnPage();
-            viewModel.TriggerPropertyChangedOnPropertyTab();
-            viewModel.RefreshExpenseTabPropertyChanged();
+            _viewModel.TriggerOneTimeUpdateOnPage();
+            _viewModel.TriggerPropertyChangedOnPropertyTab();
+            _viewModel.RefreshExpenseTabPropertyChanged();
         }
         catch (Exception ex)
         {
@@ -49,7 +51,9 @@ public partial class LoanView : ContentPage
         finally
         {
             PageHelper.PageLoadingComplete();
-            viewModel.IsUpdating = false;
+            _viewModel.IsUpdating = false;
+            _viewModel.IsBusy = false;
+            _viewModel.IsActive = true;
         }
     }
 
@@ -59,62 +63,62 @@ public partial class LoanView : ContentPage
         {
             PageHelper.PageIsLoading();
 
-            var data = await SharedServices.LoadDataFile<LoanViewModel>();
+            var data = await SharedServiceCore.LoadDataFile<LoanViewModel>();
 
             var shouldAddDefaultValues = false;
 
-            if (!viewModel.HasInitialized)
+            if (!_viewModel.HasInitialized)
             {
                 if (data == null)
                 {
                     //viewModel.InitializeViewData();
                     shouldAddDefaultValues = true;
-                    viewModel.AddDefaultToExpenses();
+                    _viewModel.AddDefaultToExpenses();
                 }
                 else
                 {
-                    viewModel = data;
-                    viewModel.IsUpdating = true;
-                    viewModel.IsBusy = true;
+                    _viewModel = data;
+                    _viewModel.IsUpdating = true;
+                    _viewModel.IsBusy = true;
                 }
             }
             else if (data == null)
             {
-                viewModel.TransactionRecords.DeleteAll();
+                _viewModel.TransactionRecords.DeleteAll();
                 shouldAddDefaultValues = true;
-                viewModel.AddDefaultToExpenses();
+                _viewModel.AddDefaultToExpenses();
             }
 
-            viewModel.InitializeViewData();
-            viewModel.InitializeBrushes();
+            _viewModel.InitializeViewData();
+            _viewModel.CustomChartColors = StyleProvider.GetChartColors();
 
-            viewModel.MarkInitializationComplete();
+            _viewModel.MarkInitializationComplete();
 
             if (shouldAddDefaultValues)
             {
-                viewModel.IsUpdating = false;
+                _viewModel.IsUpdating = false;
 
-                viewModel.AddDefaultValues();
+                _viewModel.AddDefaultValues();
             }
 
             lstEntry.DataSource?.SortDescriptors.Clear();
 
-            viewModel.ExpenseSummary = SharedServices.ExpenseSummary;
-            viewModel.IncomeSummary = SharedServices.IncomeSummary;
+            _viewModel.ExpenseSummary = SharedServices.ExpenseSummary;
+            _viewModel.IncomeSummary = SharedServices.IncomeSummary;
 
             SegmentedRepaymentFrequency.SelectionChanged += SegmentedRepaymentFrequency_SelectionChanged;
             AmortizationBreadDownFrequencySegmentCtrl.SelectionChanged += AmortizationBreadDownFrequencySegmentCtrlOnSelectionChanged;
             SegmentedAustraliaStates.SelectionChanged += SegmentedAustraliaStatesOnSelectionChanged;
 
-            viewModel.SyncAmortization();
+            _viewModel.SyncAmortization();
 
             PageHelper.PageLoadingComplete();
 
-            BindingContext ??= viewModel;
+            BindingContext ??= _viewModel;
 
             lstEntry.DataSource?.SortDescriptors.Add(new SortDescriptor() { PropertyName = "Name", Direction = ListSortDirection.Ascending });
 
-            viewModel.IsUpdating = false;
+            _viewModel.IsUpdating = false;
         }
         catch (Exception ex)
         {
@@ -126,7 +130,7 @@ public partial class LoanView : ContentPage
     {
         try
         {
-            if (e.NewIndex != null) viewModel.AustraliaStateSelectedIndex = e.NewIndex.Value;
+            if (e.NewIndex != null) _viewModel.AustraliaStateSelectedIndex = e.NewIndex.Value;
         }
         catch (Exception ex)
         {
@@ -138,7 +142,7 @@ public partial class LoanView : ContentPage
     {
         try
         {
-            if (e.NewIndex != null) viewModel.AmortizationBreakdownFrequencySelectedIndex = e.NewIndex.Value;
+            if (e.NewIndex != null) _viewModel.AmortizationBreakdownFrequencySelectedIndex = e.NewIndex.Value;
         }
         catch (Exception ex)
         {
@@ -150,7 +154,7 @@ public partial class LoanView : ContentPage
     {
         try
         {
-            if (e.NewIndex != null) viewModel.RepaymentFrequencySelectedIndex = e.NewIndex.Value;
+            if (e.NewIndex != null) _viewModel.RepaymentFrequencySelectedIndex = e.NewIndex.Value;
         }
         catch (Exception ex)
         {
@@ -164,15 +168,15 @@ public partial class LoanView : ContentPage
         {
             if (e.NewIndex == 1)
             {
-                viewModel.SyncAmortization();
+                _viewModel.SyncAmortization();
             }
             else if (e.NewIndex == 2)
             {
-                viewModel.RefreshExpenseTabPropertyChanged();
+                _viewModel.RefreshExpenseTabPropertyChanged();
             }
             else if (e.NewIndex == 3)
             {
-                viewModel.RefreshInsightsTabPropertyChanged();
+                _viewModel.RefreshInsightsTabPropertyChanged();
             }
         }
         catch (Exception ex)
@@ -209,9 +213,9 @@ public partial class LoanView : ContentPage
         {
             var persona = obj as IncomeExpense;
             var filterText = string.Empty;
-            if (viewModel.SearchExpenseIncomeName.HasValue())
+            if (_viewModel.SearchExpenseIncomeName.HasValue())
             {
-                filterText = viewModel.SearchExpenseIncomeName;
+                filterText = _viewModel.SearchExpenseIncomeName;
             }
             else if (autoComplete.SelectedItem != null)
             {
@@ -250,7 +254,7 @@ public partial class LoanView : ContentPage
                 {
                     autoComplete.SelectedItem = null;
                 });
-                viewModel.SearchExpenseIncomeName = "";
+                _viewModel.SearchExpenseIncomeName = "";
                 await RefreshListOfIncomeExpense();
                 autoComplete.IsDropDownOpen = false;
             }
@@ -277,24 +281,24 @@ public partial class LoanView : ContentPage
             txtIncomeDescription.Unfocus();
             txtInputAmount.Unfocus();
 
-            if (viewModel.HasErrorIncomeDescription)
+            if (_viewModel.HasErrorIncomeDescription)
             {
                 txtIncomeDescription.Focus();
                 return;
             }
-            if (viewModel.HasErrorIncomeAmount)
+            if (_viewModel.HasErrorIncomeAmount)
             {
                 txtInputAmount.Focus();
                 return;
             }
 
-            if (viewModel.AddOrUpdateEntryFromView() == false) return;
+            if (_viewModel.AddOrUpdateEntryFromView() == false) return;
 
             lstEntry.DataSource?.SortDescriptors.Clear();
             lstEntry.DataSource?.SortDescriptors.Add(new SortDescriptor() { PropertyName = "Name", Direction = ListSortDirection.Ascending });
 
             lstEntry.RefreshItem(canReload: true);
-            viewModel.RefreshExpenseTabPropertyChanged();
+            _viewModel.RefreshExpenseTabPropertyChanged();
         }
         catch (Exception ex)
         {
@@ -308,8 +312,8 @@ public partial class LoanView : ContentPage
             txtIncomeDescription.Unfocus();
             txtInputAmount.Unfocus();
 
-            viewModel.ResetTransactionEntryData();
-            viewModel.RefreshExpenseTabPropertyChanged();
+            _viewModel.ResetTransactionEntryData();
+            _viewModel.RefreshExpenseTabPropertyChanged();
         }
         catch (Exception ex)
         {
@@ -322,10 +326,10 @@ public partial class LoanView : ContentPage
         {
             if (sender is not SfButton button || !button.AutomationId.HasValue()) return;
 
-            viewModel.IncomeExpenseEntry = viewModel.TransactionRecords.Get(Guid.Parse(button.AutomationId)).DeepClone();
-            viewModel.IncomeExpenseFrequencySelectedIndex = viewModel.IncomeExpenseEntry.Frequency.ToString();
+            _viewModel.IncomeExpenseEntry = _viewModel.TransactionRecords.Get(Guid.Parse(button.AutomationId)).DeepClone();
+            _viewModel.IncomeExpenseFrequencySelectedIndex = _viewModel.IncomeExpenseEntry.Frequency.ToString();
 
-            viewModel.RefreshExpenseTabPropertyChanged();
+            _viewModel.RefreshExpenseTabPropertyChanged();
         }
         catch (Exception ex)
         {
@@ -338,9 +342,9 @@ public partial class LoanView : ContentPage
         {
             if (sender is not SfButton button || !button.AutomationId.HasValue()) return;
 
-            viewModel.TransactionRecords.Delete(Guid.Parse(button.AutomationId));
-            viewModel.ResetTransactionEntryData();
-            viewModel.RefreshExpenseTabPropertyChanged();
+            _viewModel.TransactionRecords.Delete(Guid.Parse(button.AutomationId));
+            _viewModel.ResetTransactionEntryData();
+            _viewModel.RefreshExpenseTabPropertyChanged();
         }
         catch (Exception ex)
         {

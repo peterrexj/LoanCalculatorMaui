@@ -1,7 +1,8 @@
-﻿using LoanCalculator.Models.Enums;
-using LoanCalculatorMaui.Services;
-using LoanCalculatorMaui.ViewModel;
+﻿using LoanCalculator.Core.Models.Enums;
+using LoanCalculator.Core.Models.ViewModels;
+using LoanCalculator.Core.Services;
 using Pj.Library;
+using System.Collections.ObjectModel;
 
 namespace LoanCalculatorMaui.Themes
 {
@@ -11,8 +12,8 @@ namespace LoanCalculatorMaui.Themes
         {
             try
             {
-                var data = await SharedServices.LoadDataFile<ThemeSelect>();
-                return data == null || data.Theme == null ? null : LoanCalculator.Models.Enums.EnumHelper<AppThemes>.FromString(data.Theme.ToString());
+                var data = await SharedServiceCore.LoadDataFile<ThemeSelect>();
+                return data == null || data.Theme == null ? null : LoanCalculator.Core.Models.Enums.EnumHelper<AppThemes>.FromString(data.Theme.ToString());
             }
             catch (Exception e)
             {
@@ -167,6 +168,29 @@ namespace LoanCalculatorMaui.Themes
             //var xaml = reader.ReadToEnd();
 
             #endregion
+        }
+
+        public static ObservableCollection<Brush> GetChartColors()
+        {
+            var appResources = Application.Current?.Resources;
+            if (appResources != null)
+            {
+                return
+                [
+                    new SolidColorBrush((Color)appResources["LoanAppChartColor1"]),
+                    new SolidColorBrush((Color)appResources["LoanAppChartColor2"]),
+                    new SolidColorBrush((Color)appResources["LoanAppChartColor3"])
+                ];
+            }
+            else
+            {
+                return
+                [
+                    new SolidColorBrush(Color.FromArgb("#d7bde2")),
+                    new SolidColorBrush(Color.FromArgb("#d6eaf8")),
+                    new SolidColorBrush(Color.FromArgb("#fdebd0"))
+                ];
+            }
         }
     }
 }

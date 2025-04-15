@@ -1,5 +1,5 @@
-using LoanCalculatorMaui.Extensions;
-using LoanCalculatorMaui.Services;
+using LoanCalculator.Core.Helper;
+using LoanCalculator.Core.Services;
 using LoanCalculatorMaui.ViewModel;
 
 namespace LoanCalculatorMaui.View;
@@ -49,7 +49,7 @@ public partial class SettingsView : ContentPage
         try
         {
             //placeholder for the data to be loaded
-            var data = await SharedServices.LoadDataFile<SettingsViewModel>();
+            var data = await SharedServiceCore.LoadDataFile<SettingsViewModel>();
 
             var theme = viewModel.SelectedTheme;
             if (theme == null)

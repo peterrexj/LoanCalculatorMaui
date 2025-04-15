@@ -25,10 +25,10 @@ namespace LoanCalculatorMaui.Services
             using MemoryStream stream = new MemoryStream();
             document.Save(stream);
             // Save the stream as a file in the device and invoke it for viewing
-            SaveAndView("Output.pdf", "application/pdf", stream);
+            SaveAndView("Output.pdf", stream);
         }
 
-        private void SaveAndView(string fileName, string contentType, MemoryStream stream)
+        private void SaveAndView(string fileName, MemoryStream stream)
         {
             // Save the stream as a file in the device and invoke it for viewing
             string filePath = Path.Combine(FileSystem.AppDataDirectory, fileName);

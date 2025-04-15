@@ -1,4 +1,4 @@
-using LoanCalculatorMaui.Services;
+using LoanCalculator.Core.Services;
 using LoanCalculatorMaui.ViewModel;
 
 namespace LoanCalculatorMaui.Controls;
@@ -23,7 +23,7 @@ public partial class PopupDisclaimerView : ContentView
         }
         catch (Exception exception)
         {
-            
+            // ignored
         }
         finally
         {

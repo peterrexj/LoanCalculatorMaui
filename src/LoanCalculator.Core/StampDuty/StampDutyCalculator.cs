@@ -1,6 +1,6 @@
-﻿using LoanCalculator.Core.StampDuty.AustralianStates;
-using LoanCalculator.Models;
-using LoanCalculator.Models.Enums;
+﻿using LoanCalculator.Core.Models;
+using LoanCalculator.Core.Models.Enums;
+using LoanCalculator.Core.StampDuty.AustralianStates;
 
 namespace LoanCalculator.Core.StampDuty
 {

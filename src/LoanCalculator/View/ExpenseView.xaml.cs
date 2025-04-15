@@ -1,8 +1,12 @@
-using LoanCalculator.Models.Enums;
-using LoanCalculator.Models.Income;
+using LoanCalculator.Core.Helper;
+using LoanCalculator.Core.Models.Enums;
+using LoanCalculator.Core.Models.Income;
+using LoanCalculator.Core.Models.ViewModels;
+using LoanCalculator.Core.Models.ViewModels.PrimaryModels;
+using LoanCalculator.Core.Services;
 using LoanCalculatorMaui.Extensions;
 using LoanCalculatorMaui.Services;
-using LoanCalculatorMaui.ViewModel;
+using LoanCalculatorMaui.Themes;
 using Pj.Library;
 using Syncfusion.Maui.Buttons;
 using Syncfusion.Maui.DataSource;
@@ -13,7 +17,7 @@ public partial class ExpenseView : ContentPage
 {
     private readonly IErrorHandlingService _errorHandlingService;
     private readonly IAlertService _alertService;
-    ExpenseViewModel viewModel;
+    private ExpenseViewModel _viewModel;
 
     public ExpenseView(IErrorHandlingService errorHandlingService, IAlertService alertService)
     {
@@ -22,7 +26,7 @@ public partial class ExpenseView : ContentPage
 
         InitializeComponent();
 
-        viewModel = new ExpenseViewModel(_errorHandlingService, _alertService);
+        _viewModel = new ExpenseViewModel(_errorHandlingService, _alertService);
     }
 
     protected override async void OnAppearing()
@@ -33,8 +37,8 @@ public partial class ExpenseView : ContentPage
 
             base.OnAppearing();
 
-            viewModel.TriggerOneTimeUpdateOnPage();
-            viewModel.RefreshIncomePropertyChanged();
+            _viewModel.TriggerOneTimeUpdateOnPage();
+            _viewModel.RefreshIncomePropertyChanged();
         }
         catch (Exception ex)
         {
@@ -44,7 +48,7 @@ public partial class ExpenseView : ContentPage
         finally
         {
             PageHelper.PageLoadingComplete();
-            viewModel.IsUpdating = false;
+            _viewModel.IsUpdating = false;
         }
     }
 
@@ -54,49 +58,49 @@ public partial class ExpenseView : ContentPage
         {
             PageHelper.PageIsLoading();
 
-            if (!viewModel.HasInitialized)
+            if (!_viewModel.HasInitialized)
             {
-                var data = await SharedServices.LoadDataFile<ExpenseViewModel>();
+                var data = await SharedServiceCore.LoadDataFile<ExpenseViewModel>();
 
                 if (data == null)
                 {
-                    viewModel.AddDefaultToExpenses();
+                    _viewModel.AddDefaultToExpenses();
                 }
                 else if (data is { TransactionRecords: null })
                 {
-                    viewModel.AddDefaultToExpenses();
+                    _viewModel.AddDefaultToExpenses();
                 }
                 else
                 {
-                    viewModel = data;
+                    _viewModel = data;
                 }
             }
-            if (viewModel?.TransactionRecords == null)
+            if (_viewModel?.TransactionRecords == null)
             {
-                viewModel!.AddDefaultToExpenses();
+                _viewModel!.AddDefaultToExpenses();
             }
             
-            viewModel.InitializeViewData();
-            viewModel.InitializeBrushes();
-            viewModel.MarkInitializationComplete();
+            _viewModel.InitializeViewData();
+            _viewModel.CustomChartColors = StyleProvider.GetChartColors();
+            _viewModel.MarkInitializationComplete();
 
-            viewModel.IncomeExpenseEntry.Frequency = TimeFrequencyEnum.Monthly;
-            viewModel.IncomeExpenseFrequencySelectedIndex = TimeFrequencyEnum.Monthly.ToString();
-            viewModel.IncomeSummary = SharedServices.IncomeSummary;
+            _viewModel.IncomeExpenseEntry.Frequency = TimeFrequencyEnum.Monthly;
+            _viewModel.IncomeExpenseFrequencySelectedIndex = TimeFrequencyEnum.Monthly.ToString();
+            _viewModel.IncomeSummary = SharedServices.IncomeSummary;
 
             var loanData = SharedServices.GetLoanViewModel();
-            viewModel.PropertyExpenseSummary = loanData.Item1;
-            viewModel.PropertyPayment = loanData.Item2;
+            _viewModel.PropertyExpenseSummary = loanData.Item1;
+            _viewModel.PropertyPayment = loanData.Item2;
 
             lstEntry.DataSource?.SortDescriptors.Clear();
 
             PageHelper.PageLoadingComplete();
 
-            BindingContext ??= viewModel;
+            BindingContext ??= _viewModel;
 
             lstEntry.DataSource?.SortDescriptors.Add(new SortDescriptor() { PropertyName = "Name", Direction = ListSortDirection.Ascending });
 
-            viewModel.IsUpdating = false;
+            _viewModel.IsUpdating = false;
         }
         catch (Exception ex)
         {
@@ -131,9 +135,9 @@ public partial class ExpenseView : ContentPage
         {
             var persona = obj as IncomeExpense;
             var filterText = string.Empty;
-            if (viewModel.SearchExpenseIncomeName.HasValue())
+            if (_viewModel.SearchExpenseIncomeName.HasValue())
             {
-                filterText = viewModel.SearchExpenseIncomeName;
+                filterText = _viewModel.SearchExpenseIncomeName;
             }
             else if (autoComplete.SelectedItem != null)
             {
@@ -177,7 +181,7 @@ public partial class ExpenseView : ContentPage
                 {
                     autoComplete.SelectedItem = null;
                 });
-                viewModel.SearchExpenseIncomeName = "";
+                _viewModel.SearchExpenseIncomeName = "";
                 await RefreshListOfIncomeExpense();
                 autoComplete.IsDropDownOpen = false;
             }
@@ -203,25 +207,25 @@ public partial class ExpenseView : ContentPage
             txtIncomeDescription.Unfocus();
             txtInputAmount.Unfocus();
 
-            if (viewModel.HasErrorIncomeDescription)
+            if (_viewModel.HasErrorIncomeDescription)
             {
                 txtIncomeDescription.Focus();
                 return;
             }
-            if (viewModel.HasErrorIncomeAmount)
+            if (_viewModel.HasErrorIncomeAmount)
             {
                 txtInputAmount.Focus();
                 return;
             }
 
-            if (viewModel.AddOrUpdateEntryFromView() == false) return;
+            if (_viewModel.AddOrUpdateEntryFromView() == false) return;
 
             lstEntry.DataSource?.SortDescriptors.Clear();
             lstEntry.DataSource?.SortDescriptors.Add(new SortDescriptor() { PropertyName = "Name", Direction = ListSortDirection.Ascending });
 
             lstEntry.RefreshItem(canReload: true);
-            viewModel.RefreshIncomePropertyChanged();
-            viewModel.UpdateProjectionData();
+            _viewModel.RefreshIncomePropertyChanged();
+            _viewModel.UpdateProjectionData();
         }
         catch (Exception ex)
         {
@@ -235,8 +239,8 @@ public partial class ExpenseView : ContentPage
             txtIncomeDescription.Unfocus();
             txtInputAmount.Unfocus();
 
-            viewModel.ResetTransactionEntryData();
-            viewModel.RefreshTransactionEntry();
+            _viewModel.ResetTransactionEntryData();
+            _viewModel.RefreshTransactionEntry();
         }
         catch (Exception ex)
         {
@@ -249,18 +253,18 @@ public partial class ExpenseView : ContentPage
         {
             if (sender is not SfButton button || !button.AutomationId.HasValue()) return;
 
-            var entryData = viewModel.TransactionRecords?.Get(Guid.Parse(button.AutomationId))?.DeepClone();
+            var entryData = _viewModel.TransactionRecords?.Get(Guid.Parse(button.AutomationId))?.DeepClone();
             if (entryData == null)
             {
                 await _alertService.ShowAlertAsync("Error", "Unable to find the entry to edit.", "OK");
                 return;
             }
 
-            viewModel.IncomeExpenseEntry = entryData;
+            _viewModel.IncomeExpenseEntry = entryData;
 
-            viewModel.IncomeExpenseFrequencySelectedIndex = entryData.Frequency.ToString();
+            _viewModel.IncomeExpenseFrequencySelectedIndex = entryData.Frequency.ToString();
 
-            viewModel.RefreshTransactionEntry();
+            _viewModel.RefreshTransactionEntry();
         }
         catch (Exception ex)
         {
@@ -273,9 +277,9 @@ public partial class ExpenseView : ContentPage
         {
             if (sender is not SfButton button || !button.AutomationId.HasValue()) return;
 
-            viewModel.TransactionRecords.Delete(Guid.Parse(button.AutomationId));
-            viewModel.ResetTransactionEntryData();
-            viewModel.RefreshIncomePropertyChanged();
+            _viewModel.TransactionRecords.Delete(Guid.Parse(button.AutomationId));
+            _viewModel.ResetTransactionEntryData();
+            _viewModel.RefreshIncomePropertyChanged();
         }
         catch (Exception ex)
         {
@@ -290,8 +294,8 @@ public partial class ExpenseView : ContentPage
         {
             if (e.NewIndex == 1)
             {
-                viewModel.UpdateProjectionData();
-                viewModel.TriggerPropertyChangedOnProjectionTab();
+                _viewModel.UpdateProjectionData();
+                _viewModel.TriggerPropertyChangedOnProjectionTab();
             }
         }
         catch (Exception ex)

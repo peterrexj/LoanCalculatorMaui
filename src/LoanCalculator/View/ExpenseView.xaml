@@ -9,13 +9,13 @@
     xmlns:customControls="clr-namespace:LoanCalculatorMaui.Controls"
     xmlns:datagrid="clr-namespace:Syncfusion.Maui.DataGrid;assembly=Syncfusion.Maui.DataGrid"
     xmlns:editors="clr-namespace:Syncfusion.Maui.Inputs;assembly=Syncfusion.Maui.Inputs"
-    xmlns:income="clr-namespace:LoanCalculator.Models.Income;assembly=LoanCalculator.Models"
+    xmlns:income="clr-namespace:LoanCalculator.Core.Models.Income;assembly=LoanCalculator.Core"
     xmlns:pager="clr-namespace:Syncfusion.Maui.DataGrid.DataPager;assembly=Syncfusion.Maui.DataGrid"
     xmlns:range="clr-namespace:Syncfusion.Maui.Sliders;assembly=Syncfusion.Maui.Sliders"
     xmlns:sfList="clr-namespace:Syncfusion.Maui.ListView;assembly=Syncfusion.Maui.ListView"
-    xmlns:summary="clr-namespace:LoanCalculator.Models.Income.Summary;assembly=LoanCalculator.Models"
+    xmlns:summary="clr-namespace:LoanCalculator.Core.Models.Income.Summary;assembly=LoanCalculator.Core"
     xmlns:tabView="clr-namespace:Syncfusion.Maui.TabView;assembly=Syncfusion.Maui.TabView"
-    xmlns:viewModel="clr-namespace:LoanCalculatorMaui.ViewModel"
+    xmlns:viewModels="clr-namespace:LoanCalculator.Core.Models.ViewModels;assembly=LoanCalculator.Core"
     Title="ExpenseView">
     <ContentPage.Content>
         <Grid BackgroundColor="{DynamicResource LoanAppDefaultBackgroundColor}">
@@ -240,7 +240,7 @@
                                                 Style="{DynamicResource CommonTextInputLayoutStyle}">
 
                                                 <editors:SfComboBox
-                                                    x:DataType="viewModel:ExpenseEntryViewBaseModel"
+                                                    x:DataType="viewModels:ExpenseEntryViewBaseModel"
                                                     ItemsSource="{Binding IncomeFrequencyCollection}"
                                                     SelectedItem="{Binding IncomeExpenseFrequencySelectedIndex, Mode=TwoWay}"
                                                     Style="{DynamicResource SfComboBoxStyle}" />

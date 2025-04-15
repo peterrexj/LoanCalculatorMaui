@@ -67,6 +67,7 @@
 
 	<ItemGroup>
 	  <None Remove="Extensions\DisclaimerData\AppLaunchDisclaimerData.txt" />
+	  <None Remove="Resources\AppIcon\appiconfg.png" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -106,7 +107,6 @@
 
 	<ItemGroup>
 	  <ProjectReference Include="..\LoanCalculator.Core\LoanCalculator.Core.csproj" />
-	  <ProjectReference Include="..\LoanCalculator.Models\LoanCalculator.Models.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -139,6 +139,10 @@
 	<ItemGroup>
 	  <Folder Include="Platforms\MacCatalyst\Services\" />
 	  <Folder Include="Platforms\Tizen\Services\" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <MauiAsset Include="Resources\AppIcon\appiconfg.png" />
 	</ItemGroup>
 
 	  

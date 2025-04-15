@@ -1,7 +1,8 @@
 ﻿using System.Text.Json.Serialization;
-using LoanCalculator.Models.BaseExtensions;
 using LoanCalculatorMaui.Services;
 using System.Windows.Input;
+using LoanCalculator.Core.Models.BaseExtensions;
+using LoanCalculator.Core.Services;
 
 namespace LoanCalculatorMaui.ViewModel;
 public class PopupDisclaimerViewModel : BaseViewModel

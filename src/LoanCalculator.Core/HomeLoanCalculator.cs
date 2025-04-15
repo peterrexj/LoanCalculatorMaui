@@ -1,7 +1,7 @@
 ﻿using System.Globalization;
+using LoanCalculator.Core.Models;
+using LoanCalculator.Core.Models.Income.Summary;
 using LoanCalculator.Core.StampDuty;
-using LoanCalculator.Models;
-using LoanCalculator.Models.Income.Summary;
 
 namespace LoanCalculator.Core
 {

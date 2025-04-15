@@ -1,4 +1,4 @@
-﻿using LoanCalculator.Models;
+﻿using LoanCalculator.Core.Models;
 
 namespace LoanCalculator.Core.StampDuty
 {

@@ -1,8 +1,8 @@
-﻿using System.Globalization;
-using LoanCalculator.Models;
-using LoanCalculator.Models.Charts;
+﻿using LoanCalculator.Core.Models;
+using LoanCalculator.Core.Models.Charts;
+using LoanCalculator.Core.Models.ViewModels;
 using LoanCalculatorMaui.Extensions;
-using LoanCalculatorMaui.ViewModel;
+using System.Globalization;
 
 namespace LoanCalculatorMaui.Converters
 {

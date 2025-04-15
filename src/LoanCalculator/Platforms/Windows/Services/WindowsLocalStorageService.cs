@@ -1,5 +1,6 @@
 ﻿using LoanCalculatorMaui.Services;
 using Windows.Storage;
+using LoanCalculator.Core.Services;
 
 namespace LoanCalculatorMaui.Platforms.Windows.Services;
 

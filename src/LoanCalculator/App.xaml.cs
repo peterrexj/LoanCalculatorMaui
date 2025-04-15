@@ -1,5 +1,4 @@
-﻿using LoanCalculator.Models.Enums;
-using LoanCalculatorMaui.Services;
+﻿using LoanCalculator.Core.Services;
 using LoanCalculatorMaui.Themes;
 
 namespace LoanCalculatorMaui

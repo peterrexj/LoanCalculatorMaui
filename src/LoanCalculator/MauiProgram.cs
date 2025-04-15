@@ -1,8 +1,6 @@
 ﻿using CommunityToolkit.Maui;
+using LoanCalculator.Core.Services;
 using LoanCalculatorMaui.Services;
-using LoanCalculatorMaui.Themes;
-using LoanCalculatorMaui.View;
-using LoanCalculatorMaui.ViewModel;
 using Microsoft.Extensions.Logging;
 using Syncfusion.Maui.Core.Hosting;
 
@@ -57,7 +55,6 @@ namespace LoanCalculatorMaui
 #endif
 
             builder.Services.AddSingleton<INameValueDataService, NameValueDataService>();
-            builder.Services.AddSingleton<IThemeHelper, ThemeHelper>();
 #if DEBUG
             builder.Logging.AddDebug();
 #endif

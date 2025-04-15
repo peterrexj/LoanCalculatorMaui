@@ -1,8 +1,7 @@
-﻿using LoanCalculator.Models;
-using LoanCalculator.Models.Income.Summary;
-using LoanCalculatorMaui.Extensions;
-using LoanCalculatorMaui.Themes;
-using LoanCalculatorMaui.ViewModel;
+﻿using LoanCalculator.Core.Models;
+using LoanCalculator.Core.Models.Income.Summary;
+using LoanCalculator.Core.Models.ViewModels.PrimaryModels;
+using LoanCalculator.Core.Services;
 using Pj.Library;
 
 namespace LoanCalculatorMaui.Services
@@ -15,14 +14,7 @@ namespace LoanCalculatorMaui.Services
         private static INameValueDataService? _nameValueDataService;
         public static INameValueDataService? NameValueDataService => _nameValueDataService ??= ServiceLocator.GetService<INameValueDataService>();
 
-        private static IAppInformation? _appInformation;
-        public static IAppInformation? AppInformation => _appInformation ??= ServiceLocator.GetService<IAppInformation>();
-
-        private static IThemeHelper? _themeHelper;
-        public static IThemeHelper? ThemeHelper => _themeHelper ??= ServiceLocator.GetService<IThemeHelper>();
-
         private static IErrorHandlingService? _errorHandlingService;
-
         public static IErrorHandlingService ErrorHandlingService =>
             _errorHandlingService ??= ServiceLocator.GetService<IErrorHandlingService>();
 
@@ -126,43 +118,6 @@ namespace LoanCalculatorMaui.Services
             return content;
         }
 
-        public static async Task<T?> LoadDataFile<T>()
-        {
-            T? data = default;
-
-            try
-            {
-                LocalStorage.Initialize();
-                data = await LocalStorage.GetData<T>().ConfigureAwait(false);
-            }
-            catch (Exception e)
-            {
-                ErrorHandlingService.HandleException(e);
-            }
-
-            return data;
-        }
-
-        public static Task SaveData<T>(T data)
-        {
-            try
-            {
-                if (PageHelper.IsFormLoading)
-                {
-                    return Task.CompletedTask;
-                }
-
-                Task.Run(async () =>
-                {
-                    await LocalStorage.SaveData(data).ConfigureAwait(false);
-                }).Wait();
-            }
-            catch (Exception e)
-            {
-                ErrorHandlingService.HandleException(e);
-            }
-            
-            return Task.CompletedTask;
-        }
+        
     }
 }

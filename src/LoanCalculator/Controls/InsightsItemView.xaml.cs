@@ -1,4 +1,4 @@
-using LoanCalculatorMaui.ViewModel;
+using LoanCalculator.Core.Models.ViewModels;
 
 namespace LoanCalculatorMaui.Controls;
 

@@ -1,5 +1,5 @@
-﻿using LoanCalculator.Models;
-using LoanCalculator.Models.AdditionalExpense;
+﻿using LoanCalculator.Core.Models;
+using LoanCalculator.Core.Models.AdditionalExpense;
 
 namespace LoanCalculator.Core.StampDuty.AustralianStates
 {

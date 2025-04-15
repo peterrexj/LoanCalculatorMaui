@@ -112,6 +112,8 @@
     <!--  Buttons  -->
     <Color x:Key="LoanAppButtonFgColor">#d4e6f1</Color>
     <Color x:Key="LoanAppButtonBgColor">#154360</Color>
+    <Color x:Key="LoanAppExportButtonBgColor">#9EC8B9</Color>
+    <Color x:Key="LoanAppExportButtonFgColor">#040D12</Color>
 
     <!--  Charts  -->
     <Color x:Key="LoanAppChartAxisTextColor">#2E4053</Color>

@@ -1083,9 +1083,9 @@
                                         AnimationEasing="{x:Static Easing.CubicOut}"
                                         IsVisible="{Binding IsGeneratingPdf}"
                                         Progress="{Binding PdfGenerator.Progress}"
-                                        ProgressFill="{DynamicResource ProgressColor}"
+                                        ProgressFill="{DynamicResource LoanAppProgressColor}"
                                         ProgressHeight="10"
-                                        TrackFill="{DynamicResource ProgressTrackColor}"
+                                        TrackFill="{DynamicResource LoanAppProgressTrackColor}"
                                         TrackHeight="10" />
                                 </VerticalStackLayout>
 

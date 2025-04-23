@@ -16,7 +16,7 @@
         string ThemeSelectDataFilePath { get; }
 
         string FilePathBasedOnType<T>();
-        Task<T> GetData<T>();
+        Task<T?> GetData<T>();
         Task SaveData<T>(T data);
         Task ClearData<T>();
 

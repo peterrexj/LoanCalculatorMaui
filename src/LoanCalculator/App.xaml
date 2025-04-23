@@ -7,10 +7,6 @@
     xmlns:localConverters="clr-namespace:LoanCalculatorMaui.Converters">
     <Application.Resources>
         <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="Resources/Styles/Colors.xaml" />
-                <ResourceDictionary Source="Resources/Styles/Styles.xaml" />
-            </ResourceDictionary.MergedDictionaries>
             <localConverters:StringToColorConverter x:Key="StringToBrushConverter" />
         </ResourceDictionary>
     </Application.Resources>

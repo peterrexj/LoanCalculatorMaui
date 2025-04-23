@@ -11,13 +11,13 @@ namespace LoanCalculator.UnitTests
         public void Setup()
         {
             // Set the relative path to the themes folder
-            _rootFolderForThemes = Path.Combine(PjUtility.Runtime.ExecutingRepositoryRootFolder, "src", "LoanCalculator", "Themes");
+            _rootFolderForThemes = Path.Combine(PjUtility.Runtime.ExecutingRepositoryRootFolder, "src", "LoanCalculator", "Extensions", "Data");
         }
 
         [Test]
         public void ThemeFiles_ShouldHave_EqualKeys()
         {
-            string[] files = { "LightTheme.xaml", "DarkTheme.xaml" };
+            string[] files = { "Theme.Light.xaml", "Theme.Dark.xaml" };
 
             var allKeys = new Dictionary<string, HashSet<string>>();
 
@@ -42,7 +42,7 @@ namespace LoanCalculator.UnitTests
         [Test]
         public void ThemeFiles_ShouldHave_NonEmptyValues()
         {
-            string[] files = { "LightTheme.xaml", "DarkTheme.xaml" };
+            string[] files = { "Theme.Light.xaml", "Theme.Dark.xaml" };
 
             foreach (var file in files)
             {
@@ -57,7 +57,7 @@ namespace LoanCalculator.UnitTests
         [Test]
         public void ThemeFiles_ShouldPrint_SameValuesForSameKeys()
         {
-            string[] files = { "LightTheme.xaml", "DarkTheme.xaml" };
+            string[] files = { "Theme.Light.xaml", "Theme.Dark.xaml" };
 
             var allKeysWithValues = new Dictionary<string, Dictionary<string, string>>();
 

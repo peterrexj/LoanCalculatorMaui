@@ -4,56 +4,56 @@
 
     <!--  Colors  -->
     <Color x:Key="LoanAppDefaultForegroundColor">Black</Color>
-    <Color x:Key="LoanAppDefaultBackgroundColor">#F5F5F7</Color>
+    <Color x:Key="LoanAppDefaultBackgroundColor">#F8FAFC</Color>
 
-    <Color x:Key="LoanAppTabBarBackgroundGradientStart">#a9cce3</Color>
-    <Color x:Key="LoanAppTabBarBackgroundGradientEnd">#7fb3d5</Color>
-    <Color x:Key="LoanAppTabIndicatorStrokeColor">#154360</Color>
-    <Color x:Key="LoanAppTabTextColorSelected">#154360</Color>
-    <Color x:Key="LoanAppTabTextColorNormal">#5d6d7e</Color>
+    <Color x:Key="LoanAppTabBarBackgroundGradientStart">#eaeff4</Color>
+    <Color x:Key="LoanAppTabBarBackgroundGradientEnd">#c9d6e3</Color>
+    <Color x:Key="LoanAppTabIndicatorStrokeColor">#5e666e</Color>
+    <Color x:Key="LoanAppTabTextColorSelected">#565d65</Color>
+    <Color x:Key="LoanAppTabTextColorNormal">#151719</Color>
 
-    <Color x:Key="LoanAppHighlightFgColor">#34495e</Color>
+    <Color x:Key="LoanAppHighlightFgColor">#41464b</Color>
 
-    <Color x:Key="LoanAppInputTextFgColor">#17202A</Color>
-    <Color x:Key="LoanAppInputTextWhenFocusedColor">#566573</Color>
-    <Color x:Key="LoanAppInputTextWhenUnFocusedColor">#17202A</Color>
+    <Color x:Key="LoanAppInputTextFgColor">#2b2e32</Color>
+    <Color x:Key="LoanAppInputTextWhenFocusedColor">#2b2e32</Color>
+    <Color x:Key="LoanAppInputTextWhenUnFocusedColor">#2b2e32</Color>
     <Color x:Key="LoanAppInputErrorTextFgColor">#CA6F1E</Color>
 
-    <Color x:Key="LoanAppSegBgColor">#F7F9F9</Color>
-    <Color x:Key="LoanAppSegBorderColor">#34495E</Color>
-    <Color x:Key="LoanAppSegTextFgColor">#808B96</Color>
-    <Color x:Key="LoanAppSegSelectedBgColor">#AED6F1</Color>
+    <Color x:Key="LoanAppSegBgColor">#d6dbe0</Color>
+    <Color x:Key="LoanAppSegBorderColor">#9aa6b2</Color>
+    <Color x:Key="LoanAppSegTextFgColor">#3d4247</Color>
+    <Color x:Key="LoanAppSegSelectedBgColor">#7b848e</Color>
 
-    <Color x:Key="LoanAppSliderKnobFillColor">#f7dc6f</Color>
-    <Color x:Key="LoanAppSliderKnobBorderColor">#b7950b</Color>
+    <Color x:Key="LoanAppSliderKnobFillColor">#7b848e</Color>
+    <Color x:Key="LoanAppSliderKnobBorderColor">#3d4247</Color>
     <Color x:Key="LoanAppSliderKnobOverlapColor">#f5cba7</Color>
-    <Color x:Key="LoanAppRangeSliderTrackInActiveFillColor">#AED6F1</Color>
-    <Color x:Key="LoanAppRangeSliderTrackActiveFillColor">#2980B9</Color>
+    <Color x:Key="LoanAppRangeSliderTrackInActiveFillColor">#636464</Color>
+    <Color x:Key="LoanAppRangeSliderTrackActiveFillColor">#adafb0</Color>
     <Color x:Key="LoanAppRangeSliderLabelTextColor">#17202A</Color>
 
-    <Color x:Key="LoanAppDataGridHeaderBackgroundColor">#154360</Color>
-    <Color x:Key="LoanAppDataGridHeaderTextColor">#eaf2f8</Color>
-    <Color x:Key="LoanAppDataGridCellTextColor">#154360</Color>
+    <Color x:Key="LoanAppDataGridHeaderBackgroundColor">#3d4247</Color>
+    <Color x:Key="LoanAppDataGridHeaderTextColor">#ccd2d8</Color>
+    <Color x:Key="LoanAppDataGridCellTextColor">#1e2123</Color>
     <Color x:Key="LoanAppDataGridCellBackgroundColor">#d4e6f1</Color>
-    <Color x:Key="LoanAppDataGridCellBg1">#ebf5fb</Color>
-    <Color x:Key="LoanAppDataGridCellBg2">#d6eaf8</Color>
-    <Color x:Key="LoanAppDataGridCellBg3">#aed6f1</Color>
-    <Color x:Key="LoanAppDataGridCellBg4">#85c1e9</Color>
-    <Color x:Key="LoanAppDataGridCellBg5">#5dade2</Color>
-    <Color x:Key="LoanAppDataGridCellFg1">#154360</Color>
-    <Color x:Key="LoanAppDataGridCellFg2">#1a5276</Color>
-    <Color x:Key="LoanAppDataGridCellFg3">#1f618d</Color>
-    <Color x:Key="LoanAppDataGridCellFg4">#2471a3</Color>
-    <Color x:Key="LoanAppDataGridCellFg5">#2980b9</Color>
+    <Color x:Key="LoanAppDataGridCellBg1">#ffffff</Color>
+    <Color x:Key="LoanAppDataGridCellBg2">#e0e4e7</Color>
+    <Color x:Key="LoanAppDataGridCellBg3">#b8c0c9</Color>
+    <Color x:Key="LoanAppDataGridCellBg4">#9aa6b2</Color>
+    <Color x:Key="LoanAppDataGridCellBg5">#7b848e</Color>
+    <Color x:Key="LoanAppDataGridCellFg1">#4d5359</Color>
+    <Color x:Key="LoanAppDataGridCellFg2">#3d4247</Color>
+    <Color x:Key="LoanAppDataGridCellFg3">#2e3135</Color>
+    <Color x:Key="LoanAppDataGridCellFg4">#1e2123</Color>
+    <Color x:Key="LoanAppDataGridCellFg5">#0f1011</Color>
 
-    <Color x:Key="LoanAppNavigationButtonBackgroundColor">#849f95</Color>
+    <Color x:Key="LoanAppNavigationButtonBackgroundColor">#b8c0c9</Color>
     <Color x:Key="LoanAppNavigationButtonDisableBackgroundColor">Transparent</Color>
-    <Color x:Key="LoanAppNavigationButtonDisableIconColor">#93b1a6</Color>
-    <Color x:Key="LoanAppNavigationButtonIconColor">#495853</Color>
-    <Color x:Key="LoanAppNumericButtonBackgroundColor">#495853</Color>
-    <Color x:Key="LoanAppNumericButtonSelectionBackgroundColor">#b3c8c0</Color>
-    <Color x:Key="LoanAppNumericButtonSelectionTextColor">#495853</Color>
-    <Color x:Key="LoanAppNumericButtonTextColor">#b3c8c0</Color>
+    <Color x:Key="LoanAppNavigationButtonDisableIconColor">#8a95a0</Color>
+    <Color x:Key="LoanAppNavigationButtonIconColor">#4d5359</Color>
+    <Color x:Key="LoanAppNumericButtonBackgroundColor">#4d5359</Color>
+    <Color x:Key="LoanAppNumericButtonSelectionBackgroundColor">#9aa6b2</Color>
+    <Color x:Key="LoanAppNumericButtonSelectionTextColor">#4d5359</Color>
+    <Color x:Key="LoanAppNumericButtonTextColor">#9aa6b2</Color>
 
     <Color x:Key="LoanAppComboDropDownBackgroundColor">#BDC3C7</Color>
     <Color x:Key="LoanAppComboDropDownTextColor">#17202A</Color>
@@ -62,96 +62,96 @@
     <Color x:Key="LoanAppComboTextColor">#17202A</Color>
 
     <Color x:Key="LoanAppSwitchThumbBorderColorOn">Transparent</Color>
-    <Color x:Key="LoanAppSwitchThumbColorOn">#D6EAF8</Color>
+    <Color x:Key="LoanAppSwitchThumbColorOn">#dfe1e2</Color>
     <Color x:Key="LoanAppSwitchTrackBorderColorOn">Transparent</Color>
-    <Color x:Key="LoanAppSwitchTrackColorOn">#1A5276</Color>
+    <Color x:Key="LoanAppSwitchTrackColorOn">#4a4b4b</Color>
     <Color x:Key="LoanAppSwitchThumbBorderColorOff">Transparent</Color>
-    <Color x:Key="LoanAppSwitchThumbColorOff">#1A5276</Color>
+    <Color x:Key="LoanAppSwitchThumbColorOff">#4a4b4b</Color>
     <Color x:Key="LoanAppSwitchTrackBorderColorOff">Transparent</Color>
-    <Color x:Key="LoanAppSwitchTrackColorOff">#D6EAF8</Color>
+    <Color x:Key="LoanAppSwitchTrackColorOff">#dfe1e2</Color>
 
     <!--  AutoComplete  -->
-    <Color x:Key="LoanAppAutoCompleteSelectionTextHighlightColor">#b3c8c0</Color>
-    <Color x:Key="LoanAppAutoCompleteSelectedDropDownItemBackground">#405b51</Color>
-    <Color x:Key="LoanAppAutoCompleteClearButtonColor">#153636</Color>
-    <Color x:Key="LoanAppAutoCompleteDropdownBackgroundColor">#153636</Color>
-    <Color x:Key="LoanAppAutoCompleteDropdownTextColor">#8b9e9e</Color>
+    <Color x:Key="LoanAppAutoCompleteSelectionTextHighlightColor">#ccd2d8</Color>
+    <Color x:Key="LoanAppAutoCompleteSelectedDropDownItemBackground">#5c636a</Color>
+    <Color x:Key="LoanAppAutoCompleteClearButtonColor">#3d4247</Color>
+    <Color x:Key="LoanAppAutoCompleteDropdownBackgroundColor">#3d4247</Color>
+    <Color x:Key="LoanAppAutoCompleteDropdownTextColor">#ccd2d8</Color>
     <Color x:Key="LoanAppAutoCompleteDropdownBorderColor">#1b2722</Color>
-    <Color x:Key="LoanAppAutoCompleteHighlightedTextColor">#E57373</Color>
-    <Color x:Key="LoanAppAutoCompleteWaterColor">#183d3d</Color>
-    <Color x:Key="LoanAppAutoCompleteTextColor">#183d3d</Color>
-    <Color x:Key="LoanAppAutoCompleteNoResultsFoundTextColor">#183d3d</Color>
+    <Color x:Key="LoanAppAutoCompleteHighlightedTextColor">#4CC9FE</Color>
+    <Color x:Key="LoanAppAutoCompleteWaterColor">#5c636a</Color>
+    <Color x:Key="LoanAppAutoCompleteTextColor">#5c636a</Color>
+    <Color x:Key="LoanAppAutoCompleteNoResultsFoundTextColor">#5c636a</Color>
 
     <!--  AppShell  -->
-    <Color x:Key="LoanAppAppShellBgColor">#B3B6B7</Color>
-    <Color x:Key="LoanAppAppShellFgColor">#283747</Color>
+    <Color x:Key="LoanAppAppShellBgColor">#949697</Color>
+    <Color x:Key="LoanAppAppShellFgColor">#2D4356</Color>
     <Color x:Key="LoanAppAppShellTitleColor">#283747</Color>
     <Color x:Key="LoanAppAppShellDisabledColor">#979A9A</Color>
-    <Color x:Key="LoanAppAppShellUnselectedColor">#5D6D7E</Color>
-    <Color x:Key="LoanAppAppShellTabBarBackgroundColor">#B3B6B7</Color>
-    <Color x:Key="LoanAppAppShellTabBarForegroundColor">#283747</Color>
-    <Color x:Key="LoanAppAppShellTabBarUnselectedColor">#5D6D7E</Color>
-    <Color x:Key="LoanAppAppShellTabBarDisabledColor">#979A9A</Color>
-    <Color x:Key="LoanAppAppShellTabBarTitleColor">#21618C</Color>
+    <Color x:Key="LoanAppAppShellUnselectedColor">#aeb7c1</Color>
+    <Color x:Key="LoanAppAppShellTabBarBackgroundColor">#9aa6b2</Color>
+    <Color x:Key="LoanAppAppShellTabBarForegroundColor">#2D4356</Color>
+    <Color x:Key="LoanAppAppShellTabBarUnselectedColor">#526D82</Color>
+    <Color x:Key="LoanAppAppShellTabBarDisabledColor">#526D82</Color>
+    <Color x:Key="LoanAppAppShellTabBarTitleColor">#2D4356</Color>
 
     <!--  Notifications  -->
-    <Color x:Key="LoanAppNotificationWarningBgGradientStart">#EDE8DC</Color>
-    <Color x:Key="LoanAppNotificationWarningBgGradientEnd">#E7CCCC</Color>
-    <Color x:Key="LoanAppNotificationInformationBgGradientStart">#CCD5AE</Color>
-    <Color x:Key="LoanAppNotificationInformationBgGradientEnd">#E0E5B6</Color>
-    <Color x:Key="LoanAppNotificationTextColor">#641e16</Color>
+    <Color x:Key="LoanAppNotificationWarningBgGradientStart">#fefcf7</Color>
+    <Color x:Key="LoanAppNotificationWarningBgGradientEnd">#e4dccf</Color>
+    <Color x:Key="LoanAppNotificationInformationBgGradientStart">#f8fcfb</Color>
+    <Color x:Key="LoanAppNotificationInformationBgGradientEnd">#d0ddda</Color>
+    <Color x:Key="LoanAppNotificationTextColor">#65625c</Color>
     <Color x:Key="LoanAppNotificationBgColor">Black</Color>
 
     <!--  Lists  -->
-    <Color x:Key="LstForegroundColor">#17202A</Color>
-    <Color x:Key="LoanAppLstBgGradientStart">#586a63</Color>
-    <Color x:Key="LoanAppLstBgGradientEnd">#3a4642</Color>
-    <Color x:Key="LoanAppLstBorderGradientStart">#3a4642</Color>
-    <Color x:Key="LoanAppLstBorderGradientEnd">#586a63</Color>
+    <Color x:Key="LstForegroundColor">#2e3135</Color>
+    <Color x:Key="LoanAppLstBgGradientStart">#d6dbe0</Color>
+    <Color x:Key="LoanAppLstBgGradientEnd">#a4aeb9</Color>
+    <Color x:Key="LoanAppLstBorderGradientStart">#c2c9d0</Color>
+    <Color x:Key="LoanAppLstBorderGradientEnd">#8a95a0</Color>
 
     <!--  Buttons  -->
-    <Color x:Key="LoanAppButtonFgColor">#d4e6f1</Color>
-    <Color x:Key="LoanAppButtonBgColor">#154360</Color>
-    <Color x:Key="LoanAppExportButtonBgColor">#9EC8B9</Color>
-    <Color x:Key="LoanAppExportButtonFgColor">#040D12</Color>
+    <Color x:Key="LoanAppButtonFgColor">#f8f9fb</Color>
+    <Color x:Key="LoanAppButtonBgColor">#5e666e</Color>
+    <Color x:Key="LoanAppExportButtonBgColor">#2D4356</Color>
+    <Color x:Key="LoanAppExportButtonFgColor">#eaeff4</Color>
 
     <!--  Charts  -->
     <Color x:Key="LoanAppChartAxisTextColor">#2E4053</Color>
     <Color x:Key="LoanAppChartLegendTextColor">#2E4053</Color>
     <Color x:Key="LoanAppChartTitleTextColor">#1B2631</Color>
     <Color x:Key="LoanAppChartDataMarkerTextColor">#2E4053</Color>
-    <Color x:Key="LoanAppChartOuterBorderGradientStart">Red</Color>
-    <Color x:Key="LoanAppChartOuterBorderGradientEnd">Yellow</Color>
-    <Color x:Key="LoanAppChartInnerBorderGradientStart">#ebf5fb</Color>
-    <Color x:Key="LoanAppChartInnerBorderGradientEnd">#d6eaf8</Color>
-    <Color x:Key="LoanAppChartColor1">#F5B041</Color>
-    <Color x:Key="LoanAppChartColor2">#73C6B6</Color>
+    <Color x:Key="LoanAppChartOuterBorderGradientStart">#bcccdc</Color>
+    <Color x:Key="LoanAppChartOuterBorderGradientEnd">#96a3b0</Color>
+    <Color x:Key="LoanAppChartInnerBorderGradientStart">#f7fafe</Color>
+    <Color x:Key="LoanAppChartInnerBorderGradientEnd">#eff6fe</Color>
+    <Color x:Key="LoanAppChartColor1">#37AFE1</Color>
+    <Color x:Key="LoanAppChartColor2">#FFBD73</Color>
     <Color x:Key="LoanAppChartColor3">#BB8FCE</Color>
 
     <!--  Borders  -->
-    <Color x:Key="LoanAppBorderTopGradientOuterLineStart">#566573</Color>
-    <Color x:Key="LoanAppBorderTopGradientOuterLineEnd">#34495e</Color>
-    <Color x:Key="LoanAppBorderTopGradientBackgroundStart">#D0DDD0</Color>
-    <Color x:Key="LoanAppBorderTopGradientBackgroundEnd">#AAB99A</Color>
+    <Color x:Key="LoanAppBorderTopGradientOuterLineStart">#8a95a0</Color>
+    <Color x:Key="LoanAppBorderTopGradientOuterLineEnd">#6b747c</Color>
+    <Color x:Key="LoanAppBorderTopGradientBackgroundStart">#e0e4e7</Color>
+    <Color x:Key="LoanAppBorderTopGradientBackgroundEnd">#9aa6b2</Color>
 
     <!--  Border controls box styles  -->
-    <Color x:Key="LoanAppBorderControlGradientBorderLineStart">#d4e6f1</Color>
-    <Color x:Key="LoanAppBorderControlGradientBorderLineEnd">#1a5276</Color>
-    <Color x:Key="LoanAppBorderControlGradientBackgroundStart">#d4e6f1</Color>
-    <Color x:Key="LoanAppBorderControlGradientBackgroundEnd">#a9cce3</Color>
+    <Color x:Key="LoanAppBorderControlGradientBorderLineStart">#c3d2e3</Color>
+    <Color x:Key="LoanAppBorderControlGradientBorderLineEnd">#97a3b1</Color>
+    <Color x:Key="LoanAppBorderControlGradientBackgroundStart">#f7fafe</Color>
+    <Color x:Key="LoanAppBorderControlGradientBackgroundEnd">#eff6fe</Color>
 
     <!--  Insights controls box styles  -->
-    <Color x:Key="LoanAppBorderInsightsGradientOuterLineStart">#d4e6f1</Color>
-    <Color x:Key="LoanAppBorderInsightsGradientOuterLineEnd">#1a5276</Color>
-    <Color x:Key="LoanAppBorderInsightsGradientBackgroundStart">#bdc3c7</Color>
-    <Color x:Key="LoanAppBorderInsightsGradientBackgroundEnd">#eaecee</Color>
-    <Color x:Key="LoanAppInsightsFgColor">#e7ebeb</Color>
+    <Color x:Key="LoanAppBorderInsightsGradientOuterLineStart">#a9b7c6</Color>
+    <Color x:Key="LoanAppBorderInsightsGradientOuterLineEnd">#838e9a</Color>
+    <Color x:Key="LoanAppBorderInsightsGradientBackgroundStart">#c9d6e3</Color>
+    <Color x:Key="LoanAppBorderInsightsGradientBackgroundEnd">#d6e0ea</Color>
+    <Color x:Key="LoanAppInsightsFgColor">#2e3135</Color>
 
     <!--  Expander styles  -->
-    <Color x:Key="LoanAppExpanderExpandedGradientStart">#FFB3E5FC</Color>
-    <Color x:Key="LoanAppExpanderExpandedGradientEnd">#FFFFF9C4</Color>
-    <Color x:Key="LoanAppExpanderCollapsedGradientStart">#bdc3c7</Color>
-    <Color x:Key="LoanAppExpanderCollapsedGradientEnd">#eaecee</Color>
+    <Color x:Key="LoanAppExpanderExpandedGradientStart">#828c97</Color>
+    <Color x:Key="LoanAppExpanderExpandedGradientEnd">#d9eafd</Color>
+    <Color x:Key="LoanAppExpanderCollapsedGradientStart">#ccd2d8</Color>
+    <Color x:Key="LoanAppExpanderCollapsedGradientEnd">#eaedef</Color>
     <Color x:Key="LoanAppExpanderHeaderTextColor">#212F3C</Color>
 
     <!--  Expander styles - cannot move this cuz of the initialization failure, need to repeat in all themes  -->
@@ -169,15 +169,15 @@
     <Color x:Key="LoanAppCheckboxBackColor">#C1CFA1</Color>
 
     <!--  Disclaimer  -->
-    <Color x:Key="LoanAppDisclaimerBodyBackgroundColor">#758d84</Color>
-    <Color x:Key="LoanAppDisclaimerHeaderBackgroundColor">#091818</Color>
+    <Color x:Key="LoanAppDisclaimerBodyBackgroundColor">#9aa6b2</Color>
+    <Color x:Key="LoanAppDisclaimerHeaderBackgroundColor">#2b2e32</Color>
     <Color x:Key="LoanAppDisclaimerHeaderTextColor">#b9c4c4</Color>
-    <Color x:Key="LoanAppDisclaimerHeaderBorderColor">#0E8388</Color>
-    <Color x:Key="LoanAppDisclaimerContentBackgroundColor">#dee7e4</Color>
+    <Color x:Key="LoanAppDisclaimerHeaderBorderColor">#DEE5D4</Color>
+    <Color x:Key="LoanAppDisclaimerContentBackgroundColor">#dfe1e2</Color>
     <Color x:Key="LoanAppDisclaimerContentBoxShadowColor">#2c3531</Color>
     <Color x:Key="LoanAppDisclaimerHeader2TextColor">#091818</Color>
 
-    <Color x:Key="ProgressTrackColor">#092635</Color>
-    <Color x:Key="ProgressColor">#9EC8B9</Color>
+    <Color x:Key="LoanAppProgressTrackColor">#eaeff4</Color>
+    <Color x:Key="LoanAppProgressColor">#2D4356</Color>
 
 </ResourceDictionary>

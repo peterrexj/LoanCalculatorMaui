@@ -6,7 +6,7 @@ namespace LoanCalculator.Core.Services;
 public abstract class LocalStorageService
 {
     public string RootFolder { get; set; }
-    private readonly JsonSerializerOptions _serializerOptions;
+    private readonly JsonSerializerOptions? _serializerOptions;
 
     protected LocalStorageService(string rootFolder)
     {
@@ -40,7 +40,7 @@ public abstract class LocalStorageService
             _ => DefaultDataFilePath
         };
 
-    public async Task<T> GetData<T>()
+    public async Task<T?> GetData<T>()
     {
         EnsureRootFolderIsSet();
         var filePath = FilePathBasedOnType<T>();

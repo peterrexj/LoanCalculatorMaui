@@ -4,9 +4,9 @@ using LoanCalculator.Core.Models.Income;
 using LoanCalculator.Core.Models.ViewModels;
 using LoanCalculator.Core.Models.ViewModels.PrimaryModels;
 using LoanCalculator.Core.Services;
+using LoanCalculator.Core.Themes;
 using LoanCalculatorMaui.Extensions;
 using LoanCalculatorMaui.Services;
-using LoanCalculatorMaui.Themes;
 using Pj.Library;
 using Syncfusion.Maui.Buttons;
 using Syncfusion.Maui.DataSource;
@@ -18,37 +18,44 @@ public partial class ExpenseView : ContentPage
     private readonly IErrorHandlingService _errorHandlingService;
     private readonly IAlertService _alertService;
     private ExpenseViewModel _viewModel;
+    private readonly IThemeHandler _themeHandler;
 
-    public ExpenseView(IErrorHandlingService errorHandlingService, IAlertService alertService)
+    public ExpenseView(
+        IErrorHandlingService errorHandlingService, 
+        IAlertService alertService, 
+        ExpenseViewModel expenseViewModel,
+        IThemeHandler themeHandler)
     {
-        _errorHandlingService = errorHandlingService;
-        _alertService = alertService;
-
         InitializeComponent();
 
-        _viewModel = new ExpenseViewModel(_errorHandlingService, _alertService);
+        _errorHandlingService = errorHandlingService;
+        _alertService = alertService;
+        _themeHandler = themeHandler;
+        _viewModel = expenseViewModel;
+        _viewModel.IsUpdating = true;
+
+        //_viewModel = new ExpenseViewModel(_errorHandlingService, _alertService) { IsUpdating = true };
     }
 
     protected override async void OnAppearing()
     {
         try
         {
-            await LoadDataSet();
-
             base.OnAppearing();
 
-            _viewModel.TriggerOneTimeUpdateOnPage();
-            _viewModel.RefreshIncomePropertyChanged();
+            await Task.Delay(100); // Delay to allow UI to load
+
+            await Task.Yield();
+
+            Dispatcher.Dispatch(async () =>
+            {
+                await LoadDataSet();
+            });
         }
         catch (Exception ex)
         {
             base.OnAppearing();
             _errorHandlingService.HandleException(ex);
-        }
-        finally
-        {
-            PageHelper.PageLoadingComplete();
-            _viewModel.IsUpdating = false;
         }
     }
 
@@ -58,52 +65,70 @@ public partial class ExpenseView : ContentPage
         {
             PageHelper.PageIsLoading();
 
-            if (!_viewModel.HasInitialized)
+            var viewModelInitializeTask = Task.Run(async () =>
             {
-                var data = await SharedServiceCore.LoadDataFile<ExpenseViewModel>();
+                if (!_viewModel.HasInitialized)
+                {
+                    var data = await SharedServiceCore.LoadDataFile<ExpenseViewModel>();
 
-                if (data == null)
-                {
-                    _viewModel.AddDefaultToExpenses();
+                    if (data == null)
+                    {
+                        _viewModel.AddDefaultToExpenses();
+                    }
+                    else if (data is { TransactionRecords: null })
+                    {
+                        _viewModel.AddDefaultToExpenses();
+                    }
+                    else
+                    {
+                        _viewModel.CopyPropertiesFrom(data);
+                    }
                 }
-                else if (data is { TransactionRecords: null })
+                if (_viewModel?.TransactionRecords == null)
                 {
-                    _viewModel.AddDefaultToExpenses();
+                    _viewModel!.AddDefaultToExpenses();
                 }
-                else
-                {
-                    _viewModel = data;
-                }
-            }
-            if (_viewModel?.TransactionRecords == null)
-            {
-                _viewModel!.AddDefaultToExpenses();
-            }
+
+                _viewModel.InitializeViewData();
+                _viewModel.IncomeExpenseEntry.Frequency = TimeFrequencyEnum.Monthly;
+                _viewModel.IncomeExpenseFrequencySelectedIndex = TimeFrequencyEnum.Monthly.ToString();
+            });
             
-            _viewModel.InitializeViewData();
-            _viewModel.CustomChartColors = StyleProvider.GetChartColors();
-            _viewModel.MarkInitializationComplete();
 
-            _viewModel.IncomeExpenseEntry.Frequency = TimeFrequencyEnum.Monthly;
-            _viewModel.IncomeExpenseFrequencySelectedIndex = TimeFrequencyEnum.Monthly.ToString();
-            _viewModel.IncomeSummary = SharedServices.IncomeSummary;
+            var incomeSummaryTask = Task.Run(() => SharedServiceCore.IncomeSummary);
+            var loanDataTask = Task.Run(() => SharedServiceCore.GetLoanViewModel());
+            var chartColorsTask = Task.Run(() => _themeHandler.GetChartColors());
 
-            var loanData = SharedServices.GetLoanViewModel();
+            var lstSourceTask = Task.Run(() =>
+            {
+                lstEntry.DataSource?.SortDescriptors.Clear();
+                lstEntry.DataSource?.SortDescriptors.Add(new SortDescriptor() { PropertyName = "Name", Direction = ListSortDirection.Ascending });
+            });
+
+            await Task.WhenAll(viewModelInitializeTask, incomeSummaryTask, loanDataTask, chartColorsTask, lstSourceTask);
+
+            _viewModel.CustomChartColors = chartColorsTask.Result;
+            _viewModel.IncomeSummary = incomeSummaryTask.Result;
+
+            var loanData = loanDataTask.Result;
             _viewModel.PropertyExpenseSummary = loanData.Item1;
             _viewModel.PropertyPayment = loanData.Item2;
 
-            lstEntry.DataSource?.SortDescriptors.Clear();
-
-            PageHelper.PageLoadingComplete();
+            _viewModel.MarkInitializationComplete();
 
             BindingContext ??= _viewModel;
 
-            lstEntry.DataSource?.SortDescriptors.Add(new SortDescriptor() { PropertyName = "Name", Direction = ListSortDirection.Ascending });
-
             _viewModel.IsUpdating = false;
+            PageHelper.PageLoadingComplete();
+
+            _viewModel.TriggerOneTimeUpdateOnPage();
+            _viewModel.RefreshIncomePropertyChanged();
         }
         catch (Exception ex)
         {
+            _viewModel.IsUpdating = false;
+            PageHelper.PageLoadingComplete();
+
             _errorHandlingService.HandleException(ex);
         }
     }

@@ -827,6 +827,13 @@
                 </tabView:SfTabItem>
 
             </tabView:SfTabView>
+
+            <!--  Activity Indicator  -->
+            <ActivityIndicator
+                HorizontalOptions="Center"
+                IsRunning="{Binding IsCustomBusyIndicator}"
+                VerticalOptions="Center"
+                Color="{DynamicResource LoanAppAppShellFgColor}" />
         </Grid>
     </ContentPage.Content>
 </ContentPage>

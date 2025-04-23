@@ -14,6 +14,7 @@
     xmlns:models="clr-namespace:LoanCalculator.Core.Models;assembly=LoanCalculator.Core"
     xmlns:pager="clr-namespace:Syncfusion.Maui.DataGrid.DataPager;assembly=Syncfusion.Maui.DataGrid"
     xmlns:primaryModels="clr-namespace:LoanCalculator.Core.Models.ViewModels.PrimaryModels;assembly=LoanCalculator.Core"
+    xmlns:progressBar="clr-namespace:Syncfusion.Maui.ProgressBar;assembly=Syncfusion.Maui.ProgressBar"
     xmlns:range="clr-namespace:Syncfusion.Maui.Sliders;assembly=Syncfusion.Maui.Sliders"
     xmlns:sfList="clr-namespace:Syncfusion.Maui.ListView;assembly=Syncfusion.Maui.ListView"
     xmlns:system="clr-namespace:System;assembly=System.Runtime"
@@ -23,7 +24,7 @@
     Title="LoanView"
     x:DataType="primaryModels:LoanViewModel">
     <ContentPage.Content>
-        <Grid BackgroundColor="{DynamicResource LoanAppDefaultBackgroundColor}">
+        <Grid BackgroundColor="{DynamicResource LoanAppDefaultBackgroundColor}" IsEnabled="{Binding IsFree}">
             <customControls:PopupDisclaimerView />
 
             <tabView:SfTabView
@@ -414,8 +415,6 @@
                                                     Grid.Row="2"
                                                     Grid.Column="1"
                                                     Margin="0,0,0,-15"
-                                                    BackgroundColor="Transparent"
-                                                    ContainerBackground="Transparent"
                                                     Hint="Bank fees"
                                                     Style="{DynamicResource CommonTextInputLayoutStyle}">
                                                     <editors:SfNumericEntry
@@ -1077,8 +1076,17 @@
                                     <Button
                                         Command="{Binding ExportInsightsReportCommand}"
                                         IsEnabled="{Binding IsActive}"
+                                        MinimumHeightRequest="60"
                                         Style="{DynamicResource ExportButtonStyle}"
                                         Text="Export Detailed Insights" />
+                                    <progressBar:SfLinearProgressBar
+                                        AnimationEasing="{x:Static Easing.CubicOut}"
+                                        IsVisible="{Binding IsGeneratingPdf}"
+                                        Progress="{Binding PdfGenerator.Progress}"
+                                        ProgressFill="{DynamicResource ProgressColor}"
+                                        ProgressHeight="10"
+                                        TrackFill="{DynamicResource ProgressTrackColor}"
+                                        TrackHeight="10" />
                                 </VerticalStackLayout>
 
                                 <expander:SfExpander HeaderIconPosition="End" Style="{DynamicResource CommonExpanderStyle}">
@@ -1284,7 +1292,7 @@
             <!--  Activity Indicator  -->
             <ActivityIndicator
                 HorizontalOptions="Center"
-                IsRunning="{Binding IsBusy}"
+                IsRunning="{Binding IsPageBusy}"
                 VerticalOptions="Center"
                 Color="{DynamicResource LoanAppAppShellFgColor}" />
         </Grid>

@@ -8,16 +8,44 @@ using System.Text.Json.Serialization;
 
 namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
 {
-    public class ExpenseViewModel(IErrorHandlingService errorHandlingService, IAlertService alertService)
-        : ExpenseEntryViewBaseModel
+    public class ExpenseViewModel : ExpenseEntryViewBaseModel
     {
-        [JsonIgnore]
-        private readonly IErrorHandlingService _errorHandlingService = errorHandlingService;
-        [JsonIgnore]
-        private readonly IAlertService _alertService = alertService;
+        [JsonIgnore] private readonly IErrorHandlingService _errorHandlingService;
+        [JsonIgnore] private readonly IAlertService _alertService;
 
-        public ExpenseViewModel() : this(ServiceLocator.GetService<IErrorHandlingService>(), ServiceLocator.GetService<IAlertService>())
+        public ExpenseViewModel()
         {
+        }
+
+        public ExpenseViewModel(IErrorHandlingService errorHandlingService, IAlertService alertService) 
+        {
+            _errorHandlingService = errorHandlingService;
+            _alertService = alertService;
+        }
+
+        public void CopyPropertiesFrom(ExpenseViewModel source)
+        {
+            if (source == null) throw new ArgumentNullException(nameof(source));
+
+            // Get all properties of the ExpenseViewModel
+            var properties = typeof(ExpenseViewModel).GetProperties(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
+
+            foreach (var property in properties)
+            {
+                // Skip properties with [JsonIgnore] attribute
+                if (property.GetCustomAttributes(typeof(JsonIgnoreAttribute), true).Any())
+                {
+                    continue;
+                }
+
+                // Check if the property can be written to
+                if (property.CanWrite)
+                {
+                    // Copy the value from the source to the current instance
+                    var value = property.GetValue(source);
+                    property.SetValue(this, value);
+                }
+            }
         }
 
         public void InitializeViewData()
@@ -63,8 +91,7 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
         }
 
         [JsonIgnore]
-        public List<IncomeExpenseProjectionOutput> IncomeProjectList =>
-            TransactionRecords.IncomeExpenseSummary.ProjectionTerms;
+        public List<IncomeExpenseProjectionOutput> IncomeProjectList => TransactionRecords?.IncomeExpenseSummary?.ProjectionTerms ?? new List<IncomeExpenseProjectionOutput>();
 
         #region Income after Expense
 
@@ -269,13 +296,13 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
         #region Total Details
 
         [JsonIgnore]
-        public string TotalMonthlyIncomeWithComma => TransactionRecords.IncomeExpenseSummary.TotalMonthlyWithComma;
+        public string TotalMonthlyIncomeWithComma => TransactionRecords?.IncomeExpenseSummary?.TotalMonthlyWithComma ?? "";
 
         [JsonIgnore]
         public string TotalYearlyIncomeWithComma => $"{TotalYearlyExpense:N0}";
 
         [JsonIgnore]
-        public string TotalProjectedYearlyIncomeWithComma => TransactionRecords.IncomeExpenseSummary.ProjectTotalYearlyWithComma;
+        public string TotalProjectedYearlyIncomeWithComma => TransactionRecords?.IncomeExpenseSummary?.ProjectTotalYearlyWithComma ?? "";
 
         [JsonIgnore]
         public string TotalIncomeMonthlyWithComma
@@ -309,7 +336,7 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
         {
             get
             {
-                if (TransactionRecords.IncomeExpenseSummary.ProjectionTerms?.ToList() == null)
+                if (TransactionRecords?.IncomeExpenseSummary?.ProjectionTerms?.ToList() == null)
                 {
                     return new ObservableCollection<ChartDataModel>();
                 }
@@ -327,7 +354,7 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
         {
             get
             {
-                if (TransactionRecords.IncomeExpenseSummary.ProjectionTerms?.ToList() == null)
+                if (TransactionRecords?.IncomeExpenseSummary?.ProjectionTerms?.ToList() == null)
                 {
                     return new ObservableCollection<ChartDataModel>();
                 }
@@ -345,7 +372,7 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
         {
             get
             {
-                if (TransactionRecords.IncomeExpenseSummary.ProjectionTerms?.ToList() == null)
+                if (TransactionRecords?.IncomeExpenseSummary?.ProjectionTerms?.ToList() == null)
                 {
                     return new ObservableCollection<ChartDataModel>();
                 }
@@ -365,7 +392,7 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
         [JsonIgnore]
         public int TotalYearsToProject
         {
-            get => TransactionRecords.IncomeExpenseSummary.NumberOfYearsProjection;
+            get => TransactionRecords?.IncomeExpenseSummary?.NumberOfYearsProjection ?? 0;
             set
             {
                 if (isUpdating == false)
@@ -382,7 +409,7 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
         [JsonIgnore]
         public double AnnualGrowthRate
         {
-            get => TransactionRecords.IncomeExpenseSummary.AnnualGrowthRate;
+            get => TransactionRecords?.IncomeExpenseSummary?.AnnualGrowthRate ?? 0;
             set
             {
                 if (isUpdating == false)
@@ -397,7 +424,7 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
         }
 
         [JsonIgnore]
-        public double AnnualGrowthRatePercentage => TransactionRecords.IncomeExpenseSummary.AnnualGrowthRatePercentage;
+        public double AnnualGrowthRatePercentage => TransactionRecords?.IncomeExpenseSummary?.AnnualGrowthRatePercentage ?? 0;
 
         #endregion
 
@@ -409,10 +436,13 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
             {
                 await Task.Run(() =>
                 {
-                    if (!SharedServiceCore.LoadSafe)
+                    if (PageHelper.IsFormLoading == false)
                     {
-                        UpdateProjectionData();
-                        TriggerPropertyChangedOnProjectionTab();
+                        if (!SharedServiceCore.LoadSafe)
+                        {
+                            UpdateProjectionData();
+                            TriggerPropertyChangedOnProjectionTab();
+                        }
                     }
                 });
             }
@@ -425,9 +455,12 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
         {
             try
             {
-                if (SharedServiceCore.LoadSafe) return;
+                if (PageHelper.IsFormLoading == false)
+                {
+                    if (SharedServiceCore.LoadSafe) return;
 
-                await Task.Run(RefreshIncomePropertyChanged);
+                    await Task.Run(RefreshIncomePropertyChanged);
+                }
             }
             catch (Exception e)
             {
@@ -437,7 +470,9 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
 
         public void RefreshIncomePropertyChanged()
         {
-            if (SharedServiceCore.LoadSafe) return;
+            if (PageHelper.IsFormLoading) return;
+
+            if (SharedServiceCore.LoadSafe || TransactionRecords == null) return;
 
             TransactionRecords?.SumUpData();
 
@@ -464,6 +499,8 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
 
         public void RefreshTransactionEntry()
         {
+            if (PageHelper.IsFormLoading) return;
+
             if (SharedServiceCore.LoadSafe) return;
 
             OnPropertyChanged(nameof(IncomeEntryName));
@@ -475,7 +512,9 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
 
         public void UpdateProjectionData()
         {
-            if (SharedServiceCore.LoadSafe) return;
+            if (PageHelper.IsFormLoading) return;
+
+            if (SharedServiceCore.LoadSafe || TransactionRecords == null) return;
 
             double propertyExpenses = 0;
 
@@ -499,6 +538,8 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
 
         public void TriggerPropertyChangedOnProjectionTab()
         {
+            if (PageHelper.IsFormLoading) return;
+
             if (SharedServiceCore.LoadSafe) return;
 
             OnPropertyChanged(nameof(ChartProjectionTermStartAmountAxis));

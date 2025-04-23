@@ -2,18 +2,14 @@
 using LoanCalculator.Core.Models.Enums;
 using LoanCalculator.Core.Models.Income;
 using LoanCalculator.Core.Models.Pdf;
-using LoanCalculator.Core.Models.ViewModels;
-using LoanCalculator.Core.Models.ViewModels.PrimaryModels;
-using LoanCalculator.Core.Pdf;
 using LoanCalculator.Core.Services;
 using Pj.Library;
 using Syncfusion.Drawing;
-using Syncfusion.Maui.Core;
 using Syncfusion.Pdf;
 using Syncfusion.Pdf.Graphics;
 using Syncfusion.Pdf.Grid;
 using Syncfusion.Pdf.Interactive;
-using System.Diagnostics;
+using System.ComponentModel;
 using System.Globalization;
 using Color = Syncfusion.Drawing.Color;
 using PointF = Syncfusion.Drawing.PointF;
@@ -21,52 +17,107 @@ using SizeF = Syncfusion.Drawing.SizeF;
 
 namespace LoanCalculator.Core.Pdf
 {
-    public class PdfInsightsGenerator : PdfGeneratorBaseWithDisclaimer
+    public class PdfInsightsGenerator : PdfGeneratorBaseWithDisclaimer, INotifyPropertyChanged
     {
         public PdfInsightsGenerator()
         {
 
         }
 
-        public async Task GeneratePdf()
+        public event PropertyChangedEventHandler? PropertyChanged;
+
+        private void OnPropertyChanged(string propertyName)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        private int _progress;
+        public int Progress
+        {
+            get => _progress;
+            private set
+            {
+                if (_progress != value)
+                {
+                    _progress = value;
+                    OnPropertyChanged(nameof(Progress));
+                }
+            }
+        }
+
+        private void UpdateProgress(int value)
+        {
+            Progress = value;
+            // Optionally, raise an event or notify observers if needed
+        }
+
+        public async Task GeneratePdf(int taskDelay = 0)
         {
             try
             {
+                _yPosition = 0;
+
                 SharedServiceCore.LoadSafeOn();
 
-                InitializeDataSets();
-                InitializeDocumentWithPageSettings();
+                UpdateProgress(10); // 10% progress
 
+                // Offload CPU-intensive tasks to a background thread
+                await Task.Run(() =>
+                {
+                    InitializeDataSets();
+                    InitializeDocumentWithPageSettings();
+                });
+
+                UpdateProgress(20); // 30% progress
+                await Task.Delay(taskDelay); // Simulate work
+
+                // Render header and footer templates
                 await RenderHeaderTemplate();
-                RenderFooterTemplate();
+                await Task.Run(() => RenderFooterTemplate());
 
                 // Add a page to the document
-                Page = Document!.Pages.Add();
+                await Task.Run(() =>
+                {
+                    Page = Document!.Pages.Add();
+                });
 
-                // Render the gradient background
-                //RenderGradientBackground(_page);
+                UpdateProgress(40); // 50% progress
+                await Task.Delay(taskDelay); // Simulate work
 
-                // Draw header H1
-                PageTitle("Property Home Loan Report");
-                // Draw subtitle
-                PageSubtitle("Comprehensive Overview (estimate ONLY)");
+                // Draw header and subtitle
+                await Task.Run(() =>
+                {
+                    PageTitle("Property Home Loan Report");
+                    PageSubtitle("Comprehensive Overview (estimate ONLY)");
+                    AddNewLineSpace(20);
+                    GenerateDisclaimerData();
+                });
 
-                AddNewLineSpace(20);
+                UpdateProgress(50); // 50% progress
+                await Task.Delay(taskDelay); // Simulate work
 
-                // Draw title
-                GenerateDisclaimerData();
+                // Draw KPI boxes
+                await Task.Run(() => DrawKpiBoxes());
 
-                DrawKpiBoxes();
+                UpdateProgress(60); // 70% progress
+                await Task.Delay(taskDelay); // Simulate work
 
-                GeneratePropertyInsights();
+                // Generate property insights
+                await Task.Run(() => GeneratePropertyInsights());
 
-                //await DrawPieChart();
+                UpdateProgress(80); // 90% progress
+                await Task.Delay(taskDelay); // Simulate work
 
                 // Save the document to a stream
                 using MemoryStream stream = new MemoryStream();
-                Document.Save(stream);
+                await Task.Run(() => Document.Save(stream));
+
                 // Save the stream as a file in the device and invoke it for viewing
+                await Task.Delay(taskDelay); // Simulate work
+                UpdateProgress(100); // 100% progress
                 await SaveAndView("Output.pdf", stream);
+
+                UpdateProgress(0);
             }
             catch (Exception e)
             {
@@ -77,6 +128,7 @@ namespace LoanCalculator.Core.Pdf
                 SharedServiceCore.LoadSafeOff();
             }
         }
+
 
         private async Task RenderHeaderTemplate()
         {

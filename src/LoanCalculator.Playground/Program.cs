@@ -17,4 +17,4 @@ errorHandlingService.HandleException(new Exception("test error!"));
 
 Console.WriteLine("Mock services are ready!");
 
-new PdfInsightsGenerator().GeneratePdf();
+await new PdfInsightsGenerator().GeneratePdf();

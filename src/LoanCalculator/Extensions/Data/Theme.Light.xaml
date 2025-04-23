@@ -168,7 +168,7 @@
     <!--  Checkbox styles  -->
     <Color x:Key="LoanAppCheckboxBackColor">#C1CFA1</Color>
 
-    <!--  Disclaimer -->
+    <!--  Disclaimer  -->
     <Color x:Key="LoanAppDisclaimerBodyBackgroundColor">#758d84</Color>
     <Color x:Key="LoanAppDisclaimerHeaderBackgroundColor">#091818</Color>
     <Color x:Key="LoanAppDisclaimerHeaderTextColor">#b9c4c4</Color>
@@ -176,4 +176,8 @@
     <Color x:Key="LoanAppDisclaimerContentBackgroundColor">#dee7e4</Color>
     <Color x:Key="LoanAppDisclaimerContentBoxShadowColor">#2c3531</Color>
     <Color x:Key="LoanAppDisclaimerHeader2TextColor">#091818</Color>
+
+    <Color x:Key="ProgressTrackColor">#092635</Color>
+    <Color x:Key="ProgressColor">#9EC8B9</Color>
+
 </ResourceDictionary>

@@ -4,16 +4,16 @@ using LoanCalculator.Core.Services;
 using Pj.Library;
 using System.Collections.ObjectModel;
 
-namespace LoanCalculatorMaui.Themes
+namespace LoanCalculator.Core.Themes
 {
-    public class StyleProvider
+    public class ThemeHandler : IThemeHandler
     {
-        public static async Task<AppThemes?> GetCurrentThemeAsync()
+        public async Task<AppThemes?> GetCurrentThemeAsync()
         {
             try
             {
                 var data = await SharedServiceCore.LoadDataFile<ThemeSelect>();
-                return data == null || data.Theme == null ? null : LoanCalculator.Core.Models.Enums.EnumHelper<AppThemes>.FromString(data.Theme.ToString());
+                return data?.Theme == null ? null : LoanCalculator.Core.Models.Enums.EnumHelper<AppThemes>.FromString(data.Theme.ToString());
             }
             catch (Exception e)
             {
@@ -23,7 +23,7 @@ namespace LoanCalculatorMaui.Themes
             return null;
         }
 
-        public static void LoadDefaultStyle()
+        public void LoadDefaultStyle()
         {
             AppThemes? currentTheme = null;
             Task.Run(async () => currentTheme = await GetCurrentThemeAsync()).Wait();
@@ -31,7 +31,7 @@ namespace LoanCalculatorMaui.Themes
             LoadDefaultStyle(currentTheme.Value);
         }
 
-        public static void LoadDefaultStyle(AppThemes appTheme)
+        public void LoadDefaultStyle(AppThemes appTheme)
         {
             try
             {
@@ -94,7 +94,7 @@ namespace LoanCalculatorMaui.Themes
             {
                 throw new Exception($"Exception thrown from the style provider {e}");
             }
-            
+
         }
 
         static void ClearAllResources(string prefix)
@@ -138,7 +138,7 @@ namespace LoanCalculatorMaui.Themes
             }
         }
 
-        private static ResourceDictionary? LoadResourceDictionary(string resourcePath)
+        private ResourceDictionary? LoadResourceDictionary(string resourcePath)
         {
             try
             {
@@ -170,7 +170,7 @@ namespace LoanCalculatorMaui.Themes
             #endregion
         }
 
-        public static ObservableCollection<Brush> GetChartColors()
+        public ObservableCollection<Brush> GetChartColors()
         {
             var appResources = Application.Current?.Resources;
             if (appResources != null)

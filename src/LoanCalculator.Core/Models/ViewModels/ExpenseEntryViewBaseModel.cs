@@ -40,14 +40,12 @@ namespace LoanCalculator.Core.Models.ViewModels
         }
 
         [JsonIgnore]
-        public bool HasErrorIncomeDescription
-        {
-            get => IncomeExpenseEntry == null || IncomeExpenseEntry.Name.IsEmpty();
-        }
+        public bool HasErrorIncomeDescription => IncomeExpenseEntry?.Name?.IsEmpty() == true;
+
         [JsonIgnore]
         public string IncomeEntryName
         {
-            get => IncomeExpenseEntry?.Name;
+            get => IncomeExpenseEntry?.Name ?? "";
             set
             {
                 if (value == null || IncomeExpenseEntry == null) return;
@@ -59,7 +57,7 @@ namespace LoanCalculator.Core.Models.ViewModels
         }
 
         [JsonIgnore]
-        public bool HasErrorIncomeAmount => IncomeExpenseEntry == null || IncomeExpenseEntry.Amount <= 0;
+        public bool HasErrorIncomeAmount => IncomeExpenseEntry?.Amount <= 0;
 
         [JsonIgnore]
         public double IncomeEntryAmount
@@ -95,6 +93,8 @@ namespace LoanCalculator.Core.Models.ViewModels
 
         public bool AddOrUpdateEntryFromView()
         {
+            if (TransactionRecords == null) return false;
+
             if (IncomeExpenseEntry.Id != Guid.Empty && TransactionRecords.Exists(IncomeExpenseEntry.Id))
             {
                 TransactionRecords.Delete(IncomeExpenseEntry.Id);
@@ -117,6 +117,8 @@ namespace LoanCalculator.Core.Models.ViewModels
 
         public void ResetTransactionEntryData()
         {
+            if (IncomeExpenseEntry == null) return;
+
             IncomeExpenseEntry.Name = string.Empty;
             IncomeExpenseEntry.Amount = 0;
             IncomeExpenseFrequencySelectedIndex = TimeFrequencyEnum.Monthly.ToString();
@@ -129,7 +131,7 @@ namespace LoanCalculator.Core.Models.ViewModels
         public ObservableCollection<string> IncomeFrequencyCollection { get; set; }
 
         [JsonIgnore]
-        public ObservableCollection<IncomeExpense>? Transactions => TransactionRecords.IncomeExpenseEntries;
+        public ObservableCollection<IncomeExpense>? Transactions => TransactionRecords?.IncomeExpenseEntries ?? new ObservableCollection<IncomeExpense>();
         [JsonIgnore]
         public IEnumerable<SearchAutoCompleteViewModel> AutocompleteList
             => Transactions.Select(f => new SearchAutoCompleteViewModel { Id = 0, Name = f.Name });

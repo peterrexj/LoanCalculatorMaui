@@ -7,7 +7,7 @@
     xmlns:expander="clr-namespace:Syncfusion.Maui.Expander;assembly=Syncfusion.Maui.Expander"
     xmlns:sfPopup="clr-namespace:Syncfusion.Maui.Popup;assembly=Syncfusion.Maui.Popup"
     Title="SettingsView">
-    <Grid BackgroundColor="{DynamicResource LoanAppDefaultBackgroundColor}">
+    <Grid BackgroundColor="{DynamicResource LoanAppDefaultBackgroundColor}" IsEnabled="{Binding IsFree}">
         <sfPopup:SfPopup
             x:Name="PopupDisclaimer"
             Padding="10,25,10,20"

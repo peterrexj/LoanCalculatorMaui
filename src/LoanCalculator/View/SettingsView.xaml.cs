@@ -1,23 +1,23 @@
 using LoanCalculator.Core.Helper;
+using LoanCalculator.Core.Models.ViewModels.PrimaryModels;
 using LoanCalculator.Core.Services;
-using LoanCalculatorMaui.ViewModel;
 
 namespace LoanCalculatorMaui.View;
 
 public partial class SettingsView : ContentPage
 {
     private readonly IErrorHandlingService _errorHandlingService;
-    private SettingsViewModel viewModel;
+    private readonly SettingsViewModel _viewModel;
 
-    public SettingsView(IErrorHandlingService errorHandlingService)
+    public SettingsView(
+        IErrorHandlingService errorHandlingService,
+        SettingsViewModel viewModel)
     {
-        _errorHandlingService = errorHandlingService;
         InitializeComponent();
-        viewModel = new SettingsViewModel
-        {
-            IsBusy = true
-        };
-        BindingContext ??= viewModel;
+
+        _errorHandlingService = errorHandlingService;
+        _viewModel = viewModel;
+        _viewModel.IsBusy = true;
     }
 
     protected override async void OnAppearing()
@@ -26,21 +26,24 @@ public partial class SettingsView : ContentPage
         {
             PageHelper.PageIsLoading();
 
-            await LoadDataSet();
-
             base.OnAppearing();
 
-            viewModel.RefreshProperties();
+            await Task.Delay(100); // Delay to allow UI to load
+
+            await Task.Yield();
+
+            Dispatcher.Dispatch(async () =>
+            {
+                await LoadDataSet();
+            });
         }
         catch (Exception ex)
         {
-            base.OnAppearing();
             _errorHandlingService.HandleException(ex);
         }
         finally
         {
-            PageHelper.PageLoadingComplete();
-            viewModel.IsBusy = false;
+            _viewModel.IsBusy = false;
         }
     }
 
@@ -49,17 +52,33 @@ public partial class SettingsView : ContentPage
         try
         {
             //placeholder for the data to be loaded
-            var data = await SharedServiceCore.LoadDataFile<SettingsViewModel>();
-
-            var theme = viewModel.SelectedTheme;
-            if (theme == null)
+            var viewModelInitializeTask = Task.Run(async () =>
             {
-                viewModel.SelectedTheme = viewModel.Themes.First(f => f == AppTheme.Light.ToString());
-            }
+                var data = await SharedServiceCore.LoadDataFile<SettingsViewModel>();
+            });
+
+            var themeHandlerTask = Task.Run(async () =>
+            {
+                var theme = _viewModel.SelectedTheme;
+                if (theme == null)
+                {
+                    _viewModel.SelectedTheme = _viewModel.Themes.First(f => f == AppTheme.Light.ToString());
+                }
+            });
+
+            await Task.WhenAll(viewModelInitializeTask, themeHandlerTask);
+
+            _viewModel.RefreshProperties();
+
+            BindingContext ??= _viewModel;
         }
         catch (Exception ex)
         {
             _errorHandlingService.HandleException(ex);
+        }
+        finally
+        {
+            PageHelper.PageLoadingComplete();
         }
     }
 }

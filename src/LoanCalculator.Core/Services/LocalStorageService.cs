@@ -6,10 +6,16 @@ namespace LoanCalculator.Core.Services;
 public abstract class LocalStorageService
 {
     public string RootFolder { get; set; }
+    private readonly JsonSerializerOptions _serializerOptions;
 
     protected LocalStorageService(string rootFolder)
     {
         RootFolder = rootFolder;
+        _serializerOptions = new JsonSerializerOptions
+        {
+            Converters = { new DoubleDefaultConverter() },
+            NumberHandling = JsonNumberHandling.AllowNamedFloatingPointLiterals
+        };
     }
 
     public bool IsInitialized => !string.IsNullOrEmpty(RootFolder);
@@ -44,19 +50,15 @@ public abstract class LocalStorageService
         }
 
         var json = await File.ReadAllTextAsync(filePath);
-        return JsonSerializer.Deserialize<T>(json);
+        return JsonSerializer.Deserialize<T>(json, _serializerOptions);
     }
 
     public async Task SaveData<T>(T data)
     {
         EnsureRootFolderIsSet();
-        var options = new JsonSerializerOptions
-        {
-            NumberHandling = JsonNumberHandling.AllowNamedFloatingPointLiterals
-        };
 
         var filePath = FilePathBasedOnType<T>();
-        var json = JsonSerializer.Serialize(data, options);
+        var json = JsonSerializer.Serialize(data, _serializerOptions);
         await File.WriteAllTextAsync(filePath, json);
     }
 

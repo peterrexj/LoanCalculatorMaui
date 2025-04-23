@@ -1,5 +1,8 @@
 ﻿using CommunityToolkit.Maui;
+using LoanCalculator.Core.Models.ViewModels.PrimaryModels;
 using LoanCalculator.Core.Services;
+using LoanCalculator.Core.Themes;
+using LoanCalculatorMaui.Controls;
 using LoanCalculatorMaui.Services;
 using Microsoft.Extensions.Logging;
 using Syncfusion.Maui.Core.Hosting;
@@ -54,7 +57,15 @@ namespace LoanCalculatorMaui
                         builder.Services.AddSingleton<ILocalStorage, LoanCalculatorMaui.Platforms.Windows.Services.WindowsLocalStorageService>();
 #endif
 
+            builder.Services.AddTransient<PopupDisclaimerView>();
             builder.Services.AddSingleton<INameValueDataService, NameValueDataService>();
+            builder.Services.AddSingleton<LoanViewModel>();
+            builder.Services.AddSingleton<ExpenseViewModel>();
+            builder.Services.AddSingleton<IncomeViewModel>();
+            builder.Services.AddSingleton<SettingsViewModel>();
+            builder.Services.AddSingleton<PopupDisclaimerViewModel>();
+            builder.Services.AddSingleton<IThemeHandler, ThemeHandler>();
+
 #if DEBUG
             builder.Logging.AddDebug();
 #endif

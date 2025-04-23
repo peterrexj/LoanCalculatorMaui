@@ -178,4 +178,7 @@
     <Color x:Key="LoanAppDisclaimerContentBoxShadowColor">#2c3531</Color>
     <Color x:Key="LoanAppDisclaimerHeader2TextColor">#091818</Color>
 
+    <Color x:Key="ProgressTrackColor">#092635</Color>
+    <Color x:Key="ProgressColor">#9EC8B9</Color>
+
 </ResourceDictionary>

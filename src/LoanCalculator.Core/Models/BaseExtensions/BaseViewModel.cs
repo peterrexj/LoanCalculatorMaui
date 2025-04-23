@@ -13,10 +13,26 @@ namespace LoanCalculator.Core.Models.BaseExtensions
             {
                 _isBusy = value;
                 OnPropertyChanged(nameof(IsBusy));
-                //OnPropertyChanged(nameof(IsFree));
+                OnPropertyChanged(nameof(IsCustomBusyIndicator));
+                OnPropertyChanged(nameof(IsFree));
             }
         }
-        //public bool IsFree => !IsBusy;
+        public bool IsFree => !IsBusy;
+
+        public bool IsCustomBusyIndicator => IsBusy || IsPageBusy;
+
+        private bool _isPageBusy;
+        [JsonIgnore]
+        public bool IsPageBusy
+        {
+            get => _isPageBusy;
+            set
+            {
+                _isPageBusy = value;
+                OnPropertyChanged(nameof(IsPageBusy));
+                OnPropertyChanged(nameof(IsCustomBusyIndicator));
+            }
+        }
 
         private bool _isActive { get; set; }
         [JsonIgnore]

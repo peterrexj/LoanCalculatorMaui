@@ -8,19 +8,25 @@ using Syncfusion.Maui.Buttons;
 using System.Collections.ObjectModel;
 using System.Text.Json.Serialization;
 using System.Windows.Input;
+using LoanCalculator.Core.Helper;
 
 namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
 {
-    public class LoanViewModel(IErrorHandlingService errorHandlingService, IAlertService alertService) : ExpenseEntryViewBaseModel
+    public class LoanViewModel : ExpenseEntryViewBaseModel
     {
-        [JsonIgnore]
-        private readonly IErrorHandlingService _errorHandlingService = errorHandlingService;
-        [JsonIgnore]
-        private readonly IAlertService _alertService = alertService;
+        [JsonIgnore] private readonly IErrorHandlingService _errorHandlingService;
+        [JsonIgnore] private readonly IAlertService _alertService;
 
-        public LoanViewModel() : this(ServiceLocator.GetService<IErrorHandlingService>(), ServiceLocator.GetService<IAlertService>())
+        public LoanViewModel()
         {
-            ExportInsightsReportCommand = new Command(async void () =>
+        }
+
+        public LoanViewModel(IErrorHandlingService errorHandlingService, IAlertService alertService)
+        {
+            _errorHandlingService = errorHandlingService;
+            _alertService = alertService;
+
+            ExportInsightsReportCommand = new Command(async () =>
             {
                 try
                 {
@@ -31,6 +37,31 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
                     _errorHandlingService.HandleException(e);
                 }
             });
+        }
+
+        public void CopyPropertiesFrom(LoanViewModel source)
+        {
+            if (source == null) throw new ArgumentNullException(nameof(source));
+
+            // Get all properties of the IncomeViewModel
+            var properties = typeof(LoanViewModel).GetProperties(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
+
+            foreach (var property in properties)
+            {
+                // Skip properties with [JsonIgnore] attribute
+                if (property.GetCustomAttributes(typeof(JsonIgnoreAttribute), true).Any())
+                {
+                    continue;
+                }
+
+                // Check if the property can be written to
+                if (property.CanWrite)
+                {
+                    // Copy the value from the source to the current instance
+                    var value = property.GetValue(source);
+                    property.SetValue(this, value);
+                }
+            }
         }
 
         [JsonIgnore] protected HomeLoanInformation _homeLoanInfo;
@@ -58,33 +89,61 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
         }
 
         [JsonIgnore] public ICommand ExportInsightsReportCommand { get; }
+        [JsonIgnore] public PdfInsightsGenerator PdfGenerator { get; set; } = new PdfInsightsGenerator();
+        [JsonIgnore]
+        private bool _isGeneratingPdf;
 
+        [JsonIgnore]
+        public bool IsGeneratingPdf
+        {
+            get => _isGeneratingPdf;
+            set
+            {
+                if (_isGeneratingPdf == value) return; // Avoid unnecessary updates
+                _isGeneratingPdf = value;
+                OnPropertyChanged(nameof(IsGeneratingPdf)); // Notify UI of the change
+            }
+        }
 
         private async Task ExportInsights()
         {
-            if (ExpenseSummary.TotalYearly <= 0 || IncomeSummary.TotalYearly <= 0)
+            try
             {
-                await _alertService.ShowAlertAsync("Warning", "Please enter the income and expense details.", "OK");
-                return;
+                IsGeneratingPdf = true;
+                IsBusy = true;
+
+                await Task.Delay(500); // Simulate a delay for the loader
+
+                if (ExpenseSummary.TotalYearly <= 0 || IncomeSummary.TotalYearly <= 0)
+                {
+                    await _alertService.ShowAlertAsync("Warning", "Please enter the income and expense details.", "OK");
+                    return;
+                }
+                else
+                {
+                    try
+                    {
+                        IsBusy = true; // Show loader
+                        IsActive = false;
+                        await Task.Delay(500); // Simulate a delay for the loader
+                        await PdfGenerator.GeneratePdf(taskDelay: 400);
+                    }
+                    catch (Exception ex)
+                    {
+                        _errorHandlingService.HandleException(ex);
+                    }
+                }
             }
-            else
+            catch (Exception ex)
             {
-                try
-                {
-                    IsBusy = true; // Show loader
-                    IsActive = false;
-                    await Task.Delay(1000); // Simulate a delay for the loader
-                    await new PdfInsightsGenerator().GeneratePdf();
-                }
-                catch (Exception ex)
-                {
-                    _errorHandlingService.HandleException(ex);
-                }
-                finally
-                {
-                    IsBusy = false; // Hide loader
-                    IsActive = true;
-                }
+                // Handle any unexpected errors for the entire method
+                _errorHandlingService.HandleException(ex, "An unexpected error occurred while exporting insights.");
+            }
+            finally
+            {
+                IsGeneratingPdf = false; // Ensure this is reset even if an error occurs
+                IsBusy = false; // Hide loader
+                IsActive = true;
             }
         }
 
@@ -95,8 +154,8 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
                 RepaymentFrequencyCollection =
                 [
                     new SfSegmentItem { Text = "Monthly" },
-                new SfSegmentItem { Text = "Fortnightly" },
-                new SfSegmentItem { Text = "Weekly" }
+                    new SfSegmentItem { Text = "Fortnightly" },
+                    new SfSegmentItem { Text = "Weekly" }
                 ];
             }
 
@@ -105,7 +164,7 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
                 AmortizationBreakdownFrequencyCollection =
                 [
                     new SfSegmentItem { Text = "Yearly" },
-                new SfSegmentItem { Text = "Term" }
+                    new SfSegmentItem { Text = "Term" }
                 ];
             }
 
@@ -159,7 +218,7 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
 
         public double PropertyAmount
         {
-            get => HomeLoanInfo.PropertyAmount;
+            get => HomeLoanInfo?.PropertyAmount ?? 0;
             set
             {
                 if (isUpdating || !HasInitialized) return;
@@ -177,7 +236,7 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
 
         public int LoanTermInYears
         {
-            get => HomeLoanInfo.HomeLoanRepaymentRequest.LoanTermInYears;
+            get => HomeLoanInfo?.HomeLoanRepaymentRequest?.LoanTermInYears ?? 30;
             set
             {
                 if (isUpdating || !HasInitialized) return;
@@ -195,7 +254,7 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
 
         public double InterestRate
         {
-            get => HomeLoanInfo.HomeLoanRepaymentRequest.InterestRate;
+            get => HomeLoanInfo?.HomeLoanRepaymentRequest?.InterestRate ?? 5.0;
             set
             {
                 if (isUpdating || !HasInitialized) return;
@@ -212,9 +271,9 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
             }
         }
 
-        public string LoanAmount => $"{CurrencySymbol}{HomeLoanInfo.LoanAmount:N0}";
+        public string LoanAmount => $"{CurrencySymbol}{HomeLoanInfo?.LoanAmount ?? 0:N0}";
 
-        [JsonIgnore] public string PropertyTotalAmount => $"{CurrencySymbol}{HomeLoanInfo.PropertyTotalAmount:N0}";
+        [JsonIgnore] public string PropertyTotalAmount => $"{CurrencySymbol}{HomeLoanInfo?.PropertyTotalAmount ?? 0:N0}";
 
         [JsonIgnore]
         private bool _isDepositPercentageSliderEnabled;
@@ -233,11 +292,11 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
         #region Loan Calculations
 
         [JsonIgnore]
-        public string DepositAmountStrFormatted => $"{CurrencySymbol}{HomeLoanInfo.DepositAmountDirectInput:N0}";
+        public string DepositAmountStrFormatted => $"{CurrencySymbol}{HomeLoanInfo?.DepositAmountDirectInput ?? 0:N0}";
 
         public double DepositPercentage
         {
-            get => HomeLoanInfo.DepositPercentage;
+            get => HomeLoanInfo?.DepositPercentage ?? 0;
             set
             {
                 if (isUpdating || !HasInitialized) return;
@@ -254,7 +313,7 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
 
         public double DepositAmountDirectInput
         {
-            get => HomeLoanInfo.DepositAmountDirectInput;
+            get => HomeLoanInfo?.DepositAmountDirectInput ?? 0;
             set
             {
                 if (isUpdating == false && HasInitialized)
@@ -267,11 +326,11 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
             }
         }
 
-        [JsonIgnore] public string LoanAmountStrFormatted => $"{CurrencySymbol}{HomeLoanInfo.LoanAmountDirectInput:N0}";
+        [JsonIgnore] public string LoanAmountStrFormatted => $"{CurrencySymbol}{HomeLoanInfo?.LoanAmountDirectInput ?? 0:N0}";
 
         public double LoanAmountPercentage
         {
-            get => HomeLoanInfo.LoanAmountPercentage;
+            get => HomeLoanInfo?.LoanAmountPercentage ?? 0;
             set
             {
                 if (isUpdating || !HasInitialized) return;
@@ -288,7 +347,7 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
 
         public double LoanAmountDirectInput
         {
-            get => HomeLoanInfo.LoanAmountDirectInput;
+            get => HomeLoanInfo?.LoanAmountDirectInput ?? 0;
             set
             {
                 if (isUpdating || !HasInitialized) return;
@@ -363,7 +422,7 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
         public ObservableCollection<ChartDataModel> InsightChartLoanAmountAxis =>
             new(new List<ChartDataModel>
                 {
-                    new(name: DateTime.Now.Year.ToString(), value: HomeLoanInfo.LoanAmountDirectInput)
+                    new(name: DateTime.Now.Year.ToString(), value: HomeLoanInfo?.LoanAmountDirectInput ?? 0)
                 }.AsEnumerable());
 
         [JsonIgnore]
@@ -373,7 +432,7 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
             {
                 return new ObservableCollection<ChartDataModel>(new List<ChartDataModel>
                     {
-                        new(name: "2025", value: HomeLoanInfo.PaymentSummary.Payment.TotalInterestPayment)
+                        new(name: "2025", value: HomeLoanInfo?.PaymentSummary?.Payment?.TotalInterestPayment ?? 0)
                     }
                     .AsEnumerable());
             }
@@ -386,7 +445,7 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
             {
                 return new ObservableCollection<ChartDataModel>(new List<ChartDataModel>
                 {
-                    new(name: "2025", value: HomeLoanInfo.DepositAmountDirectInput)
+                    new(name: "2025", value: HomeLoanInfo?.DepositAmountDirectInput ?? 0)
                 }.AsEnumerable());
             }
         }
@@ -395,31 +454,33 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
 
         private void BuildInsights()
         {
+            if (PageHelper.IsFormLoading) return;
+
             InsightsDetails = new InsightsDetailsViewModel();
 
             #region Property
 
             InsightsDetails.PropertyAmount.Value = $"{CurrencySymbol}{PropertyAmount:N0}";
-            InsightsDetails.PropertyEstimatedUpfront.Value = $"{CurrencySymbol}{HomeLoanInfo.OtherExpenseTotalAmount:N0}";
-            InsightsDetails.PropertyTotalAmount.Value = $"{CurrencySymbol}{HomeLoanInfo.PropertyTotalAmount:N0}";
+            InsightsDetails.PropertyEstimatedUpfront.Value = $"{CurrencySymbol}{HomeLoanInfo?.OtherExpenseTotalAmount ?? 0:N0}";
+            InsightsDetails.PropertyTotalAmount.Value = $"{CurrencySymbol}{HomeLoanInfo?.PropertyTotalAmount ?? 0:N0}";
 
             #endregion
 
             #region Loan
 
-            InsightsDetails.LoanAmount.Value = $"{CurrencySymbol}{HomeLoanInfo.LoanAmountDirectInput:N0}";
-            InsightsDetails.DepositAmount.Value = $"{CurrencySymbol}{HomeLoanInfo.DepositAmountDirectInput:N0}";
+            InsightsDetails.LoanAmount.Value = $"{CurrencySymbol}{HomeLoanInfo?.LoanAmountDirectInput ?? 0:N0}";
+            InsightsDetails.DepositAmount.Value = $"{CurrencySymbol}{HomeLoanInfo?.DepositAmountDirectInput ?? 0:N0}";
             InsightsDetails.TotalRepaymentToBank.Value =
-                $"{CurrencySymbol}{HomeLoanInfo.PaymentSummary.Payment.TotalPaymentRounded:N0}";
+                $"{CurrencySymbol}{HomeLoanInfo?.PaymentSummary?.Payment?.TotalPaymentRounded ?? 0:N0}";
             InsightsDetails.TotalInterestToBank.Value =
-                $"{CurrencySymbol}{HomeLoanInfo.PaymentSummary.Payment.TotalInterestPaymentRoundedWithComma:N0}";
+                $"{CurrencySymbol}{HomeLoanInfo?.PaymentSummary?.Payment?.TotalInterestPaymentRoundedWithComma:N0}";
             InsightsDetails.LoanTerm.Value = $"{LoanTermInYears} years";
             InsightsDetails.InterestRate.Value = $"{InterestRate}%";
             InsightsDetails.RepaymentDetailSelectedFrequency.Value =
-                $"{CurrencySymbol}{HomeLoanInfo.PaymentSummary.Payment.TermPaymentRoundedWithComma} {RepaymentFrequencySelected}";
+                $"{CurrencySymbol}{HomeLoanInfo?.PaymentSummary?.Payment?.TermPaymentRoundedWithComma} {RepaymentFrequencySelected}";
             InsightsDetails.RepaymentFrequency.Value = RepaymentFrequencySelected.Trim();
             InsightsDetails.RepaymentDetailYearly.Value =
-                $"{CurrencySymbol}{HomeLoanInfo.PaymentSummary.Payment.TermPaymentYearlyWithComma} yearly";
+                $"{CurrencySymbol}{HomeLoanInfo?.PaymentSummary?.Payment?.TermPaymentYearlyWithComma} yearly";
 
             #endregion
 
@@ -543,17 +604,14 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
         [JsonIgnore] public bool IsAmortizationYearBased => AmortizationBreakdownFrequencySelectedIndex == 0;
 
         [JsonIgnore]
-        public List<PaymentAmortisationOutput>? PaymentAmortization
-        {
-            get { return HomeLoanInfo.PaymentSummary.PaymentAmortizationTerms; }
-        }
+        public List<PaymentAmortisationOutput>? PaymentAmortization => HomeLoanInfo?.PaymentSummary?.PaymentAmortizationTerms ?? new List<PaymentAmortisationOutput>();
 
         [JsonIgnore]
         public ObservableCollection<ChartDataModel> AmortizationChartPrincipalAmountAxis
         {
             get
             {
-                if (HomeLoanInfo.PaymentSummary.PaymentAmortizationTerms?.ToList() == null)
+                if (HomeLoanInfo?.PaymentSummary?.PaymentAmortizationTerms?.ToList() == null)
                 {
                     return new ObservableCollection<ChartDataModel>();
                 }
@@ -571,7 +629,7 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
         {
             get
             {
-                if (HomeLoanInfo.PaymentSummary.PaymentAmortizationTerms?.ToList() == null)
+                if (HomeLoanInfo?.PaymentSummary?.PaymentAmortizationTerms?.ToList() == null)
                 {
                     return new ObservableCollection<ChartDataModel>();
                 }
@@ -589,7 +647,7 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
         {
             get
             {
-                if (HomeLoanInfo.PaymentSummary.PaymentAmortizationTerms?.ToList() == null)
+                if (HomeLoanInfo?.PaymentSummary?.PaymentAmortizationTerms?.ToList() == null)
                 {
                     return new ObservableCollection<ChartDataModel>();
                 }
@@ -615,7 +673,7 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
         {
             get
             {
-                if (HomeLoanInfo.PaymentSummary.PaymentAmortizationTerms?.ToList() == null)
+                if (HomeLoanInfo?.PaymentSummary?.PaymentAmortizationTerms?.ToList() == null)
                 {
                     return new ObservableCollection<ChartDataModel>();
                 }
@@ -643,7 +701,7 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
         [JsonIgnore]
         public double StampDuty
         {
-            get => HomeLoanInfo.StampDuty.StampDuty;
+            get => HomeLoanInfo?.StampDuty?.StampDuty ?? 0;
             set
             {
                 if (isUpdating || !HasInitialized) return;
@@ -663,7 +721,7 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
         [JsonIgnore]
         public double MortgageCharges
         {
-            get => HomeLoanInfo.StampDuty.MortgageCharges;
+            get => HomeLoanInfo?.StampDuty?.MortgageCharges ?? 0;
             set
             {
                 if (isUpdating || !HasInitialized) return;
@@ -683,7 +741,7 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
         [JsonIgnore]
         public double ConveyancerFee
         {
-            get => HomeLoanInfo.ConveyanceExpense.ConveyancerFee;
+            get => HomeLoanInfo?.ConveyanceExpense?.ConveyancerFee ?? 0;
             set
             {
                 if (isUpdating == false && HasInitialized)
@@ -703,7 +761,7 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
         [JsonIgnore]
         public double BankFee
         {
-            get => HomeLoanInfo.BankExpense.BankSettlementFee;
+            get => HomeLoanInfo?.BankExpense?.BankSettlementFee ?? 0;
             set
             {
                 if (isUpdating == false && HasInitialized)
@@ -723,7 +781,7 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
         [JsonIgnore]
         public double InspectionFee
         {
-            get => HomeLoanInfo.OtherExpense.InspectionFee;
+            get => HomeLoanInfo?.OtherExpense?.InspectionFee ?? 0;
             set
             {
                 if (isUpdating == false && HasInitialized)
@@ -743,7 +801,7 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
         [JsonIgnore]
         public double OtherExpenses
         {
-            get => HomeLoanInfo.OtherExpense.OtherExpenses;
+            get => HomeLoanInfo?.OtherExpense?.OtherExpenses ?? 0;
             set
             {
                 if (isUpdating == false && HasInitialized)
@@ -760,7 +818,7 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
             }
         }
 
-        [JsonIgnore] public string OtherExpenseTotalAmount => $"{CurrencySymbol}{HomeLoanInfo.OtherExpenseTotalAmount:N0}";
+        [JsonIgnore] public string OtherExpenseTotalAmount => $"{CurrencySymbol}{HomeLoanInfo?.OtherExpenseTotalAmount ?? 0:N0}";
 
         #endregion
 
@@ -834,6 +892,8 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
 
         public void TriggerPropertyChangedOnPropertyTab()
         {
+            if (PageHelper.IsFormLoading) return;
+
             if (SharedServiceCore.LoadSafe) return;
 
             EventsTriggerPriceUpdate();
@@ -861,6 +921,8 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
         }
         public virtual void TriggerPropertyChangedOnAmortizationTab()
         {
+            if (PageHelper.IsFormLoading) return;
+
             if (SharedServiceCore.LoadSafe) return;
 
             OnPropertyChanged(nameof(PaymentAmortization));
@@ -877,6 +939,8 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
 
         public void RefreshExpenseTabPropertyChanged()
         {
+            if (PageHelper.IsFormLoading || TransactionRecords == null) return;
+
             if (SharedServiceCore.LoadSafe) return;
 
             TransactionRecords.SumUpData();
@@ -899,6 +963,8 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
         }
         public void RefreshInsightsTabPropertyChanged()
         {
+            if (PageHelper.IsFormLoading) return;
+
             if (SharedServiceCore.LoadSafe) return;
 
             BuildInsights();
@@ -908,6 +974,8 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
 
         public void UpdateAmortizationData()
         {
+            if (PageHelper.IsFormLoading) return;
+
             if (AmortizationBreakdownFrequencySelectedIndex == 0)
             {
                 HomeLoanCalculator.UpdateLoanPaymentAmortizationDataByYear(HomeLoanInfo.PaymentSummary);
@@ -919,6 +987,8 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
         }
         public void SyncAmortization()
         {
+            if (PageHelper.IsFormLoading) return;
+
             if (SharedServiceCore.LoadSafe) return;
 
             UpdateAmortizationData();
@@ -927,6 +997,8 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
         }
         public void UpdateAmortizationFrequencyText()
         {
+            if (PageHelper.IsFormLoading) return;
+
             var frequency = RepaymentFrequencySelected.Trim();
             frequency = char.ToUpper(frequency[0]) + frequency.Substring(1);
             AmortizationBreakdownFrequencyCollection[1].Text = frequency;
@@ -934,6 +1006,8 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
 
         public void EventsTriggerStampDutyUpdate()
         {
+            if (PageHelper.IsFormLoading || HomeLoanInfo == null) return;
+
             if (SharedServiceCore.LoadSafe) return;
 
             if (SharedServiceCore.AppInformation != null && SharedServiceCore.AppInformation.IsAustralia == false) return;
@@ -946,6 +1020,8 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
         }
         public void EventsTriggerPriceUpdate()
         {
+            if (PageHelper.IsFormLoading || HomeLoanInfo == null) return;
+
             if (SharedServiceCore.LoadSafe) return;
 
             HomeLoanInfo.PaymentSummary =
@@ -956,6 +1032,8 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
         }
         public void LiveEventsUpdate()
         {
+            if (PageHelper.IsFormLoading || HomeLoanInfo == null) return;
+
             if (SharedServiceCore.LoadSafe) return;
 
             if (HomeLoanInfo.PropertyTotalAmount > 0 && HomeLoanInfo.PaymentSummary.Payment.TotalPaymentRounded > 0)

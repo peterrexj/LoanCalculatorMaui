@@ -1,5 +1,5 @@
 ﻿using LoanCalculator.Core.Services;
-using LoanCalculatorMaui.Themes;
+using LoanCalculator.Core.Themes;
 
 namespace LoanCalculatorMaui
 {
@@ -16,7 +16,7 @@ namespace LoanCalculatorMaui
 
             Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense("Ngo9BigBOggjHTQxAR8/V1NMaF5cXmBCf1FpRmJGdld5fUVHYVZUTXxaS00DNHVRdkdnWH1ccXVSQ2dcV0Z0W0A=");
 
-            StyleProvider.LoadDefaultStyle();
+            ServiceLocator.GetService<IThemeHandler>().LoadDefaultStyle();
         }
         
 
@@ -25,7 +25,7 @@ namespace LoanCalculatorMaui
             InitializeComponent();
             Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense("Ngo9BigBOggjHTQxAR8/V1NMaF5cXmBCf1FpR2JGfV5ycEVCallSTnVfUiweQnxTdEFiW35acHBQRWNcVEZ3WQ==");
 
-            StyleProvider.LoadDefaultStyle();
+            ServiceLocator.GetService<IThemeHandler>().LoadDefaultStyle();
         }
 
         protected override Window CreateWindow(IActivationState? activationState)

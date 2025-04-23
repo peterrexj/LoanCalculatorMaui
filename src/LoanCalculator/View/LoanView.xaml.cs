@@ -3,9 +3,8 @@ using LoanCalculator.Core.Models.Income;
 using LoanCalculator.Core.Models.ViewModels;
 using LoanCalculator.Core.Models.ViewModels.PrimaryModels;
 using LoanCalculator.Core.Services;
+using LoanCalculator.Core.Themes;
 using LoanCalculatorMaui.Extensions;
-using LoanCalculatorMaui.Services;
-using LoanCalculatorMaui.Themes;
 using Pj.Library;
 using Syncfusion.Maui.Buttons;
 using Syncfusion.Maui.DataSource;
@@ -17,31 +16,39 @@ public partial class LoanView : ContentPage
 {
     private readonly IErrorHandlingService _errorHandlingService;
     private LoanViewModel _viewModel;
+    private readonly IThemeHandler _themeHandler;
 
-    public LoanView(IErrorHandlingService errorHandlingService)
+    public LoanView(
+        IErrorHandlingService errorHandlingService, 
+        LoanViewModel viewModel,
+        IThemeHandler themeHandler)
     {
-        _errorHandlingService = errorHandlingService;
-
         InitializeComponent();
-        _viewModel = new LoanViewModel
-        {
-            IsBusy = true,
-            IsUpdating = true,
-            IsActive = false
-        };
+
+        _errorHandlingService = errorHandlingService;
+        _themeHandler = themeHandler;
+
+        _viewModel = viewModel;
+        _viewModel.IsBusy = true;
+        _viewModel.IsUpdating = true;
+        _viewModel.IsActive = false;
+        _viewModel.IsPageBusy = true;
     }
 
     protected override async void OnAppearing()
     {
         try
         {
-            await LoadDataSet();
-
             base.OnAppearing();
 
-            _viewModel.TriggerOneTimeUpdateOnPage();
-            _viewModel.TriggerPropertyChangedOnPropertyTab();
-            _viewModel.RefreshExpenseTabPropertyChanged();
+            await Task.Delay(100); // Delay to allow UI to load
+
+            await Task.Yield();
+
+            Dispatcher.Dispatch(async () =>
+            {
+                await LoadDataSet();
+            });
         }
         catch (Exception ex)
         {
@@ -54,6 +61,7 @@ public partial class LoanView : ContentPage
             _viewModel.IsUpdating = false;
             _viewModel.IsBusy = false;
             _viewModel.IsActive = true;
+            _viewModel.IsPageBusy = false;
         }
     }
 
@@ -63,66 +71,81 @@ public partial class LoanView : ContentPage
         {
             PageHelper.PageIsLoading();
 
-            var data = await SharedServiceCore.LoadDataFile<LoanViewModel>();
+            bool requiresDefault = false;
 
-            var shouldAddDefaultValues = false;
-
-            if (!_viewModel.HasInitialized)
+            var viewModelInitializeTask = Task.Run(async () =>
             {
-                if (data == null)
-                {
-                    //viewModel.InitializeViewData();
-                    shouldAddDefaultValues = true;
-                    _viewModel.AddDefaultToExpenses();
-                }
-                else
-                {
-                    _viewModel = data;
-                    _viewModel.IsUpdating = true;
-                    _viewModel.IsBusy = true;
-                }
-            }
-            else if (data == null)
-            {
-                _viewModel.TransactionRecords.DeleteAll();
-                shouldAddDefaultValues = true;
-                _viewModel.AddDefaultToExpenses();
-            }
+                _viewModel.InitializeViewData();
 
-            _viewModel.InitializeViewData();
-            _viewModel.CustomChartColors = StyleProvider.GetChartColors();
+                var data = await SharedServiceCore.LoadDataFile<LoanViewModel>();
+                if (!_viewModel.HasInitialized || data == null || _viewModel.TransactionRecords == null)
+                {
+                    if (data == null)
+                    {
+                        requiresDefault = true;
+                        //The reason for not calling AddDefaultValues here is that it will not go into the SET method as there are few checks
+                    }
+                    else
+                    {
+                        _viewModel.CopyPropertiesFrom(data);
+                    }
+
+                    if (_viewModel.TransactionRecords == null)
+                    {
+                        _viewModel.AddDefaultToExpenses();
+                    }
+                }
+            });
+
+            var chartColorsTask = Task.Run(() => _themeHandler.GetChartColors());
+            var expenseSummaryTask = Task.Run(() => SharedServiceCore.ExpenseSummary);
+            var incomeSummaryTask = Task.Run(() => SharedServiceCore.IncomeSummary);
+            var lstSourceTask = Task.Run(() =>
+            {
+                lstEntry.DataSource?.SortDescriptors.Clear();
+                lstEntry.DataSource?.SortDescriptors.Add(new SortDescriptor()
+                    { PropertyName = "Name", Direction = ListSortDirection.Ascending });
+            });
+
+
+            await Task.WhenAll(viewModelInitializeTask, expenseSummaryTask, chartColorsTask, lstSourceTask);
+
+            _viewModel.CustomChartColors = chartColorsTask.Result;
+            _viewModel.ExpenseSummary = expenseSummaryTask.Result;
+            _viewModel.IncomeSummary = incomeSummaryTask.Result;
+
+            SegmentedRepaymentFrequency.SelectionChanged += SegmentedRepaymentFrequency_SelectionChanged;
+            AmortizationBreadDownFrequencySegmentCtrl.SelectionChanged +=
+                AmortizationBreadDownFrequencySegmentCtrlOnSelectionChanged;
+            SegmentedAustraliaStates.SelectionChanged += SegmentedAustraliaStatesOnSelectionChanged;
 
             _viewModel.MarkInitializationComplete();
 
-            if (shouldAddDefaultValues)
-            {
-                _viewModel.IsUpdating = false;
-
-                _viewModel.AddDefaultValues();
-            }
-
-            lstEntry.DataSource?.SortDescriptors.Clear();
-
-            _viewModel.ExpenseSummary = SharedServices.ExpenseSummary;
-            _viewModel.IncomeSummary = SharedServices.IncomeSummary;
-
-            SegmentedRepaymentFrequency.SelectionChanged += SegmentedRepaymentFrequency_SelectionChanged;
-            AmortizationBreadDownFrequencySegmentCtrl.SelectionChanged += AmortizationBreadDownFrequencySegmentCtrlOnSelectionChanged;
-            SegmentedAustraliaStates.SelectionChanged += SegmentedAustraliaStatesOnSelectionChanged;
-
-            _viewModel.SyncAmortization();
-
-            PageHelper.PageLoadingComplete();
+            _viewModel.IsUpdating = false;
 
             BindingContext ??= _viewModel;
 
-            lstEntry.DataSource?.SortDescriptors.Add(new SortDescriptor() { PropertyName = "Name", Direction = ListSortDirection.Ascending });
+            PageHelper.PageLoadingComplete();
 
-            _viewModel.IsUpdating = false;
+            if (requiresDefault)
+            {
+                _viewModel.AddDefaultValues();
+            }
+
+            var syncAmortizationTask = Task.Run(() => _viewModel.SyncAmortization());
+            var triggerOneTimeUpdateTask = Task.Run(() => _viewModel.TriggerOneTimeUpdateOnPage());
+            var triggerPropertyChangedTask = Task.Run(() => _viewModel.TriggerPropertyChangedOnPropertyTab());
+            var refreshExpenseTabTask = Task.Run(() => _viewModel.RefreshExpenseTabPropertyChanged());
+
+            await Task.WhenAll(syncAmortizationTask, triggerOneTimeUpdateTask, triggerPropertyChangedTask, refreshExpenseTabTask);
         }
         catch (Exception ex)
         {
             _errorHandlingService.HandleException(ex);
+        }
+        finally
+        {
+            PageHelper.PageLoadingComplete();
         }
     }
 

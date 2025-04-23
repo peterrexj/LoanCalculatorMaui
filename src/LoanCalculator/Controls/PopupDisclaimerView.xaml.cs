@@ -1,16 +1,22 @@
+using LoanCalculator.Core.Models.ViewModels.PrimaryModels;
 using LoanCalculator.Core.Services;
-using LoanCalculatorMaui.ViewModel;
 
 namespace LoanCalculatorMaui.Controls;
 
 public partial class PopupDisclaimerView : ContentView
 {
     private readonly PopupDisclaimerViewModel _viewModel;
-    public PopupDisclaimerView()
+
+    public PopupDisclaimerView() : this(ServiceLocator.GetService<IErrorHandlingService>(), ServiceLocator.GetService<PopupDisclaimerViewModel>())
+    {
+    }
+
+    public PopupDisclaimerView(IErrorHandlingService errorHandlingService, PopupDisclaimerViewModel viewModel)
 	{
 		InitializeComponent();
 
-        _viewModel = new(ServiceLocator.GetService<IErrorHandlingService>(), ServiceLocator.GetService<IAlertService>());
+        _viewModel = viewModel;
+
         BindingContext = _viewModel;
 
         Loaded += OnLoaded;
@@ -29,6 +35,6 @@ public partial class PopupDisclaimerView : ContentView
         {
             _viewModel.IsActive = true;
         }
-        
+
     }
 }

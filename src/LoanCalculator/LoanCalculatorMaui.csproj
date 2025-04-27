@@ -91,6 +91,7 @@
 		<PackageReference Include="CommunityToolkit.Maui" Version="11.0.0" />
 		<PackageReference Include="Microsoft.Maui.Controls" Version="9.0.30" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="9.0.1" />
+		<PackageReference Include="Plugin.InAppBilling" Version="8.0.5" />
 		<PackageReference Include="Sentry.Maui" Version="5.1.0" />
 		<PackageReference Include="Syncfusion.Maui.Core" Version="28.2.7" />
 		<PackageReference Include="Syncfusion.Maui.Expander" Version="28.2.7" />
@@ -117,8 +118,17 @@
 	  <MauiXaml Update="Controls\InsightsItemView.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
+	  <MauiXaml Update="Controls\InAppPurchaseView.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
 	  <MauiXaml Update="Controls\PopupDisclaimerView.xaml">
 	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Resources\Styles\Colors.xaml">
+	    <Generator></Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Resources\Styles\Styles.xaml">
+	    <Generator></Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="View\ExpenseView.xaml">
 	    <Generator>MSBuild:Compile</Generator>
@@ -144,6 +154,12 @@
 
 	<ItemGroup>
 	  <MauiAsset Include="Resources\AppIcon\appiconfg.png" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Compile Update="Controls\InAppPurchaseView.xaml.cs">
+	    <DependentUpon>PremiumBuyView.xaml</DependentUpon>
+	  </Compile>
 	</ItemGroup>
 
 	  

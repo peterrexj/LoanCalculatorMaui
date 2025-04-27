@@ -18,5 +18,7 @@ namespace LoanCalculatorMaui.Platforms.Android.Services
         public string Country => "Australia";
 
         public bool IsAustralia => Country.EqualsIgnoreCase("Australia");
+
+        public string InAppProductId => "com.pj.loan.calculator.pro"; // Replace with your actual product ID
     }
 }

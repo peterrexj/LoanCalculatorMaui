@@ -1,0 +1,138 @@
+<ContentView
+    x:Class="LoanCalculatorMaui.Controls.InAppPurchaseView"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:sfPopup="clr-namespace:Syncfusion.Maui.Popup;assembly=Syncfusion.Maui.Popup">
+
+    <sfPopup:SfPopup
+        Padding="10,25,10,20"
+        AnimationMode="Zoom"
+        Closing="SfPopup_OnClosing"
+        HeaderTitle=""
+        IsFullScreen="True"
+        IsOpen="{Binding ShowPremiumBuyWindow}"
+        ShowCloseButton="True"
+        StaysOpen="True">
+        <sfPopup:SfPopup.PopupStyle>
+            <sfPopup:PopupStyle PopupBackground="{DynamicResource LoanAppPurchaseGradientBrush}" OverlayColor="{DynamicResource LoanAppPurchasePopupOverlayBgColor}" HasShadow="True" />
+        </sfPopup:SfPopup.PopupStyle>
+        <sfPopup:SfPopup.ContentTemplate>
+            <DataTemplate>
+                <ScrollView>
+                    <StackLayout Padding="10">
+                        <!--  Header with Icon  -->
+                        <HorizontalStackLayout
+                            Margin="0,5,5,10"
+                            HorizontalOptions="Start"
+                            Spacing="10">
+                            <Label
+                                FontAttributes="Bold"
+                                FontFamily="{DynamicResource DefaultFontFamily}"
+                                FontSize="32"
+                                Text="Try Premium"
+                                TextColor="{DynamicResource LoanAppPurchaseTextFontColor}"
+                                VerticalOptions="Center" />
+
+                            <Image
+                                HeightRequest="32"
+                                Source="image/icon_premium.png"
+                                VerticalOptions="Center"
+                                WidthRequest="32" />
+                        </HorizontalStackLayout>
+
+                        <!--  Subheader  -->
+                        <Label
+                            FontFamily="{DynamicResource DefaultFontFamily}"
+                            FontSize="18"
+                            HorizontalOptions="Start"
+                            Text="Get all the new exciting features"
+                            TextColor="{DynamicResource LoanAppPurchaseTextFontColor}" />
+
+                        <!--  Promotional Image  -->
+                        <Image
+                            Margin="0,10,10,0"
+                            Aspect="AspectFill"
+                            HeightRequest="150"
+                            HorizontalOptions="FillAndExpand"
+                            Opacity="0.75"
+                            Source="image/premiumbuyads.jpeg" />
+
+                        <!--  Features List  -->
+                        <StackLayout
+                            Margin="0,20,10,20"
+                            BindableLayout.ItemsSource="{Binding Features}"
+                            HorizontalOptions="Center">
+                            <BindableLayout.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid ColumnSpacing="10">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+                                        <!--  Static Icon  -->
+                                        <Image
+                                            Grid.Column="0"
+                                            HeightRequest="14"
+                                            Source="image/icon_ticks.png"
+                                            WidthRequest="14" />
+                                        <!--  Dynamic Text  -->
+                                        <Label
+                                            Grid.Column="1"
+                                            FontFamily="{DynamicResource DefaultFontFamily}"
+                                            FontSize="14"
+                                            Text="{Binding}"
+                                            TextColor="{DynamicResource LoanAppPurchaseTextFontColor}"
+                                            VerticalOptions="Center" />
+                                    </Grid>
+                                </DataTemplate>
+                            </BindableLayout.ItemTemplate>
+                        </StackLayout>
+
+                        <!--  Buttons  -->
+                        <StackLayout
+                            Padding="10"
+                            HorizontalOptions="FillAndExpand"
+                            Orientation="Vertical"
+                            Spacing="10">
+                            <Button
+                                Margin="15,0,20,0"
+                                Background="{DynamicResource LoanAppPurchaseButtonPrimaryBgColor}"
+                                FontFamily="{DynamicResource DefaultFontFamily}"
+                                FontSize="15"
+                                HorizontalOptions="Fill"
+                                MaximumHeightRequest="50"
+                                Text="Buy Now"
+                                TextColor="{DynamicResource LoanAppPurchaseButtonPrimaryFgColor}"
+                                VerticalOptions="Fill" />
+
+                            <Button
+                                Margin="15,0,20,0"
+                                Background="{DynamicResource LoanAppPurchaseButtonPrimaryBgColor}"
+                                FontFamily="{DynamicResource DefaultFontFamily}"
+                                FontSize="15"
+                                HorizontalOptions="Fill"
+                                MaximumHeightRequest="50"
+                                Text="Restore purchases"
+                                TextColor="{DynamicResource LoanAppPurchaseButtonPrimaryFgColor}"
+                                VerticalOptions="Fill" />
+
+                            <Button
+                                Margin="15,0,20,0"
+                                Background="{DynamicResource LoanAppPurchaseButtonSecondaryBgColor}"
+                                BorderColor="{DynamicResource LoanAppPurchaseButtonSecondaryBorderColor}"
+                                FontFamily="{DynamicResource DefaultFontFamily}"
+                                FontSize="15"
+                                HorizontalOptions="Fill"
+                                MaximumHeightRequest="50"
+                                Text="Ignore offer!"
+                                TextColor="{DynamicResource LoanAppPurchaseButtonSecondaryFgColor}"
+                                Command="{Binding IgnoreOfferCommand}"
+                                VerticalOptions="Fill" />
+                        </StackLayout>
+                    </StackLayout>
+                </ScrollView>
+            </DataTemplate>
+        </sfPopup:SfPopup.ContentTemplate>
+    </sfPopup:SfPopup>
+</ContentView>
+

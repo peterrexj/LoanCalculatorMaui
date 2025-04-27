@@ -64,7 +64,9 @@ namespace LoanCalculatorMaui
             builder.Services.AddSingleton<IncomeViewModel>();
             builder.Services.AddSingleton<SettingsViewModel>();
             builder.Services.AddSingleton<PopupDisclaimerViewModel>();
+            builder.Services.AddSingleton<InAppPurchaseViewModel>();
             builder.Services.AddSingleton<IThemeHandler, ThemeHandler>();
+            builder.Services.AddSingleton<IInAppPurchaseService, InAppPurchaseService>();
 
 #if DEBUG
             builder.Logging.AddDebug();

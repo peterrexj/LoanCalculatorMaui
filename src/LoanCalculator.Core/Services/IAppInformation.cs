@@ -9,5 +9,6 @@
         int ShowLaterInterstitialAdOnClickLimit { get; }
         string Country { get; }
         bool IsAustralia { get; }
+        string InAppProductId { get; }
     }
 }

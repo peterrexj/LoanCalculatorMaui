@@ -8,6 +8,7 @@ using LoanCalculatorMaui.Extensions;
 using Pj.Library;
 using Syncfusion.Maui.Buttons;
 using Syncfusion.Maui.DataSource;
+using Syncfusion.Maui.TabView;
 using SelectionChangedEventArgs = Syncfusion.Maui.Buttons.SelectionChangedEventArgs;
 
 namespace LoanCalculatorMaui.View;
@@ -19,7 +20,7 @@ public partial class LoanView : ContentPage
     private readonly IThemeHandler _themeHandler;
 
     public LoanView(
-        IErrorHandlingService errorHandlingService, 
+        IErrorHandlingService errorHandlingService,
         LoanViewModel viewModel,
         IThemeHandler themeHandler)
     {
@@ -104,7 +105,7 @@ public partial class LoanView : ContentPage
             {
                 lstEntry.DataSource?.SortDescriptors.Clear();
                 lstEntry.DataSource?.SortDescriptors.Add(new SortDescriptor()
-                    { PropertyName = "Name", Direction = ListSortDirection.Ascending });
+                { PropertyName = "Name", Direction = ListSortDirection.Ascending });
             });
 
 
@@ -132,12 +133,14 @@ public partial class LoanView : ContentPage
                 _viewModel.AddDefaultValues();
             }
 
-            var syncAmortizationTask = Task.Run(() => _viewModel.SyncAmortization());
+            //var syncAmortizationTask = Task.Run(() => _viewModel.SyncAmortization());
             var triggerOneTimeUpdateTask = Task.Run(() => _viewModel.TriggerOneTimeUpdateOnPage());
             var triggerPropertyChangedTask = Task.Run(() => _viewModel.TriggerPropertyChangedOnPropertyTab());
             var refreshExpenseTabTask = Task.Run(() => _viewModel.RefreshExpenseTabPropertyChanged());
 
-            await Task.WhenAll(syncAmortizationTask, triggerOneTimeUpdateTask, triggerPropertyChangedTask, refreshExpenseTabTask);
+            await Task.WhenAll(triggerOneTimeUpdateTask, triggerPropertyChangedTask, refreshExpenseTabTask);
+
+            _viewModel.SyncAmortization(); //has to be done later as the amortization requires the property data which cannot refreshed in parallel
         }
         catch (Exception ex)
         {
@@ -178,29 +181,6 @@ public partial class LoanView : ContentPage
         try
         {
             if (e.NewIndex != null) _viewModel.RepaymentFrequencySelectedIndex = e.NewIndex.Value;
-        }
-        catch (Exception ex)
-        {
-            _errorHandlingService.HandleException(ex);
-        }
-    }
-
-    private void OnTabSelectionChanged(object sender, Syncfusion.Maui.TabView.TabSelectionChangedEventArgs e)
-    {
-        try
-        {
-            if (e.NewIndex == 1)
-            {
-                _viewModel.SyncAmortization();
-            }
-            else if (e.NewIndex == 2)
-            {
-                _viewModel.RefreshExpenseTabPropertyChanged();
-            }
-            else if (e.NewIndex == 3)
-            {
-                _viewModel.RefreshInsightsTabPropertyChanged();
-            }
         }
         catch (Exception ex)
         {
@@ -378,5 +358,44 @@ public partial class LoanView : ContentPage
     private void OnLabelTapped(object sender, TappedEventArgs e)
     {
         EnableSliderCheckBox.IsChecked = !EnableSliderCheckBox.IsChecked;
+    }
+
+    private void TabView_OnSelectionChanging(object? sender, SelectionChangingEventArgs e)
+    {
+        try
+        {
+            if (e.Index == 1)
+            {
+                _viewModel.SyncAmortization();
+            }
+            else if (e.Index == 2)
+            {
+                if (SharedServiceCore.IsTrialUser)
+                {
+                    PremiumWindow.ShowPremiumBuyWindow = true;
+                    e.Cancel = true;
+                }
+                else
+                {
+                    _viewModel.RefreshExpenseTabPropertyChanged();
+                }
+            }
+            else if (e.Index == 3)
+            {
+                if (SharedServiceCore.IsTrialUser)
+                {
+                    PremiumWindow.ShowPremiumBuyWindow = true;
+                    e.Cancel = true;
+                }
+                else
+                {
+                    _viewModel.RefreshInsightsTabPropertyChanged();
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            _errorHandlingService.HandleException(ex);
+        }
     }
 }

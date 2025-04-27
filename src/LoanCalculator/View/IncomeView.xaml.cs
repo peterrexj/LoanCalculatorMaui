@@ -10,6 +10,7 @@ using LoanCalculatorMaui.Services;
 using Pj.Library;
 using Syncfusion.Maui.Buttons;
 using Syncfusion.Maui.DataSource;
+using Syncfusion.Maui.TabView;
 
 namespace LoanCalculatorMaui.View;
 
@@ -304,14 +305,22 @@ public partial class IncomeView : ContentPage
     }
     #endregion
 
-    private void OnTabSelectionChanged(object sender, Syncfusion.Maui.TabView.TabSelectionChangedEventArgs e)
+    private void TabView_OnSelectionChanging(object? sender, SelectionChangingEventArgs e)
     {
         try
         {
-            if (e.NewIndex == 1)
+            if (e.Index == 1)
             {
-                _viewModel.UpdateProjectionData();
-                _viewModel.TriggerPropertyChangedOnProjectionTab();
+                if (SharedServiceCore.IsTrialUser)
+                {
+                    PremiumWindow.ShowPremiumBuyWindow = true;
+                    e.Cancel = true;
+                }
+                else
+                {
+                    _viewModel.UpdateProjectionData();
+                    _viewModel.TriggerPropertyChangedOnProjectionTab();
+                }
             }
         }
         catch (Exception ex)

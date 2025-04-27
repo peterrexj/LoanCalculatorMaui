@@ -26,11 +26,12 @@
     <ContentPage.Content>
         <Grid BackgroundColor="{DynamicResource LoanAppDefaultBackgroundColor}" IsEnabled="{Binding IsFree}">
             <customControls:PopupDisclaimerView />
+            <customControls:InAppPurchaseView x:Name="PremiumWindow" />
 
             <tabView:SfTabView
                 x:Name="TabView"
                 HeaderHorizontalTextAlignment="Center"
-                SelectionChanged="OnTabSelectionChanged">
+                SelectionChanging="TabView_OnSelectionChanging">
                 <tabView:SfTabItem Header="Property">
                     <tabView:SfTabItem.Content>
                         <ScrollView>

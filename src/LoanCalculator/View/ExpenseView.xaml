@@ -20,10 +20,12 @@
     <ContentPage.Content>
         <Grid BackgroundColor="{DynamicResource LoanAppDefaultBackgroundColor}">
             <customControls:PopupDisclaimerView />
+            <customControls:InAppPurchaseView x:Name="PremiumWindow" />
+
             <tabView:SfTabView
                 x:Name="tabView"
                 HeaderHorizontalTextAlignment="Center"
-                SelectionChanged="OnTabSelectionChanged">
+                SelectionChanging="TabView_OnSelectionChanging">
                 <tabView:SfTabItem x:Name="tabIncomeDetails" Header="Expense">
                     <tabView:SfTabItem.Content>
                         <StackLayout>

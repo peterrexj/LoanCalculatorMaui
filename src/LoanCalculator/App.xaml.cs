@@ -1,5 +1,6 @@
 ﻿using LoanCalculator.Core.Services;
 using LoanCalculator.Core.Themes;
+using LoanCalculatorMaui.Services;
 
 namespace LoanCalculatorMaui
 {
@@ -17,6 +18,8 @@ namespace LoanCalculatorMaui
             Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense("Ngo9BigBOggjHTQxAR8/V1NMaF5cXmBCf1FpRmJGdld5fUVHYVZUTXxaS00DNHVRdkdnWH1ccXVSQ2dcV0Z0W0A=");
 
             ServiceLocator.GetService<IThemeHandler>().LoadDefaultStyle();
+
+            _ = CheckIfUserPurchasedAsync();
         }
         
 
@@ -26,6 +29,20 @@ namespace LoanCalculatorMaui
             Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense("Ngo9BigBOggjHTQxAR8/V1NMaF5cXmBCf1FpR2JGfV5ycEVCallSTnVfUiweQnxTdEFiW35acHBQRWNcVEZ3WQ==");
 
             ServiceLocator.GetService<IThemeHandler>().LoadDefaultStyle();
+
+            _ = CheckIfUserPurchasedAsync();
+        }
+
+        private async Task CheckIfUserPurchasedAsync()
+        {
+            //Preferences.Set("IsPremium", false);
+            var isPremium = Preferences.Get("IsPremium", false);
+            if (!isPremium)
+            {
+                var productPurchaseStatus = await ServiceLocator.GetService<IInAppPurchaseService>()
+                    .IsProductPurchasedAsync(ServiceLocator.GetService<IAppInformation>().InAppProductId);
+                Preferences.Set("IsPremium", productPurchaseStatus);
+            }
         }
 
         protected override Window CreateWindow(IActivationState? activationState)

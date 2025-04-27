@@ -186,5 +186,8 @@ namespace LoanCalculator.Core.Services
         }
 
         #endregion
+
+        public static bool IsPremiumUser => Preferences.Get("IsPremium", false);
+        public static bool IsTrialUser => !IsPremiumUser;
     }
 }

@@ -177,7 +177,25 @@
     <Color x:Key="LoanAppDisclaimerContentBoxShadowColor">#2c3531</Color>
     <Color x:Key="LoanAppDisclaimerHeader2TextColor">#091818</Color>
 
+    <!--  Progress  -->
     <Color x:Key="LoanAppProgressTrackColor">#eaeff4</Color>
     <Color x:Key="LoanAppProgressColor">#2D4356</Color>
+
+    <!--  Purchase  -->
+    <Color x:Key="LoanAppPurchaseTextFontColor">#1e2123</Color>
+    <Color x:Key="LoanAppPurchaseButtonPrimaryFgColor">#e8f6f3</Color>
+    <Color x:Key="LoanAppPurchaseButtonPrimaryBgColor">#2e3130</Color>
+    <Color x:Key="LoanAppPurchaseButtonSecondaryFgColor">#2e3130</Color>
+    <Color x:Key="LoanAppPurchaseButtonSecondaryBgColor">Transparent</Color>
+    <Color x:Key="LoanAppPurchaseButtonSecondaryBorderColor">#2e3130</Color>
+    <Color x:Key="LoanAppPurchaseWindowBgStart">#e8f6f3</Color>
+    <Color x:Key="LoanAppPurchaseWindowBgEnd">#747b79</Color>
+    <Color x:Key="LoanAppPurchasePopupOverlayBgColor">#c3d2e3</Color>
+
+    <LinearGradientBrush x:Key="LoanAppPurchaseGradientBrush" StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Offset="0.0" Color="{StaticResource LoanAppPurchaseWindowBgStart}" />
+        <GradientStop Offset="1.0" Color="{StaticResource LoanAppPurchaseWindowBgEnd}" />
+    </LinearGradientBrush>
+
 
 </ResourceDictionary>

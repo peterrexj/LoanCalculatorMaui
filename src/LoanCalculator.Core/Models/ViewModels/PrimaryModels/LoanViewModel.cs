@@ -1,14 +1,16 @@
-﻿using LoanCalculator.Core.Models.Charts;
+﻿using LoanCalculator.Core.Helper;
+using LoanCalculator.Core.Models.Charts;
 using LoanCalculator.Core.Models.Enums;
 using LoanCalculator.Core.Models.Income;
-using LoanCalculator.Core.Models.Income.Summary;
+using LoanCalculator.Core.Models.Pdf;
 using LoanCalculator.Core.Pdf;
 using LoanCalculator.Core.Services;
 using Syncfusion.Maui.Buttons;
 using System.Collections.ObjectModel;
+using System.Globalization;
 using System.Text.Json.Serialization;
 using System.Windows.Input;
-using LoanCalculator.Core.Helper;
+using LoanCalculator.Core.Exts;
 
 namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
 {
@@ -114,7 +116,8 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
 
                 await Task.Delay(500); // Simulate a delay for the loader
 
-                if (ExpenseSummary.TotalYearly <= 0 || IncomeSummary.TotalYearly <= 0)
+                if (ExpenseSummary?.TransactionRecords?.IncomeExpenseSummary?.TotalYearly <= 0 ||
+                    IncomeSummary?.TransactionRecords?.IncomeExpenseSummary?.TotalYearly <= 0)
                 {
                     await _alertService.ShowAlertAsync("Warning", "Please enter the income and expense details.", "OK");
                     return;
@@ -397,28 +400,6 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
         #region Insights
 
         [JsonIgnore]
-        public double SavingsMonthly
-        {
-            get
-            {
-                return ((IncomeSummary?.TotalMonthly ?? 0) -
-                        (
-                            (ExpenseSummary?.TotalMonthly ?? 0) +
-                            (TransactionRecords?.IncomeExpenseSummary?.TotalMonthly ?? 0) +
-                            (HomeLoanInfo?.PaymentSummary?.Payment?.TermPaymentMonthly ?? 0)
-                        )).Round0();
-            }
-        }
-
-        [JsonIgnore] public string SavingsMonthlyWithComma => SavingsMonthly.WithComma();
-
-        [JsonIgnore]
-        public double SavingsYearly =>
-            ModelHelper.ConvertAmountToYearlyFrequency(SavingsMonthly, TimeFrequencyEnum.Monthly).Round0();
-
-        [JsonIgnore] public string SavingsYearlyWithComma => SavingsYearly.WithComma();
-
-        [JsonIgnore]
         public ObservableCollection<ChartDataModel> InsightChartLoanAmountAxis =>
             new(new List<ChartDataModel>
                 {
@@ -456,58 +437,100 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
         {
             if (PageHelper.IsFormLoading) return;
 
+            PdfDataInsightsModel pdfDataInsights = new PdfDataInsightsModel(this, IncomeSummary, ExpenseSummary);
+            pdfDataInsights.InitializeLocalDataSet();
+
             InsightsDetails = new InsightsDetailsViewModel();
+
+            InsightsDetails.AffordabilityMonthly.Value = pdfDataInsights.Income
+                .TotalAfterExpenseIncludingPropertyMonthly.ToCustomCurrencyRounded();
+            InsightsDetails.AffordabilityYearly.Value = pdfDataInsights.Income.TotalAfterExpenseIncludingPropertyYearly
+                .ToCustomCurrencyRounded();
 
             #region Property
 
-            InsightsDetails.PropertyAmount.Value = $"{CurrencySymbol}{PropertyAmount:N0}";
-            InsightsDetails.PropertyEstimatedUpfront.Value = $"{CurrencySymbol}{HomeLoanInfo?.OtherExpenseTotalAmount ?? 0:N0}";
-            InsightsDetails.PropertyTotalAmount.Value = $"{CurrencySymbol}{HomeLoanInfo?.PropertyTotalAmount ?? 0:N0}";
+            InsightsDetails.PropertyAmount.Value = PropertyAmount.ToCustomCurrencyRounded();
+            InsightsDetails.PropertyEstimatedUpfront.Value = (HomeLoanInfo?.OtherExpenseTotalAmount ?? 0).ToCustomCurrencyRounded();
+            InsightsDetails.PropertyTotalAmount.Value =
+                (HomeLoanInfo?.PropertyTotalAmount ?? 0).ToCustomCurrencyRounded();
 
             #endregion
 
             #region Loan
 
-            InsightsDetails.LoanAmount.Value = $"{CurrencySymbol}{HomeLoanInfo?.LoanAmountDirectInput ?? 0:N0}";
-            InsightsDetails.DepositAmount.Value = $"{CurrencySymbol}{HomeLoanInfo?.DepositAmountDirectInput ?? 0:N0}";
+            InsightsDetails.LoanAmount.Value = (HomeLoanInfo?.LoanAmountDirectInput ?? 0).ToCustomCurrencyRounded();
+            InsightsDetails.DepositAmount.Value = (HomeLoanInfo?.DepositAmountDirectInput ?? 0).ToCustomCurrencyRounded();
             InsightsDetails.TotalRepaymentToBank.Value =
-                $"{CurrencySymbol}{HomeLoanInfo?.PaymentSummary?.Payment?.TotalPaymentRounded ?? 0:N0}";
+                (HomeLoanInfo?.PaymentSummary?.Payment?.TotalPaymentRounded ?? 0).ToCustomCurrencyRounded();
             InsightsDetails.TotalInterestToBank.Value =
-                $"{CurrencySymbol}{HomeLoanInfo?.PaymentSummary?.Payment?.TotalInterestPaymentRoundedWithComma:N0}";
+                (HomeLoanInfo?.PaymentSummary?.Payment?.TotalInterestPaymentRounded ?? 0).ToCustomCurrencyRounded();
             InsightsDetails.LoanTerm.Value = $"{LoanTermInYears} years";
             InsightsDetails.InterestRate.Value = $"{InterestRate}%";
             InsightsDetails.RepaymentDetailSelectedFrequency.Value =
-                $"{CurrencySymbol}{HomeLoanInfo?.PaymentSummary?.Payment?.TermPaymentRoundedWithComma} {RepaymentFrequencySelected}";
-            InsightsDetails.RepaymentFrequency.Value = RepaymentFrequencySelected.Trim();
+                $"{HomeLoanInfo?.PaymentSummary?.Payment?.TermPayment.ToCustomCurrencyRounded()} {RepaymentFrequencySelected.Trim()}";
+            InsightsDetails.RepaymentFrequency.Value = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(RepaymentFrequencySelected.Trim());
+            InsightsDetails.RepaymentDetailMonthly.Value =
+                (HomeLoanInfo?.PaymentSummary?.Payment?.TermPaymentMonthly ?? 0).ToCustomCurrencyRounded();
             InsightsDetails.RepaymentDetailYearly.Value =
-                $"{CurrencySymbol}{HomeLoanInfo?.PaymentSummary?.Payment?.TermPaymentYearlyWithComma} yearly";
+                (HomeLoanInfo?.PaymentSummary?.Payment?.TermPaymentYearly ?? 0).ToCustomCurrencyRounded();
 
             #endregion
 
-            #region Expense Income
+            #region Income
 
-            InsightsDetails.ExpenseExistingMonthly.Value =
-                $"{CurrencySymbol}{Math.Round(ExpenseSummary?.TotalMonthly ?? 0, 0):N0}";
-            InsightsDetails.ExpenseExistingYearly.Value =
-                $"{CurrencySymbol}{Math.Round(ExpenseSummary?.TotalYearly ?? 0, 0):N0}";
-            InsightsDetails.ExpenseThisPropertyMonthly.Value = $"{CurrencySymbol}{TotalMonthlyExpenseWithComma}";
-            InsightsDetails.ExpenseThisPropertyYearly.Value = $"{CurrencySymbol}{TotalYearlyExpenseWithComma}";
-            InsightsDetails.ExpenseTotalMonthly.Value =
-                $"{CurrencySymbol}{Math.Round((ExpenseSummary?.TotalMonthly ?? 0) + (TransactionRecords?.IncomeExpenseSummary?.TotalMonthly ?? 0), 0)}";
-            InsightsDetails.ExpenseTotalYearly.Value =
-                $"{CurrencySymbol}{Math.Round((ExpenseSummary?.TotalYearly ?? 0) + (TransactionRecords?.IncomeExpenseSummary?.TotalYearly ?? 0), 0):N0}";
-            InsightsDetails.IncomeTotalMonthly.Value =
-                $"{CurrencySymbol}{Math.Round(IncomeSummary?.TotalMonthly ?? 0, 0):N0}";
-            InsightsDetails.IncomeTotalYearly.Value =
-                $"{CurrencySymbol}{Math.Round(IncomeSummary?.TotalYearly ?? 0, 0):N0}";
-            InsightsDetails.SavingMonthly.Value = $"{CurrencySymbol}{SavingsMonthlyWithComma}";
-            InsightsDetails.SavingYearly.Value = $"{CurrencySymbol}{SavingsYearlyWithComma}";
+            InsightsDetails.IncomeTotalMonthly.Value = pdfDataInsights.Income.TotalMonthly.ToCustomCurrencyRounded();
+            InsightsDetails.IncomeTotalYearly.Value = pdfDataInsights.Income.TotalYearly.ToCustomCurrencyRounded();
+
+            InsightsDetails.IncomeAfterExpenseMonthly.Value = pdfDataInsights.Income.TotalAfterExpenseMonthly.ToCustomCurrencyRounded();
+            InsightsDetails.IncomeAfterExpenseMonthly.Description =
+                $"{pdfDataInsights.Income.TotalAfterExpenseMonthly.ToCustomCurrencyRounded()} This represents the net earnings remaining after deducting {pdfDataInsights.Expense.TotalMonthly.ToCustomCurrencyRounded()} in monthly expenses from the total monthly income of {pdfDataInsights.Income.TotalMonthly.ToCustomCurrencyRounded()}.";
+
+            InsightsDetails.IncomeAfterExpenseYearly.Value = pdfDataInsights.Income.TotalAfterExpenseYearly.ToCustomCurrencyRounded();
+            InsightsDetails.IncomeAfterExpenseYearly.Description =
+                $"{pdfDataInsights.Income.TotalAfterExpenseYearly.ToCustomCurrencyRounded()} This reflects the total annual income after subtracting {pdfDataInsights.Expense.TotalYearly.ToCustomCurrencyRounded()} in yearly expenses from the total annual income of {pdfDataInsights.Income.TotalYearly.ToCustomCurrencyRounded()}.";
+
+            InsightsDetails.IncomeAfterExpenseWithLoanMonthly.Value = pdfDataInsights.Income.TotalAfterExpenseIncludingPropertyMonthly.ToCustomCurrencyRounded();
+            InsightsDetails.IncomeAfterExpenseWithLoanMonthly.Description =
+                $"{pdfDataInsights.Income.TotalAfterExpenseIncludingPropertyMonthly.ToCustomCurrencyRounded()} represents the remaining income after deducting monthly expenses, loan repayments, and investment expenses from the total monthly income of {pdfDataInsights.Income.TotalMonthly.ToCustomCurrencyRounded()}.";
+
+            InsightsDetails.IncomeAfterExpenseWithLoanYearly.Value = pdfDataInsights.Income.TotalAfterExpenseIncludingPropertyYearly.ToCustomCurrencyRounded();
+            InsightsDetails.IncomeAfterExpenseWithLoanYearly.Description =
+                $"{pdfDataInsights.Income.TotalAfterExpenseIncludingPropertyYearly.ToCustomCurrencyRounded()} reflects the total annual income after subtracting yearly expenses, loan repayments, and investment expenses from the total annual income of {pdfDataInsights.Income.TotalYearly.ToCustomCurrencyRounded()}.";
+            #endregion
+
+            #region Expense
+            
+            InsightsDetails.ExpenseOverallTotalMonthly.Value = pdfDataInsights.Income.TotalExpenseIncludingPropertyMonthly.ToCustomCurrencyRounded();
+            InsightsDetails.ExpenseOverallTotalYearly.Value = pdfDataInsights.Income.TotalExpenseIncludingPropertyYearly.ToCustomCurrencyRounded();
+
+            InsightsDetails.ExpenseCostOfNewPropertyOwnershipMonthly.Value =
+                pdfDataInsights.Loan.TotalMonthlyRunningExpense.ToCustomCurrencyRounded();
+            InsightsDetails.ExpenseCostOfNewPropertyOwnershipYearly.Value = pdfDataInsights.Loan.TotalYearlyRunningExpense.ToCustomCurrencyRounded();
+
+            InsightsDetails.ExpenseLoanFinancialCommitmentsMonthly.Value = pdfDataInsights.Loan.MonthlyRepaymentWithExpenses.ToCustomCurrencyRounded();
+            InsightsDetails.ExpenseLoanFinancialCommitmentsYearly.Value = pdfDataInsights.Loan.YearlyRepaymentWithExpenses.ToCustomCurrencyRounded();
+
+            InsightsDetails.ExpenseCurrentFinancialOutflowsMonthly.Value =
+                pdfDataInsights.Expense.TotalMonthly.ToCustomCurrencyRounded();
+            InsightsDetails.ExpenseCurrentFinancialOutflowsYearly.Value = pdfDataInsights.Expense.TotalYearly.ToCustomCurrencyRounded();
 
             #endregion
+
+
+            InsightsDetails.ExpenseOverallTotalMonthly.Description =
+                $"is your overall financial outflows within a given month, covering loan repayments and all other expenses. {Environment.NewLine}(Calculation: {InsightsDetails.RepaymentDetailMonthly.Value} repayment + {InsightsDetails.ExpenseCostOfNewPropertyOwnershipMonthly.Value} cost of ownership + {InsightsDetails.ExpenseCurrentFinancialOutflowsMonthly.Value} current monthly expenses)";
+
+
+            InsightsDetails.ExpenseOverallTotalYearly.Description =
+                $"is your overall financial outflows within a given year, covering loan repayments and all other expenses. {Environment.NewLine}(Calculation: {InsightsDetails.RepaymentDetailYearly.Value} repayment + {InsightsDetails.ExpenseCostOfNewPropertyOwnershipYearly.Value} cost of ownership + {InsightsDetails.ExpenseCurrentFinancialOutflowsYearly.Value} current monthly expenses)";
+
 
             OnPropertyChanged(nameof(InsightChartLoanDepositAxis));
             OnPropertyChanged(nameof(InsightChartLoanAmountAxis));
             OnPropertyChanged(nameof(InsightChartLoanInterestAxis));
+
+            IncomeSummary.TransactionRecords?.SumUpData();
+            ExpenseSummary.TransactionRecords?.SumUpData();
         }
 
         #endregion
@@ -833,10 +856,10 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
         public string TotalYearlyExpenseWithComma => TransactionRecords?.IncomeExpenseSummary?.TotalYearlyWithComma;
 
 
-        [JsonIgnore] private IncomeExpenseSummary _incomeSummary;
+        [JsonIgnore] private IncomeViewModel _incomeSummary;
 
         [JsonIgnore]
-        public IncomeExpenseSummary IncomeSummary
+        public IncomeViewModel IncomeSummary
         {
             get => _incomeSummary;
             set
@@ -846,10 +869,10 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
             }
         }
 
-        [JsonIgnore] private IncomeExpenseSummary _expenseSummary;
+        [JsonIgnore] private ExpenseViewModel _expenseSummary;
 
         [JsonIgnore]
-        public IncomeExpenseSummary ExpenseSummary
+        public ExpenseViewModel ExpenseSummary
         {
             get => _expenseSummary;
             set
@@ -859,7 +882,7 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
             }
         }
 
-        [JsonIgnore] public string TotalMonthlyExistingExpense => $"{Math.Round(ExpenseSummary?.TotalMonthly ?? 0, 0):N0}";
+        [JsonIgnore] public string TotalMonthlyExistingExpense => $"{Math.Round(ExpenseSummary?.TransactionRecords?.IncomeExpenseSummary?.TotalMonthly ?? 0, 0):N0}";
 
         [JsonIgnore]
         public string TotalMonthlyOverallExpense =>

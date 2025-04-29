@@ -14,7 +14,10 @@
         ShowCloseButton="True"
         StaysOpen="True">
         <sfPopup:SfPopup.PopupStyle>
-            <sfPopup:PopupStyle PopupBackground="{DynamicResource LoanAppPurchaseGradientBrush}" OverlayColor="{DynamicResource LoanAppPurchasePopupOverlayBgColor}" HasShadow="True" />
+            <sfPopup:PopupStyle
+                HasShadow="True"
+                OverlayColor="{DynamicResource LoanAppPurchasePopupOverlayBgColor}"
+                PopupBackground="{DynamicResource LoanAppPurchaseGradientBrush}" />
         </sfPopup:SfPopup.PopupStyle>
         <sfPopup:SfPopup.ContentTemplate>
             <DataTemplate>
@@ -120,13 +123,13 @@
                                 Margin="15,0,20,0"
                                 Background="{DynamicResource LoanAppPurchaseButtonSecondaryBgColor}"
                                 BorderColor="{DynamicResource LoanAppPurchaseButtonSecondaryBorderColor}"
+                                Command="{Binding IgnoreOfferCommand}"
                                 FontFamily="{DynamicResource DefaultFontFamily}"
                                 FontSize="15"
                                 HorizontalOptions="Fill"
                                 MaximumHeightRequest="50"
                                 Text="Ignore offer!"
                                 TextColor="{DynamicResource LoanAppPurchaseButtonSecondaryFgColor}"
-                                Command="{Binding IgnoreOfferCommand}"
                                 VerticalOptions="Fill" />
                         </StackLayout>
                     </StackLayout>

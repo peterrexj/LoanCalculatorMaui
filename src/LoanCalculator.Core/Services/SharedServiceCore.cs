@@ -96,11 +96,39 @@ namespace LoanCalculator.Core.Services
             return transactionRecords?.IncomeExpenseSummary;
         }
 
-        public static IncomeExpenseSummary ExpenseSummary => GetIncomeExpenseSummary<ExpenseViewModel>();
+        public static ExpenseViewModel ExpenseSummary
+        {
+            get
+            {
+                ExpenseViewModel? temp = null;
+                Task.Run(async () => temp = await LocalStorage.GetData<ExpenseViewModel>()).Wait();
 
-        public static IncomeExpenseSummary IncomeSummary => GetIncomeExpenseSummary<IncomeViewModel>();
+                if (temp == null)
+                {
+                    return new ExpenseViewModel();
+                }
+                temp.TransactionRecords?.SumUpData();
+                return temp;
+            }
+        }
 
-        public static IncomeExpenseSummary LoanPropertyExpenseSummary => GetIncomeExpenseSummary<LoanViewModel>();
+        public static IncomeViewModel IncomeSummary
+        {
+            get
+            {
+                IncomeViewModel? temp = null;
+                Task.Run(async () => temp = await LocalStorage.GetData<IncomeViewModel>()).Wait();
+
+                if (temp == null)
+                {
+                    return new IncomeViewModel();
+                }
+                temp.TransactionRecords?.SumUpData();
+                return temp;
+            }
+        }
+
+        //public static IncomeExpenseSummary LoanPropertyExpenseSummary => GetIncomeExpenseSummary<LoanViewModel>();
 
         public static (IncomeExpenseSummary?, PaymentOutput?) GetLoanViewModel()
         {

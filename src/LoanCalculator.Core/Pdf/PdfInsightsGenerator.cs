@@ -281,7 +281,7 @@ namespace LoanCalculator.Core.Pdf
         {
             InsertBlankPage();
 
-            DrawH1("Key Performance Indicators");
+            DrawH1("Key Insights");
 
             AddNewLineSpace();
 
@@ -975,11 +975,11 @@ namespace LoanCalculator.Core.Pdf
             RenderCostOfNewPropertyOwnership();
 
             AddNewLineSpace(20);
-            DrawH2("Current Monthly Financial Outflows");
+            DrawH2("Current Financial Outflows");
 
-            DrawFormattedText($"{DataModel.Expense.TotalMonthly.ToCurrency()}", "Monthly Expenses Recorded", "Represents the total recurring costs incurred on a monthly basis, including repayments, utility bills, maintenance charges, and other recurring expenses.");
+            DrawFormattedText($"{DataModel.Expense.TotalMonthly.ToCurrency()}", "Monthly Expenses Recorded", "Represents the total recurring costs incurred on a monthly basis, including utility bills, maintenance charges, and other recurring expenses.");
 
-            DrawFormattedText($"{DataModel.Expense.TotalYearly.ToCurrency()}", "Yearly Expenses Recorded", "Represents the cumulative recurring costs incurred over a year, including repayments, utility bills, maintenance charges, and other recurring annual expenses.");
+            DrawFormattedText($"{DataModel.Expense.TotalYearly.ToCurrency()}", "Yearly Expenses Recorded", "Represents the cumulative recurring costs incurred over a year, including utility bills, maintenance charges, and other recurring annual expenses.");
 
             DrawTransactionRecordsTable(DataModel.Expense.Transactions, "Expense", colorShadeTopValue: true, cellHighlightBgBrush: DefaultCellNegativeBgBrush);
         }
@@ -1072,7 +1072,7 @@ namespace LoanCalculator.Core.Pdf
 
             DrawFormattedText($"{DataModel.Income.TotalAfterExpenseIncludingPropertyMonthly.ToCurrency()}",
                 $"Monthly Net Income",
-                $"{DataModel.Income.TotalAfterExpenseIncludingPropertyMonthly.ToCurrency()} This represents the remaining income after deducting monthly expenses, loan repayments, and investment expenses from the total monthly income of {DataModel.Income.TotalMonthly.ToCurrency()}.",
+                $"{DataModel.Income.TotalAfterExpenseIncludingPropertyMonthly.ToCurrency()} represents the remaining income after deducting monthly expenses, loan repayments, and investment expenses from the total monthly income of {DataModel.Income.TotalMonthly.ToCurrency()}.",
                 amountTextBrush: _defaultTextFgBasedOnValueBrush(DataModel.Income.TotalAfterExpenseIncludingPropertyMonthly));
 
             var incomeAfterExpenseMonthlyDistributionText = new List<TextElementModel>
@@ -1099,7 +1099,7 @@ namespace LoanCalculator.Core.Pdf
 
             DrawFormattedText($"{DataModel.Income.TotalAfterExpenseIncludingPropertyYearly.ToCurrency()}",
                 $"Yearly Net Total",
-                $"{DataModel.Income.TotalAfterExpenseIncludingPropertyYearly.ToCurrency()} This reflects the total annual income after subtracting yearly expenses, loan repayments, and investment expenses from the total annual income of {DataModel.Income.TotalYearly.ToCurrency()}.",
+                $"{DataModel.Income.TotalAfterExpenseIncludingPropertyYearly.ToCurrency()} reflects the total annual income after subtracting yearly expenses, loan repayments, and investment expenses from the total annual income of {DataModel.Income.TotalYearly.ToCurrency()}.",
                 amountTextBrush: _defaultTextFgBasedOnValueBrush(DataModel.Income.TotalAfterExpenseIncludingPropertyYearly));
 
             var incomeAfterExpenseYearlyDistributionText = new List<TextElementModel>

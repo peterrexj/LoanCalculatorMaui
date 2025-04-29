@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Globalization;
 
 namespace LoanCalculator.Core.Exts
 {
@@ -12,6 +7,11 @@ namespace LoanCalculator.Core.Exts
         public static string ToCurrency(this double value)
         {
             return value.ToString("C", CultureInfo.CurrentCulture);
+        }
+
+        public static string ToCustomCurrencyRounded(this double value)
+        {
+            return $"{Models.Helper.CurrencySymbol}{value:N0}";
         }
     }
 }

@@ -167,10 +167,10 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
             }
         }
 
-        [JsonIgnore] private IncomeExpenseSummary? _incomeSummary;
+        [JsonIgnore] private IncomeViewModel? _incomeSummary;
 
         [JsonIgnore]
-        public IncomeExpenseSummary? IncomeSummary
+        public IncomeViewModel? IncomeSummary
         {
             get => _incomeSummary;
             set
@@ -309,7 +309,7 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
         {
             get
             {
-                double income = IncomeSummary?.TotalMonthly ?? 0;
+                double income = IncomeSummary?.TransactionRecords?.IncomeExpenseSummary?.TotalMonthly ?? 0;
 
                 if (ShowIncomeAfterExpense)
                 {

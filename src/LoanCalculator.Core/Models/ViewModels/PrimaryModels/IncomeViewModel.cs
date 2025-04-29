@@ -152,10 +152,10 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
             }
         }
 
-        [JsonIgnore] private IncomeExpenseSummary? _expenseSummary;
+        [JsonIgnore] private ExpenseViewModel? _expenseSummary;
 
         [JsonIgnore]
-        public IncomeExpenseSummary? ExpenseSummary
+        public ExpenseViewModel? ExpenseSummary
         {
             get => _expenseSummary;
             set
@@ -198,7 +198,7 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
         {
             get
             {
-                double expenses = ExpenseSummary?.TotalMonthly ?? 0;
+                double expenses = ExpenseSummary?.TransactionRecords?.IncomeExpenseSummary?.TotalMonthly ?? 0;
 
                 if (ShowIncomeAfterPropertyExpense)
                 {
@@ -218,7 +218,7 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
                 {
                     var expenses = System.Environment.NewLine;
 
-                    expenses += $"${Math.Round(ExpenseSummary?.TotalMonthly ?? 0, 0):N0}";
+                    expenses += $"${Math.Round(ExpenseSummary?.TransactionRecords?.IncomeExpenseSummary?.TotalMonthly ?? 0, 0):N0}";
 
                     expenses += $" + ${Math.Round(PropertyExpenseSummary?.TotalMonthly ?? 0, 0):N0}";
                     expenses += $" + ${Math.Round(PropertyPayment?.TermPaymentMonthly ?? 0, 0):N0}";
@@ -240,7 +240,7 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
                 double expenses = 0;
                 if (ShowIncomeAfterExpense)
                 {
-                    expenses = ExpenseSummary?.TotalMonthly ?? 0;
+                    expenses = ExpenseSummary?.TransactionRecords?.IncomeExpenseSummary?.TotalMonthly ?? 0;
                 }
 
                 if (ShowIncomeAfterPropertyExpense)
@@ -261,7 +261,7 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
                 double expenses = 0;
                 if (ShowIncomeAfterExpense)
                 {
-                    expenses = ExpenseSummary?.TotalYearly ?? 0;
+                    expenses = ExpenseSummary?.TransactionRecords?.IncomeExpenseSummary?.TotalYearly ?? 0;
                 }
 
                 if (ShowIncomeAfterPropertyExpense)
@@ -486,7 +486,7 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
             double expenses = 0;
             if (IncludeExpenses && ExpenseSummary != null)
             {
-                expenses = ExpenseSummary?.TotalYearly ?? 0;
+                expenses = ExpenseSummary?.TransactionRecords?.IncomeExpenseSummary?.TotalYearly ?? 0;
             }
 
             if (IncludePropertyExpenses)

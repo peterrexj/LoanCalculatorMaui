@@ -1295,7 +1295,7 @@
                                     Style="{DynamicResource CommonExpanderStyle}">
                                     <expander:SfExpander.Header>
                                         <Grid>
-                                            <Label Style="{DynamicResource ExpanderHeaderLabelStyle}" Text="Expenses - Cost of new property ownership" />
+                                            <Label Style="{DynamicResource ExpanderHeaderLabelStyle}" Text="Expenses on cost of new property ownership" />
                                         </Grid>
                                     </expander:SfExpander.Header>
                                     <expander:SfExpander.Content>
@@ -1318,7 +1318,7 @@
                                     Style="{DynamicResource CommonExpanderStyle}">
                                     <expander:SfExpander.Header>
                                         <Grid>
-                                            <Label Style="{DynamicResource ExpanderHeaderLabelStyle}" Text="Expenses - Loan financial commitments" />
+                                            <Label Style="{DynamicResource ExpanderHeaderLabelStyle}" Text="Expenses on Loan financial commitments" />
                                         </Grid>
                                     </expander:SfExpander.Header>
                                     <expander:SfExpander.Content>
@@ -1341,7 +1341,7 @@
                                     Style="{DynamicResource CommonExpanderStyle}">
                                     <expander:SfExpander.Header>
                                         <Grid>
-                                            <Label Style="{DynamicResource ExpanderHeaderLabelStyle}" Text="Expenses - Current financial outflows" />
+                                            <Label Style="{DynamicResource ExpanderHeaderLabelStyle}" Text="Expenses on current financial outflows" />
                                         </Grid>
                                     </expander:SfExpander.Header>
                                     <expander:SfExpander.Content>

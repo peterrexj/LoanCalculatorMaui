@@ -119,7 +119,7 @@
     <Color x:Key="LoanAppChartAxisTextColor">#b3c8c0</Color>
     <Color x:Key="LoanAppChartLegendTextColor">#e7ebeb</Color>
     <Color x:Key="LoanAppChartTitleTextColor">#1B2631</Color>
-    <Color x:Key="LoanAppChartDataMarkerTextColor">#b3c8c0</Color>
+    <Color x:Key="LoanAppChartDataMarkerTextColor">#3a4642</Color>
     <Color x:Key="LoanAppChartOuterBorderGradientStart">#3a4642</Color>
     <Color x:Key="LoanAppChartOuterBorderGradientEnd">#586a63</Color>
     <Color x:Key="LoanAppChartInnerBorderGradientStart">#586a63</Color>

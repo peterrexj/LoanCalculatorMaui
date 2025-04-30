@@ -12,7 +12,7 @@
             VerticalOptions="Center" />
         <Label
             x:Name="InnerInsightsLabel"
-            Margin="15,-5,0,0"
+            Margin="15,-5,10,0"
             HorizontalOptions="Start"
             HorizontalTextAlignment="Start"
             VerticalOptions="Center">

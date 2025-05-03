@@ -1,4 +1,5 @@
-﻿using LoanCalculator.Core.Helper;
+﻿using LoanCalculator.Core.Exts;
+using LoanCalculator.Core.Helper;
 using LoanCalculator.Core.Models.Charts;
 using LoanCalculator.Core.Models.Enums;
 using LoanCalculator.Core.Models.Income;
@@ -10,7 +11,6 @@ using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Text.Json.Serialization;
 using System.Windows.Input;
-using LoanCalculator.Core.Exts;
 
 namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
 {
@@ -107,6 +107,20 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
             }
         }
 
+        // this should be updated on the page load only as the income or expense will not change unless the user has navigated to the page and added new income or expense
+        private bool _hasIncomeExpensesRecorded;
+        [JsonIgnore]
+        public bool HasIncomeExpensesRecorded
+        {
+            get => _hasIncomeExpensesRecorded;
+            set
+            {
+                _hasIncomeExpensesRecorded = value;
+                OnPropertyChanged(nameof(HasIncomeExpensesRecorded));
+            }
+        } 
+
+
         private async Task ExportInsights()
         {
             try
@@ -116,8 +130,7 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
 
                 await Task.Delay(500); // Simulate a delay for the loader
 
-                if (ExpenseSummary?.TransactionRecords?.IncomeExpenseSummary?.TotalYearly <= 0 ||
-                    IncomeSummary?.TransactionRecords?.IncomeExpenseSummary?.TotalYearly <= 0)
+                if (HasIncomeExpensesRecorded == false)
                 {
                     await _alertService.ShowAlertAsync("Warning", "Please enter the income and expense details.", "OK");
                     return;
@@ -428,6 +441,56 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
                 {
                     new(name: "2025", value: HomeLoanInfo?.DepositAmountDirectInput ?? 0)
                 }.AsEnumerable());
+            }
+        }
+
+        [JsonIgnore]
+        public string AffordabilityCurrencySymbol
+        {
+            get
+            {
+                if (IsAffordabilityAvailable) return CurrencySymbol;
+                else return string.Empty;
+            }
+        }
+        [JsonIgnore]
+        public bool IsAffordabilityAvailable
+        {
+            get
+            {
+                if (SharedServiceCore.IsTrialUser) return false;
+                if (HasIncomeExpensesRecorded == false) return false;
+                
+                return true;
+            }
+        }
+        [JsonIgnore]
+        public string Affordability
+        {
+            get
+            {
+                if (IsAffordabilityAvailable == false) return "Affordability";
+
+                PdfDataInsightsModel pdfDataInsights = new PdfDataInsightsModel(this, IncomeSummary, ExpenseSummary);
+                pdfDataInsights.InitializeLocalDataSet();
+
+                var t01 = pdfDataInsights?.Income?.TotalAfterExpenseIncludingPropertyMonthly ?? 0;
+                //var t02 = pdfDataInsights.Income.TotalAfterExpenseIncludingPropertyYearly
+                //    .ToCustomCurrencyRounded();
+
+                return $"{t01:N0}";
+            }
+        }
+
+        [JsonIgnore]
+        public string AffordabilityTextDescription
+        {
+            get
+            {
+                if (SharedServiceCore.IsTrialUser) return " go premium";
+                if (HasIncomeExpensesRecorded == false) return " record your income & expenses";
+
+                return " your monthly affordability status";
             }
         }
 
@@ -939,6 +1002,11 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
             OnPropertyChanged(nameof(InspectionFee));
             OnPropertyChanged(nameof(OtherExpenses));
             OnPropertyChanged(nameof(RepaymentFrequencySelected));
+            OnPropertyChanged(nameof(AffordabilityCurrencySymbol));
+            OnPropertyChanged(nameof(IsAffordabilityAvailable));
+            OnPropertyChanged(nameof(Affordability));
+            OnPropertyChanged(nameof(AffordabilityTextDescription));
+
             SharedServiceCore.SaveData(this);
             IsBusy = false;
         }
@@ -957,6 +1025,10 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
             OnPropertyChanged(nameof(AmortizationChartAreaInterestAmountAxis));
             OnPropertyChanged(nameof(IsAmortizationTermBased));
             OnPropertyChanged(nameof(IsAmortizationYearBased));
+            OnPropertyChanged(nameof(AffordabilityCurrencySymbol));
+            OnPropertyChanged(nameof(IsAffordabilityAvailable));
+            OnPropertyChanged(nameof(Affordability));
+            OnPropertyChanged(nameof(AffordabilityTextDescription));
             SharedServiceCore.SaveData(this);
         }
 
@@ -981,6 +1053,10 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
             OnPropertyChanged(nameof(TotalMonthlyOverallExpense));
             OnPropertyChanged(nameof(TotalMonthlyExistingExpense));
             OnPropertyChanged(nameof(TotalMonthlyOverallExpenseBreakdownWithComma));
+            OnPropertyChanged(nameof(AffordabilityCurrencySymbol));
+            OnPropertyChanged(nameof(IsAffordabilityAvailable));
+            OnPropertyChanged(nameof(Affordability));
+            OnPropertyChanged(nameof(AffordabilityTextDescription));
 
             SharedServiceCore.SaveData(this);
         }

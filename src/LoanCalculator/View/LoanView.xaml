@@ -75,9 +75,9 @@
                                     </customControls:ThreeColumnBorderedContentView.FormattedText2>
                                     <customControls:ThreeColumnBorderedContentView.FormattedText3>
                                         <FormattedString>
-                                            <Span Style="{DynamicResource SpanThreeBoxCurrencyStyle}" Text="{Binding CurrencySymbol}" />
-                                            <Span Style="{DynamicResource SpanThreeBoxAmountStyle}" Text="{Binding HomeLoanInfo.PaymentSummary.Payment.TotalPaymentRoundedWithComma}" />
-                                            <Span Style="{DynamicResource SpanThreeBoxTextStyle}" Text=" total repayment (principal + interest)" />
+                                            <Span Style="{DynamicResource SpanThreeBoxCurrencyStyle}" Text="{Binding AffordabilityCurrencySymbol}" />
+                                            <Span Style="{DynamicResource SpanThreeBoxAmountStyle}" Text="{Binding Affordability}" />
+                                            <Span Style="{DynamicResource SpanThreeBoxTextStyle}" Text="{Binding AffordabilityTextDescription}" />
                                         </FormattedString>
                                     </customControls:ThreeColumnBorderedContentView.FormattedText3>
                                 </customControls:ThreeColumnBorderedContentView>

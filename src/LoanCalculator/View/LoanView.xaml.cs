@@ -114,8 +114,10 @@ public partial class LoanView : ContentPage
             _viewModel.CustomChartColors = chartColorsTask.Result;
             _viewModel.ExpenseSummary = expenseSummaryTask.Result;
             _viewModel.IncomeSummary = incomeSummaryTask.Result;
-
-            SegmentedRepaymentFrequency.SelectionChanged += SegmentedRepaymentFrequency_SelectionChanged;
+            _viewModel.HasIncomeExpensesRecorded = _viewModel.ExpenseSummary?.TransactionRecords?.IncomeExpenseSummary?.TotalYearly > 0 && 
+                _viewModel.IncomeSummary?.TransactionRecords?.IncomeExpenseSummary?.TotalYearly > 0;
+           
+                SegmentedRepaymentFrequency.SelectionChanged += SegmentedRepaymentFrequency_SelectionChanged;
             AmortizationBreadDownFrequencySegmentCtrl.SelectionChanged +=
                 AmortizationBreadDownFrequencySegmentCtrlOnSelectionChanged;
             SegmentedAustraliaStates.SelectionChanged += SegmentedAustraliaStatesOnSelectionChanged;

@@ -48,7 +48,7 @@ namespace LoanCalculator.Core.Models.Pdf
             public double TotalMonthlyRunningExpense { get; set; }
             public double TotalYearlyRunningExpense { get; set; }
 
-            public IncomeExpenseBase Transactions { get; set; }
+            public IncomeExpenseBase? Transactions { get; set; }
 
             public List<PaymentAmortisationOutput> PaymentAmortization { get; set; }
         }
@@ -64,27 +64,27 @@ namespace LoanCalculator.Core.Models.Pdf
             public double TotalAfterExpenseIncludingPropertyMonthly { get; set; }
             public double TotalAfterExpenseIncludingPropertyYearly { get; set; }
 
-            public IncomeExpenseBase Transactions { get; set; }
+            public IncomeExpenseBase? Transactions { get; set; }
 
             public void ResetTransactions()
             {
-                Transactions.SumUpData();
+                Transactions?.SumUpData();
             }
 
-            public IncomeExpenseBase TransactionRecordsWithExpense
+            public IncomeExpenseBase? TransactionRecordsWithExpense
             {
                 get
                 {
-                    Transactions.SumUpData(TotalExpenseMonthly, TotalExpenseYearly);
+                    Transactions?.SumUpData(TotalExpenseMonthly, TotalExpenseYearly);
                     return Transactions;
                 }
             }
 
-            public IncomeExpenseBase TransactionRecordsWithExpenseIncludingProperty
+            public IncomeExpenseBase? TransactionRecordsWithExpenseIncludingProperty
             {
                 get
                 {
-                    Transactions.SumUpData(TotalExpenseIncludingPropertyMonthly, TotalExpenseIncludingPropertyYearly);
+                    Transactions?.SumUpData(TotalExpenseIncludingPropertyMonthly, TotalExpenseIncludingPropertyYearly);
                     return Transactions;
                 }
             }
@@ -101,7 +101,7 @@ namespace LoanCalculator.Core.Models.Pdf
         {
             public double TotalMonthly { get; set; }
             public double TotalYearly { get; set; }
-            public IncomeExpenseBase Transactions { get; set; }
+            public IncomeExpenseBase? Transactions { get; set; }
         }
 
         public void InitializeLocalDataSet()
@@ -160,7 +160,7 @@ namespace LoanCalculator.Core.Models.Pdf
             Income.TotalYearly = incomeModel.TransactionRecords?.IncomeExpenseSummary?.TotalYearly ?? 0;
             Income.Transactions = incomeModel.TransactionRecords;
 
-            incomeModel.TransactionRecords.SumUpData(Expense.TotalMonthly, Expense.TotalYearly);
+            incomeModel.TransactionRecords?.SumUpData(Expense.TotalMonthly, Expense.TotalYearly);
 
             Income.TotalAfterExpenseMonthly = incomeModel.TransactionRecords?.IncomeExpenseSummary?.TotalMonthly ?? 0;
             Income.TotalAfterExpenseYearly = incomeModel.TransactionRecords?.IncomeExpenseSummary?.TotalYearly ?? 0;
@@ -170,7 +170,7 @@ namespace LoanCalculator.Core.Models.Pdf
             Income.TotalExpenseIncludingPropertyMonthly = Expense.TotalMonthly + Loan.MonthlyRepayment + Loan.TotalMonthlyRunningExpense;
             Income.TotalExpenseIncludingPropertyYearly = Expense.TotalYearly + Loan.YearlyRepayment + Loan.TotalYearlyRunningExpense;
 
-            incomeModel.TransactionRecords.SumUpData(Income.TotalExpenseIncludingPropertyMonthly, Income.TotalExpenseIncludingPropertyYearly);
+            incomeModel.TransactionRecords?.SumUpData(Income.TotalExpenseIncludingPropertyMonthly, Income.TotalExpenseIncludingPropertyYearly);
 
             Income.TotalAfterExpenseIncludingPropertyMonthly = incomeModel.TransactionRecords?.IncomeExpenseSummary?.TotalMonthly ?? 0;
             Income.TotalAfterExpenseIncludingPropertyYearly = incomeModel.TransactionRecords?.IncomeExpenseSummary?.TotalYearly ?? 0;

@@ -98,7 +98,7 @@
         <Setter Property="StrokeThickness" Value="1" />
         <Setter Property="Stroke" Value="{DynamicResource BorderInsightsGradientBrush}" />
         <Setter Property="Background" Value="{DynamicResource BorderInsightsBackgroundGradientBrush}" />
-        <Setter Property="HorizontalOptions" Value="Center" />
+        <Setter Property="HorizontalOptions" Value="Fill" />
         <Setter Property="VerticalOptions" Value="Center" />
         <Setter Property="Margin" Value="12,10,12,10" />
     </Style>
@@ -128,10 +128,12 @@
     <!--  Expander header label  -->
     <Style x:Key="ExpanderHeaderLabelStyle" TargetType="Label">
         <Setter Property="Margin" Value="15,0,0,0" />
-        <Setter Property="HeightRequest" Value="30" />
+        <!--<Setter Property="HeightRequest" Value="30" />-->
+        <Setter Property="MinimumHeightRequest" Value="{OnPlatform Android={OnIdiom Phone=30, Tablet=60, Desktop=60, TV=60, Watch=15}, iOS={OnIdiom Phone=30, Tablet=60, Desktop=60, TV=60, Watch=15}, Default=30}" />
         <Setter Property="TextColor" Value="{DynamicResource LoanAppExpanderHeaderTextColor}" />
         <Setter Property="VerticalOptions" Value="Center" />
         <Setter Property="VerticalTextAlignment" Value="Center" />
+        <Setter Property="FontSize" Value="{OnPlatform Android={OnIdiom Phone=12, Tablet=24, Desktop=24, TV=24, Watch=8}, iOS={OnIdiom Phone=12, Tablet=24, Desktop=24, TV=24, Watch=8}, Default=12}" />
         <Setter Property="FontFamily" Value="{DynamicResource DefaultFontFamily}" />
     </Style>
 
@@ -157,7 +159,7 @@
     <!--  Tab Item  -->
     <Style TargetType="tabView:SfTabItem">
         <Setter Property="FontFamily" Value="{DynamicResource DefaultFontFamily}" />
-        <Setter Property="FontSize" Value="10" />
+        <Setter Property="FontSize" Value="{OnPlatform Android={OnIdiom Phone=10, Tablet=15, Desktop=15, TV=15, Watch=8}, iOS={OnIdiom Phone=10, Tablet=15, Desktop=15, TV=15, Watch=8}, Default=10}" />
 
         <Setter Property="VisualStateManager.VisualStateGroups">
             <VisualStateGroupList>
@@ -190,7 +192,20 @@
         <Setter Property="Stroke" Value="{DynamicResource LoanAppInputTextWhenFocusedColor}" />
         <Setter Property="HintLabelStyle">
             <Setter.Value>
-                <core:LabelStyle FontFamily="{DynamicResource DefaultFontFamily}" TextColor="{DynamicResource LoanAppInputTextFgColor}" />
+                <core:LabelStyle
+                    FontFamily="{DynamicResource DefaultFontFamily}"
+                    FontSize="{OnPlatform Android={OnIdiom Phone=16,
+                                                           Tablet=21,
+                                                           Desktop=21,
+                                                           TV=21,
+                                                           Watch=14},
+                                          iOS={OnIdiom Phone=16,
+                                                       Tablet=21,
+                                                       Desktop=21,
+                                                       TV=21,
+                                                       Watch=14},
+                                          Default=16}"
+                    TextColor="{DynamicResource LoanAppInputTextFgColor}" />
             </Setter.Value>
         </Setter>
         <Setter Property="ErrorLabelStyle">
@@ -236,11 +251,22 @@
         <Setter Property="CornerRadius" Value="15" />
         <Setter Property="Stroke" Value="{DynamicResource LoanAppSegBorderColor}" />
         <Setter Property="Background" Value="{DynamicResource LoanAppSegBgColor}" />
+        <Setter Property="SegmentHeight" Value="{OnPlatform Android={OnIdiom Phone=40, Tablet=70, Desktop=70, TV=70, Default=40}, iOS={OnIdiom Phone=40, Tablet=70, TV=70, Desktop=70, Default=40}, Default=40}" />
         <Setter Property="buttons:SfSegmentedControl.TextStyle">
             <Setter.Value>
                 <buttons:SegmentTextStyle
                     FontFamily="{DynamicResource DefaultFontFamily}"
-                    FontSize="12"
+                    FontSize="{OnPlatform Android={OnIdiom Phone=12,
+                                                           Tablet=17,
+                                                           Desktop=17,
+                                                           TV=17,
+                                                           Watch=10},
+                                          iOS={OnIdiom Phone=12,
+                                                       Tablet=17,
+                                                       Desktop=17,
+                                                       TV=17,
+                                                       Watch=10},
+                                          Default=12}"
                     TextColor="{DynamicResource LoanAppSegTextFgColor}" />
             </Setter.Value>
         </Setter>
@@ -287,7 +313,7 @@
     <Style x:Key="LoanAppChartBorderStyle" TargetType="Border">
         <Setter Property="Margin" Value="12,5,12,2" />
         <Setter Property="Background" Value="{DynamicResource LoanAppChartInnerBorderGradientBrush}" />
-        <Setter Property="HeightRequest" Value="250" />
+        <Setter Property="HeightRequest" Value="{OnPlatform Android={OnIdiom Phone=250, Tablet=350, Desktop=350, TV=350, Default=250}, iOS={OnIdiom Phone=250, Tablet=350, Desktop=350, TV=350, Default=250}}" />
         <Setter Property="HorizontalOptions" Value="Fill" />
         <Setter Property="Stroke" Value="{DynamicResource LoanAppChartOuterBorderGradientBrush}" />
         <Setter Property="StrokeShape" Value="RoundRectangle 12,12,12,12" />
@@ -299,7 +325,7 @@
     <Style x:Key="InsightsChartDataLabelStyle" TargetType="chart:ChartDataLabelStyle">
         <Setter Property="FontAttributes" Value="Bold" />
         <Setter Property="FontFamily" Value="{DynamicResource DefaultFontFamily}" />
-        <Setter Property="FontSize" Value="10" />
+        <Setter Property="FontSize" Value="{OnPlatform Android={OnIdiom Phone=10, Tablet=15, Desktop=15, TV=15, Watch=8}, iOS={OnIdiom Phone=10, Tablet=15, Desktop=15, TV=15, Watch=8}, Default=10}" />
         <Setter Property="LabelFormat" Value="c" />
         <Setter Property="TextColor" Value="{DynamicResource LoanAppChartDataMarkerTextColor}" />
     </Style>
@@ -310,18 +336,19 @@
         <Setter Property="Background" Value="{DynamicResource LoanAppButtonBgColor}" />
         <Setter Property="TextColor" Value="{DynamicResource LoanAppButtonFgColor}" />
         <Setter Property="FontFamily" Value="{DynamicResource DefaultFontFamily}" />
-        <Setter Property="FontSize" Value="14" />
+        <Setter Property="FontSize" Value="{OnPlatform Android={OnIdiom Phone=14, Tablet=19, Desktop=19, TV=19, Watch=12}, iOS={OnIdiom Phone=14, Tablet=19, Desktop=19, TV=19, Watch=12}, Default=14}" />
         <Setter Property="HorizontalOptions" Value="Fill" />
         <Setter Property="VerticalOptions" Value="Fill" />
     </Style>
     <Style x:Key="ExportButtonStyle" TargetType="Button">
         <Setter Property="CornerRadius" Value="5" />
         <Setter Property="Margin" Value="10,4,10,4" />
-        <Setter Property="MaximumHeightRequest" Value="50" />
+        <!--<Setter Property="MaximumHeightRequest" Value="60" />-->
+        <Setter Property="MinimumHeightRequest" Value="{OnPlatform Android={OnIdiom Phone=50, Tablet=80, Desktop=80, TV=80, Watch=30}, iOS={OnIdiom Phone=50, Tablet=80, Desktop=80, TV=80, Watch=30}, Default=50}" />
         <Setter Property="Background" Value="{DynamicResource LoanAppExportButtonBgColor}" />
         <Setter Property="TextColor" Value="{DynamicResource LoanAppExportButtonFgColor}" />
         <Setter Property="FontFamily" Value="{DynamicResource DefaultFontFamily}" />
-        <Setter Property="FontSize" Value="18" />
+        <Setter Property="FontSize" Value="{OnPlatform Android={OnIdiom Phone=18, Tablet=23, Desktop=23, TV=23, Watch=16}, iOS={OnIdiom Phone=18, Tablet=23, Desktop=23, TV=23, Watch=16}, Default=18}" />
         <Setter Property="HorizontalOptions" Value="Fill" />
         <Setter Property="VerticalOptions" Value="Fill" />
     </Style>
@@ -337,7 +364,7 @@
         <Setter Property="VerticalOptions" Value="Center" />
         <Setter Property="TextColor" Value="{DynamicResource LoanAppButtonFgColor}" />
         <Setter Property="FontFamily" Value="{DynamicResource DefaultFontFamily}" />
-        <Setter Property="FontSize" Value="14" />
+        <Setter Property="FontSize" Value="{OnPlatform Android={OnIdiom Phone=14, Tablet=19, Desktop=19, TV=19, Watch=12}, iOS={OnIdiom Phone=14, Tablet=19, Desktop=19, TV=19, Watch=12}, Default=14}" />
     </Style>
     <Style x:Key="ListIconButtonStyle" TargetType="core:SfButton">
         <Setter Property="Background" Value="{DynamicResource LoanAppButtonBgColor}" />
@@ -382,6 +409,8 @@
         <Setter Property="TextColor" Value="{DynamicResource LoanAppAutoCompleteTextColor}" />
         <Setter Property="TextHighlightMode" Value="MultipleOccurrence" />
         <Setter Property="TextSearchMode" Value="Contains" />
+        <Setter Property="FontSize" Value="{OnPlatform Android={OnIdiom Phone=14, Tablet=19, Desktop=19, TV=19, Watch=12}, iOS={OnIdiom Phone=14, Tablet=19, Desktop=19, TV=19, Watch=12}, Default=14}" />
+        <Setter Property="DropDownItemFontSize" Value="{OnPlatform Android={OnIdiom Phone=14, Tablet=19, Desktop=19, TV=19, Watch=12}, iOS={OnIdiom Phone=14, Tablet=19, Desktop=19, TV=19, Watch=12}, Default=14}" />
         <Setter Property="NoResultsFoundTemplate">
             <Setter.Value>
                 <DataTemplate>
@@ -389,7 +418,17 @@
                         Margin="70,10,0,0"
                         FontAttributes="Italic"
                         FontFamily="{DynamicResource DefaultFontFamily}"
-                        FontSize="16"
+                        FontSize="{OnPlatform Android={OnIdiom Phone=16,
+                                                               Tablet=21,
+                                                               Desktop=21,
+                                                               TV=21,
+                                                               Watch=14},
+                                              iOS={OnIdiom Phone=16,
+                                                           Tablet=21,
+                                                           Desktop=21,
+                                                           TV=21,
+                                                           Watch=14},
+                                              Default=16}"
                         Text="Not Found"
                         TextColor="{DynamicResource LoanAppAutoCompleteNoResultsFoundTextColor}" />
                 </DataTemplate>
@@ -403,7 +442,8 @@
         <Setter Property="DropDownItemFontFamily" Value="{DynamicResource DefaultFontFamily}" />
         <Setter Property="DropDownItemTextColor" Value="{DynamicResource LoanAppComboDropDownTextColor}" />
         <Setter Property="FontFamily" Value="{DynamicResource DefaultFontFamily}" />
-        <Setter Property="FontSize" Value="14" />
+        <Setter Property="FontSize" Value="{OnPlatform Android={OnIdiom Phone=14, Tablet=19, Desktop=19, TV=19, Watch=12}, iOS={OnIdiom Phone=14, Tablet=19, Desktop=19, TV=19, Watch=12}, Default=14}" />
+        <Setter Property="DropDownItemFontSize" Value="{OnPlatform Android={OnIdiom Phone=14, Tablet=19, Desktop=19, TV=19, Watch=12}, iOS={OnIdiom Phone=14, Tablet=19, Desktop=19, TV=19, Watch=12}, Default=14}" />
         <Setter Property="HighlightedTextColor" Value="{DynamicResource LoanAppComboHighlightedTextColor}" />
         <Setter Property="IsClearButtonVisible" Value="False" />
         <Setter Property="IsFilteringEnabled" Value="False" />
@@ -417,16 +457,16 @@
     <Style x:Key="SpanThreeBoxCurrencyStyle" TargetType="Span">
         <Setter Property="CharacterSpacing" Value="1" />
         <Setter Property="FontAttributes" Value="Bold" />
-        <Setter Property="FontSize" Value="15" />
+        <Setter Property="FontSize" Value="{OnPlatform Android={OnIdiom Phone=15, Tablet=26, Desktop=26, TV=26, Watch=26}, iOS={OnIdiom Phone=15, Tablet=26, Desktop=26, TV=26, Watch=12}, Default=15}" />
     </Style>
     <Style x:Key="SpanThreeBoxAmountStyle" TargetType="Span">
-        <Setter Property="CharacterSpacing" Value="-1" />
+        <Setter Property="CharacterSpacing" Value="{OnPlatform Android={OnIdiom Phone=-1, Tablet=0.5, Desktop=1, TV=1}, iOS={OnIdiom Phone=-1, Tablet=1, Desktop=1, TV=1}, Default=-1}" />
         <Setter Property="FontAttributes" Value="Bold" />
-        <Setter Property="FontSize" Value="18" />
+        <Setter Property="FontSize" Value="{OnPlatform Android={OnIdiom Phone=18, Tablet=32, Desktop=32, TV=32, Watch=14}, iOS={OnIdiom Phone=18, Tablet=32, Desktop=32, TV=32, Watch=14}, Default=18}" />
     </Style>
     <Style x:Key="SpanThreeBoxTextStyle" TargetType="Span">
-        <Setter Property="CharacterSpacing" Value="-0.2" />
-        <Setter Property="FontSize" Value="12" />
+        <Setter Property="CharacterSpacing" Value="{OnPlatform Android={OnIdiom Phone=-0.2, Tablet=0, Desktop=1, TV=1}, iOS={OnIdiom Phone=-0.2, Tablet=1, Desktop=1, TV=1}, Default=-0.2}" />
+        <Setter Property="FontSize" Value="{OnPlatform Android={OnIdiom Phone=12, Tablet=20, Desktop=16, TV=16, Watch=10}, iOS={OnIdiom Phone=12, Tablet=16, Desktop=16, TV=16, Watch=10}, Default=12}" />
     </Style>
 
 

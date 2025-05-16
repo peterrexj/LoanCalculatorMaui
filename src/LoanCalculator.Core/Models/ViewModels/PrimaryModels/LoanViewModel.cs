@@ -118,7 +118,7 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
                 _hasIncomeExpensesRecorded = value;
                 OnPropertyChanged(nameof(HasIncomeExpensesRecorded));
             }
-        } 
+        }
 
 
         private async Task ExportInsights()
@@ -406,7 +406,21 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
         [JsonIgnore] public bool ShowAustralianStateSelectorOnStampDuty => SharedServiceCore.AppInformation != null && SharedServiceCore.AppInformation.IsAustralia;
 
         [JsonIgnore]
-        public int HeightOfGridRowToggledByCountryOnStampDuty => ShowAustralianStateSelectorOnStampDuty ? 59 : 0;
+        public int HeightOfGridRowToggledByCountryOnStampDuty
+        {
+            get
+            {
+                if (!ShowAustralianStateSelectorOnStampDuty)
+                    return 0;
+
+                if (DeviceInfo.Idiom == DeviceIdiom.Phone)
+                    return 60;
+                else if (DeviceInfo.Idiom == DeviceIdiom.Tablet || DeviceInfo.Idiom == DeviceIdiom.Desktop || DeviceInfo.Idiom == DeviceIdiom.TV)
+                    return 110;
+
+                return 40; // Default value
+            }
+        }
 
         #endregion
 
@@ -460,7 +474,7 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
             {
                 if (SharedServiceCore.IsTrialUser) return false;
                 if (HasIncomeExpensesRecorded == false) return false;
-                
+
                 return true;
             }
         }
@@ -562,7 +576,7 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
             #endregion
 
             #region Expense
-            
+
             InsightsDetails.ExpenseOverallTotalMonthly.Value = pdfDataInsights.Income.TotalExpenseIncludingPropertyMonthly.ToCustomCurrencyRounded();
             InsightsDetails.ExpenseOverallTotalYearly.Value = pdfDataInsights.Income.TotalExpenseIncludingPropertyYearly.ToCustomCurrencyRounded();
 

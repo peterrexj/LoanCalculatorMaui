@@ -25,37 +25,103 @@
                     <StackLayout Padding="10">
                         <!--  Header with Icon  -->
                         <HorizontalStackLayout
-                            Margin="0,5,5,10"
+                            Margin="{OnPlatform Android={OnIdiom Phone='0,5,5,10',
+                                                                 Tablet='0,5,5,10',
+                                                                 Desktop='0,5,5,10',
+                                                                 TV='0,5,5,10'},
+                                                iOS={OnIdiom Phone='0,5,5,10',
+                                                             Tablet='0,5,5,10',
+                                                             Desktop='0,5,5,10',
+                                                             TV='0,5,5,10'},
+                                                Default='0,5,5,10'}"
                             HorizontalOptions="Start"
                             Spacing="10">
                             <Label
                                 FontAttributes="Bold"
                                 FontFamily="{DynamicResource DefaultFontFamily}"
-                                FontSize="32"
+                                FontSize="{OnPlatform Android={OnIdiom Phone=32,
+                                                                       Tablet=38,
+                                                                       Desktop=38,
+                                                                       TV=38,
+                                                                       Watch=24},
+                                                      iOS={OnIdiom Phone=32,
+                                                                   Tablet=38,
+                                                                   Desktop=38,
+                                                                   TV=38,
+                                                                   Watch=24},
+                                                      Default=32}"
                                 Text="Try Premium"
                                 TextColor="{DynamicResource LoanAppPurchaseTextFontColor}"
                                 VerticalOptions="Center" />
 
                             <Image
-                                HeightRequest="32"
+                                HeightRequest="{OnPlatform Android={OnIdiom Phone=32,
+                                                                            Tablet=38,
+                                                                            Desktop=38,
+                                                                            TV=38,
+                                                                            Watch=24},
+                                                           iOS={OnIdiom Phone=32,
+                                                                        Tablet=38,
+                                                                        Desktop=38,
+                                                                        TV=38,
+                                                                        Watch=24},
+                                                           Default=32}"
                                 Source="image/icon_premium.png"
                                 VerticalOptions="Center"
-                                WidthRequest="32" />
+                                WidthRequest="{OnPlatform Android={OnIdiom Phone=32,
+                                                                           Tablet=38,
+                                                                           Desktop=38,
+                                                                           TV=38,
+                                                                           Watch=24},
+                                                          iOS={OnIdiom Phone=32,
+                                                                       Tablet=38,
+                                                                       Desktop=38,
+                                                                       TV=38,
+                                                                       Watch=24},
+                                                          Default=32}" />
                         </HorizontalStackLayout>
 
                         <!--  Subheader  -->
                         <Label
                             FontFamily="{DynamicResource DefaultFontFamily}"
-                            FontSize="18"
+                            FontSize="{OnPlatform Android={OnIdiom Phone=18,
+                                                                   Tablet=23,
+                                                                   Desktop=23,
+                                                                   TV=23,
+                                                                   Watch=14},
+                                                  iOS={OnIdiom Phone=18,
+                                                               Tablet=23,
+                                                               Desktop=23,
+                                                               TV=23,
+                                                               Watch=14},
+                                                  Default=18}"
                             HorizontalOptions="Start"
                             Text="Get all the new exciting features"
                             TextColor="{DynamicResource LoanAppPurchaseTextFontColor}" />
 
                         <!--  Promotional Image  -->
                         <Image
-                            Margin="0,10,10,0"
+                            Margin="{OnPlatform Android={OnIdiom Phone='0,10,10,0',
+                                                                 Tablet='0,25,10,0',
+                                                                 Desktop='0,25,10,0',
+                                                                 TV='0,25,10,0'},
+                                                iOS={OnIdiom Phone='0,10,10,0',
+                                                             Tablet='0,25,10,0',
+                                                             Desktop='0,25,10,0',
+                                                             TV='0,25,10,0'},
+                                                Default='0,10,10,0'}"
                             Aspect="AspectFill"
-                            HeightRequest="150"
+                            HeightRequest="{OnPlatform Android={OnIdiom Phone=150,
+                                                                        Tablet=280,
+                                                                        Desktop=280,
+                                                                        TV=280,
+                                                                        Watch=100},
+                                                       iOS={OnIdiom Phone=150,
+                                                                    Tablet=280,
+                                                                    Desktop=280,
+                                                                    TV=280,
+                                                                    Watch=100},
+                                                       Default=150}"
                             HorizontalOptions="FillAndExpand"
                             Opacity="0.75"
                             Source="image/premiumbuyads.jpeg" />
@@ -67,7 +133,7 @@
                             HorizontalOptions="Center">
                             <BindableLayout.ItemTemplate>
                                 <DataTemplate>
-                                    <Grid ColumnSpacing="10">
+                                    <Grid Margin="{OnPlatform Android={OnIdiom Phone='0,2,0,0', Tablet='0,13,0,0', Desktop='0,13,0,0', TV='0,13,0,0'}, iOS={OnIdiom Phone='0,2,0,0', Tablet='0,13,0,0', Desktop='0,13,0,0', TV='0,13,0,0'}, Default='0,2,0,0'}" ColumnSpacing="10">
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="Auto" />
                                             <ColumnDefinition Width="*" />
@@ -75,14 +141,44 @@
                                         <!--  Static Icon  -->
                                         <Image
                                             Grid.Column="0"
-                                            HeightRequest="14"
+                                            HeightRequest="{OnPlatform Android={OnIdiom Phone=14,
+                                                                                        Tablet=19,
+                                                                                        Desktop=19,
+                                                                                        TV=19,
+                                                                                        Watch=12},
+                                                                       iOS={OnIdiom Phone=14,
+                                                                                    Tablet=19,
+                                                                                    Desktop=19,
+                                                                                    TV=19,
+                                                                                    Watch=12},
+                                                                       Default=14}"
                                             Source="image/icon_ticks.png"
-                                            WidthRequest="14" />
+                                            WidthRequest="{OnPlatform Android={OnIdiom Phone=14,
+                                                                                       Tablet=19,
+                                                                                       Desktop=19,
+                                                                                       TV=19,
+                                                                                       Watch=12},
+                                                                      iOS={OnIdiom Phone=14,
+                                                                                   Tablet=19,
+                                                                                   Desktop=19,
+                                                                                   TV=19,
+                                                                                   Watch=12},
+                                                                      Default=14}" />
                                         <!--  Dynamic Text  -->
                                         <Label
                                             Grid.Column="1"
                                             FontFamily="{DynamicResource DefaultFontFamily}"
-                                            FontSize="14"
+                                            FontSize="{OnPlatform Android={OnIdiom Phone=14,
+                                                                                   Tablet=19,
+                                                                                   Desktop=19,
+                                                                                   TV=19,
+                                                                                   Watch=12},
+                                                                  iOS={OnIdiom Phone=14,
+                                                                               Tablet=19,
+                                                                               Desktop=19,
+                                                                               TV=19,
+                                                                               Watch=12},
+                                                                  Default=14}"
                                             Text="{Binding}"
                                             TextColor="{DynamicResource LoanAppPurchaseTextFontColor}"
                                             VerticalOptions="Center" />
@@ -100,37 +196,25 @@
                             <Button
                                 Margin="15,0,20,0"
                                 Background="{DynamicResource LoanAppPurchaseButtonPrimaryBgColor}"
-                                FontFamily="{DynamicResource DefaultFontFamily}"
-                                FontSize="15"
-                                HorizontalOptions="Fill"
-                                MaximumHeightRequest="50"
+                                Style="{DynamicResource ExportButtonStyle}"
                                 Text="Buy Now"
-                                TextColor="{DynamicResource LoanAppPurchaseButtonPrimaryFgColor}"
-                                VerticalOptions="Fill" />
+                                TextColor="{DynamicResource LoanAppPurchaseButtonPrimaryFgColor}" />
 
                             <Button
                                 Margin="15,0,20,0"
                                 Background="{DynamicResource LoanAppPurchaseButtonPrimaryBgColor}"
-                                FontFamily="{DynamicResource DefaultFontFamily}"
-                                FontSize="15"
-                                HorizontalOptions="Fill"
-                                MaximumHeightRequest="50"
+                                Style="{DynamicResource ExportButtonStyle}"
                                 Text="Restore purchases"
-                                TextColor="{DynamicResource LoanAppPurchaseButtonPrimaryFgColor}"
-                                VerticalOptions="Fill" />
+                                TextColor="{DynamicResource LoanAppPurchaseButtonPrimaryFgColor}" />
 
                             <Button
                                 Margin="15,0,20,0"
                                 Background="{DynamicResource LoanAppPurchaseButtonSecondaryBgColor}"
                                 BorderColor="{DynamicResource LoanAppPurchaseButtonSecondaryBorderColor}"
                                 Command="{Binding IgnoreOfferCommand}"
-                                FontFamily="{DynamicResource DefaultFontFamily}"
-                                FontSize="15"
-                                HorizontalOptions="Fill"
-                                MaximumHeightRequest="50"
+                                Style="{DynamicResource ExportButtonStyle}"
                                 Text="Ignore offer!"
-                                TextColor="{DynamicResource LoanAppPurchaseButtonSecondaryFgColor}"
-                                VerticalOptions="Fill" />
+                                TextColor="{DynamicResource LoanAppPurchaseButtonSecondaryFgColor}" />
                         </StackLayout>
                     </StackLayout>
                 </ScrollView>

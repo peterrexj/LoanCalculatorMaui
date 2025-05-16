@@ -125,7 +125,7 @@ namespace LoanCalculator.Core.Models.ViewModels
             IncomeExpenseEntry.Id = Guid.Empty;
         }
 
-        public Incomes TransactionRecords { get; set; }
+        public Incomes? TransactionRecords { get; set; }
 
         [JsonIgnore]
         public ObservableCollection<string> IncomeFrequencyCollection { get; set; }

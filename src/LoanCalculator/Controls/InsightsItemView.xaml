@@ -8,7 +8,12 @@
             x:Name="InnerInsightsValueLabel"
             Margin="15,5,0,0"
             FontAttributes="Bold"
-            FontSize="22"
+            FontSize="{OnIdiom Phone=22,
+                               Tablet=30,
+                               Desktop=30,
+                               TV=30,
+                               Watch=15,
+                               Default=22}"
             VerticalOptions="Center" />
         <Label
             x:Name="InnerInsightsLabel"
@@ -21,9 +26,14 @@
                     <Span
                         x:Name="InnerInsightsNameLabel"
                         FontAttributes="Bold"
-                        FontSize="16" />
+                        FontSize="{OnIdiom Phone=16,
+                                           Tablet=24,
+                                           Desktop=24,
+                                           TV=24,
+                                           Watch=12,
+                                           Default=16}" />
                     <Span Text="  " />
-                    <Span x:Name="InnerInsightsDescriptionLabel" FontSize="12" />
+                    <Span x:Name="InnerInsightsDescriptionLabel" FontSize="{OnIdiom Phone=12, Tablet=22, Desktop=22, TV=22, Watch=12, Default=12}" />
                 </FormattedString>
             </Label.FormattedText>
         </Label>

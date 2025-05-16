@@ -28,7 +28,7 @@
                             BackgroundColor="Transparent"
                             FontAttributes="Bold"
                             FontFamily="{DynamicResource DefaultFontFamily}"
-                            FontSize="18"
+                            FontSize="{OnPlatform Android={OnIdiom Phone=18, Tablet=23, Desktop=23, TV=23, Watch=14}, iOS={OnIdiom Phone=18, Tablet=23, Desktop=23, TV=23, Watch=14}, Default=18}"
                             HorizontalTextAlignment="Center"
                             Text="Disclaimer"
                             TextColor="{DynamicResource LoanAppDefaultForegroundColor}"
@@ -44,7 +44,7 @@
                             Command="{Binding PopupCloseCommand}"
                             FontAttributes="Bold"
                             FontFamily="{DynamicResource DefaultFontFamily}"
-                            FontSize="16"
+                            FontSize="{OnPlatform Android={OnIdiom Phone=16, Tablet=21, Desktop=21, TV=21, Watch=14}, iOS={OnIdiom Phone=16, Tablet=21, Desktop=21, TV=21, Watch=14}, Default=16}"
                             IsVisible="{Binding IsActive}"
                             Text="Close"
                             TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
@@ -82,11 +82,11 @@
                 <StackLayout Grid.Column="1" Padding="10,0,0,0">
                     <Label
                         FontAttributes="Bold"
-                        FontSize="24"
+                        FontSize="{OnPlatform Android={OnIdiom Phone=24, Tablet=29, Desktop=29, TV=29, Watch=20}, iOS={OnIdiom Phone=24, Tablet=29, Desktop=29, TV=29, Watch=20}, Default=24}"
                         Text="Settings"
                         TextColor="{DynamicResource LoanAppAppShellFgColor}" />
                     <Label
-                        FontSize="14"
+                        FontSize="{OnPlatform Android={OnIdiom Phone=14, Tablet=19, Desktop=19, TV=19, Watch=12}, iOS={OnIdiom Phone=14, Tablet=19, Desktop=19, TV=19, Watch=12}, Default=14}"
                         Text="Manage your preferences"
                         TextColor="{DynamicResource LoanAppAppShellFgColor}" />
                 </StackLayout>
@@ -97,7 +97,7 @@
                 <!--  Theme Selector  -->
                 <Label
                     Margin="0,20,0,0"
-                    FontSize="Small"
+                    FontSize="{OnPlatform Android={OnIdiom Phone=14, Tablet=19, Desktop=19, TV=19, Watch=12}, iOS={OnIdiom Phone=14, Tablet=19, Desktop=19, TV=19, Watch=12}, Default=14}"
                     Text="Select Theme"
                     TextColor="{DynamicResource LoanAppAppShellFgColor}" />
                 <editors:SfComboBox
@@ -109,7 +109,7 @@
 
                 <Label
                     Margin="0,20,0,0"
-                    FontSize="Small"
+                    FontSize="{OnPlatform Android={OnIdiom Phone=14, Tablet=19, Desktop=19, TV=19, Watch=12}, iOS={OnIdiom Phone=14, Tablet=19, Desktop=19, TV=19, Watch=12}, Default=14}"
                     Text="Disclaimer"
                     TextColor="{DynamicResource LoanAppAppShellFgColor}" />
 

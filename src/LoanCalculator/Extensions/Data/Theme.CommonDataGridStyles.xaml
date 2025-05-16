@@ -3,7 +3,7 @@
 <ResourceDictionary xmlns="http://schemas.microsoft.com/dotnet/2021/maui" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
 
     <Style x:Key="LabelHeaderDataGridCell" TargetType="Label">
-        <Setter Property="FontSize" Value="11" />
+        <Setter Property="FontSize" Value="{OnPlatform Android={OnIdiom Phone=11, Tablet=20, Desktop=20, TV=20, Watch=9}, iOS={OnIdiom Phone=11, Tablet=20, Desktop=20, TV=20, Watch=9}, Default=11}" />
         <Setter Property="HorizontalTextAlignment" Value="Center" />
         <Setter Property="VerticalTextAlignment" Value="Center" />
         <Setter Property="Background" Value="{DynamicResource LoanAppDataGridHeaderBackgroundColor}" />
@@ -11,7 +11,7 @@
     </Style>
 
     <Style x:Key="LabelInsideDataGridCell" TargetType="Label">
-        <Setter Property="FontSize" Value="11" />
+        <Setter Property="FontSize" Value="{OnPlatform Android={OnIdiom Phone=11, Tablet=18, Desktop=18, TV=18, Watch=9}, iOS={OnIdiom Phone=11, Tablet=18, Desktop=18, TV=18, Watch=9}, Default=11}" />
         <Setter Property="HorizontalTextAlignment" Value="Center" />
         <Setter Property="VerticalTextAlignment" Value="Center" />
     </Style>

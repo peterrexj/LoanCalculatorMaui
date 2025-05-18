@@ -23,7 +23,7 @@
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
 
-                <!--  {OnPlatform Android={OnIdiom Phone='0,0,0,0', Tablet='3,6,3,20'}, iOS={OnIdiom Phone='0,0,0,0', Tablet='3,0,3,0'}, Default='0,0,0,0'}  -->
+                <!--  {OnIdiom Phone='0,0,0,0', Tablet='3,6,3,20', Default='0,0,0,0'}  -->
 
                 <Border
                     Grid.Row="0"
@@ -58,11 +58,11 @@
 
                 <Border
                     Grid.Column="2"
-                    Margin="{OnPlatform Android={OnIdiom Phone='5,0,5,0',
-                                                         Tablet='10,0,10,0'},
-                                        iOS={OnIdiom Phone='5,0,5,0',
-                                                     Tablet='10,0,10,0'},
-                                        Default='5,0,5,0'}"
+                    Margin="{OnIdiom Phone='5,0,5,0',
+                                     Tablet='10,0,10,0',
+                                     Desktop='10,0,10,0',
+                                     TV='10,0,10,0',
+                                     Default='5,0,5,0'}"
                     Style="{DynamicResource BorderTopHighlightBox}">
                     <ContentView>
                         <Grid HorizontalOptions="Center" VerticalOptions="Center">

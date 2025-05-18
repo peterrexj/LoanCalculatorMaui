@@ -28,7 +28,12 @@
                             BackgroundColor="Transparent"
                             FontAttributes="Bold"
                             FontFamily="{DynamicResource DefaultFontFamily}"
-                            FontSize="{OnPlatform Android={OnIdiom Phone=18, Tablet=23, Desktop=23, TV=23, Watch=14}, iOS={OnIdiom Phone=18, Tablet=23, Desktop=23, TV=23, Watch=14}, Default=18}"
+                            FontSize="{OnIdiom Phone=18,
+                                               Tablet=23,
+                                               Desktop=23,
+                                               TV=23,
+                                               Watch=14,
+                                               Default=18}"
                             HorizontalTextAlignment="Center"
                             Text="Disclaimer"
                             TextColor="{DynamicResource LoanAppDefaultForegroundColor}"
@@ -44,7 +49,12 @@
                             Command="{Binding PopupCloseCommand}"
                             FontAttributes="Bold"
                             FontFamily="{DynamicResource DefaultFontFamily}"
-                            FontSize="{OnPlatform Android={OnIdiom Phone=16, Tablet=21, Desktop=21, TV=21, Watch=14}, iOS={OnIdiom Phone=16, Tablet=21, Desktop=21, TV=21, Watch=14}, Default=16}"
+                            FontSize="{OnIdiom Phone=16,
+                                               Tablet=21,
+                                               Desktop=21,
+                                               TV=21,
+                                               Watch=14,
+                                               Default=16}"
                             IsVisible="{Binding IsActive}"
                             Text="Close"
                             TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
@@ -82,11 +92,21 @@
                 <StackLayout Grid.Column="1" Padding="10,0,0,0">
                     <Label
                         FontAttributes="Bold"
-                        FontSize="{OnPlatform Android={OnIdiom Phone=24, Tablet=29, Desktop=29, TV=29, Watch=20}, iOS={OnIdiom Phone=24, Tablet=29, Desktop=29, TV=29, Watch=20}, Default=24}"
+                        FontSize="{OnIdiom Phone=24,
+                                           Tablet=29,
+                                           Desktop=29,
+                                           TV=29,
+                                           Watch=20,
+                                           Default=24}"
                         Text="Settings"
                         TextColor="{DynamicResource LoanAppAppShellFgColor}" />
                     <Label
-                        FontSize="{OnPlatform Android={OnIdiom Phone=14, Tablet=19, Desktop=19, TV=19, Watch=12}, iOS={OnIdiom Phone=14, Tablet=19, Desktop=19, TV=19, Watch=12}, Default=14}"
+                        FontSize="{OnIdiom Phone=14,
+                                           Tablet=19,
+                                           Desktop=19,
+                                           TV=19,
+                                           Watch=12,
+                                           Default=14}"
                         Text="Manage your preferences"
                         TextColor="{DynamicResource LoanAppAppShellFgColor}" />
                 </StackLayout>
@@ -97,7 +117,12 @@
                 <!--  Theme Selector  -->
                 <Label
                     Margin="0,20,0,0"
-                    FontSize="{OnPlatform Android={OnIdiom Phone=14, Tablet=19, Desktop=19, TV=19, Watch=12}, iOS={OnIdiom Phone=14, Tablet=19, Desktop=19, TV=19, Watch=12}, Default=14}"
+                    FontSize="{OnIdiom Phone=14,
+                                       Tablet=19,
+                                       Desktop=19,
+                                       TV=19,
+                                       Watch=12,
+                                       Default=14}"
                     Text="Select Theme"
                     TextColor="{DynamicResource LoanAppAppShellFgColor}" />
                 <editors:SfComboBox
@@ -107,17 +132,29 @@
                     Style="{DynamicResource SfComboBoxStyle}" />
 
 
-                <Label
+                <!--<Label
                     Margin="0,20,0,0"
-                    FontSize="{OnPlatform Android={OnIdiom Phone=14, Tablet=19, Desktop=19, TV=19, Watch=12}, iOS={OnIdiom Phone=14, Tablet=19, Desktop=19, TV=19, Watch=12}, Default=14}"
+                    FontSize="{OnIdiom Phone=14, Tablet=19, Desktop=19, TV=19, Default=14}"
                     Text="Disclaimer"
-                    TextColor="{DynamicResource LoanAppAppShellFgColor}" />
+                    TextColor="{DynamicResource LoanAppAppShellFgColor}" />-->
 
                 <Button
                     Margin="0,10,10,0"
                     Command="{Binding ShowDisclaimerCommand}"
                     Style="{DynamicResource MauiButtonStyle}"
-                    Text="View" />
+                    Text="Privacy policy" />
+
+                <Button
+                    Margin="0,10,10,0"
+                    Command="{Binding ShowDisclaimerCommand}"
+                    Style="{DynamicResource MauiButtonStyle}"
+                    Text="Share the app" />
+
+                <Button
+                    Margin="0,10,10,0"
+                    Command="{Binding ShowDisclaimerCommand}"
+                    Style="{DynamicResource MauiButtonStyle}"
+                    Text="Send feedback" />
 
                 <expander:SfExpander
                     Margin="0,15,0,0"
@@ -125,7 +162,7 @@
                     Style="{DynamicResource CommonExpanderStyle}">
                     <expander:SfExpander.Header>
                         <Grid>
-                            <Label Style="{DynamicResource ExpanderHeaderLabelStyle}" Text="Clear Data" />
+                            <Label Style="{DynamicResource ExpanderHeaderLabelStyle}" Text="Delete your data" />
                         </Grid>
                     </expander:SfExpander.Header>
                     <expander:SfExpander.Content>

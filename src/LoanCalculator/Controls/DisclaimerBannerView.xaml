@@ -11,7 +11,7 @@
             <Label Style="{DynamicResource ExpanderHeaderLabelStyle}" Text="{Binding HeaderText, Source={x:Reference DisclaimerBannerContentView}}" />
         </expander:SfExpander.Header>
         <expander:SfExpander.Content>
-            <Grid HorizontalOptions="Center" VerticalOptions="Center">
+            <Grid HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
                 <Grid.Style>
                     <Style TargetType="Grid">
                         <Style.Triggers>
@@ -36,21 +36,21 @@
                 <Label
                     Grid.Row="0"
                     Grid.Column="0"
-                    Padding="{OnPlatform Android={OnIdiom Phone='5,5,5,5', Tablet='20,5,5,5', Desktop='20,5,5,5', TV='20,5,5,5', Watch='20,5,5,5'}, iOS={OnIdiom Phone='5,5,5,5', Tablet='20,5,5,5', Desktop='20,5,5,5', TV='20,5,5,5', Watch='20,5,5,5'}, Default='5,5,5,5'}"
+                    Padding="{OnIdiom Phone='5,5,5,5',
+                                      Tablet='20,5,5,5',
+                                      Desktop='20,5,5,5',
+                                      TV='20,5,5,5',
+                                      Watch='20,5,5,5',
+                                      Default='5,5,5,5'}"
                     FontAttributes="Italic, Bold"
                     FontAutoScalingEnabled="True"
                     FontFamily="{DynamicResource DefaultFontFamily}"
-                    FontSize="{OnPlatform Android={OnIdiom Phone=12,
-                                                           Tablet=22,
-                                                           Desktop=20,
-                                                           TV=20,
-                                                           Watch=10},
-                                          iOS={OnIdiom Phone=12,
-                                                       Tablet=20,
-                                                       Desktop=20,
-                                                       TV=20,
-                                                       Watch=10},
-                                          Default=12}"
+                    FontSize="{OnIdiom Phone=12,
+                                       Tablet=22,
+                                       Desktop=20,
+                                       TV=20,
+                                       Watch=10,
+                                       Default=12}"
                     HorizontalOptions="Center"
                     HorizontalTextAlignment="Start"
                     Text="{Binding Text, Source={x:Reference Name=DisclaimerBannerContentView}}"

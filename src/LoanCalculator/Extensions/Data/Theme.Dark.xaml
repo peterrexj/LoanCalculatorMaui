@@ -147,6 +147,16 @@
     <Color x:Key="LoanAppBorderInsightsGradientBackgroundEnd">#374e45</Color>
     <Color x:Key="LoanAppInsightsFgColor">#8ca89d</Color>
 
+    <!--  Expander styles - cannot move this cuz of the initialization failure, need to repeat in all themes  -->
+    <LinearGradientBrush x:Key="BorderInsightsGradientBrush" StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Offset="0.0" Color="{StaticResource LoanAppBorderInsightsGradientOuterLineStart}" />
+        <GradientStop Offset="1.0" Color="{StaticResource LoanAppBorderInsightsGradientOuterLineEnd}" />
+    </LinearGradientBrush>
+    <LinearGradientBrush x:Key="BorderInsightsBackgroundGradientBrush" StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Offset="0.0" Color="{StaticResource LoanAppBorderInsightsGradientBackgroundStart}" />
+        <GradientStop Offset="1.0" Color="{StaticResource LoanAppBorderInsightsGradientBackgroundEnd}" />
+    </LinearGradientBrush>
+
     <!--  Expander styles  -->
     <Color x:Key="LoanAppExpanderExpandedGradientStart">#3a4642</Color>
     <Color x:Key="LoanAppExpanderExpandedGradientEnd">#758d84</Color>
@@ -167,6 +177,19 @@
 
     <!--  Checkbox styles  -->
     <Color x:Key="LoanAppCheckboxBackColor">#b3c8c0</Color>
+
+    <!--  Notification background brush  -->
+    <RadialGradientBrush x:Key="InformationBackgroundGradientBrush" Center="0.5,0.5" Radius="0.5">
+        <GradientStop Offset="0.0" Color="{StaticResource LoanAppNotificationInformationBgGradientStart}" />
+        <GradientStop Offset="0.7" Color="{StaticResource LoanAppNotificationInformationBgGradientStart}" />
+        <GradientStop Offset="1.0" Color="{StaticResource LoanAppNotificationInformationBgGradientEnd}" />
+    </RadialGradientBrush>
+    <!--  Notification background brush  -->
+    <RadialGradientBrush x:Key="WarningBackgroundGradientBrush" Center="0.5,0.5" Radius="0.5">
+        <GradientStop Offset="0.0" Color="{StaticResource LoanAppNotificationWarningBgGradientStart}" />
+        <GradientStop Offset="0.7" Color="{StaticResource LoanAppNotificationWarningBgGradientStart}" />
+        <GradientStop Offset="1.0" Color="{StaticResource LoanAppNotificationWarningBgGradientEnd}" />
+    </RadialGradientBrush>
 
     <!--  Disclaimer  -->
     <!--<Color x:Key="LoanAppDisclaimerBodyBackgroundColor">#758d84</Color>-->

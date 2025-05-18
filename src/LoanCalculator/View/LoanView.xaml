@@ -50,32 +50,22 @@
                                             <Span Style="{DynamicResource SpanThreeBoxTextStyle}" Text="{Binding RepaymentFrequencySelected}" />
                                             <Span Text=" " />
                                             <Span
-                                                FontSize="{OnPlatform Android={OnIdiom Phone=15,
-                                                                                       Tablet=26,
-                                                                                       Desktop=26,
-                                                                                       TV=26,
-                                                                                       Watch=13},
-                                                                      iOS={OnIdiom Phone=15,
-                                                                                   Tablet=26,
-                                                                                   Desktop=26,
-                                                                                   TV=26,
-                                                                                   Watch=13},
-                                                                      Default=15}"
+                                                FontSize="{OnIdiom Phone=15,
+                                                                   Tablet=26,
+                                                                   Desktop=26,
+                                                                   TV=26,
+                                                                   Watch=13,
+                                                                   Default=15}"
                                                 Style="{DynamicResource SpanThreeBoxAmountStyle}"
                                                 Text="{Binding LoanTermInYears}" />
                                             <Span Style="{DynamicResource SpanThreeBoxTextStyle}" Text=" years with a deposit of " />
                                             <Span
-                                                FontSize="{OnPlatform Android={OnIdiom Phone=15,
-                                                                                       Tablet=26,
-                                                                                       Desktop=26,
-                                                                                       TV=26,
-                                                                                       Watch=13},
-                                                                      iOS={OnIdiom Phone=15,
-                                                                                   Tablet=26,
-                                                                                   Desktop=26,
-                                                                                   TV=26,
-                                                                                   Watch=13},
-                                                                      Default=15}"
+                                                FontSize="{OnIdiom Phone=15,
+                                                                   Tablet=26,
+                                                                   Desktop=26,
+                                                                   TV=26,
+                                                                   Watch=13,
+                                                                   Default=15}"
                                                 Style="{DynamicResource SpanThreeBoxAmountStyle}"
                                                 Text="{Binding DepositAmountStrFormatted}" />
                                         </FormattedString>
@@ -86,17 +76,12 @@
                                             <Span Style="{DynamicResource SpanThreeBoxAmountStyle}" Text="{Binding HomeLoanInfo.PaymentSummary.Payment.TotalInterestPaymentRoundedWithComma}" />
                                             <Span Style="{DynamicResource SpanThreeBoxTextStyle}" Text=" total interest payable over " />
                                             <Span
-                                                FontSize="{OnPlatform Android={OnIdiom Phone=15,
-                                                                                       Tablet=26,
-                                                                                       Desktop=26,
-                                                                                       TV=26,
-                                                                                       Watch=13},
-                                                                      iOS={OnIdiom Phone=15,
-                                                                                   Tablet=26,
-                                                                                   Desktop=26,
-                                                                                   TV=26,
-                                                                                   Watch=13},
-                                                                      Default=15}"
+                                                FontSize="{OnIdiom Phone=15,
+                                                                   Tablet=26,
+                                                                   Desktop=26,
+                                                                   TV=26,
+                                                                   Watch=13,
+                                                                   Default=15}"
                                                 Style="{DynamicResource SpanThreeBoxAmountStyle}"
                                                 Text="{Binding LoanTermInYears}" />
                                             <Span Style="{DynamicResource SpanThreeBoxTextStyle}" Text=" years" />
@@ -113,7 +98,7 @@
 
                                 <FlexLayout>
                                     <Border Style="{DynamicResource BorderControlHighlightBox}">
-                                        <StackLayout Margin="{OnPlatform Android={OnIdiom Phone='5,0,5,0', Tablet='20,10,20,10', Desktop='20,10,20,10', TV='20,10,20,10'}, iOS={OnIdiom Phone='5,0,5,0', Tablet='20,10,20,10', Desktop='20,10,20,10', TV='20,10,20,10'}, Default='5,0,5,0'}">
+                                        <StackLayout Margin="{OnIdiom Phone='5,0,5,0', Tablet='20,10,20,10', Desktop='20,10,20,10', TV='20,10,20,10', Default='5,0,5,0'}">
 
                                             <Grid Margin="5,0,5,0">
                                                 <Grid.ColumnDefinitions>
@@ -129,17 +114,12 @@
                                                     Style="{DynamicResource CommonTextInputLayoutStyle}">
                                                     <editors:SfNumericEntry
                                                         CustomFormat="c0"
-                                                        FontSize="{OnPlatform Android={OnIdiom Phone=20,
-                                                                                               Tablet=25,
-                                                                                               Desktop=25,
-                                                                                               TV=25,
-                                                                                               Watch=18},
-                                                                              iOS={OnIdiom Phone=20,
-                                                                                           Tablet=25,
-                                                                                           Desktop=25,
-                                                                                           TV=25,
-                                                                                           Watch=18},
-                                                                              Default=20}"
+                                                        FontSize="{OnIdiom Phone=20,
+                                                                           Tablet=25,
+                                                                           Desktop=25,
+                                                                           TV=25,
+                                                                           Watch=18,
+                                                                           Default=20}"
                                                         MaximumNumberDecimalDigits="0"
                                                         TextColor="{DynamicResource LoanAppInputTextFgColor}"
                                                         Value="{Binding PropertyAmount}" />
@@ -150,34 +130,24 @@
                                                     HorizontalOptions="Center"
                                                     VerticalOptions="Center">
                                                     <Label
-                                                        FontSize="{OnPlatform Android={OnIdiom Phone=12,
-                                                                                               Tablet=17,
-                                                                                               Desktop=17,
-                                                                                               TV=17,
-                                                                                               Watch=10},
-                                                                              iOS={OnIdiom Phone=12,
-                                                                                           Tablet=17,
-                                                                                           Desktop=17,
-                                                                                           TV=17,
-                                                                                           Watch=10},
-                                                                              Default=12}"
+                                                        FontSize="{OnIdiom Phone=12,
+                                                                           Tablet=17,
+                                                                           Desktop=17,
+                                                                           TV=17,
+                                                                           Watch=10,
+                                                                           Default=12}"
                                                         HorizontalOptions="Start"
                                                         Text="Total property amount"
                                                         TextColor="{DynamicResource LoanAppInputTextFgColor}"
                                                         VerticalOptions="Center" />
                                                     <Label
                                                         FontAttributes="Bold"
-                                                        FontSize="{OnPlatform Android={OnIdiom Phone=16,
-                                                                                               Tablet=21,
-                                                                                               Desktop=21,
-                                                                                               TV=21,
-                                                                                               Watch=14},
-                                                                              iOS={OnIdiom Phone=16,
-                                                                                           Tablet=21,
-                                                                                           Desktop=21,
-                                                                                           TV=21,
-                                                                                           Watch=14},
-                                                                              Default=16}"
+                                                        FontSize="{OnIdiom Phone=16,
+                                                                           Tablet=21,
+                                                                           Desktop=21,
+                                                                           TV=21,
+                                                                           Watch=14,
+                                                                           Default=16}"
                                                         HorizontalOptions="Start"
                                                         Text="{Binding PropertyTotalAmount}"
                                                         TextColor="{DynamicResource LoanAppInputTextFgColor}"
@@ -201,17 +171,12 @@
                                                     Style="{DynamicResource CommonTextInputLayoutStyle}">
                                                     <editors:SfNumericEntry
                                                         CustomFormat="##0.##'%'"
-                                                        FontSize="{OnPlatform Android={OnIdiom Phone=20,
-                                                                                               Tablet=25,
-                                                                                               Desktop=25,
-                                                                                               TV=25,
-                                                                                               Watch=18},
-                                                                              iOS={OnIdiom Phone=20,
-                                                                                           Tablet=25,
-                                                                                           Desktop=25,
-                                                                                           TV=25,
-                                                                                           Watch=18},
-                                                                              Default=20}"
+                                                        FontSize="{OnIdiom Phone=20,
+                                                                           Tablet=25,
+                                                                           Desktop=25,
+                                                                           TV=25,
+                                                                           Watch=18,
+                                                                           Default=20}"
                                                         HorizontalTextAlignment="Center"
                                                         LargeChange="1"
                                                         Maximum="100"
@@ -231,17 +196,12 @@
                                                     Style="{DynamicResource CommonTextInputLayoutStyle}">
                                                     <editors:SfNumericEntry
                                                         CustomFormat="00"
-                                                        FontSize="{OnPlatform Android={OnIdiom Phone=20,
-                                                                                               Tablet=25,
-                                                                                               Desktop=25,
-                                                                                               TV=25,
-                                                                                               Watch=18},
-                                                                              iOS={OnIdiom Phone=20,
-                                                                                           Tablet=25,
-                                                                                           Desktop=25,
-                                                                                           TV=25,
-                                                                                           Watch=18},
-                                                                              Default=20}"
+                                                        FontSize="{OnIdiom Phone=20,
+                                                                           Tablet=25,
+                                                                           Desktop=25,
+                                                                           TV=25,
+                                                                           Watch=18,
+                                                                           Default=20}"
                                                         HorizontalTextAlignment="Center"
                                                         LargeChange="5"
                                                         Maximum="30"
@@ -298,7 +258,7 @@
                                     </expander:SfExpander.Header>
                                     <expander:SfExpander.Content>
                                         <Border Style="{DynamicResource BorderControlHighlightBox}">
-                                            <Grid Margin="{OnPlatform Android={OnIdiom Phone='5,0,5,0', Tablet='20,10,20,10', Desktop='20,10,20,10', TV='20,10,20,10'}, iOS={OnIdiom Phone='5,0,5,0', Tablet='20,10,20,10', Desktop='20,10,20,10', TV='20,10,20,10'}, Default='5,0,5,0'}">
+                                            <Grid Margin="{OnIdiom Phone='5,0,5,0', Tablet='20,10,20,10', Desktop='20,10,20,10', TV='20,10,20,10', Default='5,0,5,0'}">
                                                 <Grid.ColumnDefinitions>
                                                     <ColumnDefinition Width="50*" />
                                                     <ColumnDefinition Width="50*" />
@@ -316,17 +276,12 @@
                                                     Style="{DynamicResource CommonTextInputLayoutStyle}">
                                                     <editors:SfNumericEntry
                                                         CustomFormat="c0"
-                                                        FontSize="{OnPlatform Android={OnIdiom Phone=20,
-                                                                                               Tablet=25,
-                                                                                               Desktop=25,
-                                                                                               TV=25,
-                                                                                               Watch=18},
-                                                                              iOS={OnIdiom Phone=20,
-                                                                                           Tablet=25,
-                                                                                           Desktop=25,
-                                                                                           TV=25,
-                                                                                           Watch=18},
-                                                                              Default=20}"
+                                                        FontSize="{OnIdiom Phone=20,
+                                                                           Tablet=25,
+                                                                           Desktop=25,
+                                                                           TV=25,
+                                                                           Watch=18,
+                                                                           Default=20}"
                                                         MaximumNumberDecimalDigits="0"
                                                         ShowClearButton="False"
                                                         TextColor="{DynamicResource LoanAppInputTextFgColor}"
@@ -342,17 +297,12 @@
                                                     Style="{DynamicResource CommonTextInputLayoutStyle}">
                                                     <editors:SfNumericEntry
                                                         CustomFormat="C0"
-                                                        FontSize="{OnPlatform Android={OnIdiom Phone=20,
-                                                                                               Tablet=25,
-                                                                                               Desktop=25,
-                                                                                               TV=25,
-                                                                                               Watch=18},
-                                                                              iOS={OnIdiom Phone=20,
-                                                                                           Tablet=25,
-                                                                                           Desktop=25,
-                                                                                           TV=25,
-                                                                                           Watch=18},
-                                                                              Default=20}"
+                                                        FontSize="{OnIdiom Phone=20,
+                                                                           Tablet=25,
+                                                                           Desktop=25,
+                                                                           TV=25,
+                                                                           Watch=18,
+                                                                           Default=20}"
                                                         MaximumNumberDecimalDigits="0"
                                                         ShowClearButton="False"
                                                         TextColor="{DynamicResource LoanAppInputTextFgColor}"
@@ -372,17 +322,12 @@
                                                             Color="{DynamicResource LoanAppCheckboxBackColor}" />
                                                         <Label
                                                             Margin="0,0,0,0"
-                                                            FontSize="{OnPlatform Android={OnIdiom Phone=12,
-                                                                                                   Tablet=17,
-                                                                                                   Desktop=17,
-                                                                                                   TV=17,
-                                                                                                   Watch=10},
-                                                                                  iOS={OnIdiom Phone=12,
-                                                                                               Tablet=17,
-                                                                                               Desktop=17,
-                                                                                               TV=17,
-                                                                                               Watch=10},
-                                                                                  Default=12}"
+                                                            FontSize="{OnIdiom Phone=12,
+                                                                               Tablet=17,
+                                                                               Desktop=17,
+                                                                               TV=17,
+                                                                               Watch=10,
+                                                                               Default=12}"
                                                             Text="Enable"
                                                             TextColor="{DynamicResource LoanAppDefaultForegroundColor}"
                                                             VerticalOptions="Center">
@@ -392,17 +337,12 @@
                                                         </Label>
                                                     </HorizontalStackLayout>
                                                     <Label
-                                                        FontSize="{OnPlatform Android={OnIdiom Phone=12,
-                                                                                               Tablet=17,
-                                                                                               Desktop=17,
-                                                                                               TV=17,
-                                                                                               Watch=10},
-                                                                              iOS={OnIdiom Phone=12,
-                                                                                           Tablet=17,
-                                                                                           Desktop=17,
-                                                                                           TV=17,
-                                                                                           Watch=10},
-                                                                              Default=12}"
+                                                        FontSize="{OnIdiom Phone=12,
+                                                                           Tablet=17,
+                                                                           Desktop=17,
+                                                                           TV=17,
+                                                                           Watch=10,
+                                                                           Default=12}"
                                                         Text="Deposit Percentage"
                                                         TextColor="{DynamicResource LoanAppDefaultForegroundColor}"
                                                         VerticalOptions="Center" />
@@ -426,30 +366,20 @@
                                                         <range:SfSlider.LabelStyle>
                                                             <range:SliderLabelStyle
                                                                 ActiveFontFamily="{DynamicResource DefaultFontFamily}"
-                                                                ActiveFontSize="{OnPlatform Android={OnIdiom Phone=12,
-                                                                                                             Tablet=17,
-                                                                                                             Desktop=17,
-                                                                                                             TV=17,
-                                                                                                             Watch=10},
-                                                                                            iOS={OnIdiom Phone=12,
-                                                                                                         Tablet=17,
-                                                                                                         Desktop=17,
-                                                                                                         TV=17,
-                                                                                                         Watch=10},
-                                                                                            Default=12}"
+                                                                ActiveFontSize="{OnIdiom Phone=12,
+                                                                                         Tablet=17,
+                                                                                         Desktop=17,
+                                                                                         TV=17,
+                                                                                         Watch=10,
+                                                                                         Default=12}"
                                                                 ActiveTextColor="{DynamicResource LoanAppRangeSliderLabelTextColor}"
                                                                 InactiveFontFamily="{DynamicResource DefaultFontFamily}"
-                                                                InactiveFontSize="{OnPlatform Android={OnIdiom Phone=12,
-                                                                                                               Tablet=17,
-                                                                                                               Desktop=17,
-                                                                                                               TV=17,
-                                                                                                               Watch=10},
-                                                                                              iOS={OnIdiom Phone=12,
-                                                                                                           Tablet=17,
-                                                                                                           Desktop=17,
-                                                                                                           TV=17,
-                                                                                                           Watch=10},
-                                                                                              Default=12}"
+                                                                InactiveFontSize="{OnIdiom Phone=12,
+                                                                                           Tablet=17,
+                                                                                           Desktop=17,
+                                                                                           TV=17,
+                                                                                           Watch=10,
+                                                                                           Default=12}"
                                                                 InactiveTextColor="{DynamicResource LoanAppRangeSliderLabelTextColor}" />
                                                         </range:SfSlider.LabelStyle>
                                                         <range:SfSlider.TrackStyle>
@@ -482,7 +412,7 @@
                                     </expander:SfExpander.Header>
                                     <expander:SfExpander.Content>
                                         <Border Style="{DynamicResource BorderControlHighlightBox}">
-                                            <Grid Margin="{OnPlatform Android={OnIdiom Phone='5,0,5,0', Tablet='20,10,20,10', Desktop='20,10,20,10', TV='20,10,20,10'}, iOS={OnIdiom Phone='5,0,5,0', Tablet='20,10,20,10', Desktop='20,10,20,10', TV='20,10,20,10'}, Default='5,0,5,0'}">
+                                            <Grid Margin="{OnIdiom Phone='5,0,5,0', Tablet='20,10,20,10', Desktop='20,10,20,10', TV='20,10,20,10', Default='5,0,5,0'}">
                                                 <Grid.ColumnDefinitions>
                                                     <ColumnDefinition Width="50*" />
                                                     <ColumnDefinition Width="50*" />
@@ -490,9 +420,9 @@
 
                                                 <Grid.RowDefinitions>
                                                     <RowDefinition Height="{Binding HeightOfGridRowToggledByCountryOnStampDuty}" />
-                                                    <RowDefinition Height="{OnPlatform Android={OnIdiom Phone=70, Tablet=85, Desktop=85, TV=85, Watch=85}, iOS={OnIdiom Phone=70, Tablet=85, Desktop=85, TV=85, Watch=70}, Default=70}" />
-                                                    <RowDefinition Height="{OnPlatform Android={OnIdiom Phone=70, Tablet=85, Desktop=85, TV=85, Watch=85}, iOS={OnIdiom Phone=70, Tablet=85, Desktop=85, TV=85, Watch=70}, Default=70}" />
-                                                    <RowDefinition Height="{OnPlatform Android={OnIdiom Phone=70, Tablet=85, Desktop=85, TV=85, Watch=85}, iOS={OnIdiom Phone=70, Tablet=85, Desktop=85, TV=85, Watch=70}, Default=70}" />
+                                                    <RowDefinition Height="{OnIdiom Phone=70, Tablet=85, Desktop=85, TV=85, Watch=85, Default=70}" />
+                                                    <RowDefinition Height="{OnIdiom Phone=70, Tablet=85, Desktop=85, TV=85, Watch=85, Default=70}" />
+                                                    <RowDefinition Height="{OnIdiom Phone=70, Tablet=85, Desktop=85, TV=85, Watch=85, Default=70}" />
                                                 </Grid.RowDefinitions>
 
                                                 <buttons:SfSegmentedControl
@@ -514,17 +444,12 @@
                                                     Style="{DynamicResource CommonTextInputLayoutStyle}">
                                                     <editors:SfNumericEntry
                                                         CustomFormat="c0"
-                                                        FontSize="{OnPlatform Android={OnIdiom Phone=20,
-                                                                                               Tablet=25,
-                                                                                               Desktop=25,
-                                                                                               TV=25,
-                                                                                               Watch=18},
-                                                                              iOS={OnIdiom Phone=20,
-                                                                                           Tablet=25,
-                                                                                           Desktop=25,
-                                                                                           TV=25,
-                                                                                           Watch=18},
-                                                                              Default=20}"
+                                                        FontSize="{OnIdiom Phone=20,
+                                                                           Tablet=25,
+                                                                           Desktop=25,
+                                                                           TV=25,
+                                                                           Watch=18,
+                                                                           Default=20}"
                                                         MaximumNumberDecimalDigits="0"
                                                         ShowClearButton="False"
                                                         TextColor="{DynamicResource LoanAppInputTextFgColor}"
@@ -539,17 +464,12 @@
                                                     Style="{DynamicResource CommonTextInputLayoutStyle}">
                                                     <editors:SfNumericEntry
                                                         CustomFormat="c0"
-                                                        FontSize="{OnPlatform Android={OnIdiom Phone=20,
-                                                                                               Tablet=25,
-                                                                                               Desktop=25,
-                                                                                               TV=25,
-                                                                                               Watch=18},
-                                                                              iOS={OnIdiom Phone=20,
-                                                                                           Tablet=25,
-                                                                                           Desktop=25,
-                                                                                           TV=25,
-                                                                                           Watch=18},
-                                                                              Default=20}"
+                                                        FontSize="{OnIdiom Phone=20,
+                                                                           Tablet=25,
+                                                                           Desktop=25,
+                                                                           TV=25,
+                                                                           Watch=18,
+                                                                           Default=20}"
                                                         MaximumNumberDecimalDigits="0"
                                                         ShowClearButton="False"
                                                         TextColor="{DynamicResource LoanAppInputTextFgColor}"
@@ -564,17 +484,12 @@
                                                     Style="{DynamicResource CommonTextInputLayoutStyle}">
                                                     <editors:SfNumericEntry
                                                         CustomFormat="c0"
-                                                        FontSize="{OnPlatform Android={OnIdiom Phone=20,
-                                                                                               Tablet=25,
-                                                                                               Desktop=25,
-                                                                                               TV=25,
-                                                                                               Watch=18},
-                                                                              iOS={OnIdiom Phone=20,
-                                                                                           Tablet=25,
-                                                                                           Desktop=25,
-                                                                                           TV=25,
-                                                                                           Watch=18},
-                                                                              Default=20}"
+                                                        FontSize="{OnIdiom Phone=20,
+                                                                           Tablet=25,
+                                                                           Desktop=25,
+                                                                           TV=25,
+                                                                           Watch=18,
+                                                                           Default=20}"
                                                         MaximumNumberDecimalDigits="0"
                                                         ShowClearButton="False"
                                                         TextColor="{DynamicResource LoanAppInputTextFgColor}"
@@ -589,17 +504,12 @@
                                                     Style="{DynamicResource CommonTextInputLayoutStyle}">
                                                     <editors:SfNumericEntry
                                                         CustomFormat="c0"
-                                                        FontSize="{OnPlatform Android={OnIdiom Phone=20,
-                                                                                               Tablet=25,
-                                                                                               Desktop=25,
-                                                                                               TV=25,
-                                                                                               Watch=18},
-                                                                              iOS={OnIdiom Phone=20,
-                                                                                           Tablet=25,
-                                                                                           Desktop=25,
-                                                                                           TV=25,
-                                                                                           Watch=18},
-                                                                              Default=20}"
+                                                        FontSize="{OnIdiom Phone=20,
+                                                                           Tablet=25,
+                                                                           Desktop=25,
+                                                                           TV=25,
+                                                                           Watch=18,
+                                                                           Default=20}"
                                                         MaximumNumberDecimalDigits="0"
                                                         ShowClearButton="False"
                                                         TextColor="{DynamicResource LoanAppInputTextFgColor}"
@@ -614,17 +524,12 @@
                                                     Style="{DynamicResource CommonTextInputLayoutStyle}">
                                                     <editors:SfNumericEntry
                                                         CustomFormat="c0"
-                                                        FontSize="{OnPlatform Android={OnIdiom Phone=20,
-                                                                                               Tablet=25,
-                                                                                               Desktop=25,
-                                                                                               TV=25,
-                                                                                               Watch=18},
-                                                                              iOS={OnIdiom Phone=20,
-                                                                                           Tablet=25,
-                                                                                           Desktop=25,
-                                                                                           TV=25,
-                                                                                           Watch=18},
-                                                                              Default=20}"
+                                                        FontSize="{OnIdiom Phone=20,
+                                                                           Tablet=25,
+                                                                           Desktop=25,
+                                                                           TV=25,
+                                                                           Watch=18,
+                                                                           Default=20}"
                                                         MaximumNumberDecimalDigits="0"
                                                         ShowClearButton="False"
                                                         TextColor="{DynamicResource LoanAppInputTextFgColor}"
@@ -639,17 +544,12 @@
                                                     Style="{DynamicResource CommonTextInputLayoutStyle}">
                                                     <editors:SfNumericEntry
                                                         CustomFormat="c0"
-                                                        FontSize="{OnPlatform Android={OnIdiom Phone=20,
-                                                                                               Tablet=25,
-                                                                                               Desktop=25,
-                                                                                               TV=25,
-                                                                                               Watch=18},
-                                                                              iOS={OnIdiom Phone=20,
-                                                                                           Tablet=25,
-                                                                                           Desktop=25,
-                                                                                           TV=25,
-                                                                                           Watch=18},
-                                                                              Default=20}"
+                                                        FontSize="{OnIdiom Phone=20,
+                                                                           Tablet=25,
+                                                                           Desktop=25,
+                                                                           TV=25,
+                                                                           Watch=18,
+                                                                           Default=20}"
                                                         MaximumNumberDecimalDigits="0"
                                                         ShowClearButton="False"
                                                         TextColor="{DynamicResource LoanAppInputTextFgColor}"
@@ -667,23 +567,18 @@
                                     JustifyContent="Center">
                                     <Border Style="{DynamicResource LoanAppChartBorderStyle}">
                                         <Border.Content>
-                                            <chart:SfCircularChart Margin="{OnPlatform Android={OnIdiom Phone='5,0,5,0', Tablet='20,10,20,10', Desktop='20,10,20,10', TV='20,10,20,10'}, iOS={OnIdiom Phone='5,0,5,0', Tablet='20,10,20,10', Desktop='20,10,20,10', TV='20,10,20,10'}, Default='5,0,5,0'}">
+                                            <chart:SfCircularChart Margin="{OnIdiom Phone='5,0,5,0', Tablet='20,10,20,10', Desktop='20,10,20,10', TV='20,10,20,10', Default='5,0,5,0'}">
                                                 <chart:SfCircularChart.Legend>
-                                                    <chart:ChartLegend Placement="{OnPlatform Android={OnIdiom Phone=Bottom, Tablet=Left}, iOS={OnIdiom Phone=Bottom, Tablet=Left}, UWP=Left}" ToggleSeriesVisibility="True">
+                                                    <chart:ChartLegend Placement="{OnIdiom Phone=Bottom, Tablet=Left, Desktop=Left, TV=Left, Default=Bottom}" ToggleSeriesVisibility="True">
                                                         <chart:ChartLegend.LabelStyle>
                                                             <chart:ChartLegendLabelStyle
                                                                 FontFamily="{DynamicResource DefaultFontFamily}"
-                                                                FontSize="{OnPlatform Android={OnIdiom Phone=10,
-                                                                                                       Tablet=18,
-                                                                                                       Desktop=18,
-                                                                                                       TV=18,
-                                                                                                       Watch=8},
-                                                                                      iOS={OnIdiom Phone=10,
-                                                                                                   Tablet=18,
-                                                                                                   Desktop=18,
-                                                                                                   TV=18,
-                                                                                                   Watch=8},
-                                                                                      Default=10}"
+                                                                FontSize="{OnIdiom Phone=10,
+                                                                                   Tablet=18,
+                                                                                   Desktop=18,
+                                                                                   TV=18,
+                                                                                   Watch=8,
+                                                                                   Default=10}"
                                                                 TextColor="{DynamicResource LoanAppChartLegendTextColor}" />
                                                         </chart:ChartLegend.LabelStyle>
                                                     </chart:ChartLegend>
@@ -704,17 +599,12 @@
                                                                 <chart:CircularDataLabelSettings.LabelStyle>
                                                                     <chart:ChartDataLabelStyle
                                                                         FontFamily="{DynamicResource DefaultFontFamily}"
-                                                                        FontSize="{OnPlatform Android={OnIdiom Phone=10,
-                                                                                                               Tablet=15,
-                                                                                                               Desktop=15,
-                                                                                                               TV=15,
-                                                                                                               Watch=8},
-                                                                                              iOS={OnIdiom Phone=10,
-                                                                                                           Tablet=15,
-                                                                                                           Desktop=15,
-                                                                                                           TV=15,
-                                                                                                           Watch=8},
-                                                                                              Default=10}"
+                                                                        FontSize="{OnIdiom Phone=10,
+                                                                                           Tablet=15,
+                                                                                           Desktop=15,
+                                                                                           TV=15,
+                                                                                           Watch=8,
+                                                                                           Default=10}"
                                                                         LabelFormat="c" />
                                                                 </chart:CircularDataLabelSettings.LabelStyle>
                                                             </chart:CircularDataLabelSettings>
@@ -727,32 +617,22 @@
                                                                         <FormattedString>
                                                                             <Span
                                                                                 FontAttributes="Bold"
-                                                                                FontSize="{OnPlatform Android={OnIdiom Phone=10,
-                                                                                                                       Tablet=15,
-                                                                                                                       Desktop=15,
-                                                                                                                       TV=15,
-                                                                                                                       Watch=8},
-                                                                                                      iOS={OnIdiom Phone=10,
-                                                                                                                   Tablet=15,
-                                                                                                                   Desktop=15,
-                                                                                                                   TV=15,
-                                                                                                                   Watch=8},
-                                                                                                      Default=10}"
+                                                                                FontSize="{OnIdiom Phone=10,
+                                                                                                   Tablet=15,
+                                                                                                   Desktop=15,
+                                                                                                   TV=15,
+                                                                                                   Watch=8,
+                                                                                                   Default=10}"
                                                                                 Text="$"
                                                                                 TextColor="{DynamicResource LoanAppChartDataMarkerTextColor}" />
                                                                             <Span
                                                                                 FontAttributes="Bold"
-                                                                                FontSize="{OnPlatform Android={OnIdiom Phone=10,
-                                                                                                                       Tablet=15,
-                                                                                                                       Desktop=15,
-                                                                                                                       TV=15,
-                                                                                                                       Watch=8},
-                                                                                                      iOS={OnIdiom Phone=10,
-                                                                                                                   Tablet=15,
-                                                                                                                   Desktop=15,
-                                                                                                                   TV=15,
-                                                                                                                   Watch=8},
-                                                                                                      Default=10}"
+                                                                                FontSize="{OnIdiom Phone=10,
+                                                                                                   Tablet=15,
+                                                                                                   Desktop=15,
+                                                                                                   TV=15,
+                                                                                                   Watch=8,
+                                                                                                   Default=10}"
                                                                                 Text="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.HomeLoanInfo.PaymentSummary.Payment.TotalPaymentRoundedWithComma}"
                                                                                 TextColor="{DynamicResource LoanAppChartDataMarkerTextColor}" />
                                                                         </FormattedString>
@@ -784,15 +664,11 @@
 
                                     <buttons:SfSegmentedControl
                                         x:Name="AmortizationBreadDownFrequencySegmentCtrl"
-                                        Margin="{OnPlatform Android={OnIdiom Phone='5',
-                                                                             Tablet='20,10,20,10',
-                                                                             Desktop='20,10,20,10',
-                                                                             TV='20,10,20,10'},
-                                                            iOS={OnIdiom Phone='5',
-                                                                         Tablet='20,10,20,10',
-                                                                         Desktop='20,10,20,10',
-                                                                         TV='20,10,20,10'},
-                                                            Default='5'}"
+                                        Margin="{OnIdiom Phone='5',
+                                                         Tablet='20,10,20,10',
+                                                         Desktop='20,10,20,10',
+                                                         TV='20,10,20,10',
+                                                         Default='5'}"
                                         ItemsSource="{Binding AmortizationBreakdownFrequencyCollection}"
                                         SelectedIndex="{Binding AmortizationBreakdownFrequencySelectedIndex}"
                                         Style="{DynamicResource SegmentDefaultStyle}"
@@ -832,17 +708,12 @@
                                                                     <chart:ChartAxisLabelStyle
                                                                         FontAttributes="Bold"
                                                                         FontFamily="{DynamicResource DefaultFontFamily}"
-                                                                        FontSize="{OnPlatform Android={OnIdiom Phone=12,
-                                                                                                               Tablet=17,
-                                                                                                               Desktop=17,
-                                                                                                               TV=17,
-                                                                                                               Watch=10},
-                                                                                              iOS={OnIdiom Phone=12,
-                                                                                                           Tablet=17,
-                                                                                                           Desktop=17,
-                                                                                                           TV=17,
-                                                                                                           Watch=10},
-                                                                                              Default=12}"
+                                                                        FontSize="{OnIdiom Phone=12,
+                                                                                           Tablet=17,
+                                                                                           Desktop=17,
+                                                                                           TV=17,
+                                                                                           Watch=10,
+                                                                                           Default=12}"
                                                                         TextColor="{DynamicResource LoanAppChartAxisTextColor}" />
                                                                 </chart:CategoryAxis.LabelStyle>
                                                                 <chart:CategoryAxis.MajorTickStyle>
@@ -856,17 +727,12 @@
                                                                     <chart:ChartAxisLabelStyle
                                                                         FontAttributes="Bold"
                                                                         FontFamily="{DynamicResource DefaultFontFamily}"
-                                                                        FontSize="{OnPlatform Android={OnIdiom Phone=12,
-                                                                                                               Tablet=17,
-                                                                                                               Desktop=17,
-                                                                                                               TV=17,
-                                                                                                               Watch=10},
-                                                                                              iOS={OnIdiom Phone=12,
-                                                                                                           Tablet=17,
-                                                                                                           Desktop=17,
-                                                                                                           TV=17,
-                                                                                                           Watch=10},
-                                                                                              Default=12}"
+                                                                        FontSize="{OnIdiom Phone=12,
+                                                                                           Tablet=17,
+                                                                                           Desktop=17,
+                                                                                           TV=17,
+                                                                                           Watch=10,
+                                                                                           Default=12}"
                                                                         TextColor="{DynamicResource LoanAppChartAxisTextColor}" />
                                                                 </chart:NumericalAxis.LabelStyle>
                                                                 <chart:NumericalAxis.AxisLineStyle>
@@ -883,17 +749,12 @@
                                                                 <chart:ChartLegend.LabelStyle>
                                                                     <chart:ChartLegendLabelStyle
                                                                         FontFamily="{DynamicResource DefaultFontFamily}"
-                                                                        FontSize="{OnPlatform Android={OnIdiom Phone=10,
-                                                                                                               Tablet=18,
-                                                                                                               Desktop=18,
-                                                                                                               TV=18,
-                                                                                                               Watch=8},
-                                                                                              iOS={OnIdiom Phone=10,
-                                                                                                           Tablet=18,
-                                                                                                           Desktop=18,
-                                                                                                           TV=18,
-                                                                                                           Watch=8},
-                                                                                              Default=10}"
+                                                                        FontSize="{OnIdiom Phone=10,
+                                                                                           Tablet=18,
+                                                                                           Desktop=18,
+                                                                                           TV=18,
+                                                                                           Watch=8,
+                                                                                           Default=10}"
                                                                         TextColor="{DynamicResource LoanAppChartLegendTextColor}" />
                                                                 </chart:ChartLegend.LabelStyle>
                                                             </chart:ChartLegend>
@@ -926,7 +787,7 @@
                                                         <!--<chart:SfCartesianChart.Title>
                                                         <Label
                                                             BackgroundColor="Transparent"
-                                                            FontSize="{OnPlatform Android={OnIdiom Phone=11, Tablet=16, Desktop=16, TV=16, Watch=9}, iOS={OnIdiom Phone=11, Tablet=16, Desktop=16, TV=16, Watch=9}, Default=11}"
+                                                            FontSize="{OnIdiom Phone=11, Tablet=16, Desktop=16, TV=16, Watch=9, Default=11}"
                                                             Text="Loan repayment breakdown"
                                                             TextColor="{DynamicResource LoanAppChartTitleTextColor}" />
                                                     </chart:SfCartesianChart.Title>-->
@@ -939,17 +800,12 @@
                                                                     <chart:ChartAxisLabelStyle
                                                                         FontAttributes="Bold"
                                                                         FontFamily="{DynamicResource DefaultFontFamily}"
-                                                                        FontSize="{OnPlatform Android={OnIdiom Phone=12,
-                                                                                                               Tablet=17,
-                                                                                                               Desktop=17,
-                                                                                                               TV=17,
-                                                                                                               Watch=10},
-                                                                                              iOS={OnIdiom Phone=12,
-                                                                                                           Tablet=17,
-                                                                                                           Desktop=17,
-                                                                                                           TV=17,
-                                                                                                           Watch=10},
-                                                                                              Default=12}"
+                                                                        FontSize="{OnIdiom Phone=12,
+                                                                                           Tablet=17,
+                                                                                           Desktop=17,
+                                                                                           TV=17,
+                                                                                           Watch=10,
+                                                                                           Default=12}"
                                                                         TextColor="{DynamicResource LoanAppChartAxisTextColor}" />
                                                                 </chart:CategoryAxis.LabelStyle>
                                                                 <chart:CategoryAxis.MajorTickStyle>
@@ -963,17 +819,12 @@
                                                                     <chart:ChartAxisLabelStyle
                                                                         FontAttributes="Bold"
                                                                         FontFamily="{DynamicResource DefaultFontFamily}"
-                                                                        FontSize="{OnPlatform Android={OnIdiom Phone=12,
-                                                                                                               Tablet=17,
-                                                                                                               Desktop=17,
-                                                                                                               TV=17,
-                                                                                                               Watch=10},
-                                                                                              iOS={OnIdiom Phone=12,
-                                                                                                           Tablet=17,
-                                                                                                           Desktop=17,
-                                                                                                           TV=17,
-                                                                                                           Watch=10},
-                                                                                              Default=12}"
+                                                                        FontSize="{OnIdiom Phone=12,
+                                                                                           Tablet=17,
+                                                                                           Desktop=17,
+                                                                                           TV=17,
+                                                                                           Watch=10,
+                                                                                           Default=12}"
                                                                         TextColor="{DynamicResource LoanAppChartAxisTextColor}" />
                                                                 </chart:NumericalAxis.LabelStyle>
                                                                 <chart:NumericalAxis.AxisLineStyle>
@@ -989,17 +840,12 @@
                                                                 <chart:ChartLegend.LabelStyle>
                                                                     <chart:ChartLegendLabelStyle
                                                                         FontFamily="{DynamicResource DefaultFontFamily}"
-                                                                        FontSize="{OnPlatform Android={OnIdiom Phone=10,
-                                                                                                               Tablet=18,
-                                                                                                               Desktop=18,
-                                                                                                               TV=18,
-                                                                                                               Watch=8},
-                                                                                              iOS={OnIdiom Phone=10,
-                                                                                                           Tablet=18,
-                                                                                                           Desktop=18,
-                                                                                                           TV=18,
-                                                                                                           Watch=8},
-                                                                                              Default=10}"
+                                                                        FontSize="{OnIdiom Phone=10,
+                                                                                           Tablet=18,
+                                                                                           Desktop=18,
+                                                                                           TV=18,
+                                                                                           Watch=8,
+                                                                                           Default=10}"
                                                                         TextColor="{DynamicResource LoanAppChartLegendTextColor}" />
                                                                 </chart:ChartLegend.LabelStyle>
                                                             </chart:ChartLegend>
@@ -1042,17 +888,12 @@
                                         x:Name="dataPager"
                                         Grid.Row="0"
                                         Margin="0,3,0,3"
-                                        ButtonFontSize="{OnPlatform Android={OnIdiom Phone=11,
-                                                                                     Tablet=16,
-                                                                                     Desktop=16,
-                                                                                     TV=16,
-                                                                                     Watch=9},
-                                                                    iOS={OnIdiom Phone=11,
-                                                                                 Tablet=16,
-                                                                                 Desktop=16,
-                                                                                 TV=16,
-                                                                                 Watch=9},
-                                                                    Default=11}"
+                                        ButtonFontSize="{OnIdiom Phone=11,
+                                                                 Tablet=16,
+                                                                 Desktop=16,
+                                                                 TV=16,
+                                                                 Watch=9,
+                                                                 Default=11}"
                                         ButtonShape="Circle"
                                         HorizontalOptions="Center"
                                         NumericButtonsGenerateMode="Auto"
@@ -1194,17 +1035,12 @@
                                             <Span Style="{DynamicResource SpanThreeBoxAmountStyle}" Text="{Binding TotalMonthlyOverallExpense}" />
 
                                             <Span
-                                                FontSize="{OnPlatform Android={OnIdiom Phone=10,
-                                                                                       Tablet=15,
-                                                                                       Desktop=15,
-                                                                                       TV=15,
-                                                                                       Watch=8},
-                                                                      iOS={OnIdiom Phone=10,
-                                                                                   Tablet=15,
-                                                                                   Desktop=15,
-                                                                                   TV=15,
-                                                                                   Watch=8},
-                                                                      Default=10}"
+                                                FontSize="{OnIdiom Phone=10,
+                                                                   Tablet=15,
+                                                                   Desktop=15,
+                                                                   TV=15,
+                                                                   Watch=8,
+                                                                   Default=10}"
                                                 Style="{DynamicResource SpanThreeBoxAmountStyle}"
                                                 Text="{Binding TotalMonthlyOverallExpenseBreakdownWithComma}" />
                                             <Span Style="{DynamicResource SpanThreeBoxTextStyle}" Text=" monthly new property overall expense" />
@@ -1215,7 +1051,7 @@
                                 <FlexLayout>
                                     <Border Style="{DynamicResource BorderControlHighlightBox}">
                                         <Border.Content>
-                                            <Grid Margin="{OnPlatform Android={OnIdiom Phone='5,0,5,0', Tablet='20,10,20,10', Desktop='20,10,20,10', TV='20,10,20,10'}, iOS={OnIdiom Phone='5,0,5,0', Tablet='20,10,20,10', Desktop='20,10,20,10', TV='20,10,20,10'}, Default='5,0,5,0'}">
+                                            <Grid Margin="{OnIdiom Phone='5,0,5,0', Tablet='20,10,20,10', Desktop='20,10,20,10', TV='20,10,20,10', Default='5,0,5,0'}">
                                                 <Grid.ColumnDefinitions>
                                                     <ColumnDefinition Width="25*" />
                                                     <ColumnDefinition Width="25*" />
@@ -1223,9 +1059,9 @@
                                                     <ColumnDefinition Width="25*" />
                                                 </Grid.ColumnDefinitions>
                                                 <Grid.RowDefinitions>
-                                                    <RowDefinition Height="{OnPlatform Android={OnIdiom Phone=80, Tablet=95, Desktop=95, TV=95, Watch=95}, iOS={OnIdiom Phone=80, Tablet=95, Desktop=95, TV=95, Watch=80}, Default=80}" />
+                                                    <RowDefinition Height="{OnIdiom Phone=80, Tablet=95, Desktop=95, TV=95, Watch=95, Default=80}" />
                                                     <RowDefinition Height="10" />
-                                                    <RowDefinition Height="{OnPlatform Android={OnIdiom Phone=80, Tablet=95, Desktop=95, TV=95, Watch=95}, iOS={OnIdiom Phone=80, Tablet=95, Desktop=95, TV=95, Watch=80}, Default=80}" />
+                                                    <RowDefinition Height="{OnIdiom Phone=80, Tablet=95, Desktop=95, TV=95, Watch=95, Default=80}" />
                                                 </Grid.RowDefinitions>
 
                                                 <core:SfTextInputLayout
@@ -1240,17 +1076,12 @@
                                                     Style="{DynamicResource CommonTextInputLayoutStyle}">
                                                     <Entry
                                                         x:Name="txtIncomeDescription"
-                                                        FontSize="{OnPlatform Android={OnIdiom Phone=14,
-                                                                                               Tablet=19,
-                                                                                               Desktop=19,
-                                                                                               TV=19,
-                                                                                               Watch=12},
-                                                                              iOS={OnIdiom Phone=14,
-                                                                                           Tablet=19,
-                                                                                           Desktop=19,
-                                                                                           TV=19,
-                                                                                           Watch=12},
-                                                                              Default=14}"
+                                                        FontSize="{OnIdiom Phone=14,
+                                                                           Tablet=19,
+                                                                           Desktop=19,
+                                                                           TV=19,
+                                                                           Watch=12,
+                                                                           Default=14}"
                                                         Placeholder="Any bills [Sample]"
                                                         Text="{Binding IncomeEntryName}"
                                                         TextColor="{DynamicResource LoanAppInputTextFgColor}" />
@@ -1269,17 +1100,12 @@
                                                     <core:SfNumericEntry
                                                         x:Name="txtInputAmount"
                                                         CustomFormat="c0"
-                                                        FontSize="{OnPlatform Android={OnIdiom Phone=14,
-                                                                                               Tablet=19,
-                                                                                               Desktop=19,
-                                                                                               TV=19,
-                                                                                               Watch=12},
-                                                                              iOS={OnIdiom Phone=14,
-                                                                                           Tablet=19,
-                                                                                           Desktop=19,
-                                                                                           TV=19,
-                                                                                           Watch=12},
-                                                                              Default=14}"
+                                                        FontSize="{OnIdiom Phone=14,
+                                                                           Tablet=19,
+                                                                           Desktop=19,
+                                                                           TV=19,
+                                                                           Watch=12,
+                                                                           Default=14}"
                                                         MaximumNumberDecimalDigits="0"
                                                         TextColor="{DynamicResource LoanAppInputTextFgColor}"
                                                         Value="{Binding IncomeEntryAmount}" />
@@ -1360,26 +1186,17 @@
 
                                                             <Label
                                                                 Grid.Column="0"
-                                                                Margin="{OnPlatform Android={OnIdiom Phone='5,0,0,0',
-                                                                                                     Tablet='15,0,0,0',
-                                                                                                     Desktop='15,0,0,0',
-                                                                                                     TV='15,0,0,0'},
-                                                                                    iOS={OnIdiom Phone='5,0,0,0',
-                                                                                                 Tablet='15,0,0,0',
-                                                                                                 Desktop='15,0,0,0',
-                                                                                                 TV='15,0,0,0'},
-                                                                                    Default='5,0,0,0'}"
-                                                                FontSize="{OnPlatform Android={OnIdiom Phone=12,
-                                                                                                       Tablet=17,
-                                                                                                       Desktop=17,
-                                                                                                       TV=17,
-                                                                                                       Watch=10},
-                                                                                      iOS={OnIdiom Phone=12,
-                                                                                                   Tablet=17,
-                                                                                                   Desktop=17,
-                                                                                                   TV=17,
-                                                                                                   Watch=10},
-                                                                                      Default=12}"
+                                                                Margin="{OnIdiom Phone='5,0,0,0',
+                                                                                 Tablet='15,0,0,0',
+                                                                                 Desktop='15,0,0,0',
+                                                                                 TV='15,0,0,0',
+                                                                                 Default='5,0,0,0'}"
+                                                                FontSize="{OnIdiom Phone=12,
+                                                                                   Tablet=17,
+                                                                                   Desktop=17,
+                                                                                   TV=17,
+                                                                                   Watch=10,
+                                                                                   Default=12}"
                                                                 HorizontalOptions="Start"
                                                                 HorizontalTextAlignment="Start"
                                                                 Text="{Binding Name}"
@@ -1387,17 +1204,12 @@
                                                                 VerticalOptions="Center" />
                                                             <Label
                                                                 Grid.Column="1"
-                                                                FontSize="{OnPlatform Android={OnIdiom Phone=12,
-                                                                                                       Tablet=17,
-                                                                                                       Desktop=17,
-                                                                                                       TV=17,
-                                                                                                       Watch=10},
-                                                                                      iOS={OnIdiom Phone=12,
-                                                                                                   Tablet=17,
-                                                                                                   Desktop=17,
-                                                                                                   TV=17,
-                                                                                                   Watch=10},
-                                                                                      Default=12}"
+                                                                FontSize="{OnIdiom Phone=12,
+                                                                                   Tablet=17,
+                                                                                   Desktop=17,
+                                                                                   TV=17,
+                                                                                   Watch=10,
+                                                                                   Default=12}"
                                                                 HorizontalOptions="Start"
                                                                 HorizontalTextAlignment="Start"
                                                                 Text="{Binding AmountString}"
@@ -1405,26 +1217,17 @@
                                                                 VerticalOptions="Center" />
                                                             <Label
                                                                 Grid.Column="2"
-                                                                Margin="{OnPlatform Android={OnIdiom Phone='0,0,5,0',
-                                                                                                     Tablet='0,0,20,0',
-                                                                                                     Desktop='0,0,20,0',
-                                                                                                     TV='0,0,20,0'},
-                                                                                    iOS={OnIdiom Phone='0,0,5,0',
-                                                                                                 Tablet='0,0,20,0',
-                                                                                                 Desktop='0,0,20,0',
-                                                                                                 TV='0,0,20,0'},
-                                                                                    Default='0,0,5,0'}"
-                                                                FontSize="{OnPlatform Android={OnIdiom Phone=12,
-                                                                                                       Tablet=17,
-                                                                                                       Desktop=17,
-                                                                                                       TV=17,
-                                                                                                       Watch=10},
-                                                                                      iOS={OnIdiom Phone=12,
-                                                                                                   Tablet=17,
-                                                                                                   Desktop=17,
-                                                                                                   TV=17,
-                                                                                                   Watch=10},
-                                                                                      Default=12}"
+                                                                Margin="{OnIdiom Phone='0,0,5,0',
+                                                                                 Tablet='0,0,20,0',
+                                                                                 Desktop='0,0,20,0',
+                                                                                 TV='0,0,20,0',
+                                                                                 Default='0,0,5,0'}"
+                                                                FontSize="{OnIdiom Phone=12,
+                                                                                   Tablet=17,
+                                                                                   Desktop=17,
+                                                                                   TV=17,
+                                                                                   Watch=10,
+                                                                                   Default=12}"
                                                                 HorizontalOptions="End"
                                                                 Text="{Binding Frequency}"
                                                                 TextColor="{DynamicResource LstForegroundColor}"
@@ -1592,7 +1395,7 @@
                                 </OnPlatform>
                             </chart:SfCartesianChart.Margin>-->
                                                             <chart:SfCartesianChart.Legend>
-                                                                <chart:ChartLegend Placement="{OnPlatform Android={OnIdiom Phone=Bottom, Tablet=Left}, iOS={OnIdiom Phone=Bottom, Tablet=Left}, UWP=Bottom}" ToggleSeriesVisibility="True">
+                                                                <chart:ChartLegend Placement="{OnIdiom Phone=Bottom, Tablet=Left, Desktop=Left, TV=Left, Default=Bottom}" ToggleSeriesVisibility="True">
                                                                     <chart:ChartLegend.LabelStyle>
                                                                         <chart:ChartLegendLabelStyle
                                                                             FontAttributes="Bold"
@@ -1625,17 +1428,12 @@
                                                                                 <chart:ChartDataLabelStyle
                                                                                     FontAttributes="Bold"
                                                                                     FontFamily="{DynamicResource DefaultFontFamily}"
-                                                                                    FontSize="{OnPlatform Android={OnIdiom Phone=10,
-                                                                                                                           Tablet=15,
-                                                                                                                           Desktop=15,
-                                                                                                                           TV=15,
-                                                                                                                           Watch=8},
-                                                                                                          iOS={OnIdiom Phone=10,
-                                                                                                                       Tablet=15,
-                                                                                                                       Desktop=15,
-                                                                                                                       TV=15,
-                                                                                                                       Watch=8},
-                                                                                                          Default=10}"
+                                                                                    FontSize="{OnIdiom Phone=10,
+                                                                                                       Tablet=15,
+                                                                                                       Desktop=15,
+                                                                                                       TV=15,
+                                                                                                       Watch=8,
+                                                                                                       Default=10}"
                                                                                     LabelFormat="c"
                                                                                     TextColor="{DynamicResource LoanAppChartDataMarkerTextColor}" />
                                                                             </chart:CartesianDataLabelSettings.LabelStyle>
@@ -1658,17 +1456,12 @@
                                                                                 <chart:ChartDataLabelStyle
                                                                                     FontAttributes="Bold"
                                                                                     FontFamily="{DynamicResource DefaultFontFamily}"
-                                                                                    FontSize="{OnPlatform Android={OnIdiom Phone=10,
-                                                                                                                           Tablet=15,
-                                                                                                                           Desktop=15,
-                                                                                                                           TV=15,
-                                                                                                                           Watch=8},
-                                                                                                          iOS={OnIdiom Phone=10,
-                                                                                                                       Tablet=15,
-                                                                                                                       Desktop=15,
-                                                                                                                       TV=15,
-                                                                                                                       Watch=8},
-                                                                                                          Default=10}"
+                                                                                    FontSize="{OnIdiom Phone=10,
+                                                                                                       Tablet=15,
+                                                                                                       Desktop=15,
+                                                                                                       TV=15,
+                                                                                                       Watch=8,
+                                                                                                       Default=10}"
                                                                                     LabelFormat="c"
                                                                                     TextColor="{DynamicResource LoanAppChartDataMarkerTextColor}" />
                                                                             </chart:CartesianDataLabelSettings.LabelStyle>
@@ -1691,17 +1484,12 @@
                                                                                 <chart:ChartDataLabelStyle
                                                                                     FontAttributes="Bold"
                                                                                     FontFamily="{DynamicResource DefaultFontFamily}"
-                                                                                    FontSize="{OnPlatform Android={OnIdiom Phone=10,
-                                                                                                                           Tablet=15,
-                                                                                                                           Desktop=15,
-                                                                                                                           TV=15,
-                                                                                                                           Watch=8},
-                                                                                                          iOS={OnIdiom Phone=10,
-                                                                                                                       Tablet=15,
-                                                                                                                       Desktop=15,
-                                                                                                                       TV=15,
-                                                                                                                       Watch=8},
-                                                                                                          Default=10}"
+                                                                                    FontSize="{OnIdiom Phone=10,
+                                                                                                       Tablet=15,
+                                                                                                       Desktop=15,
+                                                                                                       TV=15,
+                                                                                                       Watch=8,
+                                                                                                       Default=10}"
                                                                                     LabelFormat="c"
                                                                                     TextColor="{DynamicResource LoanAppChartDataMarkerTextColor}" />
                                                                             </chart:CartesianDataLabelSettings.LabelStyle>

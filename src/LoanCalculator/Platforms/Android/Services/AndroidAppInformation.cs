@@ -12,5 +12,7 @@ namespace LoanCalculatorMaui.Platforms.Android.Services
         public string InAppProductId => "com.pj.loan.calculator.pro"; // Replace with your actual product ID
 
         public string AppShareLink => "https://www.yoursimpleapps.com";
+
+        public string RateAppLink => "market://details?id=com.companyname.yourapp"; //com.companyname.yourapp with your Android package ID
     }
 }

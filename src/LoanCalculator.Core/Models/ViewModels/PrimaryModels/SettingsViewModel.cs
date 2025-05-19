@@ -32,6 +32,7 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
         [JsonIgnore]
         public ICommand ShowDisclaimerCommand { get; }
         public ICommand OnShareAppRequestCommand { get; }
+        public ICommand OnRateAppRequestCommand { get; }
         [JsonIgnore]
         public ICommand PopupCloseCommand { get; }
 
@@ -57,6 +58,7 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
             ShowDisclaimerCommand = new Command(async () => await ShowDisclaimer());
             PopupCloseCommand = new Command(() => IsPopupRequired = false);
             OnShareAppRequestCommand = new Command(OnShareAppRequest);
+            OnRateAppRequestCommand = new Command(OnRateAppRequest);
         }
         
 
@@ -193,5 +195,18 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
                 _errorHandlingService.HandleException(e);
             }
         }
+
+        private async void OnRateAppRequest()
+        {
+            try
+            {
+                await Launcher.Default.OpenAsync(SharedServiceCore.AppInformation.RateAppLink);
+            }
+            catch (Exception e)
+            {
+                _errorHandlingService.HandleException(e);
+            }
+        }
+
     }
 }

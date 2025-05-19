@@ -31,6 +31,7 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
         public ICommand ClearAllDataCommand { get; }
         [JsonIgnore]
         public ICommand ShowDisclaimerCommand { get; }
+        public ICommand OnShareAppRequestCommand { get; }
         [JsonIgnore]
         public ICommand PopupCloseCommand { get; }
 
@@ -55,6 +56,7 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
             ClearAllDataCommand = new Command(async () => await ClearDisclaimerData());
             ShowDisclaimerCommand = new Command(async () => await ShowDisclaimer());
             PopupCloseCommand = new Command(() => IsPopupRequired = false);
+            OnShareAppRequestCommand = new Command(OnShareAppRequest);
         }
         
 
@@ -174,6 +176,22 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
         public void RefreshProperties()
         {
             OnPropertyChanged(nameof(SelectedTheme));
+        }
+
+        private async void OnShareAppRequest()
+        {
+            try
+            {
+                await Share.RequestAsync(new ShareTextRequest
+                {
+                    Uri = SharedServiceCore.AppInformation?.AppShareLink ?? "https://www.yoursimpleapps.com", //TODO: Change this to your app link
+                    Title = "Check out this app!"
+                });
+            }
+            catch (Exception e)
+            {
+                _errorHandlingService.HandleException(e);
+            }
         }
     }
 }

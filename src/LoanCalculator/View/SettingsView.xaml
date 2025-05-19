@@ -146,7 +146,7 @@
 
                 <Button
                     Margin="0,10,10,0"
-                    Command="{Binding ShowDisclaimerCommand}"
+                    Command="{Binding OnShareAppRequestCommand}"
                     Style="{DynamicResource MauiButtonStyle}"
                     Text="Share the app" />
 

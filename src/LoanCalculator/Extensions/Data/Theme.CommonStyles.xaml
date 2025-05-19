@@ -121,9 +121,9 @@
     <Style x:Key="ExpanderHeaderLabelStyle" TargetType="Label">
         <Setter Property="Margin" Value="15,0,0,0" />
         <!--<Setter Property="HeightRequest" Value="30" />-->
-        <Setter Property="MinimumHeightRequest" Value="{OnIdiom Phone=30, Tablet=60, Desktop=60, TV=60, Watch=15, Default=30}" />
+        <Setter Property="MinimumHeightRequest" Value="{OnIdiom Phone=30, Tablet=60, Desktop=40, TV=60, Watch=15, Default=30}" />
         <Setter Property="TextColor" Value="{DynamicResource LoanAppExpanderHeaderTextColor}" />
-        <Setter Property="VerticalOptions" Value="Center" />
+        <Setter Property="VerticalOptions" Value="CenterAndExpand" />
         <Setter Property="VerticalTextAlignment" Value="Center" />
         <Setter Property="FontSize" Value="{OnIdiom Phone=12, Tablet=24, Desktop=24, TV=24, Watch=8, Default=12}" />
         <Setter Property="FontFamily" Value="{DynamicResource DefaultFontFamily}" />
@@ -258,17 +258,6 @@
             </Setter.Value>
         </Setter>
     </Style>
-
-    <!--  Style for Lists  -->
-    <LinearGradientBrush x:Key="LoanAppLstBgBrush" StartPoint="0,0" EndPoint="1,1">
-        <GradientStop Offset="0.0" Color="{DynamicResource LoanAppLstBgGradientStart}" />
-        <GradientStop Offset="1.0" Color="{DynamicResource LoanAppLstBgGradientEnd}" />
-    </LinearGradientBrush>
-    <RadialGradientBrush x:Key="LoanAppLstBorderBrush" Center="0.5,0.5" Radius="0.5">
-        <GradientStop Offset="0.0" Color="{DynamicResource LoanAppLstBorderGradientStart}" />
-        <GradientStop Offset="0.7" Color="{DynamicResource LoanAppLstBorderGradientStart}" />
-        <GradientStop Offset="1.0" Color="{DynamicResource LoanAppLstBorderGradientEnd}" />
-    </RadialGradientBrush>
 
     <!--  Style for transaction expense income list item border  -->
     <Style x:Key="TransactionListItemBorderStyle" TargetType="Border">

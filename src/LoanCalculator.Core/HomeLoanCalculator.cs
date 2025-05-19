@@ -231,7 +231,7 @@ namespace LoanCalculator.Core
 
             expenseSummary.ProjectionTerms.Last().IncomeExpenseAmount = expenseSummary.ProjectionTerms.Sum(f => f.TermAdjustments);
 
-            for (int year = 0; year <= expenseSummary.NumberOfYearsProjection; year++)
+            for (int year = 1; year < expenseSummary.NumberOfYearsProjection; year++)
             {
                 IncomeExpenseProjectionOutput amortizationOutput = new IncomeExpenseProjectionOutput
                 {
@@ -292,7 +292,7 @@ namespace LoanCalculator.Core
 
             incomeSummary.ProjectionTerms.Last().IncomeExpenseAmount = incomeSummary.ProjectionTerms.Sum(f => f.TermAdjustments);
 
-            for (int year = 0; year <= incomeSummary.NumberOfYearsProjection; year++)
+            for (int year = 1; year < incomeSummary.NumberOfYearsProjection; year++)
             {
                 IncomeExpenseProjectionOutput amortizationOutput = new IncomeExpenseProjectionOutput
                 {

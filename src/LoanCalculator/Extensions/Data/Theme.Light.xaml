@@ -109,6 +109,17 @@
     <Color x:Key="LoanAppLstBorderGradientStart">#c2c9d0</Color>
     <Color x:Key="LoanAppLstBorderGradientEnd">#8a95a0</Color>
 
+    <!--  Style for Lists  -->
+    <LinearGradientBrush x:Key="LoanAppLstBgBrush" StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Offset="0.0" Color="{StaticResource LoanAppLstBgGradientStart}" />
+        <GradientStop Offset="1.0" Color="{StaticResource LoanAppLstBgGradientEnd}" />
+    </LinearGradientBrush>
+    <RadialGradientBrush x:Key="LoanAppLstBorderBrush" Center="0.5,0.5" Radius="0.5">
+        <GradientStop Offset="0.0" Color="{StaticResource LoanAppLstBorderGradientStart}" />
+        <GradientStop Offset="0.7" Color="{StaticResource LoanAppLstBorderGradientStart}" />
+        <GradientStop Offset="1.0" Color="{StaticResource LoanAppLstBorderGradientEnd}" />
+    </RadialGradientBrush>
+
     <!--  Buttons  -->
     <Color x:Key="LoanAppButtonFgColor">#f8f9fb</Color>
     <Color x:Key="LoanAppButtonBgColor">#5e666e</Color>

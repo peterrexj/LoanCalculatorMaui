@@ -525,7 +525,7 @@
                                                 Value="{Binding AnnualGrowthRate}" />
                                         </core:SfTextInputLayout>
 
-                                        <VerticalStackLayout
+                                        <!--<VerticalStackLayout
                                             Grid.Column="1"
                                             HorizontalOptions="Start"
                                             VerticalOptions="Start">
@@ -576,10 +576,10 @@
                                                 TextColor="{DynamicResource LoanAppDefaultForegroundColor}"
                                                 VerticalOptions="Start"
                                                 VerticalTextAlignment="Start" />
-                                        </VerticalStackLayout>
+                                        </VerticalStackLayout>-->
 
                                         <VerticalStackLayout
-                                            Grid.Column="2"
+                                            Grid.Column="1"
                                             HorizontalOptions="Start"
                                             VerticalOptions="Start">
 

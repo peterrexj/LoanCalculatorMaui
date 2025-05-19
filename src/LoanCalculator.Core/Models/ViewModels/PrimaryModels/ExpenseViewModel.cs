@@ -17,7 +17,7 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
         {
         }
 
-        public ExpenseViewModel(IErrorHandlingService errorHandlingService, IAlertService alertService) 
+        public ExpenseViewModel(IErrorHandlingService errorHandlingService, IAlertService alertService)
         {
             _errorHandlingService = errorHandlingService;
             _alertService = alertService;
@@ -531,6 +531,7 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
             }
 
             TransactionRecords.SumUpData();
+
             HomeLoanCalculator.UpdateExpenseProjectionDataByYear(TransactionRecords.IncomeExpenseSummary,
                 additionalExpensesFromNewProperty: propertyExpenses
                 );

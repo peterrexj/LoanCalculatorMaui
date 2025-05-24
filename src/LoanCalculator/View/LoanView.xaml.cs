@@ -1,7 +1,9 @@
 using LoanCalculator.Core.Helper;
+using LoanCalculator.Core.Models;
 using LoanCalculator.Core.Models.Income;
 using LoanCalculator.Core.Models.ViewModels;
 using LoanCalculator.Core.Models.ViewModels.PrimaryModels;
+using LoanCalculator.Core.Pdf;
 using LoanCalculator.Core.Services;
 using LoanCalculator.Core.Themes;
 using LoanCalculatorMaui.Extensions;
@@ -111,6 +113,8 @@ public partial class LoanView : ContentPage
 
             await Task.WhenAll(viewModelInitializeTask, expenseSummaryTask, chartColorsTask, lstSourceTask);
 
+            _viewModel.PdfGenerator = new PdfInsightsGenerator(ServiceLocator.GetService<IFontUnicodeProvider>());
+
             _viewModel.CustomChartColors = chartColorsTask.Result;
             _viewModel.ExpenseSummary = expenseSummaryTask.Result;
             _viewModel.IncomeSummary = incomeSummaryTask.Result;
@@ -121,6 +125,8 @@ public partial class LoanView : ContentPage
             AmortizationBreadDownFrequencySegmentCtrl.SelectionChanged +=
                 AmortizationBreadDownFrequencySegmentCtrlOnSelectionChanged;
             SegmentedAustraliaStates.SelectionChanged += SegmentedAustraliaStatesOnSelectionChanged;
+
+            _viewModel.CurrencySymbol = Helper.CurrencySymbol;
 
             _viewModel.MarkInitializationComplete();
 

@@ -39,13 +39,18 @@ namespace LoanCalculatorMaui
                     fonts.AddFont("CALIBRI.ttf", "Calibri");
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
                     fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
+                    fonts.AddFont("NotoSans-Regular.ttf", "NotoSans");
+                    fonts.AddFont("NotoSans-Italic.ttf", "NotoSansItatic");
+                    fonts.AddFont("NotoSans-Bold.ttf", "NotoSansBold");
+
                 });
 
             builder.Services.AddSingleton<IErrorHandlingService, ErrorHandlingService>();
             builder.Services.AddSingleton<IAlertService, AlertService>();
+            builder.Services.AddSingleton<IFontUnicodeProvider, MauiFontUnicodeProvider>();
 
 #if ANDROID
-                        builder.Services.AddSingleton<IAppInformation, LoanCalculatorMaui.Platforms.Android.Services.AndroidAppInformation>();
+            builder.Services.AddSingleton<IAppInformation, LoanCalculatorMaui.Platforms.Android.Services.AndroidAppInformation>();
                         builder.Services.AddSingleton<ILocalStorage, LoanCalculatorMaui.Platforms.Android.Services.AndroidLocalStorageService>();
 #elif IOS
                         builder.Services.AddSingleton<IAppInformation, LoanCalculatorMaui.Platforms.iOS.Services.iOSAppInformation>();

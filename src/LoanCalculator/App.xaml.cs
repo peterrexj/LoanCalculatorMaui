@@ -1,4 +1,5 @@
-﻿using LoanCalculator.Core.Services;
+﻿using LoanCalculator.Core.Models;
+using LoanCalculator.Core.Services;
 using LoanCalculator.Core.Themes;
 using LoanCalculatorMaui.Services;
 
@@ -20,6 +21,9 @@ namespace LoanCalculatorMaui
             ServiceLocator.GetService<IThemeHandler>().LoadDefaultStyle();
 
             _ = CheckIfUserPurchasedAsync();
+
+            Helper.CurrencySymbol =
+                SharedServiceCore.GetCurrencySymbol(Preferences.Get(SharedServiceCore.SelectedCurrencyKey, "AUD"));
         }
         
 

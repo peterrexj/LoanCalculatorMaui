@@ -5,6 +5,7 @@ using LoanCalculator.Core.Services;
 using Syncfusion.Drawing;
 using Syncfusion.Pdf;
 using Syncfusion.Pdf.Graphics;
+using Syncfusion.Pdf.Graphics.Fonts;
 using PointF = Syncfusion.Drawing.PointF;
 using SizeF = Syncfusion.Drawing.SizeF;
 
@@ -14,12 +15,15 @@ namespace LoanCalculator.Core.Pdf
     {
         protected float _yPosition = 0;
 
+        private readonly IFontUnicodeProvider _fontUnicodeProvider;
+
         #region Page Settings
         protected const float PageWidth = 595; // A4 width
         protected const float PageHeight = 842; // A4 height
         #endregion
 
         #region Default Values
+        readonly Dictionary<PdfFontStyle, byte[]> _fontBytes = new();
         protected readonly PdfFontFamily DefaultFontFamily;
         protected const string DefaultTextColor = "#212f3c";
         protected readonly PdfSolidBrush? DefaultTextBrush;
@@ -48,11 +52,49 @@ namespace LoanCalculator.Core.Pdf
         protected PdfDocument Document;
         protected PdfPage Page;
 
-        public PdfGeneratorBase()
+        public PdfGeneratorBase(IFontUnicodeProvider fontUnicodeProvider)
         {
             DefaultFontFamily = PdfFontFamily.Helvetica;
             DefaultTextBrush = DefaultTextColor.ToPdfBrush();
+            _fontUnicodeProvider = fontUnicodeProvider;
+            LoadFontsOnce();
         }
+
+        #region Fonts
+
+        public void LoadFontsOnce()
+        {
+            // Preload all required styles
+            _fontBytes[PdfFontStyle.Regular] = LoadFontBytes("NotoSans-Regular.ttf");
+            _fontBytes[PdfFontStyle.Bold] = LoadFontBytes("NotoSans-Bold.ttf");
+            _fontBytes[PdfFontStyle.Italic] = LoadFontBytes("NotoSans-Italic.ttf");
+        }
+
+        private byte[] LoadFontBytes(string fileName)
+        {
+            using var stream = _fontUnicodeProvider.LoadFont(fileName);
+            using var memoryStream = new MemoryStream();
+            stream.CopyTo(memoryStream);
+            return memoryStream.ToArray();
+        }
+
+        protected PdfFont GetNumberFont(float size, PdfFontStyle style)
+        {
+            if (!_fontBytes.ContainsKey(style))
+                style = PdfFontStyle.Regular;
+
+            var memoryStream = new MemoryStream(_fontBytes[style]);
+            return new PdfTrueTypeFont(memoryStream, size, style);
+        }
+
+        protected PdfFont GetTextFont(float size, PdfFontStyle style)
+        {
+            return GetNumberFont(size, style);
+            // Uncomment the line below if you want to use a standard font instead of a custom one
+            //return new PdfStandardFont(DefaultFontFamily, size, style);
+        }
+
+        #endregion
 
         protected async Task SaveAndView(string fileName, MemoryStream stream)
         {
@@ -173,7 +215,7 @@ namespace LoanCalculator.Core.Pdf
 
         protected void RenderContent(string text, float size, PdfFontStyle style, PdfBrush? brush, int bottomSpaceAdjustment = 10)
         {
-            var font = new PdfStandardFont(DefaultFontFamily, size, style);
+            var font = GetTextFont(size, style);
             var textElement = new PdfTextElement(text, font) { Brush = brush };
             var layoutFormat = new PdfLayoutFormat
             {
@@ -203,14 +245,14 @@ namespace LoanCalculator.Core.Pdf
 
             var textElementsRow1 = new List<TextElementModel>
             {
-                new(amount, DefaultFontFamily, 14, PdfFontStyle.Bold, amountTextBrush, 1),
-                new($"{description}", DefaultFontFamily, 12, PdfFontStyle.Bold, descriptionTextBrush, 1),
+                new(amount, GetNumberFont(14, PdfFontStyle.Bold), amountTextBrush, 1),
+                new($"{description}", GetTextFont(12, PdfFontStyle.Bold), descriptionTextBrush, 1),
             };
             DrawTextElements(textElementsRow1, _yPosition, updateYPosition: true);
 
             var textElementsRow2 = new List<TextElementModel>
             {
-                new(additionalText, DefaultFontFamily, 12, PdfFontStyle.Regular, additionalTextBrush, 2),
+                new(additionalText, GetTextFont(12, PdfFontStyle.Regular), additionalTextBrush, 2),
             };
             DrawTextElements(textElementsRow2, _yPosition, updateYPosition: true);
 
@@ -223,18 +265,16 @@ namespace LoanCalculator.Core.Pdf
             float lineHeight = 0; // Track max height of the line
             var innerXPosition = xPosition;
 
-            var maxFontSize = textElements.Max(x => x.FontSize);
-            var maxFontData = new PdfStandardFont(DefaultFontFamily, maxFontSize, PdfFontStyle.Bold); //fix the bold font issue
+            var maxFontSize = textElements.Max(x => x.Font.Size);
+            var maxFontData = GetTextFont(maxFontSize, PdfFontStyle.Bold); //fix the bold font issue
 
             foreach (var element in textElements)
             {
-                PdfStandardFont font = new PdfStandardFont(element.FontFamily, element.FontSize, element.FontStyle);
-
                 // Calculate the baseline adjustment for alignment
                 float baselineAdjustment = 0;
-                if (element.FontSize != maxFontSize)
+                if (element.Font.Size != maxFontSize)
                 {
-                    baselineAdjustment = maxFontData.Height - font.Height;
+                    baselineAdjustment = maxFontData.Height - element.Font.Height;
                 }
 
                 string[] words = element.Text.Split(' '); // Split text into words
@@ -242,8 +282,8 @@ namespace LoanCalculator.Core.Pdf
                 {
                     string wordWithSpace = word + " "; // Preserve spaces
 
-                    float wordWidth = font.MeasureString(wordWithSpace).Width;
-                    float wordHeight = font.MeasureString(wordWithSpace).Height;
+                    float wordWidth = element.Font.MeasureString(wordWithSpace).Width;
+                    float wordHeight = element.Font.MeasureString(wordWithSpace).Height;
 
                     // If the text exceeds the width, move to the next line
                     if (innerXPosition + wordWidth > maxWidth)
@@ -255,7 +295,7 @@ namespace LoanCalculator.Core.Pdf
                     }
 
                     // Draw the word at the current position
-                    PdfTextElement text = new PdfTextElement(wordWithSpace, font, element.TextBrush);
+                    PdfTextElement text = new PdfTextElement(wordWithSpace, element.Font, element.TextBrush);
 
                     PdfLayoutResult result = text.Draw(Page, new PointF(innerXPosition, yPosition + baselineAdjustment));
                     if (result.Page != null && result.Page != Page)
@@ -284,7 +324,6 @@ namespace LoanCalculator.Core.Pdf
 
         protected void DrawBulletPoints(List<List<TextElementModel>> bulletPoints, string bulletCharacter = "- ", float additionalSpacingAfterLastBullet = 10)
         {
-            PdfStandardFont bulletFont = new PdfStandardFont(DefaultFontFamily, 12);
             float bulletIndent = 20; // Indent for the bullet points
             float textIndent = 30; // Indent for the text after the bullet
             float yPosition = _yPosition;
@@ -292,7 +331,7 @@ namespace LoanCalculator.Core.Pdf
             foreach (var point in bulletPoints)
             {
                 // Draw bullet
-                PdfTextElement bulletElement = new PdfTextElement(bulletCharacter, bulletFont)
+                PdfTextElement bulletElement = new PdfTextElement(bulletCharacter, GetTextFont(12, PdfFontStyle.Regular))
                 {
                     Brush = GetBrushFromHex(DefaultTextColor)
                 };

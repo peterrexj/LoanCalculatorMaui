@@ -71,6 +71,8 @@ public partial class SettingsView : ContentPage
             _viewModel.RefreshProperties();
 
             BindingContext ??= _viewModel;
+
+            _viewModel.LoadSelectedCurrency();
         }
         catch (Exception ex)
         {
@@ -79,6 +81,18 @@ public partial class SettingsView : ContentPage
         finally
         {
             PageHelper.PageLoadingComplete();
+        }
+    }
+
+    private async void OnPremiumShow_Clicked(object? sender, EventArgs e)
+    {
+        try
+        {
+            await Task.Run(() => PremiumWindow.ShowPremiumBuyWindow = true);
+        }
+        catch (Exception ex)
+        {
+            _errorHandlingService.HandleException(ex);
         }
     }
 }

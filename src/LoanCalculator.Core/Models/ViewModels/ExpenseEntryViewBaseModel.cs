@@ -22,6 +22,8 @@ namespace LoanCalculator.Core.Models.ViewModels
         public void TriggerOneTimeUpdateOnPage()
         {
             OnPropertyChanged(nameof(CustomChartColors));
+            OnPropertyChanged(nameof(CurrencySymbol));
+            OnPropertyChanged(nameof(TransactionRecords));
         }
 
         #region Expense Entry
@@ -125,7 +127,16 @@ namespace LoanCalculator.Core.Models.ViewModels
             IncomeExpenseEntry.Id = Guid.Empty;
         }
 
-        public Incomes? TransactionRecords { get; set; }
+        private Incomes? _incomes;
+
+        public Incomes? TransactionRecords
+        {
+            get => _incomes;
+            set             {
+                _incomes = value;
+                OnPropertyChanged(nameof(TransactionRecords));
+            }
+        }
 
         [JsonIgnore]
         public ObservableCollection<string> IncomeFrequencyCollection { get; set; }

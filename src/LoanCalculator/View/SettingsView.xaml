@@ -6,6 +6,7 @@
     xmlns:editors="clr-namespace:Syncfusion.Maui.Inputs;assembly=Syncfusion.Maui.Inputs"
     xmlns:expander="clr-namespace:Syncfusion.Maui.Expander;assembly=Syncfusion.Maui.Expander"
     xmlns:sfPopup="clr-namespace:Syncfusion.Maui.Popup;assembly=Syncfusion.Maui.Popup"
+    xmlns:controls="clr-namespace:LoanCalculatorMaui.Controls"
     Title="SettingsView">
     <Grid BackgroundColor="{DynamicResource LoanAppDefaultBackgroundColor}" IsEnabled="{Binding IsFree}">
         <sfPopup:SfPopup
@@ -75,6 +76,7 @@
                 </DataTemplate>
             </sfPopup:SfPopup.ContentTemplate>
         </sfPopup:SfPopup>
+        <controls:InAppPurchaseView x:Name="PremiumWindow" />
 
         <!--  Main Content  -->
         <VerticalStackLayout>
@@ -131,12 +133,38 @@
                     SelectedItem="{Binding SelectedTheme, Mode=TwoWay}"
                     Style="{DynamicResource SfComboBoxStyle}" />
 
+                <Label
+                    Margin="0,20,0,0"
+                    FontSize="{OnIdiom Phone=14,
+                       Tablet=19,
+                       Desktop=19,
+                       TV=19,
+                       Watch=12,
+                       Default=14}"
+                    Text="Change Currency"
+                    TextColor="{DynamicResource LoanAppAppShellFgColor}" />
+                <editors:SfComboBox
+                    BackgroundColor="Transparent"
+                    ItemsSource="{Binding Currencies}"
+                    DisplayMemberPath="Display"
+                    SelectedValuePath="Symbol"
+                    SelectedItem="{Binding SelectedCurrency, Mode=TwoWay}"
+                    Style="{DynamicResource SfComboBoxStyle}" />
+
 
                 <!--<Label
                     Margin="0,20,0,0"
                     FontSize="{OnIdiom Phone=14, Tablet=19, Desktop=19, TV=19, Default=14}"
                     Text="Disclaimer"
                     TextColor="{DynamicResource LoanAppAppShellFgColor}" />-->
+
+
+
+                <Button
+                    Margin="0,10,10,0"
+                    Clicked="OnPremiumShow_Clicked"
+                    Style="{DynamicResource MauiButtonStyle}"
+                    Text="Restore your purchase" />
 
                 <Button
                     Margin="0,10,10,0"

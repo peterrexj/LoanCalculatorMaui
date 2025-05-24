@@ -17,4 +17,6 @@ errorHandlingService.HandleException(new Exception("test error!"));
 
 Console.WriteLine("Mock services are ready!");
 
-await new PdfInsightsGenerator().GeneratePdf();
+var fontProvider = new FileSystemFontProvider();
+
+await new PdfInsightsGenerator(fontProvider).GeneratePdf("Loan Affordability Calculator");

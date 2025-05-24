@@ -246,7 +246,7 @@
                                                 Style="{DynamicResource CommonTextInputLayoutStyle}">
                                                 <core:SfNumericEntry
                                                     x:Name="txtInputAmount"
-                                                    CustomFormat="c0"
+                                                    CustomFormat="{Binding CurrencyFormat}"
                                                     FontSize="{OnIdiom Phone=14,
                                                                        Tablet=19,
                                                                        Desktop=19,

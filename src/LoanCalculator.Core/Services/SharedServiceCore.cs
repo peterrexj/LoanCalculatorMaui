@@ -1,4 +1,5 @@
-﻿using LoanCalculator.Core.Helper;
+﻿using System.Globalization;
+using LoanCalculator.Core.Helper;
 using LoanCalculator.Core.Models;
 using LoanCalculator.Core.Models.Income.Summary;
 using LoanCalculator.Core.Models.ViewModels.PrimaryModels;
@@ -217,5 +218,89 @@ namespace LoanCalculator.Core.Services
 
         public static bool IsPremiumUser => Preferences.Get("IsPremium", false);
         public static bool IsTrialUser => !IsPremiumUser;
+
+        #region Currency
+        
+        public const string SelectedCurrencyKey = "SelectedCurrencyISO";
+        private static List<CurrencyModel?>? _currencies;
+
+        public static List<CurrencyModel?>? Currencies
+        {
+            get
+            {
+                if (_currencies == null)
+                {
+                    var topISO = new[]
+                    {
+                        "USD", "EUR", "JPY", "GBP", "AUD", "CAD", "CHF", "CNY", "HKD", "NZD",
+                        "SEK", "KRW", "SGD", "NOK", "MXN", "INR", "RUB", "ZAR", "TRY", "BRL"
+                    };
+
+                    var allCurrencies = CultureInfo
+                        .GetCultures(CultureTypes.SpecificCultures)
+                        .Select(culture =>
+                        {
+                            try
+                            {
+                                var region = new RegionInfo(culture.Name);
+                                return new CurrencyModel(region.CurrencyEnglishName, region.CurrencySymbol,
+                                    region.ISOCurrencySymbol);
+                            }
+                            catch
+                            {
+                                return null;
+                            }
+                        })
+                        .Where(x => x != null)
+                        .DistinctBy(x => x.IsoCode)
+                        .ToList();
+
+                    var topCurrencies = allCurrencies
+                        .Where(c => topISO.Contains(c.IsoCode))
+                        .OrderBy(c => Array.IndexOf(topISO, c.IsoCode))
+                        .ToList();
+
+                    var otherCurrencies = allCurrencies
+                        .Where(c => !topISO.Contains(c.IsoCode))
+                        .OrderBy(c => c.Name)
+                        .ToList();
+
+                    _currencies = topCurrencies.Concat(otherCurrencies).ToList();
+                }
+                return _currencies;
+            }
+        }
+
+        public static string GetCurrencySymbol(string? isoCode)
+        {
+            if (string.IsNullOrEmpty(isoCode) || string.IsNullOrWhiteSpace(isoCode))
+            {
+                return "$";
+            }
+            var currency = Currencies?.FirstOrDefault(c => c?.IsoCode == isoCode);
+            return currency?.Symbol ?? "$";
+        }
+
+        public static CultureInfo? GetCultureFromIsoCurrency(string isoCode)
+        {
+            return CultureInfo
+                .GetCultures(CultureTypes.SpecificCultures)
+                .Select(culture =>
+                {
+                    try
+                    {
+                        var region = new RegionInfo(culture.Name);
+                        return (region.ISOCurrencySymbol == isoCode) ? culture : null;
+                    }
+                    catch
+                    {
+                        return null;
+                    }
+                })
+                .FirstOrDefault(c => c != null);
+        }
+
+        
+        #endregion
     }
 }

@@ -91,7 +91,7 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
         }
 
         [JsonIgnore] public ICommand ExportInsightsReportCommand { get; }
-        [JsonIgnore] public PdfInsightsGenerator PdfGenerator { get; set; } = new PdfInsightsGenerator();
+        [JsonIgnore] public PdfInsightsGenerator PdfGenerator { get; set; }
         [JsonIgnore]
         private bool _isGeneratingPdf;
 
@@ -142,7 +142,7 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
                         IsBusy = true; // Show loader
                         IsActive = false;
                         await Task.Delay(500); // Simulate a delay for the loader
-                        await PdfGenerator.GeneratePdf(taskDelay: 400);
+                        await PdfGenerator.GeneratePdf(SharedServiceCore.AppInformation.ApplicationTitle, taskDelay: 400);
                     }
                     catch (Exception ex)
                     {

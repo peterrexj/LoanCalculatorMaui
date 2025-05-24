@@ -4,7 +4,24 @@ namespace LoanCalculator.Core.Models
 {
     public static class Helper
     {
-        public static string CurrencySymbol { get; set; } = new RegionInfo(CultureInfo.CurrentCulture.Name).CurrencySymbol;
+        /// <summary>
+        /// ... This event is triggered when the currency symbol changes.
+        /// </summary>
+        public static event EventHandler? CurrencySymbolChanged;
+
+        private static string _currencySymbol = "$";
+        public static string CurrencySymbol
+        {
+            get => _currencySymbol;
+            set
+            {
+                if (_currencySymbol != value)
+                {
+                    _currencySymbol = value;
+                    CurrencySymbolChanged?.Invoke(null, EventArgs.Empty);
+                }
+            }
+        }
 
         public static string WithComma(this double value) => value.ToString("N0");
         public static double Round2(this double value) => Math.Round(value, 2);

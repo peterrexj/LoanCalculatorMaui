@@ -14,25 +14,18 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
 {
     public class SettingsViewModel : ViewModelUiBase
     {
-        [JsonIgnore]
-        private readonly IErrorHandlingService _errorHandlingService;
-        [JsonIgnore]
-        private readonly IAlertService _alertService;
-        [JsonIgnore]
-        private readonly IThemeHandler _themeHandler;
+        [JsonIgnore] private readonly IErrorHandlingService _errorHandlingService;
+        [JsonIgnore] private readonly IAlertService _alertService;
+        [JsonIgnore] private readonly IThemeHandler _themeHandler;
 
-        [JsonIgnore]
-        public ICommand ClearLoanDataCommand { get; }
-        [JsonIgnore]
-        public ICommand ClearExpenseDataCommand { get; }
-        [JsonIgnore]
-        public ICommand ClearIncomeDataCommand { get; }
-        [JsonIgnore]
-        public ICommand ClearAllDataCommand { get; }
-        [JsonIgnore]
-        public ICommand ShowDisclaimerCommand { get; }
-        public ICommand OnShareAppRequestCommand { get; }
-        public ICommand OnRateAppRequestCommand { get; }
+        
+        [JsonIgnore] public ICommand ClearLoanDataCommand { get; }
+        [JsonIgnore] public ICommand ClearExpenseDataCommand { get; }
+        [JsonIgnore] public ICommand ClearIncomeDataCommand { get; }
+        [JsonIgnore] public ICommand ClearAllDataCommand { get; }
+        [JsonIgnore] public ICommand ShowDisclaimerCommand { get; }
+        [JsonIgnore] public ICommand OnShareAppRequestCommand { get; }
+        [JsonIgnore] public ICommand OnRateAppRequestCommand { get; }
         [JsonIgnore]
         public ICommand PopupCloseCommand { get; }
 
@@ -60,7 +53,44 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
             OnShareAppRequestCommand = new Command(OnShareAppRequest);
             OnRateAppRequestCommand = new Command(OnRateAppRequest);
         }
-        
+
+        #region Currencies
+
+        [JsonIgnore]
+        public ObservableCollection<CurrencyModel> Currencies { get; } =
+            new ObservableCollection<CurrencyModel>(
+                (SharedServiceCore.Currencies ?? new List<CurrencyModel?>
+                {
+                    new CurrencyModel("Australian Dollar", "$", "AUD")
+                })
+                .Where(c => c != null)!
+            );
+
+        private CurrencyModel? _selectedCurrency;
+        [JsonIgnore]
+        public CurrencyModel? SelectedCurrency
+        {
+            get => _selectedCurrency;
+            set
+            {
+                if (_selectedCurrency != value)
+                {
+                    _selectedCurrency = value;
+                    OnPropertyChanged(nameof(SelectedCurrency));
+                    Preferences.Set(SharedServiceCore.SelectedCurrencyKey, _selectedCurrency?.IsoCode);
+                    Helper.CurrencySymbol = SharedServiceCore.GetCurrencySymbol(_selectedCurrency?.IsoCode);
+                }
+            }
+        }
+
+        public void LoadSelectedCurrency()
+        {
+            SelectedCurrency = Currencies.FirstOrDefault(c => c.IsoCode == Preferences.Get(SharedServiceCore.SelectedCurrencyKey, null));
+            OnPropertyChanged(nameof(SelectedCurrency));
+        }
+
+        #endregion
+
 
         [JsonIgnore]
         public ObservableCollection<string> Themes { get; }
@@ -207,6 +237,5 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
                 _errorHandlingService.HandleException(e);
             }
         }
-
     }
 }

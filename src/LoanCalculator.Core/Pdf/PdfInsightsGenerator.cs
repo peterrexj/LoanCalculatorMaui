@@ -19,9 +19,11 @@ namespace LoanCalculator.Core.Pdf
 {
     public class PdfInsightsGenerator : PdfGeneratorBaseWithDisclaimer, INotifyPropertyChanged
     {
-        public PdfInsightsGenerator()
-        {
 
+        public PdfInsightsGenerator(IFontUnicodeProvider fontUnicodeProvider) : base(fontUnicodeProvider)
+        {
+            //Enable this only when you want to set the currency symbol globally and test from playground
+            //Models.Helper.CurrencySymbol = "\u20b9";
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;
@@ -51,7 +53,7 @@ namespace LoanCalculator.Core.Pdf
             // Optionally, raise an event or notify observers if needed
         }
 
-        public async Task GeneratePdf(int taskDelay = 0)
+        public async Task GeneratePdf(string applicationTitle, int taskDelay = 0)
         {
             try
             {
@@ -72,7 +74,7 @@ namespace LoanCalculator.Core.Pdf
                 await Task.Delay(taskDelay); // Simulate work
 
                 // Render header and footer templates
-                await RenderHeaderTemplate();
+                await RenderHeaderTemplate(applicationTitle);
                 await Task.Run(() => RenderFooterTemplate());
 
                 // Add a page to the document
@@ -87,10 +89,10 @@ namespace LoanCalculator.Core.Pdf
                 // Draw header and subtitle
                 await Task.Run(() =>
                 {
-                    PageTitle("Property Home Loan Report");
-                    PageSubtitle("Comprehensive Overview (estimate ONLY)");
+                    PageTitle("Loan Insight Report");
+                    PageSubtitle("Comprehensive Overview (Estimate ONLY)");
                     AddNewLineSpace(20);
-                    GenerateDisclaimerData();
+                    GenerateDisclaimerData(applicationTitle);
                 });
 
                 UpdateProgress(50); // 50% progress
@@ -130,7 +132,7 @@ namespace LoanCalculator.Core.Pdf
         }
 
 
-        private async Task RenderHeaderTemplate()
+        private async Task RenderHeaderTemplate(string applicationTitle)
         {
             // Header template
             RectangleF headerBounds = new RectangleF(0, 0, PageWidth, 70);
@@ -165,7 +167,7 @@ namespace LoanCalculator.Core.Pdf
             // Add the header at the top.
 
             // Define title and subtitle
-            string title = "Loan Calculator Report";
+            string title = $"{applicationTitle} App Report";
             string subtitle = "Comprehensive Overview and Estimates";
 
             // Set font and style for title and subtitle
@@ -287,9 +289,8 @@ namespace LoanCalculator.Core.Pdf
 
             var listOfKpiExplain = new List<TextElementModel>
             {
-                new("Affordability", DefaultFontFamily, 12, PdfFontStyle.Bold, DefaultTextBrush, 1),
-                new("is the money you have left after paying for all your expenses, including this new loan. It shows how much you can comfortably manage while still covering your financial needs.", DefaultFontFamily, 12,
-                    PdfFontStyle.Regular, DefaultTextBrush, 1),
+                new("Affordability", GetTextFont(12, PdfFontStyle.Bold), DefaultTextBrush, 1),
+                new("is the money you have left after paying for all your expenses, including this new loan. It shows how much you can comfortably manage while still covering your financial needs.", GetTextFont(12, PdfFontStyle.Regular), DefaultTextBrush, 1),
             };
 
             DrawTextElements(listOfKpiExplain, _yPosition, updateYPosition: true);
@@ -297,9 +298,8 @@ namespace LoanCalculator.Core.Pdf
 
             listOfKpiExplain = new List<TextElementModel>
             {
-                new("Loan", DefaultFontFamily, 12, PdfFontStyle.Bold, DefaultTextBrush, 1),
-                new("is the amount borrowed and deposit paid for the property purchase.", DefaultFontFamily, 12,
-                    PdfFontStyle.Regular, DefaultTextBrush, 1),
+                new("Loan", GetTextFont(12, PdfFontStyle.Bold), DefaultTextBrush, 1),
+                new("is the amount borrowed and deposit paid for the property purchase.", GetTextFont(12, PdfFontStyle.Regular), DefaultTextBrush, 1),
             };
 
             DrawTextElements(listOfKpiExplain, _yPosition, updateYPosition: true);
@@ -307,9 +307,8 @@ namespace LoanCalculator.Core.Pdf
 
             listOfKpiExplain = new List<TextElementModel>
             {
-                new("Total Repayment", DefaultFontFamily, 12, PdfFontStyle.Bold, DefaultTextBrush, 1),
-                new("is the complete amount you'll pay back, including the loan principal and interest.", DefaultFontFamily, 12,
-                    PdfFontStyle.Regular, DefaultTextBrush, 1),
+                new("Total Repayment", GetTextFont(12, PdfFontStyle.Bold), DefaultTextBrush, 1),
+                new("is the complete amount you'll pay back, including the loan principal and interest.", GetTextFont(12, PdfFontStyle.Regular), DefaultTextBrush, 1),
             };
 
             DrawTextElements(listOfKpiExplain, _yPosition, updateYPosition: true);
@@ -317,9 +316,8 @@ namespace LoanCalculator.Core.Pdf
 
             listOfKpiExplain = new List<TextElementModel>
             {
-                new("Term Payment", DefaultFontFamily, 12, PdfFontStyle.Bold, DefaultTextBrush, 1),
-                new("is the regular payments made monthly or yearly to repay the loan.", DefaultFontFamily, 12,
-                    PdfFontStyle.Regular, DefaultTextBrush, 1),
+                new("Term Payment", GetTextFont(12, PdfFontStyle.Bold), DefaultTextBrush, 1),
+                new("is the regular payments made monthly or yearly to repay the loan.", GetTextFont(12, PdfFontStyle.Regular), DefaultTextBrush, 1),
             };
 
             DrawTextElements(listOfKpiExplain, _yPosition, updateYPosition: true);
@@ -327,9 +325,8 @@ namespace LoanCalculator.Core.Pdf
 
             listOfKpiExplain = new List<TextElementModel>
             {
-                new("Total Income", DefaultFontFamily, 12, PdfFontStyle.Bold, DefaultTextBrush, 1),
-                new("is the total earnings from all sources on a monthly and yearly basis.", DefaultFontFamily, 12,
-                    PdfFontStyle.Regular, DefaultTextBrush, 1),
+                new("Total Income", GetTextFont(12, PdfFontStyle.Bold), DefaultTextBrush, 1),
+                new("is the total earnings from all sources on a monthly and yearly basis.", GetTextFont(12, PdfFontStyle.Regular), DefaultTextBrush, 1),
             };
 
             DrawTextElements(listOfKpiExplain, _yPosition, updateYPosition: true);
@@ -337,9 +334,8 @@ namespace LoanCalculator.Core.Pdf
 
             listOfKpiExplain = new List<TextElementModel>
             {
-                new("Total Expenses", DefaultFontFamily, 12, PdfFontStyle.Bold, DefaultTextBrush, 1),
-                new("is your overall financial outflows, covering loan repayments and other expenses.", DefaultFontFamily, 12,
-                    PdfFontStyle.Regular, DefaultTextBrush, 1),
+                new("Total Expenses", GetTextFont(12, PdfFontStyle.Bold), DefaultTextBrush, 1),
+                new("is your overall financial outflows, covering loan repayments and other expenses.", GetTextFont(12, PdfFontStyle.Regular), DefaultTextBrush, 1),
             };
 
             DrawTextElements(listOfKpiExplain, _yPosition, updateYPosition: true);
@@ -425,16 +421,14 @@ namespace LoanCalculator.Core.Pdf
             headerElement.Draw(page, new PointF(bounds.Left + 5, bounds.Top + 5));
 
             // Draw the value text
-            PdfFont valueFont = new PdfStandardFont(DefaultFontFamily, 16, PdfFontStyle.Bold);
-            PdfTextElement valueElement = new PdfTextElement(value, valueFont)
+            PdfTextElement valueElement = new PdfTextElement(value, GetNumberFont(16, PdfFontStyle.Bold))
             {
                 Brush = PdfBrushes.Black
             };
             valueElement.Draw(page, new PointF(bounds.Left + 5, bounds.Top + 25));
 
             // Draw the value text
-            PdfFont secondValueFont = new PdfStandardFont(DefaultFontFamily, 12, PdfFontStyle.Regular);
-            PdfTextElement secondValueElement = new PdfTextElement(secondValue, secondValueFont)
+            PdfTextElement secondValueElement = new PdfTextElement(secondValue, GetNumberFont(12, PdfFontStyle.Regular))
             {
                 Brush = PdfBrushes.Black
             };
@@ -447,7 +441,7 @@ namespace LoanCalculator.Core.Pdf
             {
                 BackgroundBrush = bgBrush,
                 TextBrush = fgBrush,
-                Font = new PdfStandardFont(DefaultFontFamily, fontSize, fontStyle),
+                Font = GetNumberFont(fontSize, fontStyle),
                 Borders = new PdfBorders { All = new PdfPen(borderBrush, 0.5f) },
                 CellPadding = new PdfPaddings(5, 5, 5, 5) // Add padding to the header cells
             };
@@ -859,34 +853,34 @@ namespace LoanCalculator.Core.Pdf
             {
                 new()
                 {
-                    new("Stamp Duty", DefaultFontFamily, 12, PdfFontStyle.Bold, DefaultTextBrush, 1),
-                    new("estimated", DefaultFontFamily, 8, PdfFontStyle.Italic, DefaultTextBrush, 1),
-                    new($"({DataModel.Loan.StampDuty.ToCurrency()}): A government-imposed fee tied to the property transaction.", DefaultFontFamily, 12, PdfFontStyle.Regular, DefaultTextBrush, 2)
+                    new("Stamp Duty", GetTextFont(12, PdfFontStyle.Bold), DefaultTextBrush, 1),
+                    new("estimated", GetTextFont(8, PdfFontStyle.Italic), DefaultTextBrush, 1),
+                    new($"({DataModel.Loan.StampDuty.ToCurrency()}): A government-imposed fee tied to the property transaction.", GetTextFont(12, PdfFontStyle.Regular), DefaultTextBrush, 2)
                 },
                 new()
                 {
-                    new("Mortgage Charges", DefaultFontFamily, 12, PdfFontStyle.Bold, DefaultTextBrush, 1),
-                    new($"({DataModel.Loan.MortgageCharges.ToCurrency()}): Includes fees like Lender's Mortgage Insurance (LMI), application charges, property valuation costs, account maintenance fees.", DefaultFontFamily, 12, PdfFontStyle.Regular, DefaultTextBrush, 1)
+                    new("Mortgage Charges", GetTextFont(12, PdfFontStyle.Bold), DefaultTextBrush, 1),
+                    new($"({DataModel.Loan.MortgageCharges.ToCurrency()}): Includes fees like Lender's Mortgage Insurance (LMI), application charges, property valuation costs, account maintenance fees.", GetTextFont(12, PdfFontStyle.Regular), DefaultTextBrush, 1)
                 },
                 new()
                 {
-                    new("Bank Fees", DefaultFontFamily, 12, PdfFontStyle.Bold, DefaultTextBrush, 1),
-                    new($"({DataModel.Loan.BankSettlementFee.ToCurrency()}): Costs related to loan application or approval processes.", DefaultFontFamily, 12, PdfFontStyle.Regular, DefaultTextBrush, 1)
+                    new("Bank Fees", GetTextFont(12, PdfFontStyle.Bold), DefaultTextBrush, 1),
+                    new($"({DataModel.Loan.BankSettlementFee.ToCurrency()}): Costs related to loan application or approval processes.", GetTextFont(12, PdfFontStyle.Regular), DefaultTextBrush, 1)
                 },
                 new()
                 {
-                    new("Conveyancer Fees", DefaultFontFamily, 12, PdfFontStyle.Bold, DefaultTextBrush, 1),
-                    new($"({DataModel.Loan.ConveyancerFee.ToCurrency()}): Professional charges for overseeing the legal aspects of the property transfer.", DefaultFontFamily, 12, PdfFontStyle.Regular, DefaultTextBrush, 1)
+                    new("Conveyancer Fees", GetTextFont(12, PdfFontStyle.Bold), DefaultTextBrush, 1),
+                    new($"({DataModel.Loan.ConveyancerFee.ToCurrency()}): Professional charges for overseeing the legal aspects of the property transfer.", GetTextFont(12, PdfFontStyle.Regular), DefaultTextBrush, 1)
                 },
                 new()
                 {
-                    new("Inspection Charges", DefaultFontFamily, 12, PdfFontStyle.Bold, DefaultTextBrush, 1),
-                    new($"({DataModel.Loan.InspectionFee.ToCurrency()}): Fees incurred for property evaluations to ensure its condition and compliance.", DefaultFontFamily, 12, PdfFontStyle.Regular, DefaultTextBrush, 1)
+                    new("Inspection Charges", GetTextFont(12, PdfFontStyle.Bold), DefaultTextBrush, 1),
+                    new($"({DataModel.Loan.InspectionFee.ToCurrency()}): Fees incurred for property evaluations to ensure its condition and compliance.", GetTextFont(12, PdfFontStyle.Regular), DefaultTextBrush, 1)
                 },
                 new()
                 {
-                    new("Other Expenses", DefaultFontFamily, 12, PdfFontStyle.Bold, DefaultTextBrush, 1),
-                    new($"({DataModel.Loan.OtherExpenses.ToCurrency()}): Covers moving costs, utility setup fees, renovations, council rates, and home insurance expenses.", DefaultFontFamily, 12, PdfFontStyle.Regular, DefaultTextBrush, 1)
+                    new("Other Expenses", GetTextFont(12, PdfFontStyle.Bold), DefaultTextBrush, 1),
+                    new($"({DataModel.Loan.OtherExpenses.ToCurrency()}): Covers moving costs, utility setup fees, renovations, council rates, and home insurance expenses.", GetTextFont(12, PdfFontStyle.Regular), DefaultTextBrush, 1)
                 }
             };
             DrawBulletPoints(otherExpensesBullets);
@@ -935,13 +929,13 @@ namespace LoanCalculator.Core.Pdf
             {
                 new()
                 {
-                    new($"{DataModel.Loan.MonthlyRepayment.ToCurrency()}", DefaultFontFamily, 12, PdfFontStyle.Bold, DefaultTextBrush, 1),
-                    new($"Repayment on a monthly basis", DefaultFontFamily, 12, PdfFontStyle.Regular, DefaultTextBrush, 2)
+                    new($"{DataModel.Loan.MonthlyRepayment.ToCurrency()}", GetNumberFont(12, PdfFontStyle.Bold), DefaultTextBrush, 1),
+                    new($"Repayment on a monthly basis", GetTextFont(12, PdfFontStyle.Regular), DefaultTextBrush, 2)
                 },
                 new()
                 {
-                    new($"{DataModel.Loan.TotalMonthlyRunningExpense.ToCurrency()}", DefaultFontFamily, 12, PdfFontStyle.Bold, DefaultTextBrush, 1),
-                    new($"Monthly additional expense for this property (estimated)", DefaultFontFamily, 12, PdfFontStyle.Regular, DefaultTextBrush, 2)
+                    new($"{DataModel.Loan.TotalMonthlyRunningExpense.ToCurrency()}", GetNumberFont(12, PdfFontStyle.Bold), DefaultTextBrush, 1),
+                    new($"Monthly additional expense for this property (estimated)", GetTextFont(12, PdfFontStyle.Regular), DefaultTextBrush, 2)
                 }
             };
             DrawBulletPoints(monthlyPropertyTotalBullets);
@@ -952,13 +946,13 @@ namespace LoanCalculator.Core.Pdf
             {
                 new()
                 {
-                    new($"{DataModel.Loan.YearlyRepayment.ToCurrency()}", DefaultFontFamily, 12, PdfFontStyle.Bold, DefaultTextBrush, 1),
-                    new($"Repayment on a yearly basis", DefaultFontFamily, 12, PdfFontStyle.Regular, DefaultTextBrush, 2)
+                    new($"{DataModel.Loan.YearlyRepayment.ToCurrency()}", GetNumberFont(12, PdfFontStyle.Bold), DefaultTextBrush, 1),
+                    new($"Repayment on a yearly basis", GetTextFont(12, PdfFontStyle.Regular), DefaultTextBrush, 2)
                 },
                 new()
                 {
-                    new($"{DataModel.Loan.TotalYearlyRunningExpense.ToCurrency()}", DefaultFontFamily, 12, PdfFontStyle.Bold, DefaultTextBrush, 1),
-                    new($"Yearly additional expense for this property (estimated)", DefaultFontFamily, 12, PdfFontStyle.Regular, DefaultTextBrush, 2)
+                    new($"{DataModel.Loan.TotalYearlyRunningExpense.ToCurrency()}", GetNumberFont(12, PdfFontStyle.Bold), DefaultTextBrush, 1),
+                    new($"Yearly additional expense for this property (estimated)", GetTextFont(12, PdfFontStyle.Regular), DefaultTextBrush, 2)
                 }
             };
             DrawBulletPoints(yearlyPropertyTotalBullets);
@@ -1010,17 +1004,17 @@ namespace LoanCalculator.Core.Pdf
 
             var incomeAfterExpenseMonthlyDistributionText = new List<TextElementModel>
             {
-                new("(", DefaultFontFamily, fontSize, PdfFontStyle.Regular, DefaultTextBrush, 1),
-                new("Calculation:", DefaultFontFamily, fontSize - 1, PdfFontStyle.Bold, DefaultTextBrush, 1),
-                new($"{DataModel.Income.TotalMonthly.ToCurrency()}", DefaultFontFamily, fontSize, PdfFontStyle.Regular, DefaultTextBrush, 1),
-                new("income", DefaultFontFamily, fontSize, PdfFontStyle.Italic, DefaultTextBrush, 1),
-                new($"- {DataModel.Expense.TotalMonthly.ToCurrency()}", DefaultFontFamily, fontSize, PdfFontStyle.Regular, DefaultTextBrush, 1),
-                new("expenses", DefaultFontFamily, fontSize, PdfFontStyle.Italic, DefaultTextBrush, 1),
-                new("=", DefaultFontFamily, fontSize, PdfFontStyle.Regular, DefaultTextBrush, 1),
+                new("(", GetTextFont(fontSize, PdfFontStyle.Regular), DefaultTextBrush, 1),
+                new("Calculation:", GetTextFont(fontSize - 1, PdfFontStyle.Bold), DefaultTextBrush, 1),
+                new($"{DataModel.Income.TotalMonthly.ToCurrency()}", GetNumberFont(fontSize, PdfFontStyle.Regular), DefaultTextBrush, 1),
+                new("income", GetTextFont(fontSize, PdfFontStyle.Italic), DefaultTextBrush, 1),
+                new($"- {DataModel.Expense.TotalMonthly.ToCurrency()}", GetNumberFont(fontSize, PdfFontStyle.Regular), DefaultTextBrush, 1),
+                new("expenses", GetTextFont(fontSize, PdfFontStyle.Italic), DefaultTextBrush, 1),
+                new("=", GetTextFont(fontSize, PdfFontStyle.Regular), DefaultTextBrush, 1),
                 new($"{DataModel.Income.TotalAfterExpenseMonthly.ToCurrency()}",
-                    DefaultFontFamily, fontSize, PdfFontStyle.Bold, _defaultTextFgBasedOnValueBrush(DataModel.Income.TotalAfterExpenseMonthly), 1),
-                new("net income", DefaultFontFamily, fontSize, PdfFontStyle.Italic, DefaultTextBrush, 1),
-                new(")", DefaultFontFamily, fontSize, PdfFontStyle.Regular, DefaultTextBrush, 1),
+                    GetNumberFont(fontSize, PdfFontStyle.Bold), _defaultTextFgBasedOnValueBrush(DataModel.Income.TotalAfterExpenseMonthly), 1),
+                new("net income", GetTextFont(fontSize, PdfFontStyle.Italic), DefaultTextBrush, 1),
+                new(")", GetTextFont(fontSize, PdfFontStyle.Regular), DefaultTextBrush, 1),
             };
             DrawTextElements(incomeAfterExpenseMonthlyDistributionText, _yPosition, updateYPosition: true);
             AddNewLineSpace();
@@ -1032,17 +1026,17 @@ namespace LoanCalculator.Core.Pdf
 
             var incomeAfterExpenseYearlyDistributionText = new List<TextElementModel>
             {
-                new("(", DefaultFontFamily, fontSize, PdfFontStyle.Regular, DefaultTextBrush, 1),
-                new("Calculation:", DefaultFontFamily, fontSize - 1, PdfFontStyle.Bold, DefaultTextBrush, 1),
-                new($"{DataModel.Income.TotalYearly.ToCurrency()}", DefaultFontFamily, fontSize, PdfFontStyle.Regular, DefaultTextBrush, 1),
-                new("income", DefaultFontFamily, fontSize, PdfFontStyle.Italic, DefaultTextBrush, 1),
-                new($"- {DataModel.Expense.TotalYearly.ToCurrency()}", DefaultFontFamily, fontSize, PdfFontStyle.Regular, DefaultTextBrush, 1),
-                new("expenses", DefaultFontFamily, fontSize, PdfFontStyle.Italic, DefaultTextBrush, 1),
-                new("=", DefaultFontFamily, fontSize, PdfFontStyle.Regular, DefaultTextBrush, 1),
+                new("(", GetTextFont(fontSize, PdfFontStyle.Regular), DefaultTextBrush, 1),
+                new("Calculation:", GetTextFont(fontSize - 1, PdfFontStyle.Bold), DefaultTextBrush, 1),
+                new($"{DataModel.Income.TotalYearly.ToCurrency()}", GetNumberFont(fontSize, PdfFontStyle.Regular), DefaultTextBrush, 1),
+                new("income", GetTextFont(fontSize, PdfFontStyle.Italic), DefaultTextBrush, 1),
+                new($"- {DataModel.Expense.TotalYearly.ToCurrency()}", GetNumberFont(fontSize, PdfFontStyle.Regular), DefaultTextBrush, 1),
+                new("expenses", GetTextFont(fontSize, PdfFontStyle.Italic), DefaultTextBrush, 1),
+                new("=", GetTextFont(fontSize, PdfFontStyle.Regular), DefaultTextBrush, 1),
                 new($"{DataModel.Income.TotalAfterExpenseYearly.ToCurrency()}",
-                    DefaultFontFamily, fontSize, PdfFontStyle.Bold, _defaultTextFgBasedOnValueBrush(DataModel.Income.TotalAfterExpenseYearly), 1),
-                new("net income", DefaultFontFamily, fontSize, PdfFontStyle.Italic, DefaultTextBrush, 1),
-                new(")", DefaultFontFamily, fontSize, PdfFontStyle.Regular, DefaultTextBrush, 1),
+                    GetNumberFont(fontSize, PdfFontStyle.Bold), _defaultTextFgBasedOnValueBrush(DataModel.Income.TotalAfterExpenseYearly), 1),
+                new("net income", GetTextFont(fontSize, PdfFontStyle.Italic), DefaultTextBrush, 1),
+                new(")", GetTextFont(fontSize, PdfFontStyle.Regular), DefaultTextBrush, 1),
             };
             DrawTextElements(incomeAfterExpenseYearlyDistributionText, _yPosition, updateYPosition: true);
             AddNewLineSpace();
@@ -1077,22 +1071,22 @@ namespace LoanCalculator.Core.Pdf
 
             var incomeAfterExpenseMonthlyDistributionText = new List<TextElementModel>
             {
-                new("(", DefaultFontFamily, fontSize, PdfFontStyle.Regular, DefaultTextBrush, 1),
-                new("Calculation:", DefaultFontFamily, fontSize - 1, PdfFontStyle.Bold, DefaultTextBrush, 1),
-                new($"{DataModel.Income.TotalMonthly.ToCurrency()}", DefaultFontFamily, fontSize, PdfFontStyle.Regular, DefaultTextBrush, 1),
-                new("income", DefaultFontFamily, fontSize, PdfFontStyle.Italic, DefaultTextBrush, 1),
-                new($"- {DataModel.Expense.TotalMonthly.ToCurrency()}", DefaultFontFamily, fontSize, PdfFontStyle.Regular, DefaultTextBrush, 1),
-                new("expenses", DefaultFontFamily, fontSize, PdfFontStyle.Italic, DefaultTextBrush, 1),
-                new($"- {DataModel.Loan.MonthlyRepayment.ToCurrency()}", DefaultFontFamily, fontSize, PdfFontStyle.Regular, DefaultTextBrush, 1),
-                new($"loan repayment", DefaultFontFamily, fontSize, PdfFontStyle.Italic, DefaultTextBrush, 1),
-                new($"- {DataModel.Loan.TotalMonthlyRunningExpense.ToCurrency()}", DefaultFontFamily, fontSize, PdfFontStyle.Regular, DefaultTextBrush, 1),
-                new($"investment expenses", DefaultFontFamily, fontSize, PdfFontStyle.Italic, DefaultTextBrush, 1),
+                new("(", GetTextFont(fontSize, PdfFontStyle.Regular), DefaultTextBrush, 1),
+                new("Calculation:", GetTextFont(fontSize - 1, PdfFontStyle.Bold), DefaultTextBrush, 1),
+                new($"{DataModel.Income.TotalMonthly.ToCurrency()}", GetNumberFont(fontSize, PdfFontStyle.Regular), DefaultTextBrush, 1),
+                new("income", GetTextFont(fontSize, PdfFontStyle.Italic), DefaultTextBrush, 1),
+                new($"- {DataModel.Expense.TotalMonthly.ToCurrency()}", GetNumberFont(fontSize, PdfFontStyle.Regular), DefaultTextBrush, 1),
+                new("expenses", GetTextFont(fontSize, PdfFontStyle.Italic), DefaultTextBrush, 1),
+                new($"- {DataModel.Loan.MonthlyRepayment.ToCurrency()}", GetNumberFont(fontSize, PdfFontStyle.Regular), DefaultTextBrush, 1),
+                new($"loan repayment", GetTextFont(fontSize, PdfFontStyle.Italic), DefaultTextBrush, 1),
+                new($"- {DataModel.Loan.TotalMonthlyRunningExpense.ToCurrency()}", GetNumberFont(fontSize, PdfFontStyle.Regular), DefaultTextBrush, 1),
+                new($"investment expenses", GetTextFont(fontSize, PdfFontStyle.Italic), DefaultTextBrush, 1),
 
-                new("=", DefaultFontFamily, fontSize, PdfFontStyle.Regular, DefaultTextBrush, 1),
+                new("=", GetTextFont(fontSize, PdfFontStyle.Regular), DefaultTextBrush, 1),
                 new($"{DataModel.Income.TotalAfterExpenseIncludingPropertyMonthly.ToCurrency()}",
-                    DefaultFontFamily, fontSize, PdfFontStyle.Bold, _defaultTextFgBasedOnValueBrush(DataModel.Income.TotalAfterExpenseIncludingPropertyMonthly), 1),
-                new("net income", DefaultFontFamily, fontSize, PdfFontStyle.Italic, DefaultTextBrush, 1),
-                new(")", DefaultFontFamily, fontSize, PdfFontStyle.Regular, DefaultTextBrush, 1),
+                    GetNumberFont(fontSize, PdfFontStyle.Bold), _defaultTextFgBasedOnValueBrush(DataModel.Income.TotalAfterExpenseIncludingPropertyMonthly), 1),
+                new("net income", GetTextFont(fontSize, PdfFontStyle.Italic), DefaultTextBrush, 1),
+                new(")", GetTextFont(fontSize, PdfFontStyle.Regular), DefaultTextBrush, 1),
             };
             DrawTextElements(incomeAfterExpenseMonthlyDistributionText, _yPosition, updateYPosition: true);
             AddNewLineSpace();
@@ -1104,22 +1098,22 @@ namespace LoanCalculator.Core.Pdf
 
             var incomeAfterExpenseYearlyDistributionText = new List<TextElementModel>
             {
-                new("(", DefaultFontFamily, fontSize, PdfFontStyle.Regular, DefaultTextBrush, 1),
-                new("Calculation:", DefaultFontFamily, fontSize - 1, PdfFontStyle.Bold, DefaultTextBrush, 1),
-                new($"{DataModel.Income.TotalYearly.ToCurrency()}", DefaultFontFamily, fontSize, PdfFontStyle.Regular, DefaultTextBrush, 1),
-                new("income", DefaultFontFamily, fontSize, PdfFontStyle.Italic, DefaultTextBrush, 1),
-                new($"- {DataModel.Expense.TotalYearly.ToCurrency()}", DefaultFontFamily, fontSize, PdfFontStyle.Regular, DefaultTextBrush, 1),
-                new("expenses", DefaultFontFamily, fontSize, PdfFontStyle.Italic, DefaultTextBrush, 1),
-                new($"- {DataModel.Loan.YearlyRepayment.ToCurrency()}", DefaultFontFamily, fontSize, PdfFontStyle.Regular, DefaultTextBrush, 1),
-                new($"loan repayment", DefaultFontFamily, fontSize, PdfFontStyle.Italic, DefaultTextBrush, 1),
-                new($"- {DataModel.Loan.TotalYearlyRunningExpense.ToCurrency()}", DefaultFontFamily, fontSize, PdfFontStyle.Regular, DefaultTextBrush, 1),
-                new($"investment expenses", DefaultFontFamily, fontSize, PdfFontStyle.Italic, DefaultTextBrush, 1),
+                new("(", GetTextFont(fontSize, PdfFontStyle.Regular), DefaultTextBrush, 1),
+                new("Calculation:", GetTextFont(fontSize - 1, PdfFontStyle.Bold), DefaultTextBrush, 1),
+                new($"{DataModel.Income.TotalYearly.ToCurrency()}", GetNumberFont(fontSize, PdfFontStyle.Regular), DefaultTextBrush, 1),
+                new("income", GetTextFont(fontSize, PdfFontStyle.Italic), DefaultTextBrush, 1),
+                new($"- {DataModel.Expense.TotalYearly.ToCurrency()}", GetNumberFont(fontSize, PdfFontStyle.Regular), DefaultTextBrush, 1),
+                new("expenses", GetTextFont(fontSize, PdfFontStyle.Italic), DefaultTextBrush, 1),
+                new($"- {DataModel.Loan.YearlyRepayment.ToCurrency()}", GetNumberFont(fontSize, PdfFontStyle.Regular), DefaultTextBrush, 1),
+                new($"loan repayment", GetTextFont(fontSize, PdfFontStyle.Italic), DefaultTextBrush, 1),
+                new($"- {DataModel.Loan.TotalYearlyRunningExpense.ToCurrency()}", GetNumberFont(fontSize, PdfFontStyle.Regular), DefaultTextBrush, 1),
+                new($"investment expenses", GetTextFont(fontSize, PdfFontStyle.Italic), DefaultTextBrush, 1),
 
-                new("=", DefaultFontFamily, fontSize, PdfFontStyle.Regular, DefaultTextBrush, 1),
+                new("=", GetTextFont(fontSize, PdfFontStyle.Regular), DefaultTextBrush, 1),
                 new($"{DataModel.Income.TotalAfterExpenseIncludingPropertyYearly.ToCurrency()}",
-                    DefaultFontFamily, fontSize, PdfFontStyle.Bold, _defaultTextFgBasedOnValueBrush(DataModel.Income.TotalAfterExpenseIncludingPropertyYearly), 1),
-                new("net income", DefaultFontFamily, fontSize, PdfFontStyle.Italic, DefaultTextBrush, 1),
-                new(")", DefaultFontFamily, fontSize, PdfFontStyle.Regular, DefaultTextBrush, 1),
+                    GetNumberFont(fontSize, PdfFontStyle.Bold), _defaultTextFgBasedOnValueBrush(DataModel.Income.TotalAfterExpenseIncludingPropertyYearly), 1),
+                new("net income", GetTextFont(fontSize, PdfFontStyle.Italic), DefaultTextBrush, 1),
+                new(")", GetTextFont(fontSize, PdfFontStyle.Regular), DefaultTextBrush, 1),
             };
             DrawTextElements(incomeAfterExpenseYearlyDistributionText, _yPosition, updateYPosition: true);
             AddNewLineSpace();

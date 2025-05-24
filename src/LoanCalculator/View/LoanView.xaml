@@ -113,7 +113,7 @@
                                                     HorizontalOptions="Start"
                                                     Style="{DynamicResource CommonTextInputLayoutStyle}">
                                                     <editors:SfNumericEntry
-                                                        CustomFormat="c0"
+                                                        CustomFormat="{Binding CurrencyFormat}"
                                                         FontSize="{OnIdiom Phone=20,
                                                                            Tablet=25,
                                                                            Desktop=25,
@@ -275,7 +275,7 @@
                                                     Hint="Deposit value (direct)"
                                                     Style="{DynamicResource CommonTextInputLayoutStyle}">
                                                     <editors:SfNumericEntry
-                                                        CustomFormat="c0"
+                                                        CustomFormat="{Binding CurrencyFormat}"
                                                         FontSize="{OnIdiom Phone=20,
                                                                            Tablet=25,
                                                                            Desktop=25,
@@ -296,7 +296,7 @@
                                                     Hint="Loan Amount (direct)"
                                                     Style="{DynamicResource CommonTextInputLayoutStyle}">
                                                     <editors:SfNumericEntry
-                                                        CustomFormat="C0"
+                                                        CustomFormat="{Binding CurrencyFormat}"
                                                         FontSize="{OnIdiom Phone=20,
                                                                            Tablet=25,
                                                                            Desktop=25,
@@ -443,7 +443,7 @@
                                                     Hint="Property stamp duty (estimate)"
                                                     Style="{DynamicResource CommonTextInputLayoutStyle}">
                                                     <editors:SfNumericEntry
-                                                        CustomFormat="c0"
+                                                        CustomFormat="{Binding CurrencyFormat}"
                                                         FontSize="{OnIdiom Phone=20,
                                                                            Tablet=25,
                                                                            Desktop=25,
@@ -463,7 +463,7 @@
                                                     Hint="Mortgage charges"
                                                     Style="{DynamicResource CommonTextInputLayoutStyle}">
                                                     <editors:SfNumericEntry
-                                                        CustomFormat="c0"
+                                                        CustomFormat="{Binding CurrencyFormat}"
                                                         FontSize="{OnIdiom Phone=20,
                                                                            Tablet=25,
                                                                            Desktop=25,
@@ -483,7 +483,7 @@
                                                     Hint="Conveyance / solicitor fee"
                                                     Style="{DynamicResource CommonTextInputLayoutStyle}">
                                                     <editors:SfNumericEntry
-                                                        CustomFormat="c0"
+                                                        CustomFormat="{Binding CurrencyFormat}"
                                                         FontSize="{OnIdiom Phone=20,
                                                                            Tablet=25,
                                                                            Desktop=25,
@@ -503,7 +503,7 @@
                                                     Hint="Bank fees"
                                                     Style="{DynamicResource CommonTextInputLayoutStyle}">
                                                     <editors:SfNumericEntry
-                                                        CustomFormat="c0"
+                                                        CustomFormat="{Binding CurrencyFormat}"
                                                         FontSize="{OnIdiom Phone=20,
                                                                            Tablet=25,
                                                                            Desktop=25,
@@ -523,7 +523,7 @@
                                                     Hint="Inspection fee"
                                                     Style="{DynamicResource CommonTextInputLayoutStyle}">
                                                     <editors:SfNumericEntry
-                                                        CustomFormat="c0"
+                                                        CustomFormat="{Binding CurrencyFormat}"
                                                         FontSize="{OnIdiom Phone=20,
                                                                            Tablet=25,
                                                                            Desktop=25,
@@ -543,7 +543,7 @@
                                                     Hint="Other expenses"
                                                     Style="{DynamicResource CommonTextInputLayoutStyle}">
                                                     <editors:SfNumericEntry
-                                                        CustomFormat="c0"
+                                                        CustomFormat="{Binding CurrencyFormat}"
                                                         FontSize="{OnIdiom Phone=20,
                                                                            Tablet=25,
                                                                            Desktop=25,
@@ -605,7 +605,7 @@
                                                                                            TV=15,
                                                                                            Watch=8,
                                                                                            Default=10}"
-                                                                        LabelFormat="c" />
+                                                                        LabelFormat="{Binding CurrencyFormat}" />
                                                                 </chart:CircularDataLabelSettings.LabelStyle>
                                                             </chart:CircularDataLabelSettings>
                                                         </chart:DoughnutSeries.DataLabelSettings>
@@ -623,7 +623,7 @@
                                                                                                    TV=15,
                                                                                                    Watch=8,
                                                                                                    Default=10}"
-                                                                                Text="$"
+                                                                                Text="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.CurrencySymbol}"
                                                                                 TextColor="{DynamicResource LoanAppChartDataMarkerTextColor}" />
                                                                             <Span
                                                                                 FontAttributes="Bold"
@@ -1099,7 +1099,7 @@
                                                     Style="{DynamicResource CommonTextInputLayoutStyle}">
                                                     <core:SfNumericEntry
                                                         x:Name="txtInputAmount"
-                                                        CustomFormat="c0"
+                                                        CustomFormat="{Binding CurrencyFormat}"
                                                         FontSize="{OnIdiom Phone=14,
                                                                            Tablet=19,
                                                                            Desktop=19,

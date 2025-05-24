@@ -5,7 +5,24 @@ namespace LoanCalculator.Core.Models.ViewModels
 {
     public class ViewModelUiBase : BaseViewModel
     {
-        [JsonIgnore] public string CurrencySymbol { get; set; }
+        private string _currencySymbol;
+
+        [JsonIgnore]
+        public string CurrencySymbol
+        {
+            get => _currencySymbol;
+            set
+            {
+                _currencySymbol = value;
+                OnPropertyChanged(nameof(CurrencySymbol));
+                OnPropertyChanged(nameof(CurrencyFormat));
+            }
+        }
+
+        [JsonIgnore]
+        public string CurrencyFormat => $"{CurrencySymbol}#,##0";
+
+
         [JsonIgnore] public string NewLine { get; set; }
 
         protected bool isUpdating = false;
@@ -31,7 +48,6 @@ namespace LoanCalculator.Core.Models.ViewModels
 
         public ViewModelUiBase()
         {
-            CurrencySymbol = Helper.CurrencySymbol;
             NewLine = Environment.NewLine;
         }
     }

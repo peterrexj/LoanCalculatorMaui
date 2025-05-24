@@ -1,4 +1,5 @@
 using LoanCalculator.Core.Helper;
+using LoanCalculator.Core.Models;
 using LoanCalculator.Core.Models.Enums;
 using LoanCalculator.Core.Models.Income;
 using LoanCalculator.Core.Models.ViewModels;
@@ -112,6 +113,8 @@ public partial class IncomeView : ContentPage
             var loanData = loanDataTask.Result;
             _viewModel.PropertyExpenseSummary = loanData.Item1;
             _viewModel.PropertyPayment = loanData.Item2;
+
+            _viewModel.CurrencySymbol = Helper.CurrencySymbol;
 
             _viewModel.MarkInitializationComplete();
 

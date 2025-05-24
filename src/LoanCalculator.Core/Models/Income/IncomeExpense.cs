@@ -1,8 +1,9 @@
 ﻿using LoanCalculator.Core.Models.Enums;
+using System.ComponentModel;
 
 namespace LoanCalculator.Core.Models.Income
 {
-    public class IncomeExpense
+    public class IncomeExpense : INotifyPropertyChanged, IDisposable
     {
         public Guid Id { get; set; }
         public string Name { get; set; }
@@ -18,5 +19,22 @@ namespace LoanCalculator.Core.Models.Income
         public int TimeFrequencyIndex => IncomeExpenseHelper.TimeFrequencyToIndex(Frequency);
 
         public double Percentage { get; set; }
+
+        public event PropertyChangedEventHandler? PropertyChanged;
+
+        public IncomeExpense()
+        {
+            Helper.CurrencySymbolChanged += OnCurrencySymbolChanged;
+        }
+
+        private void OnCurrencySymbolChanged(object? sender, EventArgs e)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(AmountString)));
+        }
+
+        public void Dispose()
+        {
+            Helper.CurrencySymbolChanged -= OnCurrencySymbolChanged;
+        }
     }
 }

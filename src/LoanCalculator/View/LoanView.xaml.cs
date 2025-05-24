@@ -145,8 +145,9 @@ public partial class LoanView : ContentPage
             var triggerOneTimeUpdateTask = Task.Run(() => _viewModel.TriggerOneTimeUpdateOnPage());
             var triggerPropertyChangedTask = Task.Run(() => _viewModel.TriggerPropertyChangedOnPropertyTab());
             var refreshExpenseTabTask = Task.Run(() => _viewModel.RefreshExpenseTabPropertyChanged());
+            var triggerOneTimeUpdatePageLevelTask = Task.Run(() => _viewModel.TriggerPropertyChangedOnPageLevel());
 
-            await Task.WhenAll(triggerOneTimeUpdateTask, triggerPropertyChangedTask, refreshExpenseTabTask);
+            await Task.WhenAll(triggerOneTimeUpdateTask, triggerPropertyChangedTask, refreshExpenseTabTask, triggerOneTimeUpdatePageLevelTask);
 
             _viewModel.SyncAmortization(); //has to be done later as the amortization requires the property data which cannot refreshed in parallel
         }

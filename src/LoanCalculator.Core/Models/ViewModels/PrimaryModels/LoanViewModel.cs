@@ -91,7 +91,18 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
         }
 
         [JsonIgnore] public ICommand ExportInsightsReportCommand { get; }
-        [JsonIgnore] public PdfInsightsGenerator PdfGenerator { get; set; }
+        private PdfInsightsGenerator _pdfGenerator;
+
+        [JsonIgnore]
+        public PdfInsightsGenerator PdfGenerator
+        {
+            get => _pdfGenerator;
+            set
+            {
+                _pdfGenerator = value;
+                OnPropertyChanged(nameof(PdfGenerator));
+            }
+        }
         [JsonIgnore]
         private bool _isGeneratingPdf;
 
@@ -125,6 +136,7 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
         {
             try
             {
+                if (IsGeneratingPdf) return; // Prevent multiple exports at the same time
                 IsGeneratingPdf = true;
                 IsBusy = true;
 
@@ -1167,6 +1179,15 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
                     //new DataModel { Category = "Total", Value = HomeLoanInfo.PaymentSummary.Payment.TotalPayment, ValueWithComma = $"{CurrencySymbol}{HomeLoanInfo.PaymentSummary.Payment.TotalPaymentRounded:N2}" },
                 };
             }
+        }
+
+        public void TriggerPropertyChangedOnPageLevel()
+        {
+            if (PageHelper.IsFormLoading) return;
+
+            if (SharedServiceCore.LoadSafe) return;
+
+            OnPropertyChanged(nameof(PdfGenerator));
         }
     }
 }

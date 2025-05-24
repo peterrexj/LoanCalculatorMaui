@@ -45,6 +45,9 @@ namespace LoanCalculator.Core.Themes
                     case AppThemes.Light:
                         themeFile = "Theme.Light.xaml";
                         break;
+                    case AppThemes.Forest:
+                        themeFile = "Theme.Forest.xaml";
+                        break;
                     case AppThemes.FireBreather:
                         themeFile = "Theme.FireBreather.xaml";
                         break;

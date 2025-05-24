@@ -4,6 +4,7 @@
     {
         Dark,
         Light,
+        Forest,
         FireBreather
     }
 }

@@ -1,0 +1,271 @@
+﻿<?xml version="1.0" encoding="UTF-8" ?>
+<?xaml-comp compile="true" ?>
+<ResourceDictionary xmlns="http://schemas.microsoft.com/dotnet/2021/maui" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
+
+    <!--  Colors  -->
+    <Color x:Key="LoanAppDefaultForegroundColor">#5a3232</Color>
+    <Color x:Key="LoanAppDefaultBackgroundColor">#A75D5D</Color>
+
+    <Color x:Key="LoanAppTabBarBackgroundGradientStart">#ea8378</Color>
+    <Color x:Key="LoanAppTabBarBackgroundGradientEnd">#D3756B</Color>
+    <Color x:Key="LoanAppTabIndicatorStrokeColor">#D5B4B4</Color>
+    <Color x:Key="LoanAppTabTextColorSelected">#F5EBEB</Color>
+    <Color x:Key="LoanAppTabTextColorNormal">#FFC3A1</Color>
+
+    <Color x:Key="LoanAppHighlightFgColor">#F0997D</Color>
+
+    <Color x:Key="LoanAppInputTextFgColor">#5a3232</Color>
+    <Color x:Key="LoanAppInputTextWhenFocusedColor">#FFC3A1</Color>
+    <Color x:Key="LoanAppInputTextWhenUnFocusedColor">#F0997D</Color>
+    <Color x:Key="LoanAppInputErrorTextFgColor">#E57373</Color>
+
+    <Color x:Key="LoanAppSegBgColor">#ffac91</Color>
+    <Color x:Key="LoanAppSegBorderColor">#D3756B</Color>
+    <Color x:Key="LoanAppSegTextFgColor">#5a3232</Color>
+    <Color x:Key="LoanAppSegSelectedBgColor">#D3756B</Color>
+
+    <Color x:Key="LoanAppSliderKnobFillColor">#FFC3A1</Color>
+    <Color x:Key="LoanAppSliderKnobBorderColor">#D5B4B4</Color>
+    <Color x:Key="LoanAppSliderKnobOverlapColor">#F5EBEB</Color>
+    <Color x:Key="LoanAppRangeSliderTrackInActiveFillColor">#FFC3A1</Color>
+    <Color x:Key="LoanAppRangeSliderTrackActiveFillColor">#D3756B</Color>
+    <Color x:Key="LoanAppRangeSliderLabelTextColor">#5a3232</Color>
+
+    <Color x:Key="LoanAppDataGridHeaderBackgroundColor">#D3756B</Color>
+    <Color x:Key="LoanAppDataGridHeaderTextColor">#F5EBEB</Color>
+    <Color x:Key="LoanAppDataGridCellTextColor">#A75D5D</Color>
+    <Color x:Key="LoanAppDataGridCellBackgroundColor">#F0997D</Color>
+    <Color x:Key="LoanAppDataGridCellBg1">#edc7c3</Color>
+    <Color x:Key="LoanAppDataGridCellBg2">#e4aca6</Color>
+    <Color x:Key="LoanAppDataGridCellBg3">#db9088</Color>
+    <Color x:Key="LoanAppDataGridCellBg4">#d3756b</Color>
+    <Color x:Key="LoanAppDataGridCellBg5">#a85d55</Color>
+    <Color x:Key="LoanAppDataGridCellFg1">#744141</Color>
+    <Color x:Key="LoanAppDataGridCellFg2">#965353</Color>
+    <Color x:Key="LoanAppDataGridCellFg3">#a75d5d</Color>
+    <Color x:Key="LoanAppDataGridCellFg4">#F5EBEB</Color>
+    <Color x:Key="LoanAppDataGridCellFg5">#F5EBEB</Color>
+
+    <Color x:Key="LoanAppNavigationButtonBackgroundColor">#D3756B</Color>
+    <Color x:Key="LoanAppNavigationButtonDisableBackgroundColor">Transparent</Color>
+    <Color x:Key="LoanAppNavigationButtonDisableIconColor">#D5B4B4</Color>
+    <Color x:Key="LoanAppNavigationButtonIconColor">#F5EBEB</Color>
+    <Color x:Key="LoanAppNumericButtonBackgroundColor">#F0997D</Color>
+    <Color x:Key="LoanAppNumericButtonSelectionBackgroundColor">#FFC3A1</Color>
+    <Color x:Key="LoanAppNumericButtonSelectionTextColor">#A75D5D</Color>
+    <Color x:Key="LoanAppNumericButtonTextColor">#F5EBEB</Color>
+
+    <Color x:Key="LoanAppComboDropDownBackgroundColor">#D3756B</Color>
+    <Color x:Key="LoanAppComboDropDownTextColor">#F5EBEB</Color>
+    <Color x:Key="LoanAppComboHighlightedTextColor">#F0997D</Color>
+    <Color x:Key="LoanAppComboSelectedDropDownItemColor">#5a3232</Color>
+    <Color x:Key="LoanAppComboTextColor">#5a3232</Color>
+
+    <Color x:Key="LoanAppSwitchThumbBorderColorOn">#784c3e</Color>
+    <Color x:Key="LoanAppSwitchThumbColorOn">#D5B4B4</Color>
+    <Color x:Key="LoanAppSwitchTrackBorderColorOn">#D5B4B4</Color>
+    <Color x:Key="LoanAppSwitchTrackColorOn">#784c3e</Color>
+    <Color x:Key="LoanAppSwitchThumbBorderColorOff">#D5B4B4</Color>
+    <Color x:Key="LoanAppSwitchThumbColorOff">#784c3e</Color>
+    <Color x:Key="LoanAppSwitchTrackBorderColorOff">#784c3e</Color>
+    <Color x:Key="LoanAppSwitchTrackColorOff">#D5B4B4</Color>
+
+    <!--  AutoComplete  -->
+    <Color x:Key="LoanAppAutoCompleteSelectionTextHighlightColor">#FFC3A1</Color>
+    <Color x:Key="LoanAppAutoCompleteSelectedDropDownItemBackground">#D3756B</Color>
+    <Color x:Key="LoanAppAutoCompleteClearButtonColor">#F0997D</Color>
+    <Color x:Key="LoanAppAutoCompleteDropdownBackgroundColor">#D3756B</Color>
+    <Color x:Key="LoanAppAutoCompleteDropdownTextColor">#F5EBEB</Color>
+    <Color x:Key="LoanAppAutoCompleteDropdownBorderColor">#D5B4B4</Color>
+    <Color x:Key="LoanAppAutoCompleteHighlightedTextColor">#A75D5D</Color>
+    <Color x:Key="LoanAppAutoCompleteWaterColor">#784c3e</Color>
+    <Color x:Key="LoanAppAutoCompleteTextColor">#784c3e</Color>
+    <Color x:Key="LoanAppAutoCompleteNoResultsFoundTextColor">#F0997D</Color>
+
+    <!--  AppShell  -->
+    <Color x:Key="LoanAppAppShellBgColor">#A75D5D</Color>
+    <Color x:Key="LoanAppAppShellFgColor">#F5EBEB</Color>
+    <Color x:Key="LoanAppAppShellTitleColor">#FFC3A1</Color>
+    <Color x:Key="LoanAppAppShellDisabledColor">#D5B4B4</Color>
+    <Color x:Key="LoanAppAppShellUnselectedColor">#D3756B</Color>
+    <Color x:Key="LoanAppAppShellTabBarBackgroundColor">#A75D5D</Color>
+    <Color x:Key="LoanAppAppShellTabBarForegroundColor">#F5EBEB</Color>
+    <Color x:Key="LoanAppAppShellTabBarUnselectedColor">#D5B4B4</Color>
+    <Color x:Key="LoanAppAppShellTabBarDisabledColor">#FFC3A1</Color>
+    <Color x:Key="LoanAppAppShellTabBarTitleColor">#F5EBEB</Color>
+
+    <!--  Notifications  -->
+    <Color x:Key="LoanAppNotificationWarningBgGradientStart">#f6c1b1</Color>
+    <Color x:Key="LoanAppNotificationWarningBgGradientEnd">#f3ad97</Color>
+    <Color x:Key="LoanAppNotificationInformationBgGradientStart">#eddede</Color>
+    <Color x:Key="LoanAppNotificationInformationBgGradientEnd">#dbbebe</Color>
+    <Color x:Key="LoanAppNotificationTextColor">#A75D5D</Color>
+    <Color x:Key="LoanAppNotificationBgColor">#F5EBEB</Color>
+
+    <!--  Lists  -->
+    <Color x:Key="LstForegroundColor">#F5EBEB</Color>
+    <Color x:Key="LoanAppLstBgGradientStart">#F0997D</Color>
+    <Color x:Key="LoanAppLstBgGradientEnd">#D3756B</Color>
+    <Color x:Key="LoanAppLstBorderGradientStart">#D5B4B4</Color>
+    <Color x:Key="LoanAppLstBorderGradientEnd">#E4D0D0</Color>
+
+    <!--  Style for Lists  -->
+    <LinearGradientBrush x:Key="LoanAppLstBgBrush" StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Offset="0.0" Color="{StaticResource LoanAppLstBgGradientStart}" />
+        <GradientStop Offset="1.0" Color="{StaticResource LoanAppLstBgGradientEnd}" />
+    </LinearGradientBrush>
+    <RadialGradientBrush x:Key="LoanAppLstBorderBrush" Center="0.5,0.5" Radius="0.5">
+        <GradientStop Offset="0.0" Color="{StaticResource LoanAppLstBorderGradientStart}" />
+        <GradientStop Offset="0.7" Color="{StaticResource LoanAppLstBorderGradientStart}" />
+        <GradientStop Offset="1.0" Color="{StaticResource LoanAppLstBorderGradientEnd}" />
+    </RadialGradientBrush>
+
+    <!--  Buttons  -->
+    <Color x:Key="LoanAppButtonFgColor">#F5EBEB</Color>
+    <Color x:Key="LoanAppButtonBgColor">#D3756B</Color>
+    <Color x:Key="LoanAppExportButtonBgColor">#FFC3A1</Color>
+    <Color x:Key="LoanAppExportButtonFgColor">#A75D5D</Color>
+
+    <!--  Charts  -->
+    <Color x:Key="LoanAppChartAxisTextColor">#D3756B</Color>
+    <Color x:Key="LoanAppChartLegendTextColor">#A75D5D</Color>
+    <Color x:Key="LoanAppChartTitleTextColor">#D3756B</Color>
+    <Color x:Key="LoanAppChartDataMarkerTextColor">#D3756B</Color>
+    <Color x:Key="LoanAppChartOuterBorderGradientStart">#D5B4B4</Color>
+    <Color x:Key="LoanAppChartOuterBorderGradientEnd">#E4D0D0</Color>
+    <Color x:Key="LoanAppChartInnerBorderGradientStart">#F5EBEB</Color>
+    <Color x:Key="LoanAppChartInnerBorderGradientEnd">#FFC3A1</Color>
+    <Color x:Key="LoanAppChartColor1">#A75D5D</Color>
+    <Color x:Key="LoanAppChartColor2">#D3756B</Color>
+    <Color x:Key="LoanAppChartColor3">#F0997D</Color>
+
+    <!--  Borders  -->
+    <Color x:Key="LoanAppBorderTopGradientOuterLineStart">#D5B4B4</Color>
+    <Color x:Key="LoanAppBorderTopGradientOuterLineEnd">#A75D5D</Color>
+    <Color x:Key="LoanAppBorderTopGradientBackgroundStart">#E4D0D0</Color>
+    <Color x:Key="LoanAppBorderTopGradientBackgroundEnd">#F5EBEB</Color>
+
+    <!--  Border controls box styles  -->
+    <Color x:Key="LoanAppBorderControlGradientBorderLineStart">#D5B4B4</Color>
+    <Color x:Key="LoanAppBorderControlGradientBorderLineEnd">#E4D0D0</Color>
+    <Color x:Key="LoanAppBorderControlGradientBackgroundStart">#FFC3A1</Color>
+    <Color x:Key="LoanAppBorderControlGradientBackgroundEnd">#F5EBEB</Color>
+
+    <!--  Insights controls box styles  -->
+    <Color x:Key="LoanAppBorderInsightsGradientOuterLineStart">#D5B4B4</Color>
+    <Color x:Key="LoanAppBorderInsightsGradientOuterLineEnd">#A75D5D</Color>
+    <Color x:Key="LoanAppBorderInsightsGradientBackgroundStart">#f9d6cb</Color>
+    <Color x:Key="LoanAppBorderInsightsGradientBackgroundEnd">#f6c1b1</Color>
+    <Color x:Key="LoanAppInsightsFgColor">#784c3e</Color>
+
+    <!--  Expander styles - cannot move this cuz of the initialization failure, need to repeat in all themes  -->
+    <LinearGradientBrush x:Key="BorderInsightsGradientBrush" StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Offset="0.0" Color="{StaticResource LoanAppBorderInsightsGradientOuterLineStart}" />
+        <GradientStop Offset="1.0" Color="{StaticResource LoanAppBorderInsightsGradientOuterLineEnd}" />
+    </LinearGradientBrush>
+    <LinearGradientBrush x:Key="BorderInsightsBackgroundGradientBrush" StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Offset="0.0" Color="{StaticResource LoanAppBorderInsightsGradientBackgroundStart}" />
+        <GradientStop Offset="1.0" Color="{StaticResource LoanAppBorderInsightsGradientBackgroundEnd}" />
+    </LinearGradientBrush>
+
+    <!--  Expander styles  -->
+    <Color x:Key="LoanAppExpanderExpandedGradientStart">#F0997D</Color>
+    <Color x:Key="LoanAppExpanderExpandedGradientEnd">#FFC3A1</Color>
+    <Color x:Key="LoanAppExpanderCollapsedGradientStart">#D3756B</Color>
+    <Color x:Key="LoanAppExpanderCollapsedGradientEnd">#F0997D</Color>
+    <Color x:Key="LoanAppExpanderHeaderTextColor">#F5EBEB</Color>
+
+    <!--  Expander styles - cannot move this cuz of the initialization failure, need to repeat in all themes  -->
+    <LinearGradientBrush x:Key="LoanAppExpanderExpandedGradientBrush" StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Offset="0.0" Color="{StaticResource LoanAppExpanderExpandedGradientStart}" />
+        <GradientStop Offset="1.0" Color="{StaticResource LoanAppExpanderExpandedGradientEnd}" />
+    </LinearGradientBrush>
+
+    <LinearGradientBrush x:Key="LoanAppExpanderCollapsedGradientBrush" StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Offset="0.0" Color="{StaticResource LoanAppExpanderCollapsedGradientStart}" />
+        <GradientStop Offset="1.0" Color="{StaticResource LoanAppExpanderCollapsedGradientEnd}" />
+    </LinearGradientBrush>
+
+    <!--  Checkbox styles  -->
+    <Color x:Key="LoanAppCheckboxBackColor">#FFC3A1</Color>
+
+    <!--  Notification background brush  -->
+    <RadialGradientBrush x:Key="InformationBackgroundGradientBrush" Center="0.5,0.5" Radius="0.5">
+        <GradientStop Offset="0.0" Color="{StaticResource LoanAppNotificationInformationBgGradientStart}" />
+        <GradientStop Offset="0.7" Color="{StaticResource LoanAppNotificationInformationBgGradientStart}" />
+        <GradientStop Offset="1.0" Color="{StaticResource LoanAppNotificationInformationBgGradientEnd}" />
+    </RadialGradientBrush>
+    <!--  Notification background brush  -->
+    <RadialGradientBrush x:Key="WarningBackgroundGradientBrush" Center="0.5,0.5" Radius="0.5">
+        <GradientStop Offset="0.0" Color="{StaticResource LoanAppNotificationWarningBgGradientStart}" />
+        <GradientStop Offset="0.7" Color="{StaticResource LoanAppNotificationWarningBgGradientStart}" />
+        <GradientStop Offset="1.0" Color="{StaticResource LoanAppNotificationWarningBgGradientEnd}" />
+    </RadialGradientBrush>
+
+    <!--  Disclaimer  -->
+    <Color x:Key="LoanAppDisclaimerBodyBackgroundColor">#FFC3A1</Color>
+    <Color x:Key="LoanAppDisclaimerHeaderBackgroundColor">#A75D5D</Color>
+    <Color x:Key="LoanAppDisclaimerHeaderTextColor">#F5EBEB</Color>
+    <Color x:Key="LoanAppDisclaimerHeaderBorderColor">#D5B4B4</Color>
+    <Color x:Key="LoanAppDisclaimerContentBackgroundColor">#F0997D</Color>
+    <Color x:Key="LoanAppDisclaimerContentBoxShadowColor">#E4D0D0</Color>
+    <Color x:Key="LoanAppDisclaimerHeader2TextColor">#F5EBEB</Color>
+
+    <!--  Progress  -->
+    <Color x:Key="LoanAppProgressTrackColor">#F0997D</Color>
+    <Color x:Key="LoanAppProgressColor">#FFC3A1</Color>
+
+    <!--  Purchase  -->
+    <Color x:Key="LoanAppPurchaseTextFontColor">#F5EBEB</Color>
+    <Color x:Key="LoanAppPurchaseButtonPrimaryFgColor">#A75D5D</Color>
+    <Color x:Key="LoanAppPurchaseButtonPrimaryBgColor">#FFC3A1</Color>
+    <Color x:Key="LoanAppPurchaseButtonSecondaryFgColor">#D5B4B4</Color>
+    <Color x:Key="LoanAppPurchaseButtonSecondaryBgColor">Transparent</Color>
+    <Color x:Key="LoanAppPurchaseButtonSecondaryBorderColor">#D5B4B4</Color>
+    <Color x:Key="LoanAppPurchaseWindowBgStart">#F0997D</Color>
+    <Color x:Key="LoanAppPurchaseWindowBgEnd">#E4D0D0</Color>
+    <Color x:Key="LoanAppPurchasePopupOverlayBgColor">#A75D5D</Color>
+
+    <LinearGradientBrush x:Key="LoanAppPurchaseGradientBrush" StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Offset="0.0" Color="{StaticResource LoanAppPurchaseWindowBgStart}" />
+        <GradientStop Offset="1.0" Color="{StaticResource LoanAppPurchaseWindowBgEnd}" />
+    </LinearGradientBrush>
+
+    <RadialGradientBrush x:Key="TabBarBackgroundGradientBrush" Center="0.5,0.5" Radius="0.5">
+        <GradientStop Offset="0.0" Color="{StaticResource LoanAppTabBarBackgroundGradientStart}" />
+        <GradientStop Offset="0.7" Color="{StaticResource LoanAppTabBarBackgroundGradientStart}" />
+        <GradientStop Offset="1.0" Color="{StaticResource LoanAppTabBarBackgroundGradientEnd}" />
+    </RadialGradientBrush>
+
+    <!--  Style for Chart border  -->
+    <LinearGradientBrush x:Key="LoanAppChartOuterBorderGradientBrush" StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Offset="0.0" Color="{StaticResource LoanAppChartOuterBorderGradientStart}" />
+        <GradientStop Offset="1.0" Color="{StaticResource LoanAppChartOuterBorderGradientEnd}" />
+    </LinearGradientBrush>
+    <RadialGradientBrush x:Key="LoanAppChartInnerBorderGradientBrush" Center="0.5,0.5" Radius="0.5">
+        <GradientStop Offset="0.0" Color="{StaticResource LoanAppChartInnerBorderGradientStart}" />
+        <GradientStop Offset="0.7" Color="{StaticResource LoanAppChartInnerBorderGradientStart}" />
+        <GradientStop Offset="1.0" Color="{StaticResource LoanAppChartInnerBorderGradientEnd}" />
+    </RadialGradientBrush>
+
+    <!--  Border top highlight box styles  -->
+    <LinearGradientBrush x:Key="BorderTopGradientBrush" StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Offset="0.0" Color="{StaticResource LoanAppBorderTopGradientOuterLineStart}" />
+        <GradientStop Offset="1.0" Color="{StaticResource LoanAppBorderTopGradientOuterLineEnd}" />
+    </LinearGradientBrush>
+    <LinearGradientBrush x:Key="BorderTopBackgroundGradientBrush" StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Offset="0.0" Color="{StaticResource LoanAppBorderTopGradientBackgroundStart}" />
+        <GradientStop Offset="1.0" Color="{StaticResource LoanAppBorderTopGradientBackgroundEnd}" />
+    </LinearGradientBrush>
+
+    <!--  Border controls box styles  -->
+    <LinearGradientBrush x:Key="BorderControlGradientBrush" StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Offset="0.0" Color="{StaticResource LoanAppBorderControlGradientBorderLineStart}" />
+        <GradientStop Offset="1.0" Color="{StaticResource LoanAppBorderControlGradientBorderLineEnd}" />
+    </LinearGradientBrush>
+    <LinearGradientBrush x:Key="BorderControlBackgroundGradientBrush" StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Offset="0.0" Color="{StaticResource LoanAppBorderControlGradientBackgroundStart}" />
+        <GradientStop Offset="1.0" Color="{StaticResource LoanAppBorderControlGradientBackgroundEnd}" />
+    </LinearGradientBrush>
+
+</ResourceDictionary>

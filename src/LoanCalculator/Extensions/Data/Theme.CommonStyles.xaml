@@ -39,14 +39,6 @@
     </Style>
 
     <!--  Border top highlight box styles  -->
-    <LinearGradientBrush x:Key="BorderTopGradientBrush" StartPoint="0,0" EndPoint="1,1">
-        <GradientStop Offset="0.0" Color="{DynamicResource LoanAppBorderTopGradientOuterLineStart}" />
-        <GradientStop Offset="1.0" Color="{DynamicResource LoanAppBorderTopGradientOuterLineEnd}" />
-    </LinearGradientBrush>
-    <LinearGradientBrush x:Key="BorderTopBackgroundGradientBrush" StartPoint="0,0" EndPoint="1,1">
-        <GradientStop Offset="0.0" Color="{DynamicResource LoanAppBorderTopGradientBackgroundStart}" />
-        <GradientStop Offset="1.0" Color="{DynamicResource LoanAppBorderTopGradientBackgroundEnd}" />
-    </LinearGradientBrush>
     <Style x:Key="BorderTopHighlightBox" TargetType="Border">
         <Setter Property="StrokeThickness" Value="2" />
         <Setter Property="Stroke" Value="{DynamicResource BorderTopGradientBrush}" />
@@ -66,14 +58,6 @@
     </Style>
 
     <!--  Border controls box styles  -->
-    <LinearGradientBrush x:Key="BorderControlGradientBrush" StartPoint="0,0" EndPoint="1,1">
-        <GradientStop Offset="0.0" Color="{DynamicResource LoanAppBorderControlGradientBorderLineStart}" />
-        <GradientStop Offset="1.0" Color="{DynamicResource LoanAppBorderControlGradientBorderLineEnd}" />
-    </LinearGradientBrush>
-    <LinearGradientBrush x:Key="BorderControlBackgroundGradientBrush" StartPoint="0,0" EndPoint="1,1">
-        <GradientStop Offset="0.0" Color="{DynamicResource LoanAppBorderControlGradientBackgroundStart}" />
-        <GradientStop Offset="1.0" Color="{DynamicResource LoanAppBorderControlGradientBackgroundEnd}" />
-    </LinearGradientBrush>
     <Style x:Key="BorderControlHighlightBox" TargetType="Border">
         <Setter Property="StrokeShape" Value="RoundRectangle 3,3,3,3" />
         <Setter Property="StrokeThickness" Value="2" />
@@ -131,12 +115,6 @@
 
 
     <!--  Tab View  -->
-    <RadialGradientBrush x:Key="TabBarBackgroundGradientBrush" Center="0.5,0.5" Radius="0.5">
-        <GradientStop Offset="0.0" Color="{DynamicResource LoanAppTabBarBackgroundGradientStart}" />
-        <GradientStop Offset="0.7" Color="{DynamicResource LoanAppTabBarBackgroundGradientStart}" />
-        <GradientStop Offset="1.0" Color="{DynamicResource LoanAppTabBarBackgroundGradientEnd}" />
-    </RadialGradientBrush>
-
     <Style TargetType="tabView:SfTabView">
         <Setter Property="HeaderHorizontalTextAlignment" Value="Center" />
         <Setter Property="IndicatorCornerRadius" Value="1" />
@@ -271,16 +249,6 @@
     </Style>
 
     <!--  Style for Chart border  -->
-    <LinearGradientBrush x:Key="LoanAppChartOuterBorderGradientBrush" StartPoint="0,0" EndPoint="1,1">
-        <GradientStop Offset="0.0" Color="{DynamicResource LoanAppChartOuterBorderGradientStart}" />
-        <GradientStop Offset="1.0" Color="{DynamicResource LoanAppChartOuterBorderGradientEnd}" />
-    </LinearGradientBrush>
-    <RadialGradientBrush x:Key="LoanAppChartInnerBorderGradientBrush" Center="0.5,0.5" Radius="0.5">
-        <GradientStop Offset="0.0" Color="{DynamicResource LoanAppChartInnerBorderGradientStart}" />
-        <GradientStop Offset="0.7" Color="{DynamicResource LoanAppChartInnerBorderGradientStart}" />
-        <GradientStop Offset="1.0" Color="{DynamicResource LoanAppChartInnerBorderGradientEnd}" />
-    </RadialGradientBrush>
-
     <Style x:Key="LoanAppChartBorderStyle" TargetType="Border">
         <Setter Property="Margin" Value="12,5,12,2" />
         <Setter Property="Background" Value="{DynamicResource LoanAppChartInnerBorderGradientBrush}" />

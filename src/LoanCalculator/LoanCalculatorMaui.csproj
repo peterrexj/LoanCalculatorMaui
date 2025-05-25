@@ -65,6 +65,7 @@
 	  <MauiXaml Remove="Extensions\Data\Theme.Dark.xaml" />
 	  <MauiXaml Remove="Extensions\Data\Theme.Forest.xaml" />
 	  <MauiXaml Remove="Extensions\Data\Theme.Light.xaml" />
+	  <MauiXaml Remove="Extensions\Data\Theme.Warm.xaml" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -73,6 +74,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <EmbeddedResource Include="Extensions\Data\Theme.Warm.xaml">
+	    <Generator></Generator>
+	  </EmbeddedResource>
 	  <EmbeddedResource Include="Extensions\Data\Theme.Forest.xaml">
 	    <Generator></Generator>
 	  </EmbeddedResource>

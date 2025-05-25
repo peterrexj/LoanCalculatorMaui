@@ -48,8 +48,8 @@ namespace LoanCalculator.Core.Themes
                     case AppThemes.Forest:
                         themeFile = "Theme.Forest.xaml";
                         break;
-                    case AppThemes.FireBreather:
-                        themeFile = "Theme.FireBreather.xaml";
+                    case AppThemes.Warm:
+                        themeFile = "Theme.Warm.xaml";
                         break;
                     default:
                         throw new ArgumentException("Unsupported theme");
@@ -111,6 +111,10 @@ namespace LoanCalculator.Core.Themes
 
                 foreach (var key in keys)
                 {
+                    if (!Application.Current?.Resources.ContainsKey(key) ?? true)
+                    {
+                        continue;
+                    }
                     Application.Current.Resources[key] = null;
                     Application.Current.Resources.Remove(key);
                 }

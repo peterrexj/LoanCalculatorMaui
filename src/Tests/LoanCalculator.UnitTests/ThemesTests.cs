@@ -17,7 +17,7 @@ namespace LoanCalculator.UnitTests
         [Test]
         public void ThemeFiles_ShouldHave_EqualKeys()
         {
-            string[] files = { "Theme.Light.xaml", "Theme.Dark.xaml", "Theme.Forest.xaml" };
+            string[] files = { "Theme.Light.xaml", "Theme.Dark.xaml", "Theme.Forest.xaml", "Theme.Warm.xaml" };
 
             var allKeys = new Dictionary<string, HashSet<string>>();
 
@@ -42,7 +42,7 @@ namespace LoanCalculator.UnitTests
         [Test]
         public void ThemeFiles_ShouldHave_NonEmptyValues()
         {
-            string[] files = { "Theme.Light.xaml", "Theme.Dark.xaml", "Theme.Forest.xaml" };
+            string[] files = { "Theme.Light.xaml", "Theme.Dark.xaml", "Theme.Forest.xaml", "Theme.Warm.xaml" };
 
             foreach (var file in files)
             {
@@ -57,7 +57,7 @@ namespace LoanCalculator.UnitTests
         [Test]
         public void ThemeFiles_ShouldPrint_SameValuesForSameKeys()
         {
-            string[] files = { "Theme.Light.xaml", "Theme.Dark.xaml", "Theme.Forest.xaml" };
+            string[] files = { "Theme.Light.xaml", "Theme.Dark.xaml", "Theme.Forest.xaml", "Theme.Warm.xaml" };
 
             var allKeysWithValues = new Dictionary<string, Dictionary<string, string>>();
 

@@ -5,6 +5,6 @@
         Dark,
         Light,
         Forest,
-        FireBreather
+        Warm
     }
 }

@@ -232,4 +232,41 @@
         <GradientStop Offset="1.0" Color="{StaticResource LoanAppPurchaseWindowBgEnd}" />
     </LinearGradientBrush>
 
+    <RadialGradientBrush x:Key="TabBarBackgroundGradientBrush" Center="0.5,0.5" Radius="0.5">
+        <GradientStop Offset="0.0" Color="{StaticResource LoanAppTabBarBackgroundGradientStart}" />
+        <GradientStop Offset="0.7" Color="{StaticResource LoanAppTabBarBackgroundGradientStart}" />
+        <GradientStop Offset="1.0" Color="{StaticResource LoanAppTabBarBackgroundGradientEnd}" />
+    </RadialGradientBrush>
+
+    <!--  Style for Chart border  -->
+    <LinearGradientBrush x:Key="LoanAppChartOuterBorderGradientBrush" StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Offset="0.0" Color="{StaticResource LoanAppChartOuterBorderGradientStart}" />
+        <GradientStop Offset="1.0" Color="{StaticResource LoanAppChartOuterBorderGradientEnd}" />
+    </LinearGradientBrush>
+    <RadialGradientBrush x:Key="LoanAppChartInnerBorderGradientBrush" Center="0.5,0.5" Radius="0.5">
+        <GradientStop Offset="0.0" Color="{StaticResource LoanAppChartInnerBorderGradientStart}" />
+        <GradientStop Offset="0.7" Color="{StaticResource LoanAppChartInnerBorderGradientStart}" />
+        <GradientStop Offset="1.0" Color="{StaticResource LoanAppChartInnerBorderGradientEnd}" />
+    </RadialGradientBrush>
+
+    <!--  Border top highlight box styles  -->
+    <LinearGradientBrush x:Key="BorderTopGradientBrush" StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Offset="0.0" Color="{StaticResource LoanAppBorderTopGradientOuterLineStart}" />
+        <GradientStop Offset="1.0" Color="{StaticResource LoanAppBorderTopGradientOuterLineEnd}" />
+    </LinearGradientBrush>
+    <LinearGradientBrush x:Key="BorderTopBackgroundGradientBrush" StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Offset="0.0" Color="{StaticResource LoanAppBorderTopGradientBackgroundStart}" />
+        <GradientStop Offset="1.0" Color="{StaticResource LoanAppBorderTopGradientBackgroundEnd}" />
+    </LinearGradientBrush>
+
+    <!--  Border controls box styles  -->
+    <LinearGradientBrush x:Key="BorderControlGradientBrush" StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Offset="0.0" Color="{StaticResource LoanAppBorderControlGradientBorderLineStart}" />
+        <GradientStop Offset="1.0" Color="{StaticResource LoanAppBorderControlGradientBorderLineEnd}" />
+    </LinearGradientBrush>
+    <LinearGradientBrush x:Key="BorderControlBackgroundGradientBrush" StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Offset="0.0" Color="{StaticResource LoanAppBorderControlGradientBackgroundStart}" />
+        <GradientStop Offset="1.0" Color="{StaticResource LoanAppBorderControlGradientBackgroundEnd}" />
+    </LinearGradientBrush>
+
 </ResourceDictionary>

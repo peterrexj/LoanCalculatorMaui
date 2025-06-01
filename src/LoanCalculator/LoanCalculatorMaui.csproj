@@ -57,6 +57,11 @@
 	  <AndroidSigningKeyPass>CatholicSaintsPassword@01</AndroidSigningKeyPass>
 	</PropertyGroup>
 
+	<PropertyGroup Condition="'$(TargetFramework)'=='net9.0-ios'">
+	  <CodesignKey>Apple Development: Created via API (965CR7HS5Q)</CodesignKey>
+	  <CodesignProvision>VS: com.pj.loan.afford.calc Development</CodesignProvision>
+	</PropertyGroup>
+
 	<ItemGroup>
 		<!-- App Icon -->
 		<MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="#512BD4" />

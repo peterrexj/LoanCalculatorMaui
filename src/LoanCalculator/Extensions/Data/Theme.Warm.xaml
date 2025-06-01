@@ -216,12 +216,12 @@
     <Color x:Key="LoanAppProgressColor">#FFC3A1</Color>
 
     <!--  Purchase  -->
-    <Color x:Key="LoanAppPurchaseTextFontColor">#F5EBEB</Color>
+    <Color x:Key="LoanAppPurchaseTextFontColor">#5a3232</Color>
     <Color x:Key="LoanAppPurchaseButtonPrimaryFgColor">#A75D5D</Color>
     <Color x:Key="LoanAppPurchaseButtonPrimaryBgColor">#FFC3A1</Color>
-    <Color x:Key="LoanAppPurchaseButtonSecondaryFgColor">#D5B4B4</Color>
+    <Color x:Key="LoanAppPurchaseButtonSecondaryFgColor">#A75D5D</Color>
     <Color x:Key="LoanAppPurchaseButtonSecondaryBgColor">Transparent</Color>
-    <Color x:Key="LoanAppPurchaseButtonSecondaryBorderColor">#D5B4B4</Color>
+    <Color x:Key="LoanAppPurchaseButtonSecondaryBorderColor">#A75D5D</Color>
     <Color x:Key="LoanAppPurchaseWindowBgStart">#F0997D</Color>
     <Color x:Key="LoanAppPurchaseWindowBgEnd">#E4D0D0</Color>
     <Color x:Key="LoanAppPurchasePopupOverlayBgColor">#A75D5D</Color>

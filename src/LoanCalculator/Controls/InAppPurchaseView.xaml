@@ -148,6 +148,7 @@
                             <Button
                                 Margin="15,0,20,0"
                                 Background="{DynamicResource LoanAppPurchaseButtonPrimaryBgColor}"
+                                Command="{Binding PurchaseCommand}"
                                 Style="{DynamicResource ExportButtonStyle}"
                                 Text="Buy Now"
                                 TextColor="{DynamicResource LoanAppPurchaseButtonPrimaryFgColor}" />
@@ -155,6 +156,7 @@
                             <Button
                                 Margin="15,0,20,0"
                                 Background="{DynamicResource LoanAppPurchaseButtonPrimaryBgColor}"
+                                Command="{Binding RestoreCommand}"
                                 Style="{DynamicResource ExportButtonStyle}"
                                 Text="Restore purchases"
                                 TextColor="{DynamicResource LoanAppPurchaseButtonPrimaryFgColor}" />

@@ -50,19 +50,11 @@
             <DataTemplate>
                 <Grid>
                     <ScrollView>
-                        <WebView>
+                        <WebView x:Name="htmlWebViewer">
                             <WebView.Source>
                                 <HtmlWebViewSource Html="{Binding AppLaunchDisclaimerData}" />
                             </WebView.Source>
                         </WebView>
-                        <!--<Label
-                            Padding="10"
-                            BackgroundColor="Transparent"
-                            FontFamily="{DynamicResource DefaultFontFamily}"
-                            FontSize="18"
-                            HorizontalTextAlignment="Start"
-                            Text="{Binding AppLaunchDisclaimerData}"
-                            TextColor="{DynamicResource NotificationBgColor}" />-->
                     </ScrollView>
                 </Grid>
             </DataTemplate>

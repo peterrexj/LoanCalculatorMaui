@@ -20,7 +20,8 @@ namespace LoanCalculatorMaui
 
             ServiceLocator.GetService<IThemeHandler>().LoadDefaultStyle();
 
-            _ = CheckIfUserPurchasedAsync();
+            //Preferences.Set("IsPremium", true);
+            //_ = CheckIfUserPurchasedAsync();
 
             Helper.CurrencySymbol =
                 SharedServiceCore.GetCurrencySymbol(Preferences.Get(SharedServiceCore.SelectedCurrencyKey, "AUD"));
@@ -33,20 +34,6 @@ namespace LoanCalculatorMaui
             Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense("Ngo9BigBOggjHTQxAR8/V1NMaF5cXmBCf1FpR2JGfV5ycEVCallSTnVfUiweQnxTdEFiW35acHBQRWNcVEZ3WQ==");
 
             ServiceLocator.GetService<IThemeHandler>().LoadDefaultStyle();
-
-            _ = CheckIfUserPurchasedAsync();
-        }
-
-        private async Task CheckIfUserPurchasedAsync()
-        {
-            //Preferences.Set("IsPremium", false);
-            var isPremium = Preferences.Get("IsPremium", false);
-            if (!isPremium)
-            {
-                var productPurchaseStatus = await ServiceLocator.GetService<IInAppPurchaseService>()
-                    .IsProductPurchasedAsync(ServiceLocator.GetService<IAppInformation>().InAppProductId);
-                Preferences.Set("IsPremium", productPurchaseStatus);
-            }
         }
 
         protected override Window CreateWindow(IActivationState? activationState)

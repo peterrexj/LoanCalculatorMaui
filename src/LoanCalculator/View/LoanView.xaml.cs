@@ -52,6 +52,11 @@ public partial class LoanView : ContentPage
             {
                 await LoadDataSet();
             });
+
+            if (SharedServiceCore.IsTrialUser)
+            {
+                await ServiceLocator.GetService<IInAppPurchaseService>().CheckPendingPurchasesAsync(iscCheckingOnAppLoad: true);
+            }
         }
         catch (Exception ex)
         {

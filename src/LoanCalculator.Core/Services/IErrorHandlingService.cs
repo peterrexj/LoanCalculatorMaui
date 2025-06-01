@@ -29,7 +29,11 @@ namespace LoanCalculator.Core.Services
 #if !DEBUG
                 SentrySdk.CaptureException(ex);
 #endif
+
+                //Do this on the final release build
+                //#if DEBUG
                 await Application.Current?.MainPage.DisplayAlert("Error", message ?? "An unexpected error occurred.", "OK");
+//#endif
             });
         }
     }

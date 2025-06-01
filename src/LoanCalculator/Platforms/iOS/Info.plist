@@ -29,9 +29,9 @@
 	<key>XSAppIconAssets</key>
 	<string>Assets.xcassets/appicon.appiconset</string>
 	<key>CFBundleDisplayName</key>
-	<string>LoanCalcPro</string>
+	<string>Loan Affordability Calculator</string>
 	<key>CFBundleIdentifier</key>
-	<string>com.pj.loancalcpro</string>
+	<string>com.pj.loan.afford.calc</string>
 	<key>CFBundleShortVersionString</key>
 	<string>Release 1</string>
 </dict>

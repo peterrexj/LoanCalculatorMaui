@@ -165,21 +165,14 @@ namespace LoanCalculator.Core.Services
             }
         }
 
-        public static void ClearDisclaimerData()
-        {
-            _disclaimerData = string.Empty;
-        }
-        private static string _disclaimerData = string.Empty;
         public static string DisclaimerData
         {
             get
             {
-                if (_disclaimerData.IsEmpty())
-                {
-                    _disclaimerData = PjUtility.Runtime.GetAssembly("LoanCalculatorMaui").GetEmbeddedResourceAsText("LoanCalculatorMaui.Extensions.DisclaimerData.AppLaunchDisclaimerData.html")
-                        .Replace("{{AppName}}", "LoanCalcPro");
-                }
-                return ReplaceColorsWithResourceKeys(_disclaimerData);
+                var disclaimerData = PjUtility.Runtime.GetAssembly("LoanCalculatorMaui").GetEmbeddedResourceAsText("LoanCalculatorMaui.Extensions.DisclaimerData.AppLaunchDisclaimerData.html")
+                        .Replace("{{AppName}}", AppInformation?.ApplicationTitle ?? "Loan Affordability Calculator");
+
+                return ReplaceColorsWithResourceKeys(disclaimerData);
             }
         }
         private static string ReplaceColorsWithResourceKeys(string content)
@@ -216,11 +209,19 @@ namespace LoanCalculator.Core.Services
 
         #endregion
 
+        #region Premium
         public static bool IsPremiumUser => Preferences.Get("IsPremium", false);
         public static bool IsTrialUser => !IsPremiumUser;
 
+        public static void UpdateToPremium()
+        {
+            Preferences.Set("IsPremium", true);
+        }
+
+        #endregion
+
         #region Currency
-        
+
         public const string SelectedCurrencyKey = "SelectedCurrencyISO";
         private static List<CurrencyModel?>? _currencies;
 
@@ -300,7 +301,7 @@ namespace LoanCalculator.Core.Services
                 .FirstOrDefault(c => c != null);
         }
 
-        
+
         #endregion
     }
 }

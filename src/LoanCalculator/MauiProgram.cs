@@ -35,7 +35,6 @@ namespace LoanCalculatorMaui
                 .ConfigureSyncfusionCore()
                 .ConfigureFonts(fonts =>
                 {
-                    fonts.AddFont("FRSCRIPT.TTF", "French");
                     fonts.AddFont("CALIBRI.ttf", "Calibri");
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
                     fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
@@ -78,14 +77,7 @@ namespace LoanCalculatorMaui
 #endif
             var serviceProvider = builder.Build();
 
-            //SharedServices.Initialize(
-            //    serviceProvider.Services?.GetService<INameValueDataService>(),
-            //    serviceProvider.Services?.GetService<IAppInformation>(),
-            //    serviceProvider.Services?.GetService<IThemeHelper>()
-            //);
-
             return serviceProvider;
-
         }
     }
 }

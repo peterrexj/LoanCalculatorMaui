@@ -1,5 +1,6 @@
 ﻿using LoanCalculator.Core.Models.BaseExtensions;
 using LoanCalculator.Core.Services;
+using Syncfusion.Maui.Core.Carousel;
 using System.Text.Json.Serialization;
 using System.Windows.Input;
 
@@ -45,7 +46,26 @@ public class PopupDisclaimerViewModel : BaseViewModel
         }
     }
 
-    public string AppLaunchDisclaimerData => SharedServiceCore.DisclaimerData;
+    private string _appLaunchDisclaimerData = string.Empty;
+    public string AppLaunchDisclaimerData
+    {
+        get
+        {
+            return _appLaunchDisclaimerData;
+        }
+        set
+        {
+            _appLaunchDisclaimerData = value;
+            OnPropertyChanged(nameof(AppLaunchDisclaimerData));
+        }
+    }
+
+    public void TriggerChange()
+    {
+        AppLaunchDisclaimerData = string.Empty;
+        AppLaunchDisclaimerData = SharedServiceCore.DisclaimerData;
+        OnPropertyChanged(nameof(AppLaunchDisclaimerData));
+    }
 
     private void OnPopupAccept()
     {

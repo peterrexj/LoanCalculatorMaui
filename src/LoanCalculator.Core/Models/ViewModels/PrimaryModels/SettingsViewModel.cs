@@ -85,7 +85,7 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
 
         public void LoadSelectedCurrency()
         {
-            SelectedCurrency = Currencies.FirstOrDefault(c => c.IsoCode == Preferences.Get(SharedServiceCore.SelectedCurrencyKey, null));
+            SelectedCurrency = Currencies.FirstOrDefault(c => c.IsoCode == Preferences.Get(SharedServiceCore.SelectedCurrencyKey, "AUD"));
             OnPropertyChanged(nameof(SelectedCurrency));
         }
 
@@ -163,7 +163,6 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
 
         private async Task SaveAndApplyApplicationThemeAsync(AppThemes theme)
         {
-            SharedServiceCore.ClearDisclaimerData();
             await SharedServiceCore.SaveData(new ThemeSelect { Theme = theme });
             await ApplyApplicationThemeAsync(theme);
         }
@@ -200,6 +199,7 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
         {
             IsPopupRequired = true;
             IsActive = false;
+            ServiceLocator.GetService<PopupDisclaimerViewModel>().TriggerChange();
 
             await Task.Delay(3000);
 

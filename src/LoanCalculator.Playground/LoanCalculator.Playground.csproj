@@ -19,7 +19,6 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\LoanCalculator.Core\LoanCalculator.Core.csproj" />
-		<ProjectReference Include="..\LoanCalculator.Models\LoanCalculator.Models.csproj" />
 	</ItemGroup>
 
 </Project>

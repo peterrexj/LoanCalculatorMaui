@@ -52,7 +52,7 @@
                                                         TV=38,
                                                         Watch=24,
                                                         Default=32}"
-                                Source="image/icon_premium.png"
+                                Source="icon_premium.png"
                                 VerticalOptions="Center"
                                 WidthRequest="{OnIdiom Phone=32,
                                                        Tablet=38,
@@ -91,7 +91,7 @@
                                                     Default=150}"
                             HorizontalOptions="FillAndExpand"
                             Opacity="0.75"
-                            Source="image/premiumbuyads.jpeg" />
+                            Source="premiumbuyads.jpeg" />
 
                         <!--  Features List  -->
                         <StackLayout
@@ -114,7 +114,7 @@
                                                                     TV=19,
                                                                     Watch=12,
                                                                     Default=14}"
-                                            Source="image/icon_ticks.png"
+                                            Source="icon_ticks.png"
                                             WidthRequest="{OnIdiom Phone=14,
                                                                    Tablet=19,
                                                                    Desktop=19,

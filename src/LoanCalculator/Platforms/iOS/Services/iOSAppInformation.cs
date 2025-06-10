@@ -12,7 +12,7 @@ namespace LoanCalculatorMaui.Platforms.iOS.Services
 
         public string ApplicationTitle => "Loan Affordability Calculator"; 
 
-        public string InAppProductId => "com.pj.loan.calculator.pro"; // Replace with your actual product ID
+        public string InAppProductId => "com.pj.loan.afford.calc.premium"; // Replace with your actual product ID
 
         public string AppShareLink => "https://www.yoursimpleapps.com";
 

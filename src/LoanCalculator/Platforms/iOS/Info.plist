@@ -34,5 +34,7 @@
 	<string>com.pj.loan.afford.calc</string>
 	<key>CFBundleShortVersionString</key>
 	<string>Release 1</string>
+	<key>NSAllowsArbitraryLoads</key>
+    <true/>
 </dict>
 </plist>

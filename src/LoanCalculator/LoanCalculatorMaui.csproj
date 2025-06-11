@@ -70,6 +70,7 @@
 	<PropertyGroup Condition="'$(TargetFramework)'=='net9.0-ios'">
 	  <CodesignKey>Apple Development: Created via API (965CR7HS5Q)</CodesignKey>
 	  <CodesignProvision>VS: com.pj.loan.afford.calc Development</CodesignProvision>
+	  <Entitlements>Platforms/iOS/Entitlements.plist</Entitlements>
 	</PropertyGroup>
 
 	<ItemGroup>

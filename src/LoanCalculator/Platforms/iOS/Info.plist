@@ -29,12 +29,12 @@
 	<key>XSAppIconAssets</key>
 	<string>Assets.xcassets/appicon.appiconset</string>
 	<key>CFBundleDisplayName</key>
-	<string>Loan Affordability Calculator</string>
+	<string>Release 1.6</string>
 	<key>CFBundleIdentifier</key>
 	<string>com.pj.loan.afford.calc</string>
 	<key>CFBundleShortVersionString</key>
-	<string>Release 1</string>
+	<string>Release 1.6</string>
 	<key>NSAllowsArbitraryLoads</key>
-    <true/>
+	<true/>
 </dict>
 </plist>

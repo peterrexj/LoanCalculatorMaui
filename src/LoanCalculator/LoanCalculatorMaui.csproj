@@ -29,7 +29,7 @@
 		<Nullable>enable</Nullable>
 
 		<!-- Display name -->
-		<ApplicationTitle>LoanCalculatorMaui</ApplicationTitle>
+		<ApplicationTitle>Loan Affordability Calculator</ApplicationTitle>
 
 		<!-- App Identifier -->
 		<ApplicationId>com.pj.loancalcpro</ApplicationId>
@@ -67,10 +67,15 @@
 	  <AndroidSigningKeyPass>CatholicSaintsPassword@01</AndroidSigningKeyPass>
 	</PropertyGroup>
 
-	<PropertyGroup Condition="'$(TargetFramework)'=='net9.0-ios'">
-	  <CodesignKey>Apple Development: Created via API (965CR7HS5Q)</CodesignKey>
-	  <CodesignProvision>VS: com.pj.loan.afford.calc Development</CodesignProvision>
-	  <Entitlements>Platforms/iOS/Entitlements.plist</Entitlements>
+	<PropertyGroup Condition="'$(TargetFramework)' == 'net9.0-ios' and '$(Configuration)' == 'Release'">
+		<RuntimeIdentifier>ios-arm64</RuntimeIdentifier>
+		<CodesignKey>Apple Distribution: Peter Joseph (5PNCUV7LZ5)</CodesignKey>
+		<CodesignProvision>LoanAffordabilityCalculator</CodesignProvision>
+		<Entitlements>Platforms/iOS/Entitlements.plist</Entitlements>
+	</PropertyGroup>
+
+	<PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+	  
 	</PropertyGroup>
 
 	<ItemGroup>

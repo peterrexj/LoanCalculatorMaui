@@ -15,7 +15,7 @@ namespace LoanCalculatorMaui
         {
             var builder = MauiApp.CreateBuilder();
             builder
-                .UseMauiApp<App>()
+                 .UseMauiApp<App>()
                  .UseSentry(options =>
                  {
                      // The DSN is the only required setting.
@@ -25,7 +25,12 @@ namespace LoanCalculatorMaui
                      // Debug messages are written to stdout with Console.Writeline,
                      // and are viewable in your IDE's debug console or with 'adb logcat', etc.
                      // This option is not recommended when deploying your application.
+#if DEBUG
                      options.Debug = true;
+#else
+                     options.Debug = false;
+#endif
+
 
                      // Set TracesSampleRate to 1.0 to capture 100% of transactions for tracing.
                      // We recommend adjusting this value in production.

@@ -32,7 +32,7 @@
 		<ApplicationTitle>Loan Affordability Calculator</ApplicationTitle>
 
 		<!-- App Identifier -->
-		<ApplicationId>com.pj.loancalcpro</ApplicationId>
+		<ApplicationId>com.pj.loan.afford.calc</ApplicationId>
 
 		<!-- Versions -->
 		<ApplicationDisplayVersion>1.12.0</ApplicationDisplayVersion>
@@ -53,6 +53,13 @@
 		<AndroidSigningKeyStore>catholicsaints.keystore</AndroidSigningKeyStore>
 	</PropertyGroup>
 
+	<PropertyGroup Condition="'$(TargetFramework)' == 'net8.0-ios'">
+		<RuntimeIdentifiers>ios-arm64;iossimulator-x64;iossimulator-arm64</RuntimeIdentifiers>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(TargetFramework)' == 'net8.0-maccatalyst'">
+		<RuntimeIdentifiers>maccatalyst-x64;maccatalyst-arm64</RuntimeIdentifiers>
+	</PropertyGroup>
+	
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net9.0-android|AnyCPU'">
 	  <AndroidKeyStore>True</AndroidKeyStore>
 	  <AndroidSigningKeyAlias>keyalias.alias</AndroidSigningKeyAlias>
@@ -71,11 +78,13 @@
 		<RuntimeIdentifier>ios-arm64</RuntimeIdentifier>
 		<CodesignKey>iPhone Distribution</CodesignKey>
 		<CodesignProvision>LoanAffordabilityCalculator</CodesignProvision>
-		<Entitlements>Platforms/iOS/Entitlements.plist</Entitlements>
-	</PropertyGroup>
 
-	<PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-	  
+		<MauiEnableLinking>false</MauiEnableLinking>
+		<PublishTrimmed>false</PublishTrimmed>
+		<UseInterpreter>true</UseInterpreter>
+		<Optimize>False</Optimize>
+		<MtouchLink>None</MtouchLink>
+		<MtouchExtraArgs>--optimize:-static-block-to-delegate-lookup</MtouchExtraArgs>
 	</PropertyGroup>
 
 	<PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
@@ -209,11 +218,5 @@
 	  <Compile Update="Controls\InAppPurchaseView.xaml.cs">
 	    <DependentUpon>PremiumBuyView.xaml</DependentUpon>
 	  </Compile>
-	</ItemGroup>
-
-	<ItemGroup>
-		<None Update="Platforms/iOS/Entitlements.plist">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
 	</ItemGroup>
 </Project>

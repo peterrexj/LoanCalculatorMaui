@@ -58,7 +58,7 @@
                                                                    Default=15}"
                                                 Style="{DynamicResource SpanThreeBoxAmountStyle}"
                                                 Text="{Binding LoanTermInYears}" />
-                                            <Span Style="{DynamicResource SpanThreeBoxTextStyle}" Text=" years with a deposit of " />
+                                            <Span Style="{DynamicResource SpanThreeBoxTextStyle}" Text=" years with " />
                                             <Span
                                                 FontSize="{OnIdiom Phone=15,
                                                                    Tablet=26,
@@ -67,24 +67,17 @@
                                                                    Watch=13,
                                                                    Default=15}"
                                                 Style="{DynamicResource SpanThreeBoxAmountStyle}"
-                                                Text="{Binding DepositAmountStrFormatted}" />
+                                                Text="{Binding InterestRateFormatted}" />
+                                            <Span Style="{DynamicResource SpanThreeBoxTextStyle}" Text=" interest rate" />
                                         </FormattedString>
                                     </customControls:ThreeColumnBorderedContentView.FormattedText1>
                                     <customControls:ThreeColumnBorderedContentView.FormattedText2>
                                         <FormattedString>
                                             <Span Style="{DynamicResource SpanThreeBoxCurrencyStyle}" Text="{Binding CurrencySymbol}" />
-                                            <Span Style="{DynamicResource SpanThreeBoxAmountStyle}" Text="{Binding HomeLoanInfo.PaymentSummary.Payment.TotalInterestPaymentRoundedWithComma}" />
-                                            <Span Style="{DynamicResource SpanThreeBoxTextStyle}" Text=" total interest payable over " />
-                                            <Span
-                                                FontSize="{OnIdiom Phone=15,
-                                                                   Tablet=26,
-                                                                   Desktop=26,
-                                                                   TV=26,
-                                                                   Watch=13,
-                                                                   Default=15}"
-                                                Style="{DynamicResource SpanThreeBoxAmountStyle}"
-                                                Text="{Binding LoanTermInYears}" />
-                                            <Span Style="{DynamicResource SpanThreeBoxTextStyle}" Text=" years" />
+                                            <Span Style="{DynamicResource SpanThreeBoxAmountStyle}" Text="{Binding LoanAmountStrFormatted}" />
+                                            <Span Style="{DynamicResource SpanThreeBoxTextStyle}" Text=" loan with " />
+                                            <Span Style="{DynamicResource SpanThreeBoxAmountStyle}" Text="{Binding DepositAmountStrFormatted}" />
+                                            <Span Style="{DynamicResource SpanThreeBoxTextStyle}" Text=" down payment" />
                                         </FormattedString>
                                     </customControls:ThreeColumnBorderedContentView.FormattedText2>
                                     <customControls:ThreeColumnBorderedContentView.FormattedText3>
@@ -237,19 +230,19 @@
                                             <Label Style="{DynamicResource ExpanderHeaderLabelStyle}">
                                                 <Label.FormattedText>
                                                     <FormattedString>
-                                                        <Span Text="Deposit: " />
-                                                        <Span Text="{Binding DepositAmountStrFormatted}" />
-                                                        <Span Text=" (" />
-                                                        <Span Text="{Binding DepositPercentage, StringFormat='{0:F2}'}" />
-                                                        <Span Text=" %)" />
-
-                                                        <Span Text="  " />
-
                                                         <Span Text="Loan: " />
                                                         <Span Text=" " />
                                                         <Span Text="{Binding LoanAmountStrFormatted}" />
                                                         <Span Text=" (" />
                                                         <Span Text="{Binding LoanAmountPercentage, StringFormat='{0:F2}'}" />
+                                                        <Span Text=" %)" />
+
+                                                        <Span Text="  " />
+
+                                                        <Span Text="Deposit: " />
+                                                        <Span Text="{Binding DepositAmountStrFormatted}" />
+                                                        <Span Text=" (" />
+                                                        <Span Text="{Binding DepositPercentage, StringFormat='{0:F2}'}" />
                                                         <Span Text=" %)" />
                                                     </FormattedString>
                                                 </Label.FormattedText>
@@ -268,31 +261,10 @@
                                                     <RowDefinition Height="*" />
                                                 </Grid.RowDefinitions>
 
-                                                <!--  Margin="0,0,0,-20"  -->
-                                                <core:SfTextInputLayout
-                                                    Grid.Row="0"
-                                                    Grid.Column="0"
-                                                    Hint="Deposit value (direct)"
-                                                    Style="{DynamicResource CommonTextInputLayoutStyle}">
-                                                    <editors:SfNumericEntry
-                                                        CustomFormat="{Binding CurrencyFormat}"
-                                                        FontSize="{OnIdiom Phone=20,
-                                                                           Tablet=25,
-                                                                           Desktop=25,
-                                                                           TV=25,
-                                                                           Watch=18,
-                                                                           Default=20}"
-                                                        MaximumNumberDecimalDigits="0"
-                                                        ShowClearButton="False"
-                                                        TextColor="{DynamicResource LoanAppInputTextFgColor}"
-                                                        Value="{Binding DepositAmountDirectInput}" />
-                                                </core:SfTextInputLayout>
-
-
                                                 <!--  Margin="0,0,0,-10"  -->
                                                 <core:SfTextInputLayout
                                                     Grid.Row="0"
-                                                    Grid.Column="1"
+                                                    Grid.Column="0"
                                                     Hint="Loan Amount (direct)"
                                                     Style="{DynamicResource CommonTextInputLayoutStyle}">
                                                     <editors:SfNumericEntry
@@ -307,6 +279,26 @@
                                                         ShowClearButton="False"
                                                         TextColor="{DynamicResource LoanAppInputTextFgColor}"
                                                         Value="{Binding LoanAmountDirectInput}" />
+                                                </core:SfTextInputLayout>
+
+                                                <!--  Margin="0,0,0,-20"  -->
+                                                <core:SfTextInputLayout
+                                                    Grid.Row="0"
+                                                    Grid.Column="1"
+                                                    Hint="Deposit value (direct)"
+                                                    Style="{DynamicResource CommonTextInputLayoutStyle}">
+                                                    <editors:SfNumericEntry
+                                                        CustomFormat="{Binding CurrencyFormat}"
+                                                        FontSize="{OnIdiom Phone=20,
+                                                                           Tablet=25,
+                                                                           Desktop=25,
+                                                                           TV=25,
+                                                                           Watch=18,
+                                                                           Default=20}"
+                                                        MaximumNumberDecimalDigits="0"
+                                                        ShowClearButton="False"
+                                                        TextColor="{DynamicResource LoanAppInputTextFgColor}"
+                                                        Value="{Binding DepositAmountDirectInput}" />
                                                 </core:SfTextInputLayout>
 
                                                 <StackLayout

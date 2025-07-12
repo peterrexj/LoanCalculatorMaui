@@ -60,7 +60,7 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
 
         public void AddDefaultToExpenses()
         {
-            TransactionRecords ??= new Incomes
+            TransactionRecords = new Incomes
             {
                 IncomeExpenseEntries = []
             };

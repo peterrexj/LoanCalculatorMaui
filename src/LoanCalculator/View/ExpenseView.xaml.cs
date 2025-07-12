@@ -22,8 +22,8 @@ public partial class ExpenseView : ContentPage
     private readonly IThemeHandler _themeHandler;
 
     public ExpenseView(
-        IErrorHandlingService errorHandlingService, 
-        IAlertService alertService, 
+        IErrorHandlingService errorHandlingService,
+        IAlertService alertService,
         ExpenseViewModel expenseViewModel,
         IThemeHandler themeHandler)
     {
@@ -68,23 +68,23 @@ public partial class ExpenseView : ContentPage
 
             var viewModelInitializeTask = Task.Run(async () =>
             {
-                if (!_viewModel.HasInitialized)
-                {
-                    var data = await SharedServiceCore.LoadDataFile<ExpenseViewModel>();
+                //if (!_viewModel.HasInitialized)
+                //{
+                var data = await SharedServiceCore.LoadDataFile<ExpenseViewModel>();
 
-                    if (data == null)
-                    {
-                        _viewModel.AddDefaultToExpenses();
-                    }
-                    else if (data is { TransactionRecords: null })
-                    {
-                        _viewModel.AddDefaultToExpenses();
-                    }
-                    else
-                    {
-                        _viewModel.CopyPropertiesFrom(data);
-                    }
+                if (data == null)
+                {
+                    _viewModel.AddDefaultToExpenses();
                 }
+                else if (data is { TransactionRecords: null })
+                {
+                    _viewModel.AddDefaultToExpenses();
+                }
+                else
+                {
+                    _viewModel.CopyPropertiesFrom(data);
+                }
+                //}
                 if (_viewModel?.TransactionRecords == null)
                 {
                     _viewModel!.AddDefaultToExpenses();
@@ -94,7 +94,7 @@ public partial class ExpenseView : ContentPage
                 _viewModel.IncomeExpenseEntry.Frequency = TimeFrequencyEnum.Monthly;
                 _viewModel.IncomeExpenseFrequencySelectedIndex = TimeFrequencyEnum.Monthly.ToString();
             });
-            
+
 
             var incomeSummaryTask = Task.Run(() => SharedServiceCore.IncomeSummary);
             var loanDataTask = Task.Run(() => SharedServiceCore.GetLoanViewModel());
@@ -316,7 +316,7 @@ public partial class ExpenseView : ContentPage
     }
     #endregion
 
-   
+
     private void TabView_OnSelectionChanging(object? sender, SelectionChangingEventArgs e)
     {
         try

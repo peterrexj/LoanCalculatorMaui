@@ -67,8 +67,8 @@ public partial class IncomeView : ContentPage
 
             var viewModelInitializeTask = Task.Run(async () =>
             {
-                if (!_viewModel.HasInitialized)
-                {
+                //if (!_viewModel.HasInitialized)
+                //{
                     var data = await SharedServiceCore.LoadDataFile<IncomeViewModel>();
 
                     if (data == null)
@@ -84,7 +84,7 @@ public partial class IncomeView : ContentPage
                         //_viewModel = data;
                         _viewModel.CopyPropertiesFrom(data);
                     }
-                }
+                //}
                 if (_viewModel?.TransactionRecords == null)
                 {
                     _viewModel.AddDefaultToExpenses();

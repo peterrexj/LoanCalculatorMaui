@@ -19,10 +19,10 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
         [JsonIgnore] private readonly IThemeHandler _themeHandler;
 
         
-        [JsonIgnore] public ICommand ClearLoanDataCommand { get; }
-        [JsonIgnore] public ICommand ClearExpenseDataCommand { get; }
-        [JsonIgnore] public ICommand ClearIncomeDataCommand { get; }
-        [JsonIgnore] public ICommand ClearAllDataCommand { get; }
+        [JsonIgnore] public ICommand DeleteLoanDataCommand { get; }
+        [JsonIgnore] public ICommand DeleteExpenseDataCommand { get; }
+        [JsonIgnore] public ICommand DeleteIncomeDataCommand { get; }
+        [JsonIgnore] public ICommand DeleteAllDataCommand { get; }
         [JsonIgnore] public ICommand ShowDisclaimerCommand { get; }
         [JsonIgnore] public ICommand OnShareAppRequestCommand { get; }
         [JsonIgnore] public ICommand OnRateAppRequestCommand { get; }
@@ -44,10 +44,10 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
 
             InitializeSelectedTheme();
 
-            ClearLoanDataCommand = new Command(async () => await ClearLoanData());
-            ClearIncomeDataCommand = new Command(async () => await ClearIncomeData());
-            ClearExpenseDataCommand = new Command(async () => await ClearExpenseData());
-            ClearAllDataCommand = new Command(async () => await ClearDisclaimerData());
+            DeleteLoanDataCommand = new Command(async () => await DeleteLoanData());
+            DeleteIncomeDataCommand = new Command(async () => await DeleteIncomeData());
+            DeleteExpenseDataCommand = new Command(async () => await DeleteExpenseData());
+            DeleteAllDataCommand = new Command(async () => await DeleteAllData());
             ShowDisclaimerCommand = new Command(async () => await ShowDisclaimer());
             PopupCloseCommand = new Command(() => IsPopupRequired = false);
             OnShareAppRequestCommand = new Command(OnShareAppRequest);
@@ -172,18 +172,40 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
             await MainThread.InvokeOnMainThreadAsync(() => _themeHandler.LoadDefaultStyle(theme));
         }
 
-        private async Task ClearLoanData() => await SharedServiceCore.LocalStorage.ClearData<LoanViewModel>();
-        private async Task ClearIncomeData() => await SharedServiceCore.LocalStorage.ClearData<IncomeViewModel>();
-        private async Task ClearExpenseData() => await SharedServiceCore.LocalStorage.ClearData<ExpenseViewModel>();
-        private async Task ClearDisclaimerData() //TODO: Change this from clearing disclaimer to clearing all data
+
+        private async Task DeleteDataWithConfirmationAsync<T>(string title = "Important", string message = "Do you wish to delete the data?", string accept = "Yes", string cancel = "No")
         {
-            await Task.Run(() =>
-            {
-                //new PdfGenerator().GeneratePdf();
-                SharedServiceCore.NameValueDataService.NameValueDataModel.HasShowAppLaunchDisclaimer = false;
-                SharedServiceCore.NameValueDataService.SaveNameValueData();
-            });
+            var response = await _alertService.ShowConfirmationAsync(title, message, accept, cancel);
+            if (!response)
+                return;
+
+            await SharedServiceCore.LocalStorage.ClearData<T>();
         }
+        private async Task DeleteMultipleDataWithConfirmationAsync(IEnumerable<Func<Task>> clearActions, string title = "Important", string message = "Do you wish to delete the data?", string accept = "Yes", string cancel = "No")
+        {
+            var response = await _alertService.ShowConfirmationAsync(title, message, accept, cancel);
+            if (!response)
+                return;
+
+            foreach (var action in clearActions)
+            {
+                await action();
+            }
+        }
+
+        private async Task DeleteAllData()
+        {
+            await DeleteMultipleDataWithConfirmationAsync([
+                () => SharedServiceCore.LocalStorage.ClearData<LoanViewModel>(),
+                () => SharedServiceCore.LocalStorage.ClearData<IncomeViewModel>(),
+                () => SharedServiceCore.LocalStorage.ClearData<ExpenseViewModel>()
+            ]);
+        }
+
+        private async Task DeleteLoanData() => await DeleteDataWithConfirmationAsync<LoanViewModel>();
+        private async Task DeleteIncomeData() => await DeleteDataWithConfirmationAsync<IncomeViewModel>();
+        private async Task DeleteExpenseData() => await DeleteDataWithConfirmationAsync<ExpenseViewModel>();
+       
         public string AppLaunchDisclaimerData => SharedServiceCore.DisclaimerData;
         private bool _isPopupRequired;
         public bool IsPopupRequired

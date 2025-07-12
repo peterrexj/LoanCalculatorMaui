@@ -117,7 +117,7 @@ namespace LoanCalculator.Core.Pdf
                 // Save the stream as a file in the device and invoke it for viewing
                 await Task.Delay(taskDelay); // Simulate work
                 UpdateProgress(100); // 100% progress
-                await SaveAndView("Output.pdf", stream);
+                await SaveAndView($"{applicationTitle} Insights.pdf", stream);
 
                 UpdateProgress(0);
             }

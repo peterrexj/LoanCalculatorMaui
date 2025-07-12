@@ -208,36 +208,36 @@
                                 Grid.Row="0"
                                 Grid.Column="0"
                                 Margin="0,10,10,0"
-                                Command="{Binding ClearLoanDataCommand}"
+                                Command="{Binding DeleteLoanDataCommand}"
                                 CornerRadius="5"
                                 Style="{DynamicResource MauiButtonStyle}"
-                                Text="Clear Loan Data" />
+                                Text="Loan Data" />
 
                             <Button
                                 Grid.Row="0"
                                 Grid.Column="1"
                                 Margin="0,10,10,0"
-                                Command="{Binding ClearExpenseDataCommand}"
+                                Command="{Binding DeleteExpenseDataCommand}"
                                 CornerRadius="5"
                                 Style="{DynamicResource MauiButtonStyle}"
-                                Text="Clear Expense Data" />
+                                Text="Expense Data" />
                             <Button
                                 Grid.Row="1"
                                 Grid.Column="0"
                                 Margin="0,10,10,0"
-                                Command="{Binding ClearIncomeDataCommand}"
+                                Command="{Binding DeleteIncomeDataCommand}"
                                 CornerRadius="5"
                                 Style="{DynamicResource MauiButtonStyle}"
-                                Text="Clear Income Data" />
+                                Text="Income Data" />
 
                             <Button
                                 Grid.Row="1"
                                 Grid.Column="1"
                                 Margin="0,10,10,0"
-                                Command="{Binding ClearAllDataCommand}"
+                                Command="{Binding DeleteAllDataCommand}"
                                 CornerRadius="5"
                                 Style="{DynamicResource MauiButtonStyle}"
-                                Text="Clear All Data" />
+                                Text="All Data" />
                         </Grid>
 
                     </expander:SfExpander.Content>

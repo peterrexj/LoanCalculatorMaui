@@ -20,13 +20,27 @@ namespace LoanCalculatorMaui
 
             ServiceLocator.GetService<IThemeHandler>().LoadDefaultStyle();
 
-            //Preferences.Set("IsPremium", true);
-            //_ = CheckIfUserPurchasedAsync();
+            //SetIsPremiumFlagAsync();
 
             Helper.CurrencySymbol =
                 SharedServiceCore.GetCurrencySymbol(Preferences.Get(SharedServiceCore.SelectedCurrencyKey, "AUD"));
         }
-        
+
+        /// <summary>
+        /// Sets the "IsPremium" flag in secure storage asynchronously and handles exceptions.
+        /// </summary>
+        private void SetIsPremiumFlagAsync()
+        {
+            _ = SecureStorage.SetAsync("IsPremium", "false").ContinueWith(t =>
+            {
+                if (t.Exception != null)
+                {
+                    // Optionally log or handle the exception here
+                    var errorHandlingService = ServiceLocator.GetService<IErrorHandlingService>();
+                    errorHandlingService?.HandleException(t.Exception, "Failed to set IsPremium in SecureStorage.");
+                }
+            }, TaskContinuationOptions.OnlyOnFaulted);
+        }
 
         public App()
         {

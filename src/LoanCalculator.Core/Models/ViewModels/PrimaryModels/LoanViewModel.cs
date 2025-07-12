@@ -322,6 +322,12 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
         [JsonIgnore]
         public string DepositAmountStrFormatted => $"{CurrencySymbol}{HomeLoanInfo?.DepositAmountDirectInput ?? 0:N0}";
 
+        [JsonIgnore]
+        public string InterestRateFormatted =>
+            InterestRate % 1 == 0
+                ? $"{InterestRate:N0}%"
+                : $"{InterestRate:N2}%";
+
         public double DepositPercentage
         {
             get => HomeLoanInfo?.DepositPercentage ?? 0;
@@ -513,7 +519,7 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
         {
             get
             {
-                if (SharedServiceCore.IsTrialUser) return " go premium";
+                if (SharedServiceCore.IsTrialUser) return " try premium";
                 if (HasIncomeExpensesRecorded == false) return " record your income & expenses";
 
                 return " your monthly affordability status";
@@ -1020,6 +1026,7 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
             OnPropertyChanged(nameof(DepositPercentage));
             OnPropertyChanged(nameof(LoanAmount));
             OnPropertyChanged(nameof(PropertyTotalAmount));
+            OnPropertyChanged(nameof(InterestRateFormatted));
             OnPropertyChanged(nameof(DepositAmountStrFormatted));
             OnPropertyChanged(nameof(OtherExpenseTotalAmount));
             OnPropertyChanged(nameof(MortgageCharges));

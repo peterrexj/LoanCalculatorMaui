@@ -210,12 +210,32 @@ namespace LoanCalculator.Core.Services
         #endregion
 
         #region Premium
-        public static bool IsPremiumUser => Preferences.Get("IsPremium", false);
-        public static bool IsTrialUser => !IsPremiumUser;
+        public static bool IsTrialUser => !IsPremiumUser();
+
+        public static bool IsPremiumUser()
+        {
+            try
+            {
+                var value = Task.Run(() => SecureStorage.GetAsync("IsPremium")).Result;
+                return value == "true";
+            }
+            catch (Exception ex)
+            {
+                ErrorHandlingService.HandleException(ex, "Failed to get IsPremium from SecureStorage.");
+                return false;
+            }
+        }
 
         public static void UpdateToPremium()
         {
-            Preferences.Set("IsPremium", true);
+            try
+            {
+                Task.Run(() => SecureStorage.SetAsync("IsPremium", "true")).Wait();
+            }
+            catch (Exception ex)
+            {
+                ErrorHandlingService.HandleException(ex, "Failed to set IsPremium in SecureStorage.");
+            }
         }
 
         #endregion

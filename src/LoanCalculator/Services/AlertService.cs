@@ -14,7 +14,14 @@ namespace LoanCalculatorMaui.Services
 
         public async Task<bool> ShowConfirmationAsync(string title, string message, string acceptButton, string cancelButton)
         {
-            return await MainThread.InvokeOnMainThreadAsync(async () => await Application.Current.MainPage.DisplayAlert(title, message, acceptButton, cancelButton));
+            try
+            {
+                return await MainThread.InvokeOnMainThreadAsync(async () => await Application.Current?.MainPage?.DisplayAlert(title, message, acceptButton, cancelButton));
+            }
+            catch (Exception e)
+            {
+                return true;
+            }
         }
     }
 }

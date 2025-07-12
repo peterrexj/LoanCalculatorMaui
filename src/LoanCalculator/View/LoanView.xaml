@@ -32,7 +32,7 @@
                 x:Name="TabView"
                 HeaderHorizontalTextAlignment="Center"
                 SelectionChanging="TabView_OnSelectionChanging">
-                <tabView:SfTabItem Header="Property">
+                <tabView:SfTabItem Header="Asset">
                     <tabView:SfTabItem.Content>
                         <ScrollView>
                             <StackLayout>
@@ -102,7 +102,7 @@
                                                 <core:SfTextInputLayout
                                                     Grid.Column="0"
                                                     Margin="0,0,0,-15"
-                                                    Hint="Property Value"
+                                                    Hint="Asset Value"
                                                     HorizontalOptions="Start"
                                                     Style="{DynamicResource CommonTextInputLayoutStyle}">
                                                     <editors:SfNumericEntry
@@ -130,7 +130,7 @@
                                                                            Watch=10,
                                                                            Default=12}"
                                                         HorizontalOptions="Start"
-                                                        Text="Total property amount"
+                                                        Text="Total asset amount"
                                                         TextColor="{DynamicResource LoanAppInputTextFgColor}"
                                                         VerticalOptions="Center" />
                                                     <Label
@@ -432,7 +432,7 @@
                                                     Grid.Row="1"
                                                     Grid.Column="0"
                                                     Margin="0,0,0,-15"
-                                                    Hint="Property stamp duty (estimate)"
+                                                    Hint="Asset stamp duty (estimate)"
                                                     Style="{DynamicResource CommonTextInputLayoutStyle}">
                                                     <editors:SfNumericEntry
                                                         CustomFormat="{Binding CurrencyFormat}"
@@ -995,14 +995,14 @@
                     </tabView:SfTabItem.Content>
                 </tabView:SfTabItem>
 
-                <tabView:SfTabItem Header="Expense on Property">
+                <tabView:SfTabItem Header="Expense on Asset">
                     <tabView:SfTabItem.Content>
                         <ScrollView>
                             <StackLayout>
                                 <customControls:DisclaimerBannerView
                                     BannerType="Information"
                                     HeaderText="Instructions"
-                                    Text="Enter the anticipated ongoing costs for this property (such as maintenance, insurance, and taxes) after purchase, excluding mortgage payments." />
+                                    Text="Enter the anticipated ongoing costs for this asset (such as maintenance, insurance, and taxes) after purchase, excluding mortgage payments." />
 
                                 <customControls:ThreeColumnBorderedContentView LineHeightBox3="2.0">
                                     <customControls:ThreeColumnBorderedContentView.FormattedText1>
@@ -1010,7 +1010,7 @@
                                             <Span Style="{DynamicResource SpanThreeBoxCurrencyStyle}" Text="{Binding CurrencySymbol}" />
                                             <Span Style="{DynamicResource SpanThreeBoxAmountStyle}" Text="{Binding TotalMonthlyExpenseWithComma}" />
                                             <Span Text="{Binding NewLine}" />
-                                            <Span Style="{DynamicResource SpanThreeBoxTextStyle}" Text="Monthly this property (expense)" />
+                                            <Span Style="{DynamicResource SpanThreeBoxTextStyle}" Text="Monthly new asset (expense)" />
                                         </FormattedString>
                                     </customControls:ThreeColumnBorderedContentView.FormattedText1>
                                     <customControls:ThreeColumnBorderedContentView.FormattedText2>
@@ -1018,7 +1018,7 @@
                                             <Span Style="{DynamicResource SpanThreeBoxCurrencyStyle}" Text="{Binding CurrencySymbol}" />
                                             <Span Style="{DynamicResource SpanThreeBoxAmountStyle}" Text="{Binding TotalYearlyExpenseWithComma}" />
                                             <Span Text="{Binding NewLine}" />
-                                            <Span Style="{DynamicResource SpanThreeBoxTextStyle}" Text="Yearly this property (expense)" />
+                                            <Span Style="{DynamicResource SpanThreeBoxTextStyle}" Text="Yearly new asset (expense)" />
                                         </FormattedString>
                                     </customControls:ThreeColumnBorderedContentView.FormattedText2>
                                     <customControls:ThreeColumnBorderedContentView.FormattedText3>
@@ -1035,7 +1035,7 @@
                                                                    Default=10}"
                                                 Style="{DynamicResource SpanThreeBoxAmountStyle}"
                                                 Text="{Binding TotalMonthlyOverallExpenseBreakdownWithComma}" />
-                                            <Span Style="{DynamicResource SpanThreeBoxTextStyle}" Text=" monthly new property overall expense" />
+                                            <Span Style="{DynamicResource SpanThreeBoxTextStyle}" Text=" monthly new asset overall expense" />
                                         </FormattedString>
                                     </customControls:ThreeColumnBorderedContentView.FormattedText3>
                                 </customControls:ThreeColumnBorderedContentView>
@@ -1331,7 +1331,7 @@
                                     Style="{DynamicResource CommonExpanderStyle}">
                                     <expander:SfExpander.Header>
                                         <Grid>
-                                            <Label Style="{DynamicResource ExpanderHeaderLabelStyle}" Text="Property Insights" />
+                                            <Label Style="{DynamicResource ExpanderHeaderLabelStyle}" Text="Asset Insights" />
                                         </Grid>
                                     </expander:SfExpander.Header>
                                     <expander:SfExpander.Content>
@@ -1512,7 +1512,7 @@
                                     Style="{DynamicResource CommonExpanderStyle}">
                                     <expander:SfExpander.Header>
                                         <Grid>
-                                            <Label Style="{DynamicResource ExpanderHeaderLabelStyle}" Text="Expenses on cost of new property ownership" />
+                                            <Label Style="{DynamicResource ExpanderHeaderLabelStyle}" Text="Expenses on cost of new asset ownership" />
                                         </Grid>
                                     </expander:SfExpander.Header>
                                     <expander:SfExpander.Content>

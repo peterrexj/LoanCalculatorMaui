@@ -20,7 +20,7 @@ namespace LoanCalculatorMaui
 
             ServiceLocator.GetService<IThemeHandler>().LoadDefaultStyle();
 
-            //SetIsPremiumFlagAsync();
+            SetIsPremiumFlagAsync();
 
             Helper.CurrencySymbol =
                 SharedServiceCore.GetCurrencySymbol(Preferences.Get(SharedServiceCore.SelectedCurrencyKey, "AUD"));
@@ -31,7 +31,7 @@ namespace LoanCalculatorMaui
         /// </summary>
         private void SetIsPremiumFlagAsync()
         {
-            _ = SecureStorage.SetAsync("IsPremium", "false").ContinueWith(t =>
+            _ = SecureStorage.SetAsync("IsPremium", "true").ContinueWith(t =>
             {
                 if (t.Exception != null)
                 {

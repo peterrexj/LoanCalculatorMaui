@@ -186,7 +186,7 @@
                                         HorizontalOptions="Fill"
                                         HorizontalTextAlignment="Start"
                                         LineBreakMode="WordWrap"
-                                        Text="Income after new property expense"
+                                        Text="Income after new asset expense"
                                         TextColor="{DynamicResource LoanAppDefaultForegroundColor}"
                                         VerticalOptions="Fill"
                                         VerticalTextAlignment="Center" />
@@ -635,7 +635,7 @@
                                                 HorizontalOptions="Start"
                                                 HorizontalTextAlignment="Start"
                                                 LineBreakMode="WordWrap"
-                                                Text="Include expenses (new property)"
+                                                Text="Include expenses (new asset)"
                                                 TextColor="{DynamicResource LoanAppDefaultForegroundColor}"
                                                 VerticalOptions="Start"
                                                 VerticalTextAlignment="Start" />

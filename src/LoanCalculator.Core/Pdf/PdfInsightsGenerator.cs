@@ -299,7 +299,7 @@ namespace LoanCalculator.Core.Pdf
             listOfKpiExplain = new List<TextElementModel>
             {
                 new("Loan", GetTextFont(12, PdfFontStyle.Bold), DefaultTextBrush, 1),
-                new("is the amount borrowed and deposit paid for the property purchase.", GetTextFont(12, PdfFontStyle.Regular), DefaultTextBrush, 1),
+                new("is the amount borrowed and deposit paid for the asset purchase.", GetTextFont(12, PdfFontStyle.Regular), DefaultTextBrush, 1),
             };
 
             DrawTextElements(listOfKpiExplain, _yPosition, updateYPosition: true);
@@ -830,7 +830,7 @@ namespace LoanCalculator.Core.Pdf
         {
             InsertBlankPage();
 
-            DrawH1("Property Insights");
+            DrawH1("Asset Insights");
 
             RenderProperty();
 
@@ -845,8 +845,8 @@ namespace LoanCalculator.Core.Pdf
         private void RenderProperty()
         {
             AddNewLineSpace();
-            DrawH2("Property");
-            DrawFormattedText($"{DataModel.Loan.PropertyAmount.ToCurrency()}", "Property Purchase Price", "The settled amount required to acquire ownership of the property.");
+            DrawH2("Asset");
+            DrawFormattedText($"{DataModel.Loan.PropertyAmount.ToCurrency()}", "Asset Purchase Price", "The settled amount required to acquire ownership of the asset.");
             DrawFormattedText($"{DataModel.Loan.OtherExpenseTotalAmount.ToCurrency()}", "Additional Upfront Costs (estimated)", "These are essential expenses associated with the purchase, including but not limited to:");
 
             List<List<TextElementModel>> otherExpensesBullets = new()
@@ -855,12 +855,12 @@ namespace LoanCalculator.Core.Pdf
                 {
                     new("Stamp Duty", GetTextFont(12, PdfFontStyle.Bold), DefaultTextBrush, 1),
                     new("estimated", GetTextFont(8, PdfFontStyle.Italic), DefaultTextBrush, 1),
-                    new($"({DataModel.Loan.StampDuty.ToCurrency()}): A government-imposed fee tied to the property transaction.", GetTextFont(12, PdfFontStyle.Regular), DefaultTextBrush, 2)
+                    new($"({DataModel.Loan.StampDuty.ToCurrency()}): A government-imposed fee tied to the asset transaction.", GetTextFont(12, PdfFontStyle.Regular), DefaultTextBrush, 2)
                 },
                 new()
                 {
                     new("Mortgage Charges", GetTextFont(12, PdfFontStyle.Bold), DefaultTextBrush, 1),
-                    new($"({DataModel.Loan.MortgageCharges.ToCurrency()}): Includes fees like Lender's Mortgage Insurance (LMI), application charges, property valuation costs, account maintenance fees.", GetTextFont(12, PdfFontStyle.Regular), DefaultTextBrush, 1)
+                    new($"({DataModel.Loan.MortgageCharges.ToCurrency()}): Includes fees like Lender's Mortgage Insurance (LMI), application charges, asset valuation costs, account maintenance fees.", GetTextFont(12, PdfFontStyle.Regular), DefaultTextBrush, 1)
                 },
                 new()
                 {
@@ -870,12 +870,12 @@ namespace LoanCalculator.Core.Pdf
                 new()
                 {
                     new("Conveyancer Fees", GetTextFont(12, PdfFontStyle.Bold), DefaultTextBrush, 1),
-                    new($"({DataModel.Loan.ConveyancerFee.ToCurrency()}): Professional charges for overseeing the legal aspects of the property transfer.", GetTextFont(12, PdfFontStyle.Regular), DefaultTextBrush, 1)
+                    new($"({DataModel.Loan.ConveyancerFee.ToCurrency()}): Professional charges for overseeing the legal aspects of the asset transfer.", GetTextFont(12, PdfFontStyle.Regular), DefaultTextBrush, 1)
                 },
                 new()
                 {
                     new("Inspection Charges", GetTextFont(12, PdfFontStyle.Bold), DefaultTextBrush, 1),
-                    new($"({DataModel.Loan.InspectionFee.ToCurrency()}): Fees incurred for property evaluations to ensure its condition and compliance.", GetTextFont(12, PdfFontStyle.Regular), DefaultTextBrush, 1)
+                    new($"({DataModel.Loan.InspectionFee.ToCurrency()}): Fees incurred for asset evaluations to ensure its condition and compliance.", GetTextFont(12, PdfFontStyle.Regular), DefaultTextBrush, 1)
                 },
                 new()
                 {
@@ -885,7 +885,7 @@ namespace LoanCalculator.Core.Pdf
             };
             DrawBulletPoints(otherExpensesBullets);
 
-            DrawFormattedText(DataModel.Loan.TotalPropertyAmount.ToCurrency(), "Total Property Cost (estimated)", "The total investment in the property combines the actual purchase price and additional upfront costs. This comprehensive sum should be carefully considered when planning your financial commitment.");
+            DrawFormattedText(DataModel.Loan.TotalPropertyAmount.ToCurrency(), "Total Asset Cost (estimated)", "The total investment in the asset combines the actual purchase price and additional upfront costs. This comprehensive sum should be carefully considered when planning your financial commitment.");
         }
         private void RenderLoan()
         {
@@ -912,18 +912,18 @@ namespace LoanCalculator.Core.Pdf
         private void RenderCostOfNewPropertyOwnership()
         {
             AddNewLineSpace();
-            DrawH2("Costs of New Property Ownership");
+            DrawH2("Costs of New Asset Ownership");
 
-            DrawFormattedText($"{DataModel.Loan.TotalMonthlyRunningExpense.ToCurrency()}", "Monthly additional expense for this property (estimated)", "This refers to the recurring monthly costs associated with the property, which might include maintenance charges, utility bills, and other expenses directly tied to its ownership. These expenses are a crucial consideration for budgeting after the initial purchase.");
+            DrawFormattedText($"{DataModel.Loan.TotalMonthlyRunningExpense.ToCurrency()}", "Monthly additional expense for this asset (estimated)", "This refers to the recurring monthly costs associated with the asset, which might include maintenance charges, utility bills, and other expenses directly tied to its ownership. These expenses are a crucial consideration for budgeting after the initial purchase.");
 
-            DrawFormattedText($"{DataModel.Loan.TotalYearlyRunningExpense.ToCurrency()}", "Yearly Additional Expense for This Property (estimated)", "Yearly additional expense for this property encompasses total utility costs, maintenance fees, insurance premiums, and other recurring annual charges.");
+            DrawFormattedText($"{DataModel.Loan.TotalYearlyRunningExpense.ToCurrency()}", "Yearly Additional Expense for this Asset (estimated)", "Yearly additional expense for this asset encompasses total utility costs, maintenance fees, insurance premiums, and other recurring annual charges.");
 
             DrawTransactionRecordsTable(DataModel.Loan.Transactions, "Expense", colorShadeTopValue: true, cellHighlightBgBrush: DefaultCellNegativeBgBrush);
 
             AddNewLineSpace();
-            DrawH2("Property Financial Commitments");
+            DrawH2("Asset Financial Commitments");
 
-            DrawFormattedText($"{DataModel.Loan.MonthlyRepaymentWithExpenses.ToCurrency()}", "Monthly Total Expense for This Property (estimated)", "Includes the mortgage payment and recurring costs such as utilities, maintenance, and insurance, giving a comprehensive view of monthly financial commitments.");
+            DrawFormattedText($"{DataModel.Loan.MonthlyRepaymentWithExpenses.ToCurrency()}", "Monthly Total Expense for This Asset (estimated)", "Includes the mortgage payment and recurring costs such as utilities, maintenance, and insurance, giving a comprehensive view of monthly financial commitments.");
 
             List<List<TextElementModel>> monthlyPropertyTotalBullets = new()
             {
@@ -935,12 +935,12 @@ namespace LoanCalculator.Core.Pdf
                 new()
                 {
                     new($"{DataModel.Loan.TotalMonthlyRunningExpense.ToCurrency()}", GetNumberFont(12, PdfFontStyle.Bold), DefaultTextBrush, 1),
-                    new($"Monthly additional expense for this property (estimated)", GetTextFont(12, PdfFontStyle.Regular), DefaultTextBrush, 2)
+                    new($"Monthly additional expense for this asset (estimated)", GetTextFont(12, PdfFontStyle.Regular), DefaultTextBrush, 2)
                 }
             };
             DrawBulletPoints(monthlyPropertyTotalBullets);
 
-            DrawFormattedText($"{DataModel.Loan.YearlyRepaymentWithExpenses.ToCurrency()}", "Yearly Total Expense for This Property (estimated)", "Combines the yearly mortgage repayment with all recurring annual costs such as utilities, maintenance, and insurance, to provide a comprehensive summary of total yearly obligations.");
+            DrawFormattedText($"{DataModel.Loan.YearlyRepaymentWithExpenses.ToCurrency()}", "Yearly Total Expense for This Asset (estimated)", "Combines the yearly mortgage repayment with all recurring annual costs such as utilities, maintenance, and insurance, to provide a comprehensive summary of total yearly obligations.");
 
             List<List<TextElementModel>> yearlyPropertyTotalBullets = new()
             {
@@ -952,7 +952,7 @@ namespace LoanCalculator.Core.Pdf
                 new()
                 {
                     new($"{DataModel.Loan.TotalYearlyRunningExpense.ToCurrency()}", GetNumberFont(12, PdfFontStyle.Bold), DefaultTextBrush, 1),
-                    new($"Yearly additional expense for this property (estimated)", GetTextFont(12, PdfFontStyle.Regular), DefaultTextBrush, 2)
+                    new($"Yearly additional expense for this asset (estimated)", GetTextFont(12, PdfFontStyle.Regular), DefaultTextBrush, 2)
                 }
             };
             DrawBulletPoints(yearlyPropertyTotalBullets);

@@ -411,15 +411,31 @@
                                                 </Grid.ColumnDefinitions>
 
                                                 <Grid.RowDefinitions>
+                                                    <RowDefinition Height="Auto" />
                                                     <RowDefinition Height="{Binding HeightOfGridRowToggledByCountryOnStampDuty}" />
                                                     <RowDefinition Height="{OnIdiom Phone=70, Tablet=85, Desktop=85, TV=85, Watch=85, Default=70}" />
                                                     <RowDefinition Height="{OnIdiom Phone=70, Tablet=85, Desktop=85, TV=85, Watch=85, Default=70}" />
                                                     <RowDefinition Height="{OnIdiom Phone=70, Tablet=85, Desktop=85, TV=85, Watch=85, Default=70}" />
                                                 </Grid.RowDefinitions>
 
+                                                <Label
+                                                    Grid.Row="0"
+                                                    Grid.ColumnSpan="2"
+                                                    Margin="0,0,0,0"
+                                                    FontSize="{OnIdiom Phone=12,
+                                                                       Tablet=17,
+                                                                       Desktop=17,
+                                                                       TV=17,
+                                                                       Watch=10,
+                                                                       Default=12}"
+                                                    HorizontalOptions="Center"
+                                                    Text="Only to be used for Home or Property Asset"
+                                                    TextColor="{DynamicResource LoanAppDefaultForegroundColor}"
+                                                    VerticalOptions="Center" />
+
                                                 <buttons:SfSegmentedControl
                                                     x:Name="SegmentedAustraliaStates"
-                                                    Grid.Row="0"
+                                                    Grid.Row="1"
                                                     Grid.ColumnSpan="2"
                                                     Margin="10,5"
                                                     IsVisible="{Binding ShowAustralianStateSelectorOnStampDuty}"
@@ -429,7 +445,7 @@
                                                     VisibleSegmentsCount="8" />
 
                                                 <core:SfTextInputLayout
-                                                    Grid.Row="1"
+                                                    Grid.Row="2"
                                                     Grid.Column="0"
                                                     Margin="0,0,0,-15"
                                                     Hint="Asset stamp duty (estimate)"
@@ -449,7 +465,7 @@
                                                 </core:SfTextInputLayout>
 
                                                 <core:SfTextInputLayout
-                                                    Grid.Row="1"
+                                                    Grid.Row="2"
                                                     Grid.Column="1"
                                                     Margin="0,0,0,-15"
                                                     Hint="Mortgage charges"
@@ -469,7 +485,7 @@
                                                 </core:SfTextInputLayout>
 
                                                 <core:SfTextInputLayout
-                                                    Grid.Row="2"
+                                                    Grid.Row="3"
                                                     Grid.Column="0"
                                                     Margin="0,0,0,-15"
                                                     Hint="Conveyance / solicitor fee"
@@ -489,7 +505,7 @@
                                                 </core:SfTextInputLayout>
 
                                                 <core:SfTextInputLayout
-                                                    Grid.Row="2"
+                                                    Grid.Row="3"
                                                     Grid.Column="1"
                                                     Margin="0,0,0,-15"
                                                     Hint="Bank fees"
@@ -509,7 +525,7 @@
                                                 </core:SfTextInputLayout>
 
                                                 <core:SfTextInputLayout
-                                                    Grid.Row="3"
+                                                    Grid.Row="4"
                                                     Grid.Column="0"
                                                     Margin="0,0,0,-15"
                                                     Hint="Inspection fee"
@@ -529,7 +545,7 @@
                                                 </core:SfTextInputLayout>
 
                                                 <core:SfTextInputLayout
-                                                    Grid.Row="3"
+                                                    Grid.Row="4"
                                                     Grid.Column="1"
                                                     Margin="0,0,0,-15"
                                                     Hint="Other expenses"

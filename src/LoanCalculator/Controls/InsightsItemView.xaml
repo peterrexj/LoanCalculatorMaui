@@ -22,6 +22,7 @@
                                Watch=15,
                                Default=22}"
             HorizontalOptions="End"
+            HorizontalTextAlignment="End"
             VerticalOptions="Center" />
         <BoxView
             Grid.Column="1"

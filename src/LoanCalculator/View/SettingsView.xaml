@@ -3,10 +3,10 @@
     x:Class="LoanCalculatorMaui.View.SettingsView"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:controls="clr-namespace:LoanCalculatorMaui.Controls"
     xmlns:editors="clr-namespace:Syncfusion.Maui.Inputs;assembly=Syncfusion.Maui.Inputs"
     xmlns:expander="clr-namespace:Syncfusion.Maui.Expander;assembly=Syncfusion.Maui.Expander"
     xmlns:sfPopup="clr-namespace:Syncfusion.Maui.Popup;assembly=Syncfusion.Maui.Popup"
-    xmlns:controls="clr-namespace:LoanCalculatorMaui.Controls"
     Title="SettingsView">
     <Grid BackgroundColor="{DynamicResource LoanAppDefaultBackgroundColor}" IsEnabled="{Binding IsFree}">
         <sfPopup:SfPopup
@@ -136,19 +136,19 @@
                 <Label
                     Margin="0,20,0,0"
                     FontSize="{OnIdiom Phone=14,
-                       Tablet=19,
-                       Desktop=19,
-                       TV=19,
-                       Watch=12,
-                       Default=14}"
+                                       Tablet=19,
+                                       Desktop=19,
+                                       TV=19,
+                                       Watch=12,
+                                       Default=14}"
                     Text="Change Currency"
                     TextColor="{DynamicResource LoanAppAppShellFgColor}" />
                 <editors:SfComboBox
                     BackgroundColor="Transparent"
-                    ItemsSource="{Binding Currencies}"
                     DisplayMemberPath="Display"
-                    SelectedValuePath="Symbol"
+                    ItemsSource="{Binding Currencies}"
                     SelectedItem="{Binding SelectedCurrency, Mode=TwoWay}"
+                    SelectedValuePath="Symbol"
                     Style="{DynamicResource SfComboBoxStyle}" />
 
 

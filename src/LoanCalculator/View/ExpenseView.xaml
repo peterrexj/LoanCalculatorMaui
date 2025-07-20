@@ -19,7 +19,7 @@
     Title="ExpenseView">
     <ContentPage.Content>
         <Grid BackgroundColor="{DynamicResource LoanAppDefaultBackgroundColor}">
-            <customControls:PopupDisclaimerView />
+            <!--<customControls:PopupDisclaimerView />-->
             <customControls:InAppPurchaseView x:Name="PremiumWindow" />
 
             <tabView:SfTabView
@@ -216,9 +216,8 @@
                                                 Grid.Column="0"
                                                 Grid.ColumnSpan="2"
                                                 Margin="0,0,5,0"
-                                                ErrorText="Your income type"
                                                 HasError="{Binding HasErrorIncomeDescription}"
-                                                HelperText="Describe your expense type"
+                                                ErrorText="Describe your expense"
                                                 Hint="Expense"
                                                 Style="{DynamicResource CommonTextInputLayoutStyle}">
                                                 <Entry

@@ -118,35 +118,44 @@
                                                         Value="{Binding PropertyAmount}" />
                                                 </core:SfTextInputLayout>
 
-                                                <StackLayout
+                                                <Border
                                                     Grid.Column="1"
-                                                    HorizontalOptions="Center"
-                                                    VerticalOptions="Center">
-                                                    <Label
-                                                        FontSize="{OnIdiom Phone=12,
-                                                                           Tablet=17,
-                                                                           Desktop=17,
-                                                                           TV=17,
-                                                                           Watch=10,
-                                                                           Default=12}"
-                                                        HorizontalOptions="Start"
-                                                        Text="Total asset amount"
-                                                        TextColor="{DynamicResource LoanAppInputTextFgColor}"
-                                                        VerticalOptions="Center" />
-                                                    <Label
-                                                        FontAttributes="Bold"
-                                                        FontSize="{OnIdiom Phone=16,
-                                                                           Tablet=21,
-                                                                           Desktop=21,
-                                                                           TV=21,
-                                                                           Watch=14,
-                                                                           Default=16}"
-                                                        HorizontalOptions="Start"
-                                                        Text="{Binding PropertyTotalAmount}"
-                                                        TextColor="{DynamicResource LoanAppInputTextFgColor}"
-                                                        VerticalOptions="Center" />
-                                                </StackLayout>
+                                                    Margin="10"
+                                                    HorizontalOptions="Fill"
+                                                    Style="{DynamicResource BorderTopHighlightBox}"
+                                                    VerticalOptions="Fill">
 
+                                                    <StackLayout
+                                                        Padding="10"
+                                                        HorizontalOptions="Center"
+                                                        Spacing="2"
+                                                        VerticalOptions="Center">
+
+                                                        <Label
+                                                            FontSize="{OnIdiom Phone=12,
+                                                                               Tablet=17,
+                                                                               Desktop=17,
+                                                                               TV=17,
+                                                                               Watch=10,
+                                                                               Default=12}"
+                                                            HorizontalTextAlignment="Center"
+                                                            Text="Total asset amount"
+                                                            TextColor="{DynamicResource LoanAppHighlightFgColor}" />
+
+                                                        <Label
+                                                            FontAttributes="Bold"
+                                                            FontSize="{OnIdiom Phone=16,
+                                                                               Tablet=21,
+                                                                               Desktop=21,
+                                                                               TV=21,
+                                                                               Watch=14,
+                                                                               Default=16}"
+                                                            HorizontalTextAlignment="Center"
+                                                            Text="{Binding PropertyTotalAmount}"
+                                                            TextColor="{DynamicResource LoanAppHighlightFgColor}" />
+
+                                                    </StackLayout>
+                                                </Border>
                                             </Grid>
 
                                             <Grid Margin="5,0,5,0">
@@ -1077,8 +1086,8 @@
                                                     Grid.Column="0"
                                                     Grid.ColumnSpan="2"
                                                     Margin="0,0,5,0"
-                                                    HasError="{Binding HasErrorIncomeDescription}"
                                                     ErrorText="Describe your expense"
+                                                    HasError="{Binding HasErrorIncomeDescription}"
                                                     Hint="Expense"
                                                     Style="{DynamicResource CommonTextInputLayoutStyle}">
                                                     <Entry

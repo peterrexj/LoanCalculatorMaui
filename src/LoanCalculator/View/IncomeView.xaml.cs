@@ -114,6 +114,11 @@ public partial class IncomeView : ContentPage
             _viewModel.PropertyExpenseSummary = loanData.Item1;
             _viewModel.PropertyPayment = loanData.Item2;
 
+            if (SharedServiceCore.IsTrialUser && SharedServiceCore.IsCurrentDay() == false)
+            {
+                _viewModel.AddDefaultToExpenses();
+            }
+
             _viewModel.CurrencySymbol = Helper.CurrencySymbol;
 
             _viewModel.MarkInitializationComplete();

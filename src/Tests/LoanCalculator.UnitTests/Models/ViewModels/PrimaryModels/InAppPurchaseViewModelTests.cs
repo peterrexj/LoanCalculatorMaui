@@ -75,7 +75,7 @@ namespace LoanCalculator.Tests.Models.ViewModels.PrimaryModels
             var alertService = new Mock<IAlertService>();
             var appInfo = new Mock<IAppInformation>();
             appInfo.SetupGet(x => x.InAppProductId).Returns("test_product");
-            inAppPurchaseService.Setup(x => x.RestorePurchasesAsync("test_product"))
+            inAppPurchaseService.Setup(x => x.RestorePurchasesAsync("test_product", false))
                 .ReturnsAsync(true);
 
             var vm = new InAppPurchaseViewModel(inAppPurchaseService.Object, alertService.Object, appInfo.Object)
@@ -96,7 +96,7 @@ namespace LoanCalculator.Tests.Models.ViewModels.PrimaryModels
             var alertService = new Mock<IAlertService>();
             var appInfo = new Mock<IAppInformation>();
             appInfo.SetupGet(x => x.InAppProductId).Returns("test_product");
-            inAppPurchaseService.Setup(x => x.RestorePurchasesAsync("test_product"))
+            inAppPurchaseService.Setup(x => x.RestorePurchasesAsync("test_product", false))
                 .ReturnsAsync(false);
 
             var vm = new InAppPurchaseViewModel(inAppPurchaseService.Object, alertService.Object, appInfo.Object)

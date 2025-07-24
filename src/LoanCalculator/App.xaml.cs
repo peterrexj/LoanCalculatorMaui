@@ -20,7 +20,17 @@ namespace LoanCalculatorMaui
 
             ServiceLocator.GetService<IThemeHandler>().LoadDefaultStyle();
 
-            SetIsPremiumFlagAsync();
+            try
+            {
+                var productId = ServiceLocator.GetService<IAppInformation>().InAppProductId;
+                ServiceLocator.GetService<IInAppPurchaseService>().RestorePurchasesAsync(productId, true);
+            }
+            catch (Exception e)
+            {
+                LogException(e, "Error restoring purchases");
+            }
+
+            //SetIsPremiumFlagAsync();
 
             Helper.CurrencySymbol =
                 SharedServiceCore.GetCurrencySymbol(Preferences.Get(SharedServiceCore.SelectedCurrencyKey, "AUD"));
@@ -31,7 +41,7 @@ namespace LoanCalculatorMaui
         /// </summary>
         private void SetIsPremiumFlagAsync()
         {
-            _ = SecureStorage.SetAsync("IsPremium", "true").ContinueWith(t =>
+            _ = SecureStorage.SetAsync("IsPremium", "false").ContinueWith(t =>
             {
                 if (t.Exception != null)
                 {
@@ -40,14 +50,8 @@ namespace LoanCalculatorMaui
                     errorHandlingService?.HandleException(t.Exception, "Failed to set IsPremium in SecureStorage.");
                 }
             }, TaskContinuationOptions.OnlyOnFaulted);
-        }
 
-        public App()
-        {
-            InitializeComponent();
-            Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense("Ngo9BigBOggjHTQxAR8/V1NMaF5cXmBCf1FpR2JGfV5ycEVCallSTnVfUiweQnxTdEFiW35acHBQRWNcVEZ3WQ==");
 
-            ServiceLocator.GetService<IThemeHandler>().LoadDefaultStyle();
         }
 
         protected override Window CreateWindow(IActivationState? activationState)

@@ -175,7 +175,7 @@
         </Setter>
         <Setter Property="ErrorLabelStyle">
             <Setter.Value>
-                <core:LabelStyle FontFamily="{DynamicResource DefaultFontFamily}" FontAttributes="Italic" />
+                <core:LabelStyle FontAttributes="Italic" FontFamily="{DynamicResource DefaultFontFamily}" />
             </Setter.Value>
         </Setter>
         <Setter Property="HelperLabelStyle">

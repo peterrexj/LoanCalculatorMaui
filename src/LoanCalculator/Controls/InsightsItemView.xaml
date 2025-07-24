@@ -6,7 +6,7 @@
     <Grid Margin="0,7,0,0" ColumnSpacing="0">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="{OnIdiom Phone=150, Tablet=200, Desktop=200, TV=200, Default=150}" />
-            <ColumnDefinition Width="2" /> 
+            <ColumnDefinition Width="2" />
             <!--  Vertical line column  -->
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>

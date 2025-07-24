@@ -16,7 +16,7 @@ namespace LoanCalculator.Core.Services
         /// Attempts to restore previously purchased products for the user.
         /// </summary>
         /// <returns>True if any purchases were restored; otherwise, false.</returns>
-        Task<bool> RestorePurchasesAsync(string productId);
+        Task<bool> RestorePurchasesAsync(string productId, bool isSilentMode);
 
         /// <summary>
         /// Checks if the specified product has already been purchased.
@@ -28,7 +28,7 @@ namespace LoanCalculator.Core.Services
         /// <summary>
         /// Checks and handles any pending purchases.
         /// </summary>
-        Task<bool> CheckPendingPurchasesAsync(bool iscCheckingOnAppLoad);
+        Task<bool> CheckPendingPurchasesAsync(bool isSilentMode);
     }
 
     public class PurchaseResult
@@ -191,7 +191,7 @@ namespace LoanCalculator.Core.Services
         }
 
         /// <inheritdoc/>
-        public async Task<bool> RestorePurchasesAsync(string productId)
+        public async Task<bool> RestorePurchasesAsync(string productId, bool isSilentMode)
         {
             InAppBillingPurchase? billingPurchase = null;
             try
@@ -200,29 +200,40 @@ namespace LoanCalculator.Core.Services
 
                 if (string.IsNullOrEmpty(pendingProductId) == false)
                 {
-                    return await CheckPendingPurchasesAsync(iscCheckingOnAppLoad: false);
+                    return await CheckPendingPurchasesAsync(isSilentMode: isSilentMode);
                 }
                 else
                 {
                     var connected = await billing.ConnectAsync();
                     if (!connected)
                     {
-                        await HandleNoNetwork();
+                        if (!isSilentMode)
+                        {
+                            // If in silent mode, just log the error and return false
+                            await HandleNoNetwork();
+                        }
                         return false; // No network connection, handle it gracefully
                     }
 
                     var purchases = await billing.GetPurchasesAsync(ItemType.InAppPurchase);
                     billingPurchase = purchases?.FirstOrDefault(p => p.ProductId == productId);
 
-                    if (purchases == null || purchases?.Count() == 0)
+                    if (purchases?.Count() == 0)
                     {
-                        await alertService.ShowAlertAsync(AlertTitlePurchase, "No purchase to restore.", AlertButtonOk);
+                        if (!isSilentMode)
+                        {
+                            // Inform the user: no purchases found
+                            await alertService.ShowAlertAsync(AlertTitlePurchase, "No purchase to restore.", AlertButtonOk);
+                        }
                         return false; // No purchases found, handle it gracefully
                     }
                     if (billingPurchase != null && billingPurchase.State == PurchaseState.PaymentPending)
                     {
                         // Inform the user: payment is still pending
-                        await alertService.ShowAlertAsync(AlertTitlePurchase, "Your payment is currently processing. You'll get access to your purchase shortly. Please check back in a few minutes.", AlertButtonOk);
+                        if (!isSilentMode)
+                        {
+                            await alertService.ShowAlertAsync(AlertTitlePurchase, "Your payment is currently processing. You'll get access to your purchase shortly. Please check back in a few minutes.", AlertButtonOk);
+                        }
                         return false; // Payment is pending, handle it gracefully
                     }
                     if (billingPurchase != null && billingPurchase.State == PurchaseState.Purchased)
@@ -231,18 +242,31 @@ namespace LoanCalculator.Core.Services
                         if (result is { Success: true })
                         {
                             SharedServiceCore.UpdateToPremium();
-                            await alertService.ShowAlertAsync(AlertTitlePurchase, "Your purchase has been successfully restored.", AlertButtonOk);
+                            if (!isSilentMode)
+                            {
+                                // Inform the user: purchase restored successfully
+                                await alertService.ShowAlertAsync(AlertTitlePurchase, "Your purchase has been successfully restored.", AlertButtonOk);
+                            }
                             return true; // Purchase restored successfully
                         }
                         else
                         {
-                            await alertService.ShowAlertAsync(AlertTitlePurchase, result?.ErrorMessage ?? "An error occurred while processing your restore.", AlertButtonOk);
+                            if (!isSilentMode)
+                            {
+                                // Inform the user: error occurred while processing purchase
+                                await alertService.ShowAlertAsync(AlertTitlePurchase, result?.ErrorMessage ?? "An error occurred while processing your restore.", AlertButtonOk);
+                            }
                             return false; // Error occurred while processing purchase
                         }
                     }
                     else
                     {
-                        await alertService.ShowAlertAsync(AlertTitlePurchase, "No purchase to restore.", AlertButtonOk);
+                        if (!isSilentMode)
+                        {
+                            // Inform the user: no valid purchase found
+                            await alertService.ShowAlertAsync(AlertTitlePurchase, "No purchase to restore.",
+                                AlertButtonOk);
+                        }
                     }
                 }
 
@@ -250,15 +274,33 @@ namespace LoanCalculator.Core.Services
             }
             catch (InAppBillingPurchaseException ex)
             {
-                await alertService.ShowAlertAsync(AlertTitlePurchase,
-                    "We couldn't complete your restore at this time. Please try again later.",
-                    AlertButtonOk);
+                if (isSilentMode)
+                {
+                    // If in silent mode, just log the error and return false
+                    errorHandlingService.HandleException(ex, $"In-App Purchase Restore Failed: {ex.Message}");
+                }
+                else
+                {
+                    await alertService.ShowAlertAsync(AlertTitlePurchase,
+                        "We couldn't complete your restore at this time. Please try again later.",
+                        AlertButtonOk);
+                }
+
                 return false;
             }
             catch (Exception ex)
             {
-                string orderId = billingPurchase?.Id ?? "Unknown Order ID";
-                errorHandlingService.HandleException(ex, $"In-App Purchase Check Failed: OrderID: {orderId}, error: {ex.Message}");
+                if (isSilentMode)
+                {
+                    // If in silent mode, just log the error and return false
+                    errorHandlingService.HandleException(ex, $"In-App Purchase Restore Failed: {ex.Message}");
+                }
+                else
+                {
+                    var orderId = billingPurchase?.Id ?? "Unknown Order ID";
+                    errorHandlingService.HandleException(ex, $"In-App Purchase Check Failed: OrderID: {orderId}, error: {ex.Message}");
+                }
+
                 return false;
             }
             finally
@@ -293,7 +335,7 @@ namespace LoanCalculator.Core.Services
         }
 
         /// <inheritdoc/>
-        public async Task<bool> CheckPendingPurchasesAsync(bool iscCheckingOnAppLoad)
+        public async Task<bool> CheckPendingPurchasesAsync(bool isSilentMode)
         {
             InAppBillingPurchase? billingPurchase = null;
             try
@@ -306,7 +348,10 @@ namespace LoanCalculator.Core.Services
                 var connected = billing.IsConnected || await billing.ConnectAsync();
                 if (!connected)
                 {
-                    await HandleNoNetwork(); // No network connection, handle it gracefully
+                    if (!isSilentMode)
+                    {
+                        await HandleNoNetwork(); // If not in silent mode, inform the user
+                    }
                     return false;
                 }
 
@@ -322,7 +367,7 @@ namespace LoanCalculator.Core.Services
 
                 if (billingPurchase.State == PurchaseState.PaymentPending)
                 {
-                    if (iscCheckingOnAppLoad == false) 
+                    if (!isSilentMode)
                     {
                         // Inform the user: payment is still pending
                         await alertService.ShowAlertAsync(AlertTitlePurchase, "Your payment is still pending. Access will be granted once payment completes.", AlertButtonOk);
@@ -335,12 +380,22 @@ namespace LoanCalculator.Core.Services
                     if (result is { Success: true })
                     {
                         SharedServiceCore.UpdateToPremium();
-                        await alertService.ShowAlertAsync(AlertTitlePurchase, "Your purchase has been successfully processed.", AlertButtonOk);
+                        if (!isSilentMode)
+                        {
+                            await alertService.ShowAlertAsync(AlertTitlePurchase, "Your purchase has been successfully processed.", AlertButtonOk);
+                        }
                         return true;
                     }
                     else
                     {
-                        await alertService.ShowAlertAsync(AlertTitlePurchase, result?.ErrorMessage ?? "An error occurred while processing your purchase.", AlertButtonOk);
+                        if (!isSilentMode)
+                        {
+                            // Inform the user: error occurred while processing purchase
+                            await alertService.ShowAlertAsync(AlertTitlePurchase,
+                                result?.ErrorMessage ?? "An error occurred while processing your purchase.",
+                                AlertButtonOk);
+                        }
+
                         return false;
                     }
                 }
@@ -349,7 +404,7 @@ namespace LoanCalculator.Core.Services
             }
             catch (Exception ex)
             {
-                string orderId = billingPurchase?.Id ?? "Unknown Order ID";
+                var orderId = billingPurchase?.Id ?? "Unknown Order ID";
                 errorHandlingService.HandleException(ex, $"In-App Purchase Check Failed: OrderID: {orderId}, error: {ex.Message}");
                 return false;
             }

@@ -87,7 +87,7 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
         /// </summary>
         private async Task RestorePurchasesAsync()
         {
-            var result = await _inAppPurchaseService.RestorePurchasesAsync(_appInformation.InAppProductId);
+            var result = await _inAppPurchaseService.RestorePurchasesAsync(_appInformation.InAppProductId, isSilentMode: false);
             if (result) //restore was successful
             {
                 ShowPremiumBuyWindow = false;

@@ -215,8 +215,8 @@
                                                 Grid.Column="0"
                                                 Grid.ColumnSpan="2"
                                                 Margin="0,0,5,0"
-                                                HasError="{Binding HasErrorIncomeDescription}"
                                                 ErrorText="Describe your income"
+                                                HasError="{Binding HasErrorIncomeDescription}"
                                                 Hint="Income"
                                                 Style="{DynamicResource CommonTextInputLayoutStyle}">
                                                 <Entry

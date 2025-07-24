@@ -240,6 +240,38 @@ namespace LoanCalculator.Core.Services
 
         #endregion
 
+        #region Trial Current Day
+
+        private const string LastAccessKey = "LastAccessDate";
+
+        public static bool IsCurrentDay()
+        {
+            try
+            {
+                var storedDateStr = Task.Run(() => SecureStorage.GetAsync(LastAccessKey)).Result;
+
+                var todayStr = DateTime.UtcNow.Date.ToString("yyyy-MM-dd");
+
+                if (storedDateStr == todayStr)
+                {
+                    return true;
+                }
+
+                // It's a new day; update the stored value
+                Task.Run(() => SecureStorage.SetAsync(LastAccessKey, todayStr)).Wait();
+
+                return false;
+            }
+            catch (Exception ex)
+            {
+                ErrorHandlingService.HandleException(ex, "Failed to get or set LastAccessDate in SecureStorage.");
+                return false;
+            }
+        }
+
+        #endregion
+
+
         #region Currency
 
         public const string SelectedCurrencyKey = "SelectedCurrencyISO";

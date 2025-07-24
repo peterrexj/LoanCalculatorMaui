@@ -55,7 +55,7 @@ public partial class LoanView : ContentPage
 
             if (SharedServiceCore.IsTrialUser)
             {
-                await ServiceLocator.GetService<IInAppPurchaseService>().CheckPendingPurchasesAsync(iscCheckingOnAppLoad: true);
+                await ServiceLocator.GetService<IInAppPurchaseService>().CheckPendingPurchasesAsync(isSilentMode: true);
             }
         }
         catch (Exception ex)
@@ -123,10 +123,10 @@ public partial class LoanView : ContentPage
             _viewModel.CustomChartColors = chartColorsTask.Result;
             _viewModel.ExpenseSummary = expenseSummaryTask.Result;
             _viewModel.IncomeSummary = incomeSummaryTask.Result;
-            _viewModel.HasIncomeExpensesRecorded = _viewModel.ExpenseSummary?.TransactionRecords?.IncomeExpenseSummary?.TotalYearly > 0 && 
+            _viewModel.HasIncomeExpensesRecorded = _viewModel.ExpenseSummary?.TransactionRecords?.IncomeExpenseSummary?.TotalYearly > 0 &&
                 _viewModel.IncomeSummary?.TransactionRecords?.IncomeExpenseSummary?.TotalYearly > 0;
-           
-                SegmentedRepaymentFrequency.SelectionChanged += SegmentedRepaymentFrequency_SelectionChanged;
+
+            SegmentedRepaymentFrequency.SelectionChanged += SegmentedRepaymentFrequency_SelectionChanged;
             AmortizationBreadDownFrequencySegmentCtrl.SelectionChanged +=
                 AmortizationBreadDownFrequencySegmentCtrlOnSelectionChanged;
             SegmentedAustraliaStates.SelectionChanged += SegmentedAustraliaStatesOnSelectionChanged;
@@ -144,6 +144,11 @@ public partial class LoanView : ContentPage
             if (requiresDefault)
             {
                 _viewModel.AddDefaultValues();
+            }
+            else if (SharedServiceCore.IsTrialUser && SharedServiceCore.IsCurrentDay() == false)
+            {
+                _viewModel.AddDefaultValues();
+                _viewModel.AddDefaultToExpenses();
             }
 
             //var syncAmortizationTask = Task.Run(() => _viewModel.SyncAmortization());

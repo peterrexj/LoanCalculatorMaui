@@ -8,5 +8,6 @@
         string InAppProductId { get; }
         string AppShareLink { get; }
         string RateAppLink { get; }
+        bool IsFullyPaidApplication { get; }
     }
 }

@@ -18,7 +18,7 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
         [JsonIgnore] private readonly IAlertService _alertService;
         [JsonIgnore] private readonly IThemeHandler _themeHandler;
 
-        
+
         [JsonIgnore] public ICommand DeleteLoanDataCommand { get; }
         [JsonIgnore] public ICommand DeleteExpenseDataCommand { get; }
         [JsonIgnore] public ICommand DeleteIncomeDataCommand { get; }
@@ -26,8 +26,19 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
         [JsonIgnore] public ICommand ShowDisclaimerCommand { get; }
         [JsonIgnore] public ICommand OnShareAppRequestCommand { get; }
         [JsonIgnore] public ICommand OnRateAppRequestCommand { get; }
+        [JsonIgnore] public ICommand PopupCloseCommand { get; }
         [JsonIgnore]
-        public ICommand PopupCloseCommand { get; }
+        public bool IsAllDataDeleteVisible
+        {
+            get
+            {
+#if DEBUG
+                return true; // Enable in debug mode for testing
+#else
+                 return false; // Disable in release mode
+#endif
+            }
+        }
 
         public SettingsViewModel()
         {
@@ -100,7 +111,7 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
             var currentTheme = Task.Run(() => _themeHandler.GetCurrentThemeAsync()).Result;
             _selectedTheme = currentTheme != null
                 ? Themes.FirstOrDefault(t => t == currentTheme.ToString())
-                : Themes.FirstOrDefault(t => t == AppThemes.Light.ToString());
+                : Themes.FirstOrDefault(t => t == SharedServiceCore.DefaultAppTheme.ToString());
         }
 
         [JsonIgnore]
@@ -116,7 +127,7 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
                     {
                         _selectedTheme = task.Result != null ?
                             Themes.FirstOrDefault(t => t == task.Result.ToString()) :
-                            Themes.FirstOrDefault(t => t == AppThemes.Light.ToString());
+                            Themes.FirstOrDefault(t => t == SharedServiceCore.DefaultAppTheme.ToString());
                     });
                 }
                 return _selectedTheme;
@@ -205,7 +216,7 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
         private async Task DeleteLoanData() => await DeleteDataWithConfirmationAsync<LoanViewModel>();
         private async Task DeleteIncomeData() => await DeleteDataWithConfirmationAsync<IncomeViewModel>();
         private async Task DeleteExpenseData() => await DeleteDataWithConfirmationAsync<ExpenseViewModel>();
-       
+
         public string AppLaunchDisclaimerData => SharedServiceCore.DisclaimerData;
         private bool _isPopupRequired;
         public bool IsPopupRequired
@@ -227,6 +238,10 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
 
             IsActive = true;
         }
+
+
+
+
         public void RefreshProperties()
         {
             OnPropertyChanged(nameof(SelectedTheme));

@@ -145,10 +145,32 @@ public partial class LoanView : ContentPage
             {
                 _viewModel.AddDefaultValues();
             }
-            else if (SharedServiceCore.IsTrialUser && SharedServiceCore.IsCurrentDay() == false)
+            if (SharedServiceCore.IsTrialUser && SharedServiceCore.IsCurrentDay() == false)
             {
-                _viewModel.AddDefaultValues();
+                if (requiresDefault== false) //this is already done in the above task
+                {
+                    _viewModel.AddDefaultValues();
+                }
+
                 _viewModel.AddDefaultToExpenses();
+                try
+                {
+                    if (SharedServiceCore.HasAlertedUserForDataWipe() == false)
+                    {
+                        if (SharedServiceCore.ShouldShowAppLaunchDisclaimer() == false)
+                        {
+                            var showPlan = await SharedServiceCore.AlertUserForDataWipe();
+                            if (showPlan)
+                            {
+                                PremiumWindow.ShowPremiumBuyWindow = true;
+                            }
+                        }
+                    }
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                }
             }
 
             //var syncAmortizationTask = Task.Run(() => _viewModel.SyncAmortization());

@@ -13,8 +13,9 @@ namespace LoanCalculatorMaui.Platforms.Windows.Services
 
         public string InAppProductId => "com.pj.loan.calculator.pro"; // Replace with your actual product ID
 
-        public string AppShareLink => "https://www.yoursimpleapps.com";
+        public string AppShareLink => "https://apps.microsoft.com/detail/9PG3PLHBBVLQ";
 
-        public string RateAppLink => "ms-windows-store://review/?ProductId=YOUR_PRODUCT_ID"; // YOUR_PRODUCT_ID with your Windows Store app ID
+        public string RateAppLink => "ms-windows-store://pdp/?productid=9PG3PLHBBVLQ"; // YOUR_PRODUCT_ID with your Windows Store app ID
+        public bool IsFullyPaidApplication => true; // Assuming the app is fully paid, adjust as necessary
     }
 }

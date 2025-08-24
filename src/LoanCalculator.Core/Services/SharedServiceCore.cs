@@ -1,10 +1,11 @@
-﻿using System.Globalization;
-using LoanCalculator.Core.Helper;
+﻿using LoanCalculator.Core.Helper;
 using LoanCalculator.Core.Models;
+using LoanCalculator.Core.Models.Enums;
 using LoanCalculator.Core.Models.Income.Summary;
 using LoanCalculator.Core.Models.ViewModels.PrimaryModels;
 using LoanCalculatorMaui.Services;
 using Pj.Library;
+using System.Globalization;
 
 namespace LoanCalculator.Core.Services
 {
@@ -169,8 +170,10 @@ namespace LoanCalculator.Core.Services
         {
             get
             {
-                var disclaimerData = PjUtility.Runtime.GetAssembly("LoanCalculatorMaui").GetEmbeddedResourceAsText("LoanCalculatorMaui.Extensions.DisclaimerData.AppLaunchDisclaimerData.html")
-                        .Replace("{{AppName}}", AppInformation?.ApplicationTitle ?? "Loan Affordability Calculator");
+                var disclaimerData = PjUtility.Runtime.GetAssembly("LoanCalculatorMaui")
+                    .GetEmbeddedResourceAsText(
+                        "LoanCalculatorMaui.Extensions.DisclaimerData.AppLaunchDisclaimerData.html")
+                    .Replace("{{AppName}}", AppInformation?.ApplicationTitle ?? "Loan Affordability Calculator");
 
                 return ReplaceColorsWithResourceKeys(disclaimerData);
             }
@@ -187,7 +190,8 @@ namespace LoanCalculator.Core.Services
                     { "#0E8388", "LoanAppDisclaimerHeaderBorderColor" },
                     { "#dee7e4", "LoanAppDisclaimerContentBackgroundColor" },
                     { "#2c3531", "LoanAppDisclaimerContentBoxShadowColor" },
-                    { "#091817", "LoanAppDisclaimerHeader2TextColor" }
+                    { "#091817", "LoanAppDisclaimerHeader2TextColor" },
+                    { "#7355dc", "LoanAppDisclaimerContentForegroundColor" }
                 };
 
                 foreach (var mapping in colorMappings)
@@ -216,6 +220,8 @@ namespace LoanCalculator.Core.Services
         {
             try
             {
+                if (AppInformation is { IsFullyPaidApplication: true }) return true;
+
                 var value = Task.Run(() => SecureStorage.GetAsync("IsPremium")).Result;
                 return value == "true";
             }
@@ -269,8 +275,48 @@ namespace LoanCalculator.Core.Services
             }
         }
 
-        #endregion
+        private const string DataWipeAlertKey = "DataWipeAlertDate";
 
+        public static bool HasAlertedUserForDataWipe()
+        {
+            try
+            {
+                var storedDateStr = Task.Run(() => SecureStorage.GetAsync(DataWipeAlertKey)).Result;
+                var todayStr = DateTime.UtcNow.Date.ToString("yyyy-MM-dd");
+
+                if (storedDateStr == todayStr)
+                {
+                    // Already alerted today
+                    return true;
+                }
+
+                // New day or never alerted, update the stored value
+                Task.Run(() => SecureStorage.SetAsync(DataWipeAlertKey, todayStr)).Wait();
+                return false;
+            }
+            catch (Exception ex)
+            {
+                ErrorHandlingService.HandleException(ex, "Failed to get or set DataWipeAlertDate in SecureStorage.");
+                return false;
+            }
+        }
+
+        public static async Task<bool> AlertUserForDataWipe()
+        {
+            try
+            {
+                return await AlertService.ShowConfirmationAsync("Trial Version Notice",
+                    "Your data will be cleared at the end of the session. To keep your data, access all features, and continue using the app beyond today, please upgrade to the premium version.",
+                    "See Plan", "Understood");
+            }
+            catch (Exception ex)
+            {
+                ErrorHandlingService.HandleException(ex, "Failed to get or set DataWipeAlertDate in SecureStorage.");
+                return false;
+            }
+        }
+
+        #endregion
 
         #region Currency
 
@@ -355,5 +401,7 @@ namespace LoanCalculator.Core.Services
 
 
         #endregion
+
+        public const AppThemes DefaultAppTheme = AppThemes.Dark;
     }
 }

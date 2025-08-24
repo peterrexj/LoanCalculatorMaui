@@ -227,6 +227,7 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
             InterestRate = 5.0;
             LoanTermInYears = 30;
             DepositPercentage = 10;
+            //AustraliaStateSelectedIndex = null;
         }
 
         public void AddDefaultToExpenses()
@@ -401,16 +402,18 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
 
         [JsonIgnore] public ObservableCollection<SfSegmentItem> AustraliaStateCollection { get; set; }
 
-        public int AustraliaStateSelectedIndex
+        public int? AustraliaStateSelectedIndex
         {
-            get => HomeLoanInfo?.StampDuty?.AustraliaStateIndex ?? 0;
+            get => HomeLoanInfo?.StampDuty?.AustraliaStateIndex;
             set
             {
-                if (HomeLoanInfo == null) return;
+                if (HomeLoanInfo == null || value == null)
+                    return;
 
-                if (HomeLoanInfo.StampDuty.AustraliaStateSelected != StampDutyOutput.AustraliaStateFromIndex(value))
+                var newState = StampDutyOutput.AustraliaStateFromIndex(value.Value);
+                if (HomeLoanInfo.StampDuty.AustraliaStateSelected != newState)
                 {
-                    HomeLoanInfo.StampDuty.AustraliaStateSelected = StampDutyOutput.AustraliaStateFromIndex(value);
+                    HomeLoanInfo.StampDuty.AustraliaStateSelected = newState;
                     EventsTriggerStampDutyUpdate();
                     LoanAmountDirectInput = HomeLoanInfo.LoanAmountDirectInput;
                 }
@@ -1143,10 +1146,18 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
             if (SharedServiceCore.LoadSafe) return;
 
             if (SharedServiceCore.AppInformation != null && SharedServiceCore.AppInformation.IsAustralia == false) return;
-
-            HomeLoanInfo.StampDuty =
-                HomeLoanCalculator.StampDutyCalculator.CalculateStampDutyAustralia(
-                    HomeLoanInfo.StampDuty.AustraliaStateSelected, PropertyAmount);
+            if (HomeLoanInfo.StampDuty.AustraliaStateSelected.HasValue)
+            {
+                HomeLoanInfo.StampDuty =
+                    HomeLoanCalculator.StampDutyCalculator.CalculateStampDutyAustralia(
+                        HomeLoanInfo.StampDuty.AustraliaStateSelected.Value, PropertyAmount);
+            }
+            else
+            {
+                // Optionally, handle the case where no state is selected.
+                // For example, you could reset StampDuty or leave it unchanged.
+                // HomeLoanInfo.StampDuty = new StampDutyOutput();
+            }
             HomeLoanInfo.StampDuty.AutoUpdateMortgageCharges();
             OnPropertyChanged(nameof(StampDuty));
         }

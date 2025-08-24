@@ -4,7 +4,7 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:localview="clr-namespace:LoanCalculatorMaui.View"
-    Title="LoanCalculatorMaui"
+    Title="Loan Affordability Calculator"
     NavBarIsVisible="False"
     Shell.FlyoutBehavior="Disabled">
 

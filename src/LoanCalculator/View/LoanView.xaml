@@ -32,7 +32,11 @@
                 x:Name="TabView"
                 HeaderHorizontalTextAlignment="Center"
                 SelectionChanging="TabView_OnSelectionChanging">
-                <tabView:SfTabItem Header="Asset">
+                <tabView:SfTabItem
+                    Header="Asset"
+                    ImagePosition="Left"
+                    ImageSize="15"
+                    ImageSource="{DynamicResource LoanAppAssetIcon}">
                     <tabView:SfTabItem.Content>
                         <ScrollView>
                             <StackLayout>
@@ -430,7 +434,7 @@
                                                 <Label
                                                     Grid.Row="0"
                                                     Grid.ColumnSpan="2"
-                                                    Margin="0,0,0,0"
+                                                    Margin="0,2,0,0"
                                                     FontSize="{OnIdiom Phone=12,
                                                                        Tablet=17,
                                                                        Desktop=17,
@@ -438,7 +442,7 @@
                                                                        Watch=10,
                                                                        Default=12}"
                                                     HorizontalOptions="Center"
-                                                    Text="Only to be used for Home or Property Asset"
+                                                    Text="Australian property use only"
                                                     TextColor="{DynamicResource LoanAppDefaultForegroundColor}"
                                                     VerticalOptions="Center" />
 
@@ -1291,7 +1295,11 @@
                     </tabView:SfTabItem.Content>
                 </tabView:SfTabItem>
 
-                <tabView:SfTabItem Header="Insights">
+                <tabView:SfTabItem
+                    Header="Insights"
+                    ImagePosition="Left"
+                    ImageSize="15"
+                    ImageSource="{DynamicResource LoanAppInsightIcon}">
                     <tabView:SfTabItem.Content>
                         <ScrollView>
                             <StackLayout>
@@ -1451,7 +1459,7 @@
                                                                                                        Watch=8,
                                                                                                        Default=10}"
                                                                                     LabelFormat="c"
-                                                                                    TextColor="{DynamicResource LoanAppChartDataMarkerTextColor}" />
+                                                                                    TextColor="{DynamicResource LoanAppChartDataMarkerTextColor1}" />
                                                                             </chart:CartesianDataLabelSettings.LabelStyle>
                                                                         </chart:CartesianDataLabelSettings>
                                                                     </chart:StackingColumn100Series.DataLabelSettings>
@@ -1479,7 +1487,7 @@
                                                                                                        Watch=8,
                                                                                                        Default=10}"
                                                                                     LabelFormat="c"
-                                                                                    TextColor="{DynamicResource LoanAppChartDataMarkerTextColor}" />
+                                                                                    TextColor="{DynamicResource LoanAppChartDataMarkerTextColor2}" />
                                                                             </chart:CartesianDataLabelSettings.LabelStyle>
                                                                         </chart:CartesianDataLabelSettings>
                                                                     </chart:StackingColumn100Series.DataLabelSettings>
@@ -1507,7 +1515,7 @@
                                                                                                        Watch=8,
                                                                                                        Default=10}"
                                                                                     LabelFormat="c"
-                                                                                    TextColor="{DynamicResource LoanAppChartDataMarkerTextColor}" />
+                                                                                    TextColor="{DynamicResource LoanAppChartDataMarkerTextColor3}" />
                                                                             </chart:CartesianDataLabelSettings.LabelStyle>
                                                                         </chart:CartesianDataLabelSettings>
                                                                     </chart:StackingColumn100Series.DataLabelSettings>

@@ -17,5 +17,6 @@ namespace LoanCalculatorMaui.Platforms.iOS.Services
         public string AppShareLink => "https://www.yoursimpleapps.com";
 
         public string RateAppLink => "itms-apps://itunes.apple.com/app/idYOUR_APP_ID?action=write-review"; //idYOUR_APP_ID with your App Store app ID
+        public bool IsFullyPaidApplication => false; // Assuming the app is not fully paid, adjust as necessary
     }
 }

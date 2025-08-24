@@ -81,6 +81,7 @@
 
     <!--  Expander styles  -->
     <Style x:Key="CommonExpanderStyle" TargetType="expander:SfExpander">
+        <Setter Property="HeaderIconColor" Value="{DynamicResource LoanAppExpanderHeaderTextColor}" />
         <Setter Property="VisualStateManager.VisualStateGroups">
             <Setter.Value>
                 <VisualStateGroupList>
@@ -107,7 +108,7 @@
         <!--<Setter Property="HeightRequest" Value="30" />-->
         <Setter Property="MinimumHeightRequest" Value="{OnIdiom Phone=30, Tablet=60, Desktop=40, TV=60, Watch=15, Default=30}" />
         <Setter Property="TextColor" Value="{DynamicResource LoanAppExpanderHeaderTextColor}" />
-        <Setter Property="VerticalOptions" Value="CenterAndExpand" />
+        <Setter Property="VerticalOptions" Value="Center" />
         <Setter Property="VerticalTextAlignment" Value="Center" />
         <Setter Property="FontSize" Value="{OnIdiom Phone=12, Tablet=24, Desktop=24, TV=24, Watch=8, Default=12}" />
         <Setter Property="FontFamily" Value="{DynamicResource DefaultFontFamily}" />

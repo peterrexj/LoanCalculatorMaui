@@ -107,18 +107,18 @@ namespace LoanCalculator.Core.Models.Pdf
         public void InitializeLocalDataSet()
         {
             Loan.PropertyAmount = loanViewModel.HomeLoanInfo.PropertyAmount;
-            Loan.TotalRepayment = loanViewModel.HomeLoanInfo.PaymentSummary.Payment.TotalPayment;
+            Loan.TotalRepayment = loanViewModel.HomeLoanInfo.PaymentSummary?.Payment?.TotalPayment ?? 0;
             Loan.DepositAmount = loanViewModel.HomeLoanInfo.DepositAmountDirectInput;
             Loan.LoanAmount = loanViewModel.HomeLoanInfo.LoanAmountDirectInput;
 
             Loan.LoanTermInYears = loanViewModel.HomeLoanInfo.HomeLoanRepaymentRequest.LoanTermInYears;
             Loan.InterestRate = loanViewModel.HomeLoanInfo.HomeLoanRepaymentRequest.InterestRate;
-            Loan.TermPayment = loanViewModel.HomeLoanInfo.PaymentSummary.Payment.TermPayment;
+            Loan.TermPayment = loanViewModel.HomeLoanInfo.PaymentSummary?.Payment?.TermPayment ?? 0;
             Loan.RepaymentFrequency = loanViewModel.RepaymentFrequencySelectedIndex == 0 ? "Monthly" :
                 loanViewModel.RepaymentFrequencySelectedIndex == 1 ? "Fortnightly" :
                 loanViewModel.RepaymentFrequencySelectedIndex == 2 ? "Weekly" : "Monthly";
 
-            Loan.TotalInterest = loanViewModel.HomeLoanInfo.PaymentSummary.Payment.TotalInterestPayment;
+            Loan.TotalInterest = loanViewModel.HomeLoanInfo.PaymentSummary?.Payment?.TotalInterestPayment ?? 0;
 
             Loan.OtherExpenseTotalAmount = loanViewModel.HomeLoanInfo.OtherExpenseTotalAmount;
             Loan.StampDuty = loanViewModel.HomeLoanInfo.StampDuty.StampDuty;

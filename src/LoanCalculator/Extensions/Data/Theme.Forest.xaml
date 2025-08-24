@@ -136,8 +136,11 @@
     <Color x:Key="LoanAppChartInnerBorderGradientStart">#586a63</Color>
     <Color x:Key="LoanAppChartInnerBorderGradientEnd">#3a4642</Color>
     <Color x:Key="LoanAppChartColor1">#4DA8DA</Color>
+    <Color x:Key="LoanAppChartDataMarkerTextColor1">#163140</Color>
     <Color x:Key="LoanAppChartColor2">#F28C28</Color>
+    <Color x:Key="LoanAppChartDataMarkerTextColor2">#8c5016</Color>
     <Color x:Key="LoanAppChartColor3">#D64D91</Color>
+    <Color x:Key="LoanAppChartDataMarkerTextColor3">#551e3a</Color>
 
     <!--  Borders  -->
     <Color x:Key="LoanAppBorderTopGradientOuterLineStart">#183D3D</Color>
@@ -190,17 +193,17 @@
     <Color x:Key="LoanAppCheckboxBackColor">#b3c8c0</Color>
 
     <!--  Notification background brush  -->
-    <RadialGradientBrush x:Key="InformationBackgroundGradientBrush" Center="0.5,0.5" Radius="0.5">
+    <LinearGradientBrush x:Key="InformationBackgroundGradientBrush" StartPoint="0,0.5" EndPoint="1,0.5">
         <GradientStop Offset="0.0" Color="{StaticResource LoanAppNotificationInformationBgGradientStart}" />
-        <GradientStop Offset="0.7" Color="{StaticResource LoanAppNotificationInformationBgGradientStart}" />
-        <GradientStop Offset="1.0" Color="{StaticResource LoanAppNotificationInformationBgGradientEnd}" />
-    </RadialGradientBrush>
+        <GradientStop Offset="0.7" Color="{StaticResource LoanAppNotificationInformationBgGradientEnd}" />
+        <GradientStop Offset="1.0" Color="{StaticResource LoanAppNotificationInformationBgGradientStart}" />
+    </LinearGradientBrush>
     <!--  Notification background brush  -->
-    <RadialGradientBrush x:Key="WarningBackgroundGradientBrush" Center="0.5,0.5" Radius="0.5">
+    <LinearGradientBrush x:Key="WarningBackgroundGradientBrush" StartPoint="0,0.5" EndPoint="1,0.5">
         <GradientStop Offset="0.0" Color="{StaticResource LoanAppNotificationWarningBgGradientStart}" />
-        <GradientStop Offset="0.7" Color="{StaticResource LoanAppNotificationWarningBgGradientStart}" />
-        <GradientStop Offset="1.0" Color="{StaticResource LoanAppNotificationWarningBgGradientEnd}" />
-    </RadialGradientBrush>
+        <GradientStop Offset="0.7" Color="{StaticResource LoanAppNotificationWarningBgGradientEnd}" />
+        <GradientStop Offset="1.0" Color="{StaticResource LoanAppNotificationWarningBgGradientStart}" />
+    </LinearGradientBrush>
 
     <!--  Disclaimer  -->
     <!--<Color x:Key="LoanAppDisclaimerBodyBackgroundColor">#758d84</Color>-->
@@ -209,6 +212,7 @@
     <Color x:Key="LoanAppDisclaimerHeaderTextColor">#b9c4c4</Color>
     <Color x:Key="LoanAppDisclaimerHeaderBorderColor">#0E8388</Color>
     <Color x:Key="LoanAppDisclaimerContentBackgroundColor">#bed0c9</Color>
+    <Color x:Key="LoanAppDisclaimerContentForegroundColor">#2c3531</Color>
     <Color x:Key="LoanAppDisclaimerContentBoxShadowColor">#2c3531</Color>
     <Color x:Key="LoanAppDisclaimerHeader2TextColor">#091818</Color>
 
@@ -232,11 +236,13 @@
         <GradientStop Offset="1.0" Color="{StaticResource LoanAppPurchaseWindowBgEnd}" />
     </LinearGradientBrush>
 
-    <RadialGradientBrush x:Key="TabBarBackgroundGradientBrush" Center="0.5,0.5" Radius="0.5">
+    <LinearGradientBrush x:Key="TabBarBackgroundGradientBrush" StartPoint="0,0.5" EndPoint="1,0.5">
         <GradientStop Offset="0.0" Color="{StaticResource LoanAppTabBarBackgroundGradientStart}" />
-        <GradientStop Offset="0.7" Color="{StaticResource LoanAppTabBarBackgroundGradientStart}" />
-        <GradientStop Offset="1.0" Color="{StaticResource LoanAppTabBarBackgroundGradientEnd}" />
-    </RadialGradientBrush>
+        <GradientStop Offset="0.7" Color="{StaticResource LoanAppTabBarBackgroundGradientEnd}" />
+        <GradientStop Offset="1.0" Color="{StaticResource LoanAppTabBarBackgroundGradientStart}" />
+    </LinearGradientBrush>
+    <FileImageSource x:Key="LoanAppAssetIcon" File="assets_dark.png" />
+    <FileImageSource x:Key="LoanAppInsightIcon" File="insight_dark.png" />
 
     <!--  Style for Chart border  -->
     <LinearGradientBrush x:Key="LoanAppChartOuterBorderGradientBrush" StartPoint="0,0" EndPoint="1,1">

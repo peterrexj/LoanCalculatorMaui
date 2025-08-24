@@ -170,7 +170,13 @@
                     Margin="0,10,10,0"
                     Command="{Binding ShowDisclaimerCommand}"
                     Style="{DynamicResource MauiButtonStyle}"
-                    Text="Privacy policy" />
+                    Text="Disclaimer" />
+
+                <!--<Button
+                    Margin="0,10,10,0"
+                    Command="{Binding ShowDisclaimerCommand}"
+                    Style="{DynamicResource MauiButtonStyle}"
+                    Text="Privacy policy" />-->
 
                 <Button
                     Margin="0,10,10,0"
@@ -236,6 +242,7 @@
                                 Margin="0,10,10,0"
                                 Command="{Binding DeleteAllDataCommand}"
                                 CornerRadius="5"
+                                IsVisible="{Binding IsAllDataDeleteVisible}"
                                 Style="{DynamicResource MauiButtonStyle}"
                                 Text="All Data" />
                         </Grid>

@@ -62,7 +62,7 @@ public partial class SettingsView : ContentPage
                 var theme = _viewModel.SelectedTheme;
                 if (theme == null)
                 {
-                    _viewModel.SelectedTheme = _viewModel.Themes.First(f => f == AppTheme.Light.ToString());
+                    _viewModel.SelectedTheme = _viewModel.Themes.First(f => f == SharedServiceCore.DefaultAppTheme.ToString());
                 }
             });
 

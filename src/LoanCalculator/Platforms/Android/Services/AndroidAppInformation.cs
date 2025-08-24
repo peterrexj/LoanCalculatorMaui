@@ -15,5 +15,7 @@ namespace LoanCalculatorMaui.Platforms.Android.Services
         public string AppShareLink => "https://www.yoursimpleapps.com";
 
         public string RateAppLink => "market://details?id=com.pj.loan.afford.calc"; //com.companyname.yourapp with your Android package ID
+
+        public bool IsFullyPaidApplication => false; // Assuming the app is not fully paid, adjust as necessary
     }
 }

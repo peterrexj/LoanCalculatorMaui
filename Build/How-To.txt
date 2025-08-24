@@ -1,0 +1,13 @@
+How to upload to Windows Store
+- Update the version in the app.packagemanifest file
+- Run package-uwp-app.ps1
+- From the bin/wind../app packages/..
+- Upload to store
+
+
+Some notes:
+GraidientBrushes are used for the TabBar background - pastel colors
+ <LinearGradientBrush x:Key="TabBarBackgroundGradientBrush" StartPoint="0,0" EndPoint="1,1">
+    <GradientStop Offset="0.0" Color="#C4F1E5" />
+    <GradientStop Offset="1.0" Color="#B6ECB2" />
+</LinearGradientBrush>

@@ -20,14 +20,17 @@ namespace LoanCalculatorMaui
 
             ServiceLocator.GetService<IThemeHandler>().LoadDefaultStyle();
 
-            try
+            if (SharedServiceCore.IsTrialUser)
             {
-                var productId = ServiceLocator.GetService<IAppInformation>().InAppProductId;
-                ServiceLocator.GetService<IInAppPurchaseService>().RestorePurchasesAsync(productId, true);
-            }
-            catch (Exception e)
-            {
-                LogException(e, "Error restoring purchases");
+                try
+                {
+                    var productId = ServiceLocator.GetService<IAppInformation>().InAppProductId;
+                    ServiceLocator.GetService<IInAppPurchaseService>().RestorePurchasesAsync(productId, true);
+                }
+                catch (Exception e)
+                {
+                    LogException(e, "Error restoring purchases");
+                }
             }
 
             //SetIsPremiumFlagAsync();

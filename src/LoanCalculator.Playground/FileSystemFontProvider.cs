@@ -9,7 +9,6 @@ namespace LoanCalculator.Playground
         {
             var path = Path.Combine(PjUtility.Runtime.ExecutingRepositoryRootFolder, "src", "LoanCalculator", "Resources", "Fonts", fileName);
             return File.OpenRead(path);
-
         }
     }
 }

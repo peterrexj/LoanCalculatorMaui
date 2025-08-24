@@ -27,7 +27,7 @@ namespace LoanCalculator.Core.Themes
         {
             AppThemes? currentTheme = null;
             Task.Run(async () => currentTheme = await GetCurrentThemeAsync()).Wait();
-            currentTheme ??= AppThemes.Light;
+            currentTheme ??= SharedServiceCore.DefaultAppTheme;
             LoadDefaultStyle(currentTheme.Value);
         }
 
@@ -48,9 +48,9 @@ namespace LoanCalculator.Core.Themes
                     case AppThemes.Forest:
                         themeFile = "Theme.Forest.xaml";
                         break;
-                    case AppThemes.Warm:
-                        themeFile = "Theme.Warm.xaml";
-                        break;
+                    //case AppThemes.Warm:
+                    //    themeFile = "Theme.Warm.xaml";
+                    //    break;
                     default:
                         throw new ArgumentException("Unsupported theme");
                 }

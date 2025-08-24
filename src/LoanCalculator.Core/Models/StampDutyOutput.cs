@@ -14,9 +14,11 @@ namespace LoanCalculator.Core.Models
         public static int AustraliaStateToIndex(AustralianStatesEnum ausState) => EnumHelper<AustralianStatesEnum>.ToIndex(ausState);
         public static AustralianStatesEnum AustraliaStateFromIndex(int index) => EnumHelper<AustralianStatesEnum>.FromIndex(index);
         public static List<string> AustralianStates => EnumHelper<AustralianStatesEnum>.List;
-        public int AustraliaStateIndex => EnumHelper<AustralianStatesEnum>.ToIndex(AustraliaStateSelected);
+        public int? AustraliaStateIndex => AustraliaStateSelected.HasValue
+            ? EnumHelper<AustralianStatesEnum>.ToIndex(AustraliaStateSelected.Value)
+            : null;
 
-        public AustralianStatesEnum AustraliaStateSelected { get; set; }
+        public AustralianStatesEnum? AustraliaStateSelected { get; set; }
         public StampDutyOutput SetState(AustralianStatesEnum state)
         {
             AustraliaStateSelected = state;

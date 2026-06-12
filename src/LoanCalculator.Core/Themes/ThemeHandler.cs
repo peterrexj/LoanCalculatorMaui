@@ -25,10 +25,11 @@ namespace LoanCalculator.Core.Themes
 
         public void LoadDefaultStyle()
         {
-            AppThemes? currentTheme = null;
-            Task.Run(async () => currentTheme = await GetCurrentThemeAsync()).Wait();
-            currentTheme ??= SharedServiceCore.DefaultAppTheme;
-            LoadDefaultStyle(currentTheme.Value);
+            // Called from the App constructor on the main thread — must use Task.Run to
+            // avoid a sync-context deadlock on Android/iOS when the file read completes.
+            var currentTheme = Task.Run(() => GetCurrentThemeAsync()).GetAwaiter().GetResult()
+                               ?? SharedServiceCore.DefaultAppTheme;
+            LoadDefaultStyle(currentTheme);
         }
 
         public void LoadDefaultStyle(AppThemes appTheme)
@@ -48,9 +49,9 @@ namespace LoanCalculator.Core.Themes
                     case AppThemes.Forest:
                         themeFile = "Theme.Forest.xaml";
                         break;
-                    //case AppThemes.Warm:
-                    //    themeFile = "Theme.Warm.xaml";
-                    //    break;
+                    case AppThemes.Warm:
+                        themeFile = "Theme.Warm.xaml";
+                        break;
                     default:
                         throw new ArgumentException("Unsupported theme");
                 }
@@ -149,7 +150,23 @@ namespace LoanCalculator.Core.Themes
         {
             try
             {
-                var xaml = PjUtility.Runtime.GetAssembly("LoanCalculatorMaui").GetEmbeddedResourceAsText($"LoanCalculatorMaui.Extensions.Data.{resourcePath}");
+                // Use the entry assembly (the MAUI app) which contains the embedded theme resources.
+                // This is reliable on both iOS (AOT) and Android — unlike PjUtility.Runtime.GetAssembly()
+                // which uses stack-walking that fails silently when frame metadata is stripped on iOS.
+                var assembly = System.Reflection.Assembly.GetEntryAssembly()
+                    ?? AppDomain.CurrentDomain.GetAssemblies()
+                        .FirstOrDefault(a => a.GetName().Name == "LoanCalculatorMaui");
+
+                if (assembly == null) return null;
+
+                using var stream = assembly.GetManifestResourceStream($"LoanCalculatorMaui.Extensions.Data.{resourcePath}");
+                if (stream == null)
+                {
+                    System.Diagnostics.Debug.WriteLine($"[ThemeHandler] Resource not found: LoanCalculatorMaui.Extensions.Data.{resourcePath}");
+                    return null;
+                }
+                using var reader = new System.IO.StreamReader(stream);
+                var xaml = reader.ReadToEnd();
 
                 var resourceDictionary = new ResourceDictionary();
                 resourceDictionary.LoadFromXaml(xaml);
@@ -158,23 +175,9 @@ namespace LoanCalculator.Core.Themes
             }
             catch (Exception e)
             {
+                System.Diagnostics.Debug.WriteLine($"[ThemeHandler] Failed to load '{resourcePath}': {e.Message}");
                 return null;
             }
-
-            #region Using resources
-
-            //var assembly = Assembly.GetExecutingAssembly();
-            //var resourceName = $"{assembly.GetName().Name}.{resourcePath.Replace("/", ".")}";
-            //using var stream = assembly.GetManifestResourceStream(resourceName);
-            //if (stream == null)
-            //{
-            //    throw new FileNotFoundException("Resource not found", resourceName);
-            //}
-
-            //using var reader = new StreamReader(stream);
-            //var xaml = reader.ReadToEnd();
-
-            #endregion
         }
 
         public ObservableCollection<Brush> GetChartColors()

@@ -45,25 +45,237 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
         {
             if (source == null) throw new ArgumentNullException(nameof(source));
 
-            // Get all properties of the IncomeViewModel
-            var properties = typeof(LoanViewModel).GetProperties(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
+            // Assign the backing field directly — property setters guard on HasInitialized
+            // which is false during load, so they would silently drop every value.
+            _homeLoanInfo = source._homeLoanInfo;
+            TransactionRecords = source.TransactionRecords;
+        }
 
-            foreach (var property in properties)
+        protected override void OnCurrencyChanged()
+        {
+            // Re-notify all currency-formatted display properties
+            OnPropertyChanged(nameof(LoanAmount));
+            OnPropertyChanged(nameof(LoanAmountStrFormatted));
+            OnPropertyChanged(nameof(DepositAmountStrFormatted));
+            OnPropertyChanged(nameof(PropertyTotalAmount));
+            OnPropertyChanged(nameof(DepositAmountStrFormatted));
+            OnPropertyChanged(nameof(AffordabilityCurrencySymbol));
+            OnPropertyChanged(nameof(Affordability));
+            OnPropertyChanged(nameof(HomeLoanInfo));
+        }
+
+        // Controls the Upfront Costs popup on the Asset tab
+        [JsonIgnore]
+        private bool _isUpfrontInputVisible;
+        [JsonIgnore]
+        public bool IsUpfrontInputVisible
+        {
+            get => _isUpfrontInputVisible;
+            set
             {
-                // Skip properties with [JsonIgnore] attribute
-                if (property.GetCustomAttributes(typeof(JsonIgnoreAttribute), true).Any())
-                {
-                    continue;
-                }
-
-                // Check if the property can be written to
-                if (property.CanWrite)
-                {
-                    // Copy the value from the source to the current instance
-                    var value = property.GetValue(source);
-                    property.SetValue(this, value);
-                }
+                _isUpfrontInputVisible = value;
+                OnPropertyChanged(nameof(IsUpfrontInputVisible));
             }
+        }
+
+        // Controls the Quick Input popup on the Asset tab
+        [JsonIgnore]
+        private bool _isQuickInputVisible;
+        [JsonIgnore]
+        public bool IsQuickInputVisible
+        {
+            get => _isQuickInputVisible;
+            set
+            {
+                _isQuickInputVisible = value;
+                OnPropertyChanged(nameof(IsQuickInputVisible));
+            }
+        }
+
+        // ── Quick Setup Wizard ────────────────────────────────────────────────
+        [JsonIgnore] private bool _isWizardStep1Visible;
+        [JsonIgnore]
+        public bool IsWizardStep1Visible
+        {
+            get => _isWizardStep1Visible;
+            set { _isWizardStep1Visible = value; OnPropertyChanged(nameof(IsWizardStep1Visible)); }
+        }
+
+        [JsonIgnore] private bool _isWizardStep2Visible;
+        [JsonIgnore]
+        public bool IsWizardStep2Visible
+        {
+            get => _isWizardStep2Visible;
+            set { _isWizardStep2Visible = value; OnPropertyChanged(nameof(IsWizardStep2Visible)); }
+        }
+
+        [JsonIgnore] private bool _isWizardStep3Visible;
+        [JsonIgnore]
+        public bool IsWizardStep3Visible
+        {
+            get => _isWizardStep3Visible;
+            set { _isWizardStep3Visible = value; OnPropertyChanged(nameof(IsWizardStep3Visible)); }
+        }
+
+        // Transient text inputs — same pattern as IncomeEntryAmountText (string Entry binding)
+        [JsonIgnore] private string _wizardAssetText;
+        [JsonIgnore] public string WizardAssetText
+        {
+            get => _wizardAssetText;
+            set { _wizardAssetText = value; OnPropertyChanged(nameof(WizardAssetText)); }
+        }
+
+        [JsonIgnore] private string _wizardDepositText;
+        [JsonIgnore] public string WizardDepositText
+        {
+            get => _wizardDepositText;
+            set { _wizardDepositText = value; OnPropertyChanged(nameof(WizardDepositText)); }
+        }
+
+        [JsonIgnore] private string _wizardUpfrontText;
+        [JsonIgnore] public string WizardUpfrontText
+        {
+            get => _wizardUpfrontText;
+            set { _wizardUpfrontText = value; OnPropertyChanged(nameof(WizardUpfrontText)); }
+        }
+
+        [JsonIgnore] private string _wizardRunningCostText;
+        [JsonIgnore] public string WizardRunningCostText
+        {
+            get => _wizardRunningCostText;
+            set { _wizardRunningCostText = value; OnPropertyChanged(nameof(WizardRunningCostText)); }
+        }
+
+        [JsonIgnore] private string _wizardIncomeText;
+        [JsonIgnore] public string WizardIncomeText
+        {
+            get => _wizardIncomeText;
+            set { _wizardIncomeText = value; OnPropertyChanged(nameof(WizardIncomeText)); }
+        }
+
+        [JsonIgnore] private string _wizardExpenseText;
+        [JsonIgnore] public string WizardExpenseText
+        {
+            get => _wizardExpenseText;
+            set { _wizardExpenseText = value; OnPropertyChanged(nameof(WizardExpenseText)); }
+        }
+
+        // Existing-value indicators shown as summary labels above the entries
+        [JsonIgnore] public bool WizardAssetHasValue => PropertyAmount > 0;
+        [JsonIgnore] public string WizardAssetSummary => $"Current: {CurrencySymbol}{PropertyAmount:N0}";
+
+        [JsonIgnore] public bool WizardDepositHasValue => DepositAmountDirectInput > 0;
+        [JsonIgnore] public string WizardDepositSummary => $"Current: {CurrencySymbol}{DepositAmountDirectInput:N0}";
+
+        [JsonIgnore] public bool WizardUpfrontHasValue => (HomeLoanInfo?.OtherExpenseTotalAmount ?? 0) > 0;
+        [JsonIgnore] public bool WizardUpfrontEditable => !WizardUpfrontHasValue;
+        [JsonIgnore] public string WizardUpfrontSummary => $"Total upfront: {OtherExpenseTotalAmount}";
+
+        [JsonIgnore] public bool WizardRunningCostHasValue =>
+            TransactionRecords?.IncomeExpenseEntries?.Any(e => e.Amount > 0) == true;
+        [JsonIgnore] public bool WizardRunningCostEditable => !WizardRunningCostHasValue;
+        [JsonIgnore] public string WizardRunningCostSummary
+        {
+            get
+            {
+                TransactionRecords?.SumUpData();
+                var total = TransactionRecords?.IncomeExpenseSummary?.TotalMonthly ?? 0;
+                return $"Total running costs: {CurrencySymbol}{total:N0}/mo";
+            }
+        }
+
+        // Live labels shown below asset and deposit entries
+        // WizardAssetTotalLabel uses existing PropertyTotalAmount (asset + upfront costs)
+        [JsonIgnore] public bool WizardShowAssetTotal => (HomeLoanInfo?.PropertyTotalAmount ?? 0) > 0;
+        [JsonIgnore] public string WizardAssetTotalLabel => $"Total asset cost: {PropertyTotalAmount}";
+
+        // Field hint labels include the currency symbol so entries stay plain numeric
+        [JsonIgnore] public string WizardLabelAsset   => $"Asset purchase price ({CurrencySymbol})";
+        [JsonIgnore] public string WizardLabelDeposit => $"Deposit amount ({CurrencySymbol})";
+        [JsonIgnore] public string WizardLabelUpfront => $"Upfront costs, optional ({CurrencySymbol})";
+        [JsonIgnore] public string WizardLabelRunning => $"Monthly running cost, optional ({CurrencySymbol})";
+        [JsonIgnore] public string WizardLabelIncome  => $"Total monthly income ({CurrencySymbol})";
+        [JsonIgnore] public string WizardLabelExpense => $"Total monthly expenses ({CurrencySymbol})";
+
+        // WizardLoanAmountLabel uses existing LoanAmountStrFormatted (asset - deposit)
+        [JsonIgnore] public bool WizardShowLoanAmount => (HomeLoanInfo?.LoanAmountDirectInput ?? 0) > 0;
+        [JsonIgnore] public string WizardLoanAmountLabel => $"Loan amount: {LoanAmountStrFormatted}";
+
+        // Proxy properties for Step 2 — IncomeViewModel and ExpenseViewModel values
+        // accessed via LoanView's BindingContext (LoanViewModel) since DataTemplate
+        // BindingContext is set to the page's BindingContext.
+        [JsonIgnore] private IncomeViewModel? _wizardIncomeVm;
+        [JsonIgnore] private ExpenseViewModel? _wizardExpenseVm;
+
+        public void SetWizardPeerViewModels(IncomeViewModel income, ExpenseViewModel expense)
+        {
+            _wizardIncomeVm = income;
+            _wizardExpenseVm = expense;
+        }
+
+        // Force summary totals to be current before evaluating HasValue — the peer VMs
+        // may not have visited their tab yet (SumUpData not yet called on their records).
+        private void EnsureWizardPeerSummaries()
+        {
+            _wizardIncomeVm?.TransactionRecords?.SumUpData();
+            _wizardExpenseVm?.TransactionRecords?.SumUpData();
+        }
+
+        // HasValue checks: count entries with Amount > 0 directly from the collection.
+        // This works even when SumUpData hasn't been called and even when the tab hasn't
+        // been visited (TransactionRecords is loaded from disk by LoanView.LoadDataSet).
+        [JsonIgnore] public bool WizardIncomeHasValue =>
+            _wizardIncomeVm?.TransactionRecords?.IncomeExpenseEntries?.Any(e => e.Amount > 0) == true;
+        [JsonIgnore] public bool WizardIncomeEditable => !WizardIncomeHasValue;
+        [JsonIgnore] public string WizardIncomeSummary
+        {
+            get
+            {
+                _wizardIncomeVm?.TransactionRecords?.SumUpData();
+                var total = _wizardIncomeVm?.TransactionRecords?.IncomeExpenseSummary?.TotalMonthly ?? 0;
+                return $"Recorded: {CurrencySymbol}{total:N0}/mo";
+            }
+        }
+
+        [JsonIgnore] public bool WizardExpenseHasValue =>
+            _wizardExpenseVm?.TransactionRecords?.IncomeExpenseEntries?.Any(e => e.Amount > 0) == true;
+        [JsonIgnore] public bool WizardExpenseEditable => !WizardExpenseHasValue;
+        [JsonIgnore] public string WizardExpenseSummary
+        {
+            get
+            {
+                _wizardExpenseVm?.TransactionRecords?.SumUpData();
+                var total = _wizardExpenseVm?.TransactionRecords?.IncomeExpenseSummary?.TotalMonthly ?? 0;
+                return $"Recorded: {CurrencySymbol}{total:N0}/mo";
+            }
+        }
+
+        // Call after IsWizardStep1/2Visible = true so DataTemplate bindings re-evaluate after inflation.
+        public void NotifyWizardPropertiesChanged()
+        {
+            EnsureWizardPeerSummaries();
+            OnPropertyChanged(nameof(WizardUpfrontHasValue));
+            OnPropertyChanged(nameof(WizardUpfrontEditable));
+            OnPropertyChanged(nameof(WizardUpfrontSummary));
+            OnPropertyChanged(nameof(WizardRunningCostHasValue));
+            OnPropertyChanged(nameof(WizardRunningCostEditable));
+            OnPropertyChanged(nameof(WizardRunningCostSummary));
+            OnPropertyChanged(nameof(WizardIncomeHasValue));
+            OnPropertyChanged(nameof(WizardIncomeEditable));
+            OnPropertyChanged(nameof(WizardIncomeSummary));
+            OnPropertyChanged(nameof(WizardExpenseHasValue));
+            OnPropertyChanged(nameof(WizardExpenseEditable));
+            OnPropertyChanged(nameof(WizardExpenseSummary));
+            OnPropertyChanged(nameof(WizardShowAssetTotal));
+            OnPropertyChanged(nameof(WizardAssetTotalLabel));
+            OnPropertyChanged(nameof(WizardShowLoanAmount));
+            OnPropertyChanged(nameof(WizardLoanAmountLabel));
+            OnPropertyChanged(nameof(WizardLabelAsset));
+            OnPropertyChanged(nameof(WizardLabelDeposit));
+            OnPropertyChanged(nameof(WizardLabelUpfront));
+            OnPropertyChanged(nameof(WizardLabelRunning));
+            OnPropertyChanged(nameof(WizardLabelIncome));
+            OnPropertyChanged(nameof(WizardLabelExpense));
         }
 
         [JsonIgnore] protected HomeLoanInformation _homeLoanInfo;
@@ -208,6 +420,15 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
                 HomeLoanRepaymentRequest = new HomeLoanRepaymentInput()
             };
 
+            // A fresh HomeLoanRepaymentInput defaults TotalNumberPaymentPerYear to 0, which makes
+            // the payment calculation return 0 ("$0 monthly"). Default to Monthly (12) so any path
+            // that builds a loan without touching the frequency segment still computes a payment.
+            if (HomeLoanInfo.HomeLoanRepaymentRequest != null &&
+                HomeLoanInfo.HomeLoanRepaymentRequest.TotalNumberPaymentPerYear == 0)
+            {
+                HomeLoanInfo.HomeLoanRepaymentRequest.TotalNumberPaymentPerYear = 12;
+            }
+
             IncomeFrequencyCollection ??=
                 new ObservableCollection<string>(IncomeExpenseHelper.TimeFrequencies.Select(f => f.ToString()));
 
@@ -257,6 +478,9 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
                 HomeLoanInfo.PropertyAmount = value;
                 EventsTriggerStampDutyUpdate();
                 HomeLoanInfo.LoanAmountDirectInput = HomeLoanInfo.LoanAmountDirectInput;
+                OnPropertyChanged(nameof(PropertyAmountWords));
+                OnPropertyChanged(nameof(PropertyAmountFormatted));
+                OnPropertyChanged(nameof(LoanAmountWords));
 
                 TriggerPropertyChangedOnPropertyTab();
                 isUpdating = false;
@@ -335,7 +559,7 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
             set
             {
                 if (isUpdating || !HasInitialized) return;
-                //if (HomeLoanInfo.DepositPercentage == value) return;
+                if (HomeLoanInfo.DepositPercentage == value) return;
 
                 isUpdating = true;
 
@@ -363,13 +587,24 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
 
         [JsonIgnore] public string LoanAmountStrFormatted => $"{CurrencySymbol}{HomeLoanInfo?.LoanAmountDirectInput ?? 0:N0}";
 
+        // Flat wrappers over the nested PaymentSummary path. EventsTriggerPriceUpdate replaces
+        // HomeLoanInfo.PaymentSummary with a NEW object but HomeLoanInformation does not raise
+        // PropertyChanged, so XAML bindings to the deep path (HomeLoanInfo.PaymentSummary.Payment.X)
+        // never refresh. Bind the Asset-tab repayment box and chart center to these instead and
+        // notify them from TriggerPropertyChangedOnPropertyTab.
+        [JsonIgnore] public string TermPaymentRoundedWithComma =>
+            HomeLoanInfo?.PaymentSummary?.Payment?.TermPaymentRoundedWithComma ?? "0";
+
+        [JsonIgnore] public string TotalPaymentRoundedWithComma =>
+            HomeLoanInfo?.PaymentSummary?.Payment?.TotalPaymentRoundedWithComma ?? "0";
+
         public double LoanAmountPercentage
         {
             get => HomeLoanInfo?.LoanAmountPercentage ?? 0;
             set
             {
                 if (isUpdating || !HasInitialized) return;
-                //if (HomeLoanInfo.LoanAmountPercentage == value) return;
+                if (HomeLoanInfo.LoanAmountPercentage == value) return;
 
                 isUpdating = true;
 
@@ -386,14 +621,41 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
             set
             {
                 if (isUpdating || !HasInitialized) return;
-                //if (HomeLoanInfo.LoanAmountDirectInput == value) return;
+                if (HomeLoanInfo.LoanAmountDirectInput == value) return;
 
                 isUpdating = true;
                 HomeLoanInfo.LoanAmountDirectInput = value;
+                OnPropertyChanged(nameof(LoanAmountWords));
                 TriggerPropertyChangedOnPropertyTab();
                 isUpdating = false;
             }
         }
+
+        // Live word representations for Quick Input popup
+        [JsonIgnore]
+        public string PropertyAmountWords => NumberToWords((long)Math.Round(HomeLoanInfo?.PropertyAmount ?? 0));
+        [JsonIgnore]
+        public string PropertyAmountFormatted => $"{CurrencySymbol}{HomeLoanInfo?.PropertyAmount ?? 0:N0}";
+        [JsonIgnore]
+        public string LoanAmountWords => NumberToWords((long)Math.Round(HomeLoanInfo?.LoanAmountDirectInput ?? 0));
+
+        private static string NumberToWords(long n) => NumberToWordsPublic(n);
+
+        public static string NumberToWordsPublic(long n)
+        {
+            if (n <= 0) return string.Empty;
+            if (n < 0) return "Minus " + NumberToWords(-n);
+            var parts = new System.Collections.Generic.List<string>();
+            if (n >= 1_000_000_000) { parts.Add(NumberToWords(n / 1_000_000_000) + " Billion"); n %= 1_000_000_000; }
+            if (n >= 1_000_000)     { parts.Add(NumberToWords(n / 1_000_000) + " Million"); n %= 1_000_000; }
+            if (n >= 1_000)         { parts.Add(NumberToWords(n / 1_000) + " Thousand"); n %= 1_000; }
+            if (n >= 100)           { parts.Add(Ones[n / 100] + " Hundred"); n %= 100; }
+            if (n >= 20)            { parts.Add(Tens[n / 10] + (n % 10 > 0 ? " " + Ones[n % 10] : "")); }
+            else if (n > 0)         { parts.Add(Ones[n]); }
+            return string.Join(", ", parts);
+        }
+        private static readonly string[] Ones = ["", "One","Two","Three","Four","Five","Six","Seven","Eight","Nine","Ten","Eleven","Twelve","Thirteen","Fourteen","Fifteen","Sixteen","Seventeen","Eighteen","Nineteen"];
+        private static readonly string[] Tens  = ["","","Twenty","Thirty","Forty","Fifty","Sixty","Seventy","Eighty","Ninety"];
 
 
         #endregion
@@ -424,7 +686,70 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
 
         #region Country specific functionality
 
-        [JsonIgnore] public bool ShowAustralianStateSelectorOnStampDuty => SharedServiceCore.AppInformation != null && SharedServiceCore.AppInformation.IsAustralia;
+        private const string AustralianModeKey = "IsAustralianModeEnabled";
+
+        // Loaded from Preferences on page appearance and updated when Settings changes
+        [JsonIgnore]
+        private bool _isAustralianModeEnabled = false;
+
+        [JsonIgnore]
+        public bool IsAustralianModeEnabled
+        {
+            get => _isAustralianModeEnabled;
+            set
+            {
+                _isAustralianModeEnabled = value;
+                OnPropertyChanged(nameof(IsAustralianModeEnabled));
+                OnPropertyChanged(nameof(ShowAustralianStateSelectorOnStampDuty));
+                OnPropertyChanged(nameof(HeightOfGridRowToggledByCountryOnStampDuty));
+                // Australian mode always forces stamp duty on
+                OnPropertyChanged(nameof(ShowStampDutyInput));
+                OnPropertyChanged(nameof(IsStampDutyToggleEnabled));
+            }
+        }
+
+        public void LoadAustralianModeSetting()
+        {
+            IsAustralianModeEnabled = Preferences.Get(AustralianModeKey, false);
+            LoadStampDutySetting(); // re-evaluate stamp duty after Australian mode changes
+        }
+
+        // Visibility driven purely by the user's toggle
+        [JsonIgnore]
+        public bool ShowAustralianStateSelectorOnStampDuty => IsAustralianModeEnabled;
+
+        // ── Stamp Duty toggle ──────────────────────────────────────────────────
+        private const string StampDutyKey = "IsStampDutyEnabled";
+        [JsonIgnore] private bool _isStampDutyEnabled;
+
+        [JsonIgnore]
+        public bool IsStampDutyEnabled
+        {
+            get => _isStampDutyEnabled;
+            set
+            {
+                _isStampDutyEnabled = value;
+                OnPropertyChanged(nameof(IsStampDutyEnabled));
+                OnPropertyChanged(nameof(ShowStampDutyInput));
+            }
+        }
+
+        public void LoadStampDutySetting()
+        {
+            // Australian mode always forces stamp duty on regardless of saved preference
+            _isStampDutyEnabled = IsAustralianModeEnabled || Preferences.Get(StampDutyKey, false);
+            OnPropertyChanged(nameof(IsStampDutyEnabled));
+            OnPropertyChanged(nameof(ShowStampDutyInput));
+            OnPropertyChanged(nameof(IsStampDutyToggleEnabled));
+        }
+
+        // True when stamp duty field should be visible in the popup
+        [JsonIgnore]
+        public bool ShowStampDutyInput => IsAustralianModeEnabled || IsStampDutyEnabled;
+
+        // User cannot turn OFF stamp duty when Australian mode is active
+        [JsonIgnore]
+        public bool IsStampDutyToggleEnabled => !IsAustralianModeEnabled;
 
         [JsonIgnore]
         public int HeightOfGridRowToggledByCountryOnStampDuty
@@ -447,35 +772,44 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
 
         #region Insights
 
-        [JsonIgnore]
-        public ObservableCollection<ChartDataModel> InsightChartLoanAmountAxis =>
-            new(new List<ChartDataModel>
-                {
-                    new(name: DateTime.Now.Year.ToString(), value: HomeLoanInfo?.LoanAmountDirectInput ?? 0)
-                }.AsEnumerable());
+        // Set by the view's tab selection event to avoid firing expensive
+        // notifications for tabs the user isn't currently looking at.
+        [JsonIgnore] public bool IsAmortizationTabActive { get; set; }
+        [JsonIgnore] public bool IsInsightsTabActive { get; set; }
+
+        [JsonIgnore] private ObservableCollection<ChartDataModel> _insightChartLoanAmountAxis = new();
+        [JsonIgnore] private ObservableCollection<ChartDataModel> _insightChartLoanInterestAxis = new();
+        [JsonIgnore] private ObservableCollection<ChartDataModel> _insightChartLoanDepositAxis = new();
 
         [JsonIgnore]
-        public ObservableCollection<ChartDataModel> InsightChartLoanInterestAxis
+        public ObservableCollection<ChartDataModel> InsightChartLoanAmountAxis => _insightChartLoanAmountAxis;
+
+        [JsonIgnore]
+        public ObservableCollection<ChartDataModel> InsightChartLoanInterestAxis => _insightChartLoanInterestAxis;
+
+        [JsonIgnore]
+        public ObservableCollection<ChartDataModel> InsightChartLoanDepositAxis => _insightChartLoanDepositAxis;
+
+        private void UpdateInsightCharts()
         {
-            get
-            {
-                return new ObservableCollection<ChartDataModel>(new List<ChartDataModel>
-                    {
-                        new(name: "2025", value: HomeLoanInfo?.PaymentSummary?.Payment?.TotalInterestPayment ?? 0)
-                    }
-                    .AsEnumerable());
-            }
+            var year = DateTime.Now.Year.ToString();
+            var loanAmount = HomeLoanInfo?.LoanAmountDirectInput ?? 0;
+            var interest = HomeLoanInfo?.PaymentSummary?.Payment?.TotalInterestPayment ?? 0;
+            var deposit = HomeLoanInfo?.DepositAmountDirectInput ?? 0;
+
+            ReplaceChartPoint(_insightChartLoanAmountAxis, year, loanAmount);
+            ReplaceChartPoint(_insightChartLoanInterestAxis, year, interest);
+            ReplaceChartPoint(_insightChartLoanDepositAxis, year, deposit);
         }
 
-        [JsonIgnore]
-        public ObservableCollection<ChartDataModel> InsightChartLoanDepositAxis
+        private static void ReplaceChartPoint(ObservableCollection<ChartDataModel> col, string name, double value)
         {
-            get
+            if (col.Count == 0)
+                col.Add(new ChartDataModel(name, value));
+            else
             {
-                return new ObservableCollection<ChartDataModel>(new List<ChartDataModel>
-                {
-                    new(name: "2025", value: HomeLoanInfo?.DepositAmountDirectInput ?? 0)
-                }.AsEnumerable());
+                col.Clear();
+                col.Add(new ChartDataModel(name, value));
             }
         }
 
@@ -623,9 +957,7 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
                 $"is your overall financial outflows within a given year, covering loan repayments and all other expenses. {Environment.NewLine}(Calculation: {InsightsDetails.RepaymentDetailYearly.Value} repayment + {InsightsDetails.ExpenseCostOfNewPropertyOwnershipYearly.Value} cost of ownership + {InsightsDetails.ExpenseCurrentFinancialOutflowsYearly.Value} current monthly expenses)";
 
 
-            OnPropertyChanged(nameof(InsightChartLoanDepositAxis));
-            OnPropertyChanged(nameof(InsightChartLoanAmountAxis));
-            OnPropertyChanged(nameof(InsightChartLoanInterestAxis));
+            UpdateInsightCharts();
 
             IncomeSummary.TransactionRecords?.SumUpData();
             ExpenseSummary.TransactionRecords?.SumUpData();
@@ -727,92 +1059,62 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
         [JsonIgnore]
         public List<PaymentAmortisationOutput>? PaymentAmortization => HomeLoanInfo?.PaymentSummary?.PaymentAmortizationTerms ?? new List<PaymentAmortisationOutput>();
 
-        [JsonIgnore]
-        public ObservableCollection<ChartDataModel> AmortizationChartPrincipalAmountAxis
-        {
-            get
-            {
-                if (HomeLoanInfo?.PaymentSummary?.PaymentAmortizationTerms?.ToList() == null)
-                {
-                    return new ObservableCollection<ChartDataModel>();
-                }
-                else
-                {
-                    return new ObservableCollection<ChartDataModel>(HomeLoanInfo.PaymentSummary.PaymentAmortizationTerms
-                        .Where(f => f.YearOfPayment != DateTime.Now.Year).Select(f =>
-                            new ChartDataModel(name: f.YearOfPayment.ToString(), value: f.PrincipalAmount)));
-                }
-            }
-        }
+        [JsonIgnore] private ObservableCollection<ChartDataModel> _amortizationChartPrincipal = new();
+        [JsonIgnore] private ObservableCollection<ChartDataModel> _amortizationChartInterest = new();
+        [JsonIgnore] private ObservableCollection<ChartDataModel> _amortizationChartAreaPrincipal = new();
+        [JsonIgnore] private ObservableCollection<ChartDataModel> _amortizationChartAreaInterest = new();
 
         [JsonIgnore]
-        public ObservableCollection<ChartDataModel> AmortizationChartInterestAmountAxis
-        {
-            get
-            {
-                if (HomeLoanInfo?.PaymentSummary?.PaymentAmortizationTerms?.ToList() == null)
-                {
-                    return new ObservableCollection<ChartDataModel>();
-                }
-                else
-                {
-                    return new ObservableCollection<ChartDataModel>(HomeLoanInfo.PaymentSummary.PaymentAmortizationTerms
-                        .Where(f => f.YearOfPayment != DateTime.Now.Year).Select(f =>
-                            new ChartDataModel(name: f.YearOfPayment.ToString(), value: f.InterestAmount)));
-                }
-            }
-        }
+        public ObservableCollection<ChartDataModel> AmortizationChartPrincipalAmountAxis => _amortizationChartPrincipal;
 
         [JsonIgnore]
-        public ObservableCollection<ChartDataModel> AmortizationChartAreaPrincipalAmountAxis
-        {
-            get
-            {
-                if (HomeLoanInfo?.PaymentSummary?.PaymentAmortizationTerms?.ToList() == null)
-                {
-                    return new ObservableCollection<ChartDataModel>();
-                }
-                else
-                {
-                    var breakdownCount = RepaymentFrequencySelected.Trim() == "monthly" ? 2 :
-                        RepaymentFrequencySelected.Trim() == "fortnightly" ? 4 :
-                        RepaymentFrequencySelected.Trim() == "weekly" ? 8 : 2;
-                    return new ObservableCollection<ChartDataModel>(
-                        HomeLoanInfo.PaymentSummary.PaymentAmortizationTerms
-                            .Where(f => f.YearOfPayment != DateTime.Now.Year)
-                            .Skip(2)
-                            .Where((num, index) => index % breakdownCount == 0)
-                            //.Union(HomeLoanInfo.PaymentSummary.PaymentAmortizationTerms.Skip(HomeLoanInfo.PaymentSummary.PaymentAmortizationTerms.Count - 1))
-                            .Select(f => new ChartDataModel(name: f.YearOfPayment.ToString(), value: f.PrincipalAmount))
-                    );
-                }
-            }
-        }
+        public ObservableCollection<ChartDataModel> AmortizationChartInterestAmountAxis => _amortizationChartInterest;
 
         [JsonIgnore]
-        public ObservableCollection<ChartDataModel> AmortizationChartAreaInterestAmountAxis
+        public ObservableCollection<ChartDataModel> AmortizationChartAreaPrincipalAmountAxis => _amortizationChartAreaPrincipal;
+
+        [JsonIgnore]
+        public ObservableCollection<ChartDataModel> AmortizationChartAreaInterestAmountAxis => _amortizationChartAreaInterest;
+
+        private void UpdateAmortizationCharts()
         {
-            get
+            var terms = HomeLoanInfo?.PaymentSummary?.PaymentAmortizationTerms;
+            if (terms == null)
             {
-                if (HomeLoanInfo?.PaymentSummary?.PaymentAmortizationTerms?.ToList() == null)
-                {
-                    return new ObservableCollection<ChartDataModel>();
-                }
-                else
-                {
-                    var breakdownCount = RepaymentFrequencySelected.Trim() == "monthly" ? 2 :
-                        RepaymentFrequencySelected.Trim() == "fortnightly" ? 4 :
-                        RepaymentFrequencySelected.Trim() == "weekly" ? 8 : 2;
-                    return new ObservableCollection<ChartDataModel>(
-                        HomeLoanInfo.PaymentSummary.PaymentAmortizationTerms
-                            .Where(f => f.YearOfPayment != DateTime.Now.Year)
-                            .Skip(2)
-                            .Where((num, index) => index % breakdownCount == 0)
-                            //.Union(HomeLoanInfo.PaymentSummary.PaymentAmortizationTerms.Skip(HomeLoanInfo.PaymentSummary.PaymentAmortizationTerms.Count - 1))
-                            .Select(f => new ChartDataModel(name: f.YearOfPayment.ToString(), value: f.InterestAmount))
-                    );
-                }
+                _amortizationChartPrincipal.Clear();
+                _amortizationChartInterest.Clear();
+                _amortizationChartAreaPrincipal.Clear();
+                _amortizationChartAreaInterest.Clear();
+                return;
             }
+
+            var currentYear = DateTime.Now.Year;
+            var filtered = terms.Where(f => f.YearOfPayment != currentYear).ToList();
+
+            var breakdownCount = RepaymentFrequencySelected.Trim() == "monthly" ? 2 :
+                                 RepaymentFrequencySelected.Trim() == "fortnightly" ? 4 :
+                                 RepaymentFrequencySelected.Trim() == "weekly" ? 8 : 2;
+
+            var areaFiltered = filtered.Skip(2).Where((_, index) => index % breakdownCount == 0).ToList();
+
+            RefillCollection(_amortizationChartPrincipal,
+                filtered.Select(f => new ChartDataModel(f.YearOfPayment.ToString(), f.PrincipalAmount)));
+
+            RefillCollection(_amortizationChartInterest,
+                filtered.Select(f => new ChartDataModel(f.YearOfPayment.ToString(), f.InterestAmount)));
+
+            RefillCollection(_amortizationChartAreaPrincipal,
+                areaFiltered.Select(f => new ChartDataModel(f.YearOfPayment.ToString(), f.PrincipalAmount)));
+
+            RefillCollection(_amortizationChartAreaInterest,
+                areaFiltered.Select(f => new ChartDataModel(f.YearOfPayment.ToString(), f.InterestAmount)));
+        }
+
+        private static void RefillCollection(ObservableCollection<ChartDataModel> col, IEnumerable<ChartDataModel> source)
+        {
+            col.Clear();
+            foreach (var item in source)
+                col.Add(item);
         }
 
         #endregion
@@ -826,7 +1128,7 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
             set
             {
                 if (isUpdating || !HasInitialized) return;
-                //if (HomeLoanInfo.StampDuty.StampDuty == value) return;
+                if (HomeLoanInfo.StampDuty.StampDuty == value) return;
 
                 isUpdating = true;
 
@@ -846,7 +1148,7 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
             set
             {
                 if (isUpdating || !HasInitialized) return;
-                //if (HomeLoanInfo.StampDuty.MortgageCharges == value) return;
+                if (HomeLoanInfo.StampDuty.MortgageCharges == value) return;
 
                 isUpdating = true;
 
@@ -1014,10 +1316,11 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
         public void TriggerPropertyChangedOnPropertyTab()
         {
             if (PageHelper.IsFormLoading) return;
-
             if (SharedServiceCore.LoadSafe) return;
 
             EventsTriggerPriceUpdate();
+
+            // Always notify — these drive the Asset tab which is always visible
             OnPropertyChanged(nameof(PropertyAmount));
             OnPropertyChanged(nameof(LoanTermInYears));
             OnPropertyChanged(nameof(InterestRate));
@@ -1038,12 +1341,31 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
             OnPropertyChanged(nameof(InspectionFee));
             OnPropertyChanged(nameof(OtherExpenses));
             OnPropertyChanged(nameof(RepaymentFrequencySelected));
+            OnPropertyChanged(nameof(HomeLoanInfo));
+            OnPropertyChanged(nameof(TermPaymentRoundedWithComma));
+            OnPropertyChanged(nameof(TotalPaymentRoundedWithComma));
             OnPropertyChanged(nameof(AffordabilityCurrencySymbol));
             OnPropertyChanged(nameof(IsAffordabilityAvailable));
             OnPropertyChanged(nameof(Affordability));
             OnPropertyChanged(nameof(AffordabilityTextDescription));
 
-            SharedServiceCore.SaveData(this);
+            // Wizard live labels — update as user types asset/deposit values
+            OnPropertyChanged(nameof(WizardShowAssetTotal));
+            OnPropertyChanged(nameof(WizardAssetTotalLabel));
+            OnPropertyChanged(nameof(WizardShowLoanAmount));
+            OnPropertyChanged(nameof(WizardLoanAmountLabel));
+            if (IsAmortizationTabActive)
+            {
+                UpdateAmortizationCharts();
+            }
+
+            // Only update insight charts if the Insights tab is currently visible
+            if (IsInsightsTabActive)
+            {
+                UpdateInsightCharts();
+            }
+
+            ScheduleSave(() => SharedServiceCore.SaveData(this));
             IsBusy = false;
         }
         public virtual void TriggerPropertyChangedOnAmortizationTab()
@@ -1052,20 +1374,17 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
 
             if (SharedServiceCore.LoadSafe) return;
 
+            UpdateAmortizationCharts();
+
             OnPropertyChanged(nameof(PaymentAmortization));
             OnPropertyChanged(nameof(AmortizationBreakdownFrequencyCollection));
-            OnPropertyChanged(nameof(AmortizationBreakdownFrequencySelectedIndex));
-            OnPropertyChanged(nameof(AmortizationChartPrincipalAmountAxis));
-            OnPropertyChanged(nameof(AmortizationChartAreaPrincipalAmountAxis));
-            OnPropertyChanged(nameof(AmortizationChartInterestAmountAxis));
-            OnPropertyChanged(nameof(AmortizationChartAreaInterestAmountAxis));
             OnPropertyChanged(nameof(IsAmortizationTermBased));
             OnPropertyChanged(nameof(IsAmortizationYearBased));
             OnPropertyChanged(nameof(AffordabilityCurrencySymbol));
             OnPropertyChanged(nameof(IsAffordabilityAvailable));
             OnPropertyChanged(nameof(Affordability));
             OnPropertyChanged(nameof(AffordabilityTextDescription));
-            SharedServiceCore.SaveData(this);
+            ScheduleSave(() => SharedServiceCore.SaveData(this));
         }
 
         public void RefreshExpenseTabPropertyChanged()
@@ -1079,13 +1398,17 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
             OnPropertyChanged(nameof(IncomeEntryName));
             OnPropertyChanged(nameof(HasErrorIncomeDescription));
             OnPropertyChanged(nameof(IncomeEntryAmount));
+            OnPropertyChanged(nameof(IncomeEntryAmountText));
             OnPropertyChanged(nameof(HasErrorIncomeAmount));
             OnPropertyChanged(nameof(IsExpenseDataFormReadyToSubmit));
             OnPropertyChanged(nameof(TotalMonthlyExpenseWithComma));
             OnPropertyChanged(nameof(TotalYearlyExpenseWithComma));
             OnPropertyChanged(nameof(IncomeExpenseFrequencySelectedIndex));
             OnPropertyChanged(nameof(Transactions));
+            OnPropertyChanged(nameof(FilteredTransactions));
+            OnPropertyChanged(nameof(AutocompleteNameList));
             OnPropertyChanged(nameof(AutocompleteList));
+            OnPropertyChanged(nameof(IsEditMode));
             OnPropertyChanged(nameof(TotalMonthlyOverallExpense));
             OnPropertyChanged(nameof(TotalMonthlyExistingExpense));
             OnPropertyChanged(nameof(TotalMonthlyOverallExpenseBreakdownWithComma));
@@ -1094,7 +1417,7 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
             OnPropertyChanged(nameof(Affordability));
             OnPropertyChanged(nameof(AffordabilityTextDescription));
 
-            SharedServiceCore.SaveData(this);
+            ScheduleSave(() => SharedServiceCore.SaveData(this));
         }
         public void RefreshInsightsTabPropertyChanged()
         {
@@ -1145,7 +1468,7 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
 
             if (SharedServiceCore.LoadSafe) return;
 
-            if (SharedServiceCore.AppInformation != null && SharedServiceCore.AppInformation.IsAustralia == false) return;
+            if (!ShowAustralianStateSelectorOnStampDuty) return;
             if (HomeLoanInfo.StampDuty.AustraliaStateSelected.HasValue)
             {
                 HomeLoanInfo.StampDuty =
@@ -1166,6 +1489,15 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
             if (PageHelper.IsFormLoading || HomeLoanInfo == null) return;
 
             if (SharedServiceCore.LoadSafe) return;
+
+            // Guard against a 0 payments-per-year (e.g. data saved before the frequency segment
+            // was ever touched, or a wizard-only flow). Without this the payment calc returns 0
+            // and the Asset tab shows "$0 monthly" even though a loan amount exists.
+            if (HomeLoanInfo.HomeLoanRepaymentRequest != null &&
+                HomeLoanInfo.HomeLoanRepaymentRequest.TotalNumberPaymentPerYear == 0)
+            {
+                HomeLoanInfo.HomeLoanRepaymentRequest.TotalNumberPaymentPerYear = 12;
+            }
 
             HomeLoanInfo.PaymentSummary =
                 HomeLoanCalculator.CalculateHomeLoanPayments(HomeLoanInfo.LoanAmount,
@@ -1199,12 +1531,22 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
             }
         }
 
+        // Called once after data load to ensure SfSegmentedControl picks up its ItemsSource and SelectedIndex
+        public void TriggerSegmentCollectionsRefresh()
+        {
+            OnPropertyChanged(nameof(RepaymentFrequencyCollection));
+            OnPropertyChanged(nameof(RepaymentFrequencySelectedIndex));
+            OnPropertyChanged(nameof(AustraliaStateCollection));
+            OnPropertyChanged(nameof(AustraliaStateSelectedIndex));
+            OnPropertyChanged(nameof(AmortizationBreakdownFrequencyCollection));
+            OnPropertyChanged(nameof(AmortizationBreakdownFrequencySelectedIndex));
+        }
+
         public void TriggerPropertyChangedOnPageLevel()
         {
             if (PageHelper.IsFormLoading) return;
 
             if (SharedServiceCore.LoadSafe) return;
-
             OnPropertyChanged(nameof(PdfGenerator));
         }
     }

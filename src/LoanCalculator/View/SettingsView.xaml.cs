@@ -17,7 +17,18 @@ public partial class SettingsView : ContentPage
 
         _errorHandlingService = errorHandlingService;
         _viewModel = viewModel;
-        _viewModel.IsBusy = true;
+        _viewModel.IsPageBusy = true;
+
+        BindingContext = _viewModel;
+    }
+
+    protected override void OnDisappearing()
+    {
+        base.OnDisappearing();
+        // Ensure LoanViewModel reflects the latest Australian mode setting
+        var loanViewModel = ServiceLocator.GetService<LoanViewModel>();
+        if (loanViewModel != null)
+            loanViewModel.IsAustralianModeEnabled = _viewModel.IsAustralianModeEnabled;
     }
 
     protected override async void OnAppearing()
@@ -30,12 +41,7 @@ public partial class SettingsView : ContentPage
 
             await Task.Delay(100); // Delay to allow UI to load
 
-            await Task.Yield();
-
-            Dispatcher.Dispatch(async () =>
-            {
-                await LoadDataSet();
-            });
+            await LoadDataSet();
         }
         catch (Exception ex)
         {
@@ -43,7 +49,7 @@ public partial class SettingsView : ContentPage
         }
         finally
         {
-            _viewModel.IsBusy = false;
+            _viewModel.IsPageBusy = false;
         }
     }
 
@@ -69,8 +75,6 @@ public partial class SettingsView : ContentPage
             await Task.WhenAll(viewModelInitializeTask, themeHandlerTask);
 
             _viewModel.RefreshProperties();
-
-            BindingContext ??= _viewModel;
 
             _viewModel.LoadSelectedCurrency();
         }

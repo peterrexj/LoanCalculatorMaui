@@ -33,41 +33,31 @@
     </Shell.Resources>
 
     <TabBar>
-        <!--<ShellContent
+        <ShellContent
             Title="Loan"
             ContentTemplate="{DataTemplate localview:LoanView}"
-            Icon="icon_loan.png"
-            Route="LoanView" />-->
-        <ShellContent
-            Title="Loan"
-            Content="{x:Static localview:PreloadedView.LoanViewInstance}"
             Icon="icon_loan.png" />
-        <!--<ShellContent
+        <!--
+        <ShellContent
             Title="Income"
             ContentTemplate="{DataTemplate localview:IncomeView}"
-            Icon="icon_income.png"
-            Route="IncomeView" />-->
-        <ShellContent
-            Title="Income"
-            Content="{x:Static localview:PreloadedView.IncomeInstance}"
             Icon="icon_income.png" />
         <ShellContent
             Title="Expense"
-            Content="{x:Static localview:PreloadedView.ExpenseInstance}"
-            Icon="icon_expense.png" />
-        <!--<ShellContent
-            Title="Expense"
             ContentTemplate="{DataTemplate localview:ExpenseView}"
-            Icon="icon_expense.png"
-            Route="ExpenseView" />-->
-        <!--<ShellContent
-            Title="Settings"
-            ContentTemplate="{DataTemplate localview:SettingsView}"
-            Icon="icon_settings.png"
-            Route="SettingsView" />-->
+            Icon="icon_expense.png" />
+        -->
+        <ShellContent
+            Title="Budget"
+            ContentTemplate="{DataTemplate localview:BudgetView}"
+            Icon="icon_income.png" />
+        <ShellContent
+            Title="What If"
+            ContentTemplate="{DataTemplate localview:WhatIfView}"
+            Icon="icon_whatif.png" />
         <ShellContent
             Title="Settings"
-            Content="{x:Static localview:PreloadedView.SettingInstance}"
+            ContentTemplate="{DataTemplate localview:SettingsView}"
             Icon="icon_settings.png" />
     </TabBar>
 

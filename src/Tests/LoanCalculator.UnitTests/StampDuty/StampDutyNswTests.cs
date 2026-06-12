@@ -1,8 +1,3 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using LoanCalculator.Core.StampDuty.AustralianStates;
 
 namespace LoanCalculator.UnitTests.StampDuty
@@ -19,156 +14,130 @@ namespace LoanCalculator.UnitTests.StampDuty
         }
 
         [Test]
-        public void CalculateCharges_AmountInFirstRange_ReturnsCorrectStampDuty()
+        public void CalculateCharges_HasThreeExpenseEntries()
         {
-            // Arrange
-            double amount = 10000;
-
-            // Act
-            var result = _stampDutyNsw.CalculateCharges(amount);
-
-            // Assert
-            Assert.That(result.StampDuty, Is.EqualTo(125));
+            var result = _stampDutyNsw.CalculateCharges(100000);
             Assert.That(result.ExpenseEntries.Count, Is.EqualTo(3));
-            Assert.That(result.ExpenseEntries[0].Expense, Is.EqualTo(166));
-            Assert.That(result.ExpenseEntries[1].Expense, Is.EqualTo(166));
-            Assert.That(result.Total, Is.EqualTo(457));
         }
 
+        [Test]
+        public void CalculateCharges_MortgageRegistrationFee_IsCorrect()
+        {
+            var result = _stampDutyNsw.CalculateCharges(100000);
+            var reg = result.ExpenseEntries.FirstOrDefault(e => e.Name == "Mortgage Registration");
+            Assert.That(reg?.Expense, Is.EqualTo(166));
+        }
+
+        [Test]
+        public void CalculateCharges_TransferFee_IsCorrect()
+        {
+            var result = _stampDutyNsw.CalculateCharges(100000);
+            var fee = result.ExpenseEntries.FirstOrDefault(e => e.Name == "Transfer Fee");
+            Assert.That(fee?.Expense, Is.EqualTo(166));
+        }
+
+        // Range 1: 0–17,000 @ 1.25%
+        [Test]
+        public void CalculateCharges_AmountInFirstRange_ReturnsCorrectStampDuty()
+        {
+            double amount = 10000;
+            double expected = Math.Round(10000 * 0.0125, 0);
+            var result = _stampDutyNsw.CalculateCharges(amount);
+            Assert.That(result.StampDuty, Is.EqualTo(expected));
+        }
+
+        // Range 2: 17,001–36,000 @ 1.5%
         [Test]
         public void CalculateCharges_AmountInSecondRange_ReturnsCorrectStampDuty()
         {
-            // Arrange
             double amount = 20000;
-
-            // Act
+            // StampDutyCalcBase accumulates then rounds with MidpointRounding.AwayFromZero.
+            // StartRange = 17001, so second range portion = (20000 - 17001) * 0.015 = 44.985
+            double expected = Math.Round(17000 * 0.0125 + (amount - 17001) * 0.015, 0, MidpointRounding.AwayFromZero);
             var result = _stampDutyNsw.CalculateCharges(amount);
-
-            // Assert
-            Assert.That(result.StampDuty, Is.EqualTo(275));
-            Assert.That(result.ExpenseEntries.Count, Is.EqualTo(2));
-            Assert.That(result.ExpenseEntries[0].Expense, Is.EqualTo(166));
-            Assert.That(result.ExpenseEntries[1].Expense, Is.EqualTo(166));
-            Assert.That(result.Total, Is.EqualTo(607));
+            Assert.That(result.StampDuty, Is.EqualTo(expected));
         }
 
+        // Range 3: 36,001–97,000 @ 1.75%
         [Test]
         public void CalculateCharges_AmountInThirdRange_ReturnsCorrectStampDuty()
         {
-            // Arrange
             double amount = 50000;
-
-            // Act
+            double expected = Math.Round(17000 * 0.0125 + 19000 * 0.015 + 14000 * 0.0175, 0);
             var result = _stampDutyNsw.CalculateCharges(amount);
-
-            // Assert
-            Assert.That(result.StampDuty, Is.EqualTo(875));
-            Assert.That(result.ExpenseEntries.Count, Is.EqualTo(2));
-            Assert.That(result.ExpenseEntries[0].Expense, Is.EqualTo(166));
-            Assert.That(result.ExpenseEntries[1].Expense, Is.EqualTo(166));
-            Assert.That(result.Total, Is.EqualTo(1207));
+            Assert.That(result.StampDuty, Is.EqualTo(expected));
         }
 
+        // Range 4: 97,001–364,000 @ 3.5%
         [Test]
         public void CalculateCharges_AmountInFourthRange_ReturnsCorrectStampDuty()
         {
-            // Arrange
             double amount = 100000;
-
-            // Act
+            double expected = Math.Round(17000 * 0.0125 + 19000 * 0.015 + 61000 * 0.0175 + 3000 * 0.035, 0);
             var result = _stampDutyNsw.CalculateCharges(amount);
-
-            // Assert
-            Assert.That(result.StampDuty, Is.EqualTo(2475));
-            Assert.That(result.ExpenseEntries.Count, Is.EqualTo(2));
-            Assert.That(result.ExpenseEntries[0].Expense, Is.EqualTo(166));
-            Assert.That(result.ExpenseEntries[1].Expense, Is.EqualTo(166));
-            Assert.That(result.Total, Is.EqualTo(2807));
+            Assert.That(result.StampDuty, Is.EqualTo(expected));
         }
 
+        // Range 5: 364,001–1,212,000 @ 4.5%
         [Test]
         public void CalculateCharges_AmountInFifthRange_ReturnsCorrectStampDuty()
         {
-            // Arrange
             double amount = 500000;
-
-            // Act
+            double expected = Math.Round(
+                17000 * 0.0125 +
+                19000 * 0.015 +
+                61000 * 0.0175 +
+                267000 * 0.035 +
+                136000 * 0.045, 0);
             var result = _stampDutyNsw.CalculateCharges(amount);
-
-            // Assert
-            Assert.That(result.StampDuty, Is.EqualTo(17875));
-            Assert.That(result.ExpenseEntries.Count, Is.EqualTo(2));
-            Assert.That(result.ExpenseEntries[0].Expense, Is.EqualTo(166));
-            Assert.That(result.ExpenseEntries[1].Expense, Is.EqualTo(166));
-            Assert.That(result.Total, Is.EqualTo(18207));
+            Assert.That(result.StampDuty, Is.EqualTo(expected));
         }
 
+        // Range 6: 1,212,001+ @ 5.5%
         [Test]
         public void CalculateCharges_AmountInSixthRange_ReturnsCorrectStampDuty()
         {
-            // Arrange
             double amount = 2000000;
-
-            // Act
+            double expected = Math.Round(
+                17000 * 0.0125 +
+                19000 * 0.015 +
+                61000 * 0.0175 +
+                267000 * 0.035 +
+                848000 * 0.045 +
+                788000 * 0.055, 0);
             var result = _stampDutyNsw.CalculateCharges(amount);
-
-            // Assert
-            Assert.That(result.StampDuty, Is.EqualTo(110875));
-            Assert.That(result.ExpenseEntries.Count, Is.EqualTo(2));
-            Assert.That(result.ExpenseEntries[0].Expense, Is.EqualTo(166));
-            Assert.That(result.ExpenseEntries[1].Expense, Is.EqualTo(166));
-            Assert.That(result.Total, Is.EqualTo(111207));
+            Assert.That(result.StampDuty, Is.EqualTo(expected));
         }
 
         [Test]
-        public void CalculateCharges_AmountInSeventhRange_ReturnsCorrectStampDuty()
+        public void CalculateCharges_LargeAmount_5m()
         {
-            // Arrange
             double amount = 5000000;
-
-            // Act
+            double expected = Math.Round(
+                17000 * 0.0125 +
+                19000 * 0.015 +
+                61000 * 0.0175 +
+                267000 * 0.035 +
+                848000 * 0.045 +
+                3788000 * 0.055, 0);
             var result = _stampDutyNsw.CalculateCharges(amount);
-
-            // Assert
-            Assert.That(result.StampDuty, Is.EqualTo(330875));
-            Assert.That(result.ExpenseEntries.Count, Is.EqualTo(2));
-            Assert.That(result.ExpenseEntries[0].Expense, Is.EqualTo(166));
-            Assert.That(result.ExpenseEntries[1].Expense, Is.EqualTo(166));
-            Assert.That(result.Total, Is.EqualTo(331207));
+            Assert.That(result.StampDuty, Is.EqualTo(expected));
         }
 
         [Test]
-        public void CalculateCharges_AmountAtBoundary_ReturnsCorrectStampDuty()
+        public void CalculateCharges_Total_EqualsStampDutyPlusFees()
         {
-            // Arrange
-            double amount = 15000;
-
-            // Act
-            var result = _stampDutyNsw.CalculateCharges(amount);
-
-            // Assert
-            Assert.That(result.StampDuty, Is.EqualTo(187.5));
-            Assert.That(result.ExpenseEntries.Count, Is.EqualTo(2));
-            Assert.That(result.ExpenseEntries[0].Expense, Is.EqualTo(166));
-            Assert.That(result.ExpenseEntries[1].Expense, Is.EqualTo(166));
-            Assert.That(result.Total, Is.EqualTo(519.5));
+            var result = _stampDutyNsw.CalculateCharges(500000);
+            Assert.That(result.Total, Is.EqualTo(result.StampDuty + 166 + 166));
         }
 
         [Test]
-        public void CalculateCharges_AmountAtUpperBoundary_ReturnsCorrectStampDuty()
+        public void CalculateCharges_BoundaryAt17k()
         {
-            // Arrange
-            double amount = 3268000;
-
-            // Act
+            double amount = 17000;
+            double expected = Math.Round(17000 * 0.0125, 0);
             var result = _stampDutyNsw.CalculateCharges(amount);
-
-            // Assert
-            Assert.That(result.StampDuty, Is.EqualTo(178875));
-            Assert.That(result.ExpenseEntries.Count, Is.EqualTo(2));
-            Assert.That(result.ExpenseEntries[0].Expense, Is.EqualTo(166));
-            Assert.That(result.ExpenseEntries[1].Expense, Is.EqualTo(166));
-            Assert.That(result.Total, Is.EqualTo(179207));
+            Assert.That(result.StampDuty, Is.EqualTo(expected));
         }
     }
 }

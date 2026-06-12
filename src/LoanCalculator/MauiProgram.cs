@@ -4,7 +4,9 @@ using LoanCalculator.Core.Services;
 using LoanCalculator.Core.Themes;
 using LoanCalculatorMaui.Controls;
 using LoanCalculatorMaui.Services;
+using LoanCalculatorMaui.View;
 using Microsoft.Extensions.Logging;
+using SkiaSharp.Views.Maui.Controls.Hosting;
 using Syncfusion.Maui.Core.Hosting;
 
 namespace LoanCalculatorMaui
@@ -16,6 +18,7 @@ namespace LoanCalculatorMaui
             var builder = MauiApp.CreateBuilder();
             builder
                  .UseMauiApp<App>()
+                 .UseSkiaSharp()
                  .UseSentry(options =>
                  {
                      // The DSN is the only required setting.
@@ -60,7 +63,8 @@ namespace LoanCalculatorMaui
                         builder.Services.AddSingleton<IAppInformation, LoanCalculatorMaui.Platforms.iOS.Services.iOSAppInformation>();
                         builder.Services.AddSingleton<ILocalStorage, LoanCalculatorMaui.Platforms.iOS.Services.iOSLocalStorageService>();
 #elif MACCATALYST
-
+                        builder.Services.AddSingleton<IAppInformation, LoanCalculatorMaui.Platforms.iOS.Services.iOSAppInformation>();
+                        builder.Services.AddSingleton<ILocalStorage, LoanCalculatorMaui.Platforms.iOS.Services.iOSLocalStorageService>();
 #elif WINDOWS
                         builder.Services.AddSingleton<IAppInformation, LoanCalculatorMaui.Platforms.Windows.Services.WindowsAppInformation>();
                         builder.Services.AddSingleton<ILocalStorage, LoanCalculatorMaui.Platforms.Windows.Services.WindowsLocalStorageService>();
@@ -76,6 +80,14 @@ namespace LoanCalculatorMaui
             builder.Services.AddSingleton<InAppPurchaseViewModel>();
             builder.Services.AddSingleton<IThemeHandler, ThemeHandler>();
             builder.Services.AddSingleton<IInAppPurchaseService, InAppPurchaseService>();
+            builder.Services.AddTransient<SettingsView>();
+            builder.Services.AddSingleton<WhatIfViewModel>();
+            builder.Services.AddSingleton<WhatIfView>();
+            builder.Services.AddSingleton<BudgetViewModel>();
+            builder.Services.AddSingleton<BudgetView>();
+            builder.Services.AddSingleton<LoanView>();
+            builder.Services.AddSingleton<SplashPage>();
+            builder.Services.AddSingleton<AppShell>();
 
 #if DEBUG
             builder.Logging.AddDebug();

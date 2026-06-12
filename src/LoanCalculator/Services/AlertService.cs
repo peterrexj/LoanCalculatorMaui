@@ -4,11 +4,16 @@ namespace LoanCalculatorMaui.Services
 {
     public class AlertService : IAlertService
     {
+        private static Page? CurrentPage =>
+            Application.Current?.Windows.FirstOrDefault()?.Page;
+
         public async Task ShowAlertAsync(string title, string message, string okButton)
         {
             await MainThread.InvokeOnMainThreadAsync(async () =>
             {
-                await Application.Current.MainPage.DisplayAlert(title, message, okButton);
+                var page = CurrentPage;
+                if (page != null)
+                    await page.DisplayAlert(title, message, okButton);
             });
         }
 
@@ -16,9 +21,13 @@ namespace LoanCalculatorMaui.Services
         {
             try
             {
-                return await MainThread.InvokeOnMainThreadAsync(async () => await Application.Current?.MainPage?.DisplayAlert(title, message, acceptButton, cancelButton));
+                return await MainThread.InvokeOnMainThreadAsync(async () =>
+                {
+                    var page = CurrentPage;
+                    return page != null && await page.DisplayAlert(title, message, acceptButton, cancelButton);
+                });
             }
-            catch (Exception e)
+            catch
             {
                 return true;
             }

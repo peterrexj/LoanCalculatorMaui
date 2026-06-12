@@ -4,11 +4,15 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:controls="clr-namespace:LoanCalculatorMaui.Controls"
+    xmlns:buttons="clr-namespace:Syncfusion.Maui.Buttons;assembly=Syncfusion.Maui.Buttons"
     xmlns:editors="clr-namespace:Syncfusion.Maui.Inputs;assembly=Syncfusion.Maui.Inputs"
     xmlns:expander="clr-namespace:Syncfusion.Maui.Expander;assembly=Syncfusion.Maui.Expander"
     xmlns:sfPopup="clr-namespace:Syncfusion.Maui.Popup;assembly=Syncfusion.Maui.Popup"
-    Title="SettingsView">
+    Title="Settings">
+
     <Grid BackgroundColor="{DynamicResource LoanAppDefaultBackgroundColor}" IsEnabled="{Binding IsFree}">
+
+        <!--  Disclaimer Popup  -->
         <sfPopup:SfPopup
             x:Name="PopupDisclaimer"
             Padding="10,25,10,20"
@@ -29,12 +33,7 @@
                             BackgroundColor="Transparent"
                             FontAttributes="Bold"
                             FontFamily="{DynamicResource DefaultFontFamily}"
-                            FontSize="{OnIdiom Phone=18,
-                                               Tablet=23,
-                                               Desktop=23,
-                                               TV=23,
-                                               Watch=14,
-                                               Default=18}"
+                            FontSize="{StaticResource FontSizeXL}"
                             HorizontalTextAlignment="Center"
                             Text="Disclaimer"
                             TextColor="{DynamicResource LoanAppDefaultForegroundColor}"
@@ -50,12 +49,7 @@
                             Command="{Binding PopupCloseCommand}"
                             FontAttributes="Bold"
                             FontFamily="{DynamicResource DefaultFontFamily}"
-                            FontSize="{OnIdiom Phone=16,
-                                               Tablet=21,
-                                               Desktop=21,
-                                               TV=21,
-                                               Watch=14,
-                                               Default=16}"
+                            FontSize="{StaticResource FontSizeLarge}"
                             IsVisible="{Binding IsActive}"
                             Text="Close"
                             TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
@@ -76,187 +70,495 @@
                 </DataTemplate>
             </sfPopup:SfPopup.ContentTemplate>
         </sfPopup:SfPopup>
+
         <controls:InAppPurchaseView x:Name="PremiumWindow" />
 
-        <!--  Main Content  -->
-        <VerticalStackLayout>
-            <!--  Top Section  -->
-            <Grid Padding="20">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="*" />
-                </Grid.ColumnDefinitions>
-                <Image
-                    Grid.Column="0"
-                    HeightRequest="50"
-                    Source="icon_settings.png"
-                    WidthRequest="50" />
-                <StackLayout Grid.Column="1" Padding="10,0,0,0">
-                    <Label
-                        FontAttributes="Bold"
-                        FontSize="{OnIdiom Phone=24,
-                                           Tablet=29,
-                                           Desktop=29,
-                                           TV=29,
-                                           Watch=20,
-                                           Default=24}"
-                        Text="Settings"
-                        TextColor="{DynamicResource LoanAppAppShellFgColor}" />
-                    <Label
-                        FontSize="{OnIdiom Phone=14,
-                                           Tablet=19,
-                                           Desktop=19,
-                                           TV=19,
-                                           Watch=12,
-                                           Default=14}"
-                        Text="Manage your preferences"
-                        TextColor="{DynamicResource LoanAppAppShellFgColor}" />
-                </StackLayout>
-            </Grid>
+        <!--  Main scrollable content  -->
+        <ScrollView>
+            <VerticalStackLayout Spacing="0">
 
-            <!--  Main Content  -->
-            <VerticalStackLayout Padding="20">
-                <!--  Theme Selector  -->
+                <!--  ── Page Header ──────────────────────────────────────────  -->
+                <Grid
+                    Padding="20,20,20,16"
+                    BackgroundColor="{DynamicResource LoanAppDefaultBackgroundColor}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <Border
+                        Grid.Column="0"
+                        BackgroundColor="{DynamicResource LoanAppAppShellBgColor}"
+                        HeightRequest="48"
+                        StrokeShape="RoundRectangle 12"
+                        StrokeThickness="0"
+                        WidthRequest="48">
+                        <Image
+                            HeightRequest="28"
+                            HorizontalOptions="Center"
+                            Source="icon_settings.png"
+                            VerticalOptions="Center"
+                            WidthRequest="28" />
+                    </Border>
+                    <VerticalStackLayout
+                        Grid.Column="1"
+                        Margin="14,0,0,0"
+                        Spacing="2"
+                        VerticalOptions="Center">
+                        <Label
+                            FontAttributes="Bold"
+                            FontSize="{StaticResource FontSizeHeading}"
+                            Text="Settings"
+                            TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                        <Label
+                            FontSize="{StaticResource FontSizeBody}"
+                            Opacity="0.65"
+                            Text="Manage your preferences"
+                            TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                    </VerticalStackLayout>
+                </Grid>
+
+                <!--  ── Section: Appearance ──────────────────────────────────  -->
                 <Label
-                    Margin="0,20,0,0"
-                    FontSize="{OnIdiom Phone=14,
-                                       Tablet=19,
-                                       Desktop=19,
-                                       TV=19,
-                                       Watch=12,
-                                       Default=14}"
-                    Text="Select Theme"
-                    TextColor="{DynamicResource LoanAppAppShellFgColor}" />
-                <editors:SfComboBox
-                    BackgroundColor="Transparent"
-                    ItemsSource="{Binding Themes}"
-                    SelectedItem="{Binding SelectedTheme, Mode=TwoWay}"
-                    Style="{DynamicResource SfComboBoxStyle}" />
+                    Margin="20,20,20,8"
+                    FontAttributes="Bold"
+                    FontSize="{StaticResource FontSizeSmall}"
+                    Opacity="0.55"
+                    Text="APPEARANCE"
+                    TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
 
-                <Label
-                    Margin="0,20,0,0"
-                    FontSize="{OnIdiom Phone=14,
-                                       Tablet=19,
-                                       Desktop=19,
-                                       TV=19,
-                                       Watch=12,
-                                       Default=14}"
-                    Text="Change Currency"
-                    TextColor="{DynamicResource LoanAppAppShellFgColor}" />
-                <editors:SfComboBox
-                    BackgroundColor="Transparent"
-                    DisplayMemberPath="Display"
-                    ItemsSource="{Binding Currencies}"
-                    SelectedItem="{Binding SelectedCurrency, Mode=TwoWay}"
-                    SelectedValuePath="Symbol"
-                    Style="{DynamicResource SfComboBoxStyle}" />
+                <Border
+                    Margin="16,0"
+                    Padding="16"
+                    BackgroundColor="{DynamicResource BorderControlBackgroundGradientBrush}"
+                    Stroke="{DynamicResource BorderControlGradientBrush}"
+                    StrokeShape="RoundRectangle 12"
+                    StrokeThickness="1">
+                    <VerticalStackLayout Spacing="16">
 
+                        <!--  Theme  -->
+                        <VerticalStackLayout Spacing="6">
+                            <Label
+                                FontSize="{StaticResource FontSizeBody}"
+                                Text="Theme"
+                                TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                            <editors:SfComboBox
+                                BackgroundColor="Transparent"
+                                ItemsSource="{Binding Themes}"
+                                SelectedItem="{Binding SelectedTheme, Mode=TwoWay}"
+                                Style="{DynamicResource SfComboBoxStyle}" />
+                        </VerticalStackLayout>
 
-                <!--<Label
-                    Margin="0,20,0,0"
-                    FontSize="{OnIdiom Phone=14, Tablet=19, Desktop=19, TV=19, Default=14}"
-                    Text="Disclaimer"
-                    TextColor="{DynamicResource LoanAppAppShellFgColor}" />-->
+                        <!--  Divider  -->
+                        <BoxView
+                            HeightRequest="1"
+                            Opacity="0.15"
+                            Color="{DynamicResource LoanAppDefaultForegroundColor}" />
 
+                        <!--  Currency  -->
+                        <VerticalStackLayout Spacing="6">
+                            <Label
+                                FontSize="{StaticResource FontSizeBody}"
+                                Text="Currency"
+                                TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                            <editors:SfComboBox
+                                BackgroundColor="Transparent"
+                                DisplayMemberPath="Display"
+                                ItemsSource="{Binding Currencies}"
+                                SelectedItem="{Binding SelectedCurrency, Mode=TwoWay}"
+                                SelectedValuePath="Symbol"
+                                Style="{DynamicResource SfComboBoxStyle}" />
+                        </VerticalStackLayout>
 
+                        <BoxView
+                            HeightRequest="1"
+                            Opacity="0.15"
+                            Color="{DynamicResource LoanAppDefaultForegroundColor}" />
 
-                <Button
-                    Margin="0,10,10,0"
-                    Clicked="OnPremiumShow_Clicked"
-                    Style="{DynamicResource MauiButtonStyle}"
-                    Text="Restore your purchase" />
-
-                <Button
-                    Margin="0,10,10,0"
-                    Command="{Binding ShowDisclaimerCommand}"
-                    Style="{DynamicResource MauiButtonStyle}"
-                    Text="Disclaimer" />
-
-                <!--<Button
-                    Margin="0,10,10,0"
-                    Command="{Binding ShowDisclaimerCommand}"
-                    Style="{DynamicResource MauiButtonStyle}"
-                    Text="Privacy policy" />-->
-
-                <Button
-                    Margin="0,10,10,0"
-                    Command="{Binding OnShareAppRequestCommand}"
-                    Style="{DynamicResource MauiButtonStyle}"
-                    Text="Share the app" />
-
-                <Button
-                    Margin="0,10,10,0"
-                    Command="{Binding OnRateAppRequestCommand}"
-                    Style="{DynamicResource MauiButtonStyle}"
-                    Text="Send feedback" />
-
-                <expander:SfExpander
-                    Margin="0,15,0,0"
-                    HeaderIconPosition="End"
-                    Style="{DynamicResource CommonExpanderStyle}">
-                    <expander:SfExpander.Header>
-                        <Grid>
-                            <Label Style="{DynamicResource ExpanderHeaderLabelStyle}" Text="Delete your data" />
-                        </Grid>
-                    </expander:SfExpander.Header>
-                    <expander:SfExpander.Content>
-
-                        <Grid Margin="15,10,15,0">
+                        <!--  Australian mode  -->
+                        <Grid ColumnSpacing="10">
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
                                 <ColumnDefinition Width="*" />
                             </Grid.ColumnDefinitions>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
-                            </Grid.RowDefinitions>
-                            <Button
-                                Grid.Row="0"
+                            <buttons:SfSwitch
                                 Grid.Column="0"
-                                Margin="0,10,10,0"
-                                Command="{Binding DeleteLoanDataCommand}"
-                                CornerRadius="5"
-                                Style="{DynamicResource MauiButtonStyle}"
-                                Text="Loan Data" />
-
-                            <Button
-                                Grid.Row="0"
-                                Grid.Column="1"
-                                Margin="0,10,10,0"
-                                Command="{Binding DeleteExpenseDataCommand}"
-                                CornerRadius="5"
-                                Style="{DynamicResource MauiButtonStyle}"
-                                Text="Expense Data" />
-                            <Button
-                                Grid.Row="1"
-                                Grid.Column="0"
-                                Margin="0,10,10,0"
-                                Command="{Binding DeleteIncomeDataCommand}"
-                                CornerRadius="5"
-                                Style="{DynamicResource MauiButtonStyle}"
-                                Text="Income Data" />
-
-                            <Button
-                                Grid.Row="1"
-                                Grid.Column="1"
-                                Margin="0,10,10,0"
-                                Command="{Binding DeleteAllDataCommand}"
-                                CornerRadius="5"
-                                IsVisible="{Binding IsAllDataDeleteVisible}"
-                                Style="{DynamicResource MauiButtonStyle}"
-                                Text="All Data" />
+                                HorizontalOptions="Start"
+                                IsOn="{Binding IsAustralianModeEnabled, Mode=TwoWay}">
+                                <VisualStateManager.VisualStateGroups>
+                                    <VisualStateGroup x:Name="AusSwitchStates">
+                                        <VisualState x:Name="On">
+                                            <VisualState.Setters>
+                                                <Setter Property="SwitchSettings">
+                                                    <Setter.Value>
+                                                        <buttons:SwitchSettings
+                                                            ThumbBackground="{DynamicResource LoanAppSwitchThumbColorOn}"
+                                                            ThumbStroke="{DynamicResource LoanAppSwitchThumbBorderColorOn}"
+                                                            TrackBackground="{DynamicResource LoanAppSwitchTrackColorOn}"
+                                                            TrackStroke="{DynamicResource LoanAppSwitchTrackBorderColorOn}" />
+                                                    </Setter.Value>
+                                                </Setter>
+                                            </VisualState.Setters>
+                                        </VisualState>
+                                        <VisualState x:Name="Off">
+                                            <VisualState.Setters>
+                                                <Setter Property="SwitchSettings">
+                                                    <Setter.Value>
+                                                        <buttons:SwitchSettings
+                                                            ThumbBackground="{DynamicResource LoanAppSwitchThumbColorOff}"
+                                                            ThumbStroke="{DynamicResource LoanAppSwitchThumbBorderColorOff}"
+                                                            TrackBackground="{DynamicResource LoanAppSwitchTrackColorOff}"
+                                                            TrackStroke="{DynamicResource LoanAppSwitchTrackBorderColorOff}" />
+                                                    </Setter.Value>
+                                                </Setter>
+                                            </VisualState.Setters>
+                                        </VisualState>
+                                    </VisualStateGroup>
+                                </VisualStateManager.VisualStateGroups>
+                            </buttons:SfSwitch>
+                            <VerticalStackLayout Grid.Column="1" Spacing="1" VerticalOptions="Center">
+                                <Label
+                                    FontSize="{StaticResource FontSizeBody}"
+                                    Text="Australian property mode"
+                                    TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                                <Label
+                                    FontSize="{StaticResource FontSizeSmall}"
+                                    Opacity="0.55"
+                                    Text="Enables stamp duty calculator by state on the Loan tab"
+                                    TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                            </VerticalStackLayout>
                         </Grid>
 
-                    </expander:SfExpander.Content>
-                </expander:SfExpander>
-            </VerticalStackLayout>
-        </VerticalStackLayout>
+                        <BoxView
+                            HeightRequest="1"
+                            Opacity="0.15"
+                            Color="{DynamicResource LoanAppDefaultForegroundColor}" />
 
-        <!--  Activity Indicator  -->
-        <ActivityIndicator
-            HorizontalOptions="Center"
-            IsRunning="{Binding IsBusy}"
-            VerticalOptions="Center"
-            Color="{DynamicResource LoanAppAppShellFgColor}" />
+                        <!--  Stamp Duty toggle  -->
+                        <Grid ColumnSpacing="10">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <buttons:SfSwitch
+                                Grid.Column="0"
+                                HorizontalOptions="Start"
+                                IsEnabled="{Binding IsStampDutyToggleEnabled}"
+                                IsOn="{Binding IsStampDutyEnabled, Mode=TwoWay}">
+                                <VisualStateManager.VisualStateGroups>
+                                    <VisualStateGroup x:Name="StampDutySwitchStates">
+                                        <VisualState x:Name="On">
+                                            <VisualState.Setters>
+                                                <Setter Property="SwitchSettings">
+                                                    <Setter.Value>
+                                                        <buttons:SwitchSettings
+                                                            ThumbBackground="{DynamicResource LoanAppSwitchThumbColorOn}"
+                                                            ThumbStroke="{DynamicResource LoanAppSwitchThumbBorderColorOn}"
+                                                            TrackBackground="{DynamicResource LoanAppSwitchTrackColorOn}"
+                                                            TrackStroke="{DynamicResource LoanAppSwitchTrackBorderColorOn}" />
+                                                    </Setter.Value>
+                                                </Setter>
+                                            </VisualState.Setters>
+                                        </VisualState>
+                                        <VisualState x:Name="Off">
+                                            <VisualState.Setters>
+                                                <Setter Property="SwitchSettings">
+                                                    <Setter.Value>
+                                                        <buttons:SwitchSettings
+                                                            ThumbBackground="{DynamicResource LoanAppSwitchThumbColorOff}"
+                                                            ThumbStroke="{DynamicResource LoanAppSwitchThumbBorderColorOff}"
+                                                            TrackBackground="{DynamicResource LoanAppSwitchTrackColorOff}"
+                                                            TrackStroke="{DynamicResource LoanAppSwitchTrackBorderColorOff}" />
+                                                    </Setter.Value>
+                                                </Setter>
+                                            </VisualState.Setters>
+                                        </VisualState>
+                                    </VisualStateGroup>
+                                </VisualStateManager.VisualStateGroups>
+                            </buttons:SfSwitch>
+                            <VerticalStackLayout Grid.Column="1" Spacing="1" VerticalOptions="Center">
+                                <Label
+                                    FontSize="{StaticResource FontSizeBody}"
+                                    Text="Show Stamp Duty"
+                                    TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                                <Label
+                                    FontSize="{StaticResource FontSizeSmall}"
+                                    Opacity="0.55"
+                                    Text="Show stamp duty field in upfront costs"
+                                    TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                                <Label
+                                    FontSize="{StaticResource FontSizeSmall}"
+                                    IsVisible="{Binding IsAustralianModeEnabled}"
+                                    Opacity="0.45"
+                                    Text="Always on — required when Australian mode is active"
+                                    TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                            </VerticalStackLayout>
+                        </Grid>
+
+                    </VerticalStackLayout>
+                </Border>
+
+                <!--  ── Section: Support ─────────────────────────────────────  -->
+                <Label
+                    Margin="20,24,20,8"
+                    FontAttributes="Bold"
+                    FontSize="{StaticResource FontSizeSmall}"
+                    Opacity="0.55"
+                    Text="SUPPORT"
+                    TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+
+                <Border
+                    Margin="16,0"
+                    BackgroundColor="{DynamicResource BorderControlBackgroundGradientBrush}"
+                    Stroke="{DynamicResource BorderControlGradientBrush}"
+                    StrokeShape="RoundRectangle 12"
+                    StrokeThickness="1">
+                    <VerticalStackLayout Spacing="0">
+
+                        <!--  Disclaimer  -->
+                        <Grid Padding="16,14">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <Grid.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding ShowDisclaimerCommand}" />
+                            </Grid.GestureRecognizers>
+                            <VerticalStackLayout Grid.Column="0" Spacing="2">
+                                <Label
+                                    FontSize="{StaticResource FontSizeBody}"
+                                    Text="Disclaimer"
+                                    TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                                <Label
+                                    FontSize="{StaticResource FontSizeSmall}"
+                                    Opacity="0.55"
+                                    Text="Legal information and terms"
+                                    TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                            </VerticalStackLayout>
+                            <Label
+                                Grid.Column="1"
+                                FontFamily="{DynamicResource DefaultFontFamily}"
+                                FontSize="{StaticResource FontSizeMedium}"
+                                Opacity="0.4"
+                                Text="›"
+                                TextColor="{DynamicResource LoanAppDefaultForegroundColor}"
+                                VerticalOptions="Center" />
+                        </Grid>
+
+                        <BoxView Margin="16,0" HeightRequest="1" Opacity="0.1" Color="{DynamicResource LoanAppDefaultForegroundColor}" />
+
+                        <!--  Share  -->
+                        <Grid Padding="16,14">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <Grid.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding OnShareAppRequestCommand}" />
+                            </Grid.GestureRecognizers>
+                            <VerticalStackLayout Grid.Column="0" Spacing="2">
+                                <Label
+                                    FontSize="{StaticResource FontSizeBody}"
+                                    Text="Share the app"
+                                    TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                                <Label
+                                    FontSize="{StaticResource FontSizeSmall}"
+                                    Opacity="0.55"
+                                    Text="Recommend to friends and family"
+                                    TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                            </VerticalStackLayout>
+                            <Label
+                                Grid.Column="1"
+                                FontSize="{StaticResource FontSizeMedium}"
+                                Opacity="0.4"
+                                Text="›"
+                                TextColor="{DynamicResource LoanAppDefaultForegroundColor}"
+                                VerticalOptions="Center" />
+                        </Grid>
+
+                        <BoxView Margin="16,0" HeightRequest="1" Opacity="0.1" Color="{DynamicResource LoanAppDefaultForegroundColor}" />
+
+                        <!--  Feedback  -->
+                        <Grid Padding="16,14">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <Grid.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding OnRateAppRequestCommand}" />
+                            </Grid.GestureRecognizers>
+                            <VerticalStackLayout Grid.Column="0" Spacing="2">
+                                <Label
+                                    FontSize="{StaticResource FontSizeBody}"
+                                    Text="Send feedback"
+                                    TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                                <Label
+                                    FontSize="{StaticResource FontSizeSmall}"
+                                    Opacity="0.55"
+                                    Text="Rate us or report an issue"
+                                    TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                            </VerticalStackLayout>
+                            <Label
+                                Grid.Column="1"
+                                FontSize="{StaticResource FontSizeMedium}"
+                                Opacity="0.4"
+                                Text="›"
+                                TextColor="{DynamicResource LoanAppDefaultForegroundColor}"
+                                VerticalOptions="Center" />
+                        </Grid>
+
+                    </VerticalStackLayout>
+                </Border>
+
+                <!--  ── Section: Purchases ───────────────────────────────────  -->
+                <Label
+                    Margin="20,24,20,8"
+                    FontAttributes="Bold"
+                    FontSize="{StaticResource FontSizeSmall}"
+                    Opacity="0.55"
+                    Text="PURCHASES"
+                    TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+
+                <Border
+                    Margin="16,0"
+                    BackgroundColor="{DynamicResource BorderControlBackgroundGradientBrush}"
+                    Stroke="{DynamicResource BorderControlGradientBrush}"
+                    StrokeShape="RoundRectangle 12"
+                    StrokeThickness="1">
+                    <Grid Padding="16,14">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnPremiumShow_Clicked" />
+                        </Grid.GestureRecognizers>
+                        <VerticalStackLayout Grid.Column="0" Spacing="2">
+                            <Label
+                                FontSize="{StaticResource FontSizeBody}"
+                                Text="Restore purchase"
+                                TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                            <Label
+                                FontSize="{StaticResource FontSizeSmall}"
+                                Opacity="0.55"
+                                Text="Already bought premium? Restore here"
+                                TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                        </VerticalStackLayout>
+                        <Label
+                            Grid.Column="1"
+                            FontSize="{StaticResource FontSizeMedium}"
+                            Opacity="0.4"
+                            Text="›"
+                            TextColor="{DynamicResource LoanAppDefaultForegroundColor}"
+                            VerticalOptions="Center" />
+                    </Grid>
+                </Border>
+
+                <!--  ── Section: Danger Zone ──────────────────────────────────  -->
+                <Label
+                    Margin="20,24,20,8"
+                    FontAttributes="Bold"
+                    FontSize="{StaticResource FontSizeSmall}"
+                    Opacity="0.55"
+                    Text="DATA"
+                    TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+
+                <Border
+                    Margin="16,0,16,32"
+                    BackgroundColor="{DynamicResource BorderControlBackgroundGradientBrush}"
+                    Stroke="{DynamicResource BorderControlGradientBrush}"
+                    StrokeShape="RoundRectangle 12"
+                    StrokeThickness="1">
+                    <expander:SfExpander
+                        HeaderIconPosition="End"
+                        Style="{DynamicResource CommonExpanderStyle}">
+                        <expander:SfExpander.Header>
+                            <Grid Padding="0,2">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <VerticalStackLayout Spacing="2">
+                                    <Label
+                                        FontSize="{StaticResource FontSizeBody}"
+                                        Style="{DynamicResource ExpanderHeaderLabelStyle}"
+                                        Text="Delete your data" />
+                                    <Label
+                                        Margin="15,0,0,4"
+                                        FontSize="{StaticResource FontSizeSmall}"
+                                        Opacity="0.55"
+                                        Text="Permanently remove saved records"
+                                        TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                                </VerticalStackLayout>
+                            </Grid>
+                        </expander:SfExpander.Header>
+                        <expander:SfExpander.Content>
+                            <Grid Margin="16,8,16,16" ColumnSpacing="10" RowSpacing="10">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+                                <Button
+                                    Grid.Row="0"
+                                    Grid.Column="0"
+                                    Command="{Binding DeleteLoanDataCommand}"
+                                    CornerRadius="8"
+                                    Style="{DynamicResource MauiButtonStyle}"
+                                    Text="Loan" />
+                                <Button
+                                    Grid.Row="0"
+                                    Grid.Column="1"
+                                    Command="{Binding DeleteExpenseDataCommand}"
+                                    CornerRadius="8"
+                                    Style="{DynamicResource MauiButtonStyle}"
+                                    Text="Expenses" />
+                                <Button
+                                    Grid.Row="1"
+                                    Grid.Column="0"
+                                    Command="{Binding DeleteIncomeDataCommand}"
+                                    CornerRadius="8"
+                                    Style="{DynamicResource MauiButtonStyle}"
+                                    Text="Income" />
+                                <Button
+                                    Grid.Row="1"
+                                    Grid.Column="1"
+                                    Command="{Binding DeleteAllDataCommand}"
+                                    CornerRadius="8"
+                                    IsVisible="{Binding IsAllDataDeleteVisible}"
+                                    Style="{DynamicResource MauiButtonStyle}"
+                                    Text="All Data" />
+                            </Grid>
+                        </expander:SfExpander.Content>
+                    </expander:SfExpander>
+                </Border>
+
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <!--  Loading overlay  -->
+        <Grid
+            BackgroundColor="{DynamicResource LoanAppDefaultBackgroundColor}"
+            InputTransparent="False"
+            IsVisible="{Binding IsPageBusy}"
+            Opacity="0.85">
+            <VerticalStackLayout
+                HorizontalOptions="Center"
+                Spacing="12"
+                VerticalOptions="Center">
+                <ActivityIndicator
+                    HorizontalOptions="Center"
+                    IsRunning="{Binding IsPageBusy}"
+                    Color="{DynamicResource LoanAppAppShellFgColor}" />
+                <Label
+                    FontSize="{StaticResource FontSizeMedium}"
+                    HorizontalOptions="Center"
+                    Text="Loading..."
+                    TextColor="{DynamicResource LoanAppPrimaryTextColor}" />
+            </VerticalStackLayout>
+        </Grid>
+
     </Grid>
 </ContentPage>

@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="LoanCalculatorMaui.View.SplashPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    NavigationPage.HasNavigationBar="False"
+    Shell.NavBarIsVisible="False">
+
+    <!--  Brand gradient backdrop (theme-independent — this is a brand moment)  -->
+    <Grid>
+        <Grid.Background>
+            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                <GradientStop Offset="0.0" Color="#0A1A20" />
+                <GradientStop Offset="0.55" Color="#0E3340" />
+                <GradientStop Offset="1.0" Color="#10545C" />
+            </LinearGradientBrush>
+        </Grid.Background>
+
+        <!--  Soft radial glow behind the logo  -->
+        <Ellipse
+            x:Name="GlowEllipse"
+            HorizontalOptions="Center"
+            VerticalOptions="Center"
+            Margin="0,-140,0,0"
+            WidthRequest="360"
+            HeightRequest="360"
+            Opacity="0">
+            <Ellipse.Fill>
+                <RadialGradientBrush Center="0.5,0.5" Radius="0.5">
+                    <GradientStop Offset="0.0" Color="#3316BAC5" />
+                    <GradientStop Offset="1.0" Color="#0016BAC5" />
+                </RadialGradientBrush>
+            </Ellipse.Fill>
+        </Ellipse>
+
+        <Grid
+            RowDefinitions="*,Auto,Auto,Auto,*"
+            HorizontalOptions="Fill"
+            VerticalOptions="Fill"
+            Padding="32,0">
+
+            <!--  Logo card — scales + fades in  -->
+            <Border
+                x:Name="LogoCard"
+                Grid.Row="1"
+                HorizontalOptions="Center"
+                VerticalOptions="End"
+                WidthRequest="148"
+                HeightRequest="148"
+                Padding="20"
+                Opacity="0"
+                Scale="0.6"
+                BackgroundColor="#FFFFFF"
+                StrokeThickness="0">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="34" />
+                </Border.StrokeShape>
+                <Border.Shadow>
+                    <Shadow
+                        Brush="#16BAC5"
+                        Offset="0,12"
+                        Radius="32"
+                        Opacity="0.45" />
+                </Border.Shadow>
+                <Image
+                    Source="splash_icon.png"
+                    Aspect="AspectFit"
+                    HorizontalOptions="Fill"
+                    VerticalOptions="Fill" />
+            </Border>
+
+            <!--  App name  -->
+            <Label
+                x:Name="TitleLabel"
+                Grid.Row="2"
+                Margin="0,28,0,0"
+                Text="Loan Affordability Calculator"
+                FontSize="25"
+                FontAttributes="Bold"
+                TextColor="#FFFFFF"
+                HorizontalTextAlignment="Center"
+                HorizontalOptions="Center"
+                Opacity="0"
+                TranslationY="18" />
+
+            <!--  Tagline  -->
+            <Label
+                x:Name="TaglineLabel"
+                Grid.Row="3"
+                Margin="0,8,0,0"
+                Text="Plan smarter, borrow wiser"
+                FontSize="14"
+                TextColor="#9FD9DE"
+                HorizontalTextAlignment="Center"
+                HorizontalOptions="Center"
+                Opacity="0"
+                TranslationY="12" />
+
+            <!--  Loading dots — pulse while the app pre-warms  -->
+            <HorizontalStackLayout
+                x:Name="DotsLayout"
+                Grid.Row="4"
+                Margin="0,0,0,56"
+                Spacing="10"
+                HorizontalOptions="Center"
+                VerticalOptions="End"
+                Opacity="0">
+                <Ellipse x:Name="Dot1" WidthRequest="9" HeightRequest="9" Fill="#16BAC5" />
+                <Ellipse x:Name="Dot2" WidthRequest="9" HeightRequest="9" Fill="#16BAC5" />
+                <Ellipse x:Name="Dot3" WidthRequest="9" HeightRequest="9" Fill="#16BAC5" />
+            </HorizontalStackLayout>
+        </Grid>
+    </Grid>
+</ContentPage>

@@ -6,13 +6,15 @@ namespace LoanCalculatorMaui.Services
     public class NameValueDataService(ILocalStorage localStorage) : INameValueDataService
     {
         private NameValueDataModel? _nameValueDataModel;
+
         public NameValueDataModel NameValueDataModel
         {
             get
             {
                 if (_nameValueDataModel == null)
                 {
-                    Task.Run(async () => _nameValueDataModel = await localStorage.GetData<NameValueDataModel>()).Wait();
+                    // Called during App startup on the main thread — Task.Run avoids sync-context deadlock.
+                    _nameValueDataModel = Task.Run(() => localStorage.GetData<NameValueDataModel>()).GetAwaiter().GetResult();
                     if (_nameValueDataModel == null)
                     {
                         _nameValueDataModel = new NameValueDataModel
@@ -28,7 +30,14 @@ namespace LoanCalculatorMaui.Services
 
         public void SaveNameValueData(NameValueDataModel value = null)
         {
-            Task.Run(async () => await localStorage.SaveData<NameValueDataModel>(value ?? NameValueDataModel)).Wait();
+            _ = Task.Run(async () =>
+            {
+                try
+                {
+                    await localStorage.SaveData<NameValueDataModel>(value ?? NameValueDataModel).ConfigureAwait(false);
+                }
+                catch { /* non-critical metadata — swallow */ }
+            });
         }
     }
 }

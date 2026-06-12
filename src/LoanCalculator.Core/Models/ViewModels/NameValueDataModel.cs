@@ -3,5 +3,6 @@
     public class NameValueDataModel
     {
         public bool HasShowAppLaunchDisclaimer { get; set; }
+        public bool HasShownWizard { get; set; }
     }
 }

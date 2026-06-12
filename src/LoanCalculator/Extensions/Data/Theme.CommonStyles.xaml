@@ -13,6 +13,45 @@
 
     <!--  Font Families  -->
     <x:String x:Key="DefaultFontFamily">Calibri</x:String>
+
+    <!--  ═══════════════════════════════════════════════════════
+          Responsive size tokens — use StaticResource instead of
+          repeating OnIdiom inline throughout every view file.
+          ═══════════════════════════════════════════════════════ -->
+
+    <!--  Font sizes  -->
+    <OnIdiom x:Key="FontSizeXS"
+             x:TypeArguments="x:Double"
+             Phone="10" Tablet="15" Desktop="15" TV="15" Watch="8" Default="10" />
+    <OnIdiom x:Key="FontSizeSmall"
+             x:TypeArguments="x:Double"
+             Phone="11" Tablet="16" Desktop="16" TV="16" Watch="9" Default="11" />
+    <OnIdiom x:Key="FontSizeBody"
+             x:TypeArguments="x:Double"
+             Phone="12" Tablet="18" Desktop="18" TV="18" Watch="10" Default="12" />
+    <OnIdiom x:Key="FontSizeMedium"
+             x:TypeArguments="x:Double"
+             Phone="14" Tablet="20" Desktop="20" TV="20" Watch="12" Default="14" />
+    <OnIdiom x:Key="FontSizeLarge"
+             x:TypeArguments="x:Double"
+             Phone="15" Tablet="22" Desktop="22" TV="22" Watch="13" Default="15" />
+    <OnIdiom x:Key="FontSizeXL"
+             x:TypeArguments="x:Double"
+             Phone="18" Tablet="26" Desktop="26" TV="26" Watch="15" Default="18" />
+    <OnIdiom x:Key="FontSizeHeading"
+             x:TypeArguments="x:Double"
+             Phone="20" Tablet="28" Desktop="28" TV="28" Watch="16" Default="20" />
+
+    <!--  Margins  -->
+    <OnIdiom x:Key="MarginSection"
+             x:TypeArguments="Thickness"
+             Phone="5,0,5,0" Tablet="20,10,20,10" Desktop="20,10,20,10" TV="20,10,20,10" Default="5,0,5,0" />
+    <OnIdiom x:Key="MarginSectionFlat"
+             x:TypeArguments="Thickness"
+             Phone="8,0,8,0" Tablet="20,0,20,0" Desktop="20,0,20,0" TV="20,0,20,0" Default="8,0,8,0" />
+    <OnIdiom x:Key="MarginItem"
+             x:TypeArguments="Thickness"
+             Phone="5" Tablet="10" Desktop="10" TV="10" Default="5" />
     <!--  Global style for Label  -->
     <Style TargetType="Label">
         <Setter Property="FontFamily" Value="{StaticResource DefaultFontFamily}" />
@@ -110,7 +149,7 @@
         <Setter Property="TextColor" Value="{DynamicResource LoanAppExpanderHeaderTextColor}" />
         <Setter Property="VerticalOptions" Value="Center" />
         <Setter Property="VerticalTextAlignment" Value="Center" />
-        <Setter Property="FontSize" Value="{OnIdiom Phone=12, Tablet=24, Desktop=24, TV=24, Watch=8, Default=12}" />
+        <Setter Property="FontSize" Value="{StaticResource FontSizeBody}" />
         <Setter Property="FontFamily" Value="{DynamicResource DefaultFontFamily}" />
     </Style>
 
@@ -130,7 +169,7 @@
     <!--  Tab Item  -->
     <Style TargetType="tabView:SfTabItem">
         <Setter Property="FontFamily" Value="{DynamicResource DefaultFontFamily}" />
-        <Setter Property="FontSize" Value="{OnIdiom Phone=10, Tablet=15, Desktop=15, TV=15, Watch=8, Default=10}" />
+        <Setter Property="FontSize" Value="{StaticResource FontSizeXS}" />
 
         <Setter Property="VisualStateManager.VisualStateGroups">
             <VisualStateGroupList>
@@ -165,12 +204,7 @@
             <Setter.Value>
                 <core:LabelStyle
                     FontFamily="{DynamicResource DefaultFontFamily}"
-                    FontSize="{OnIdiom Phone=16,
-                                       Tablet=21,
-                                       Desktop=21,
-                                       TV=21,
-                                       Watch=14,
-                                       Default=16}"
+                    FontSize="{StaticResource FontSizeLarge}"
                     TextColor="{DynamicResource LoanAppInputTextFgColor}" />
             </Setter.Value>
         </Setter>
@@ -217,7 +251,7 @@
         <Setter Property="CornerRadius" Value="15" />
         <Setter Property="Stroke" Value="{DynamicResource LoanAppSegBorderColor}" />
         <Setter Property="Background" Value="{DynamicResource LoanAppSegBgColor}" />
-        <Setter Property="SegmentHeight" Value="{OnIdiom Phone=40, Tablet=70, Desktop=70, TV=70, Default=40}" />
+        <Setter Property="SegmentHeight" Value="{OnIdiom Phone=40, Tablet=54, Desktop=54, TV=54, Default=40}" />
         <Setter Property="buttons:SfSegmentedControl.TextStyle">
             <Setter.Value>
                 <buttons:SegmentTextStyle
@@ -265,10 +299,21 @@
     <Style x:Key="InsightsChartDataLabelStyle" TargetType="chart:ChartDataLabelStyle">
         <Setter Property="FontAttributes" Value="Bold" />
         <Setter Property="FontFamily" Value="{DynamicResource DefaultFontFamily}" />
-        <Setter Property="FontSize" Value="{OnIdiom Phone=10, Tablet=15, Desktop=15, TV=15, Watch=8, Default=10}" />
+        <Setter Property="FontSize" Value="{StaticResource FontSizeXS}" />
         <Setter Property="LabelFormat" Value="c" />
         <Setter Property="TextColor" Value="{DynamicResource LoanAppChartDataMarkerTextColor}" />
     </Style>
+    <!--  Wizard entry — transparent bg when editable, subtle tinted bg when read-only  -->
+    <Style x:Key="WizardEntryStyle" TargetType="Entry">
+        <Setter Property="BackgroundColor" Value="Transparent" />
+        <Style.Triggers>
+            <Trigger TargetType="Entry" Property="IsReadOnly" Value="True">
+                <Setter Property="BackgroundColor" Value="{DynamicResource LoanAppAppShellBgColor}" />
+                <Setter Property="Opacity" Value="0.75" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
     <Style x:Key="MauiButtonStyle" TargetType="Button">
         <Setter Property="CornerRadius" Value="5" />
         <Setter Property="Margin" Value="4" />
@@ -276,19 +321,84 @@
         <Setter Property="Background" Value="{DynamicResource LoanAppButtonBgColor}" />
         <Setter Property="TextColor" Value="{DynamicResource LoanAppButtonFgColor}" />
         <Setter Property="FontFamily" Value="{DynamicResource DefaultFontFamily}" />
-        <Setter Property="FontSize" Value="{OnIdiom Phone=14, Tablet=19, Desktop=19, TV=19, Watch=12, Default=14}" />
+        <Setter Property="FontSize" Value="{OnIdiom Phone=14, Tablet=20, Desktop=20, TV=20, Watch=12, Default=14}" />
         <Setter Property="HorizontalOptions" Value="Fill" />
         <Setter Property="VerticalOptions" Value="Fill" />
     </Style>
+    <!--  ── Shared popup (input form) styles — the "Quick Input" look ──────────  -->
+    <!--  Uppercase field label sitting above a bordered input.  -->
+    <Style x:Key="PopupFieldLabelStyle" TargetType="Label">
+        <Setter Property="FontSize" Value="{StaticResource FontSizeSmall}" />
+        <Setter Property="Opacity" Value="0.45" />
+        <Setter Property="TextColor" Value="{DynamicResource LoanAppDefaultForegroundColor}" />
+    </Style>
+
+    <!--  Rounded container that wraps an Entry / SfComboBox inside a popup.  -->
+    <Style x:Key="PopupInputBorderStyle" TargetType="Border">
+        <Setter Property="Padding" Value="14,10" />
+        <Setter Property="BackgroundColor" Value="{DynamicResource LoanAppAppShellBgColor}" />
+        <Setter Property="StrokeThickness" Value="0" />
+        <Setter Property="StrokeShape" Value="RoundRectangle 10" />
+    </Style>
+
+    <!--  Full-width primary action button at the bottom of a popup (the "Apply" button).  -->
+    <Style x:Key="PopupPrimaryButtonStyle" TargetType="Button">
+        <Setter Property="Margin" Value="16,10,16,16" />
+        <Setter Property="HeightRequest" Value="48" />
+        <Setter Property="CornerRadius" Value="12" />
+        <Setter Property="FontAttributes" Value="Bold" />
+        <Setter Property="FontSize" Value="{StaticResource FontSizeLarge}" />
+        <Setter Property="FontFamily" Value="{DynamicResource DefaultFontFamily}" />
+        <Setter Property="BackgroundColor" Value="{DynamicResource LoanAppNavigationButtonBackgroundColor}" />
+        <Setter Property="TextColor" Value="{DynamicResource LoanAppNavigationButtonIconColor}" />
+    </Style>
+
+    <!--  Transparent secondary button used for Cancel / Back inside a popup footer row.  -->
+    <Style x:Key="PopupSecondaryButtonStyle" TargetType="Button">
+        <Setter Property="BackgroundColor" Value="Transparent" />
+        <Setter Property="CornerRadius" Value="12" />
+        <Setter Property="HeightRequest" Value="48" />
+        <Setter Property="FontSize" Value="{StaticResource FontSizeBody}" />
+        <Setter Property="FontFamily" Value="{DynamicResource DefaultFontFamily}" />
+        <Setter Property="TextColor" Value="{DynamicResource LoanAppDefaultForegroundColor}" />
+    </Style>
+
+    <!--  Small ✕ dismiss button in a popup's top-right header corner.  -->
+    <Style x:Key="PopupDismissButtonStyle" TargetType="Button">
+        <Setter Property="Text" Value="✕" />
+        <Setter Property="BackgroundColor" Value="Transparent" />
+        <Setter Property="FontSize" Value="{StaticResource FontSizeLarge}" />
+        <Setter Property="HeightRequest" Value="36" />
+        <Setter Property="WidthRequest" Value="44" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="TextColor" Value="{DynamicResource LoanAppDefaultForegroundColor}" />
+    </Style>
+
+    <!--  Inline validation error shown under a bordered input.  -->
+    <Style x:Key="PopupErrorLabelStyle" TargetType="Label">
+        <Setter Property="FontAttributes" Value="Italic" />
+        <Setter Property="FontSize" Value="{StaticResource FontSizeSmall}" />
+        <Setter Property="Opacity" Value="0.8" />
+        <Setter Property="TextColor" Value="{DynamicResource LoanAppInputErrorTextFgColor}" />
+    </Style>
+
+    <!--  Popup title (left side of the header row).  -->
+    <Style x:Key="PopupTitleLabelStyle" TargetType="Label">
+        <Setter Property="FontAttributes" Value="Bold" />
+        <Setter Property="FontSize" Value="{StaticResource FontSizeXL}" />
+        <Setter Property="VerticalOptions" Value="Center" />
+        <Setter Property="TextColor" Value="{DynamicResource LoanAppDefaultForegroundColor}" />
+    </Style>
+
     <Style x:Key="ExportButtonStyle" TargetType="Button">
         <Setter Property="CornerRadius" Value="5" />
         <Setter Property="Margin" Value="10,4,10,4" />
         <!--<Setter Property="MaximumHeightRequest" Value="60" />-->
-        <Setter Property="MinimumHeightRequest" Value="{OnIdiom Phone=50, Tablet=80, Desktop=80, TV=80, Watch=30, Default=50}" />
+        <Setter Property="MinimumHeightRequest" Value="{OnIdiom Phone=50, Tablet=70, Desktop=70, TV=70, Watch=30, Default=50}" />
         <Setter Property="Background" Value="{DynamicResource LoanAppExportButtonBgColor}" />
         <Setter Property="TextColor" Value="{DynamicResource LoanAppExportButtonFgColor}" />
         <Setter Property="FontFamily" Value="{DynamicResource DefaultFontFamily}" />
-        <Setter Property="FontSize" Value="{OnIdiom Phone=18, Tablet=23, Desktop=23, TV=23, Watch=16, Default=18}" />
+        <Setter Property="FontSize" Value="{OnIdiom Phone=18, Tablet=26, Desktop=26, TV=26, Watch=16, Default=18}" />
         <Setter Property="HorizontalOptions" Value="Fill" />
         <Setter Property="VerticalOptions" Value="Fill" />
     </Style>
@@ -304,7 +414,7 @@
         <Setter Property="VerticalOptions" Value="Center" />
         <Setter Property="TextColor" Value="{DynamicResource LoanAppButtonFgColor}" />
         <Setter Property="FontFamily" Value="{DynamicResource DefaultFontFamily}" />
-        <Setter Property="FontSize" Value="{OnIdiom Phone=14, Tablet=19, Desktop=19, TV=19, Watch=12, Default=14}" />
+        <Setter Property="FontSize" Value="{OnIdiom Phone=14, Tablet=20, Desktop=20, TV=20, Watch=12, Default=14}" />
     </Style>
     <Style x:Key="ListIconButtonStyle" TargetType="core:SfButton">
         <Setter Property="Background" Value="{DynamicResource LoanAppButtonBgColor}" />
@@ -315,6 +425,7 @@
 
     <!--  Style for SfAutocomplete  -->
     <Style x:Key="SfAutocompleteStyle" TargetType="editors:SfAutocomplete">
+        <Setter Property="BackgroundColor" Value="Transparent" />
         <Setter Property="Margin" Value="5,3,5,0" />
         <Setter Property="SelectionTextHighlightColor" Value="{DynamicResource LoanAppAutoCompleteSelectionTextHighlightColor}" />
         <Setter Property="SelectedDropDownItemBackground" Value="{DynamicResource LoanAppAutoCompleteSelectedDropDownItemBackground}" />
@@ -335,23 +446,20 @@
         <Setter Property="TextColor" Value="{DynamicResource LoanAppAutoCompleteTextColor}" />
         <Setter Property="TextHighlightMode" Value="MultipleOccurrence" />
         <Setter Property="TextSearchMode" Value="Contains" />
-        <Setter Property="FontSize" Value="{OnIdiom Phone=14, Tablet=19, Desktop=19, TV=19, Watch=12, Default=14}" />
-        <Setter Property="DropDownItemFontSize" Value="{OnIdiom Phone=14, Tablet=19, Desktop=19, TV=19, Watch=12, Default=14}" />
+        <Setter Property="FontSize" Value="{OnIdiom Phone=14, Tablet=20, Desktop=20, TV=20, Watch=12, Default=14}" />
+        <Setter Property="DropDownItemFontSize" Value="{StaticResource FontSizeMedium}" />
         <Setter Property="NoResultsFoundTemplate">
             <Setter.Value>
                 <DataTemplate>
-                    <Label
-                        Margin="70,10,0,0"
-                        FontAttributes="Italic"
-                        FontFamily="{DynamicResource DefaultFontFamily}"
-                        FontSize="{OnIdiom Phone=16,
-                                           Tablet=21,
-                                           Desktop=21,
-                                           TV=21,
-                                           Watch=14,
-                                           Default=16}"
-                        Text="Not Found"
-                        TextColor="{DynamicResource LoanAppAutoCompleteNoResultsFoundTextColor}" />
+                    <Grid BackgroundColor="{DynamicResource LoanAppAutoCompleteDropdownBackgroundColor}">
+                        <Label
+                            Margin="16,10"
+                            FontAttributes="Italic"
+                            FontFamily="{DynamicResource DefaultFontFamily}"
+                            FontSize="{StaticResource FontSizeBody}"
+                            Text="No matches found"
+                            TextColor="{DynamicResource LoanAppAutoCompleteDropdownTextColor}" />
+                    </Grid>
                 </DataTemplate>
             </Setter.Value>
         </Setter>
@@ -363,8 +471,8 @@
         <Setter Property="DropDownItemFontFamily" Value="{DynamicResource DefaultFontFamily}" />
         <Setter Property="DropDownItemTextColor" Value="{DynamicResource LoanAppComboDropDownTextColor}" />
         <Setter Property="FontFamily" Value="{DynamicResource DefaultFontFamily}" />
-        <Setter Property="FontSize" Value="{OnIdiom Phone=14, Tablet=19, Desktop=19, TV=19, Watch=12, Default=14}" />
-        <Setter Property="DropDownItemFontSize" Value="{OnIdiom Phone=14, Tablet=19, Desktop=19, TV=19, Watch=12, Default=14}" />
+        <Setter Property="FontSize" Value="{OnIdiom Phone=14, Tablet=20, Desktop=20, TV=20, Watch=12, Default=14}" />
+        <Setter Property="DropDownItemFontSize" Value="{OnIdiom Phone=14, Tablet=20, Desktop=20, TV=20, Watch=12, Default=14}" />
         <Setter Property="HighlightedTextColor" Value="{DynamicResource LoanAppComboHighlightedTextColor}" />
         <Setter Property="IsClearButtonVisible" Value="False" />
         <Setter Property="IsFilteringEnabled" Value="False" />

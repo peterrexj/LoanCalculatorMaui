@@ -88,6 +88,15 @@
     <Color x:Key="LoanAppAppShellTitleColor">#FFC3A1</Color>
     <Color x:Key="LoanAppAppShellDisabledColor">#D5B4B4</Color>
     <Color x:Key="LoanAppAppShellUnselectedColor">#D3756B</Color>
+
+    <!--  Modal popup / bottom sheet — matches warm theme  -->
+    <Color x:Key="LoanAppPopupBg">#F0DDD0</Color>
+    <Color x:Key="LoanAppPopupFg">#3D1A1A</Color>
+    <Color x:Key="LoanAppPopupSurface">#E5CCBC</Color>
+    <Color x:Key="LoanAppPopupMuted">#C08888</Color>
+    <Color x:Key="LoanAppPopupAccent">#A75D5D</Color>
+    <Color x:Key="LoanAppPopupButtonBg">#D3756B</Color>
+    <Color x:Key="LoanAppPopupButtonFg">#F5EBEB</Color>
     <Color x:Key="LoanAppAppShellTabBarBackgroundColor">#A75D5D</Color>
     <Color x:Key="LoanAppAppShellTabBarForegroundColor">#F5EBEB</Color>
     <Color x:Key="LoanAppAppShellTabBarUnselectedColor">#D5B4B4</Color>

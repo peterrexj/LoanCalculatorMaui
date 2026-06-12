@@ -43,14 +43,8 @@ namespace LoanCalculator.Core.Models
 
         public void SumUpData()
         {
+            AutoUpdateMortgageCharges();
             Total = StampDuty + MortgageCharges;
-            //if (ExpenseEntries != null)
-            //{
-            //    foreach (var item in ExpenseEntries)
-            //    {
-            //        Total += item.Expense;
-            //    }
-            //}
         }
     }
 }

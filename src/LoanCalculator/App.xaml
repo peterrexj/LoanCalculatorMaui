@@ -12,6 +12,10 @@
                 <ResourceDictionary Source="Resources/Styles/Styles.xaml" />
             </ResourceDictionary.MergedDictionaries>
             <localConverters:StringToColorConverter x:Key="StringToBrushConverter" />
+            <localConverters:BoolToAddUpdateConverter x:Key="BoolToAddUpdateConverter" />
+            <localConverters:BoolToEditAddTitleConverter x:Key="BoolToEditAddTitleConverter" />
+            <localConverters:IntToIsEmptyConverter x:Key="IntToIsEmptyConverter" />
+            <localConverters:NumberToWordsConverter x:Key="NumberToWordsConverter" />
         </ResourceDictionary>
     </Application.Resources>
 </Application>

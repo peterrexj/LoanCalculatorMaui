@@ -88,6 +88,15 @@
     <Color x:Key="LoanAppAppShellTitleColor">#9DB2BF</Color>
     <Color x:Key="LoanAppAppShellDisabledColor">#526D82</Color>
     <Color x:Key="LoanAppAppShellUnselectedColor">#393E46</Color>
+
+    <!--  Modal popup / bottom sheet — matches app theme  -->
+    <Color x:Key="LoanAppPopupBg">#2E3440</Color>
+    <Color x:Key="LoanAppPopupFg">#DDE6ED</Color>
+    <Color x:Key="LoanAppPopupSurface">#3B4252</Color>
+    <Color x:Key="LoanAppPopupMuted">#526D82</Color>
+    <Color x:Key="LoanAppPopupAccent">#9DB2BF</Color>
+    <Color x:Key="LoanAppPopupButtonBg">#526D82</Color>
+    <Color x:Key="LoanAppPopupButtonFg">#DDE6ED</Color>
     <Color x:Key="LoanAppAppShellTabBarBackgroundColor">#222831</Color>
     <Color x:Key="LoanAppAppShellTabBarForegroundColor">#DDE6ED</Color>
     <Color x:Key="LoanAppAppShellTabBarUnselectedColor">#526D82</Color>
@@ -149,8 +158,8 @@
     <Color x:Key="LoanAppBorderTopGradientBackgroundEnd">#DDE6ED</Color>
 
     <!--  Border controls box styles  -->
-    <Color x:Key="LoanAppBorderControlGradientBorderLineStart">#526D82</Color>
-    <Color x:Key="LoanAppBorderControlGradientBorderLineEnd">#9DB2BF</Color>
+    <Color x:Key="LoanAppBorderControlGradientBorderLineStart">#2D3B4A</Color>
+    <Color x:Key="LoanAppBorderControlGradientBorderLineEnd">#3A4E60</Color>
     <Color x:Key="LoanAppBorderControlGradientBackgroundStart">#27374D</Color>
     <Color x:Key="LoanAppBorderControlGradientBackgroundEnd">#393E46</Color>
 

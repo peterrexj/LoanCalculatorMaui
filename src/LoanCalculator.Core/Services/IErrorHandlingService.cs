@@ -1,7 +1,7 @@
 ﻿// Services/ErrorHandlingService.cs
 
-using System.Text.Json;
 using Microsoft.Extensions.Logging;
+using System.Text.Json;
 
 namespace LoanCalculator.Core.Services
 {
@@ -14,26 +14,31 @@ namespace LoanCalculator.Core.Services
     {
         public void HandleException(Exception? ex, string message = null)
         {
-            //enabling this will log the exception to the console & Sentry will capture and send the exception
-            // Log the exception with detailed information
-            //logger.LogError(ex, message ?? ex.Message);
+            if (ex == null) return;
 
-            if (ex is JsonException)
-            {
-                //this usually happens when there are changes to model or the value of the type
-            }
+            logger.LogError(ex, message ?? ex.Message);
 
-            // Display an alert to the user
-            MainThread.BeginInvokeOnMainThread(async () =>
-            {
 #if !DEBUG
-                SentrySdk.CaptureException(ex);
+            SentrySdk.CaptureException(ex);
 #endif
 
-                //Do this on the final release build
-                //#if DEBUG
-                await Application.Current?.MainPage.DisplayAlert("Error", message ?? "An unexpected error occurred.", "OK");
-//#endif
+            // JSON errors are usually stale saved data after a model change — not user-facing.
+            if (ex is JsonException) return;
+
+            MainThread.BeginInvokeOnMainThread(async () =>
+            {
+                try
+                {
+                    var page = Application.Current?.Windows.FirstOrDefault()?.Page;
+                    if (page == null) return;
+
+#if DEBUG
+                    await page.DisplayAlert("Error", $"{message ?? "An unexpected error occurred."}\n\n{ex.GetType().Name}: {ex.Message}", "OK");
+#else
+                    await page.DisplayAlert("Something went wrong", "We hit an unexpected error. The app will continue but some data may not have saved correctly.", "OK");
+#endif
+                }
+                catch { /* alert itself failed — nothing more we can do */ }
             });
         }
     }

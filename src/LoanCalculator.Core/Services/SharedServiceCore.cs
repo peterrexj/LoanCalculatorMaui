@@ -14,6 +14,10 @@ namespace LoanCalculator.Core.Services
         private static ILocalStorage? _localStorage;
         public static ILocalStorage LocalStorage => _localStorage ??= ServiceLocator.GetService<ILocalStorage>();
 
+        // Test-only injection points — not for production use.
+        internal static void SetLocalStorage(ILocalStorage storage) => _localStorage = storage;
+        internal static void ResetLocalStorage() => _localStorage = null;
+
         private static IErrorHandlingService? _errorHandlingService;
         public static IErrorHandlingService ErrorHandlingService => _errorHandlingService ??= ServiceLocator.GetService<IErrorHandlingService>();
 
@@ -28,14 +32,22 @@ namespace LoanCalculator.Core.Services
 
         private static bool _loadSafe = false;
         public static bool LoadSafe => _loadSafe;
-        public static void LoadSafeOn()
-        {
-            _loadSafe = true;
-        }
-        public static void LoadSafeOff()
-        {
-            _loadSafe = false;
-        }
+        public static void LoadSafeOn() => _loadSafe = true;
+        public static void LoadSafeOff() => _loadSafe = false;
+
+        // Dirty flags — set when a tab saves new data so other tabs know to refresh
+        // their cross-tab summaries on next appearance instead of skipping the load.
+        public static bool IsIncomeDirty { get; private set; }
+        public static bool IsExpenseDirty { get; private set; }
+        public static bool IsLoanDirty { get; private set; }
+
+        public static void MarkIncomeDirty() => IsIncomeDirty = true;
+        public static void MarkExpenseDirty() => IsExpenseDirty = true;
+        public static void MarkLoanDirty() => IsLoanDirty = true;
+
+        public static void ClearIncomeDirty() => IsIncomeDirty = false;
+        public static void ClearExpenseDirty() => IsExpenseDirty = false;
+        public static void ClearLoanDirty() => IsLoanDirty = false;
 
         public static async Task<T?> LoadDataFile<T>()
         {
@@ -54,99 +66,48 @@ namespace LoanCalculator.Core.Services
             return data;
         }
 
-        private static readonly object _saveDataLock = new object();
-
-        public static Task SaveData<T>(T data)
+        public static void SaveData<T>(T data)
         {
-            try
-            {
-                if (_loadSafe || PageHelper.IsFormLoading)
-                {
-                    return Task.CompletedTask;
-                }
+            if (_loadSafe) return;
 
-                lock (_saveDataLock)
-                {
-                    Task.Run(async () =>
-                    {
-                        await LocalStorage.SaveData(data).ConfigureAwait(false);
-                    }).Wait();
-                }
-            }
-            catch (Exception e)
+            _ = Task.Run(async () =>
             {
-                ErrorHandlingService.HandleException(e);
-            }
-
-            return Task.CompletedTask;
+                try
+                {
+                    await LocalStorage.SaveData(data).ConfigureAwait(false);
+                }
+                catch (Exception e)
+                {
+                    ErrorHandlingService.HandleException(e);
+                }
+            });
         }
 
         #region Inter Model Data Transfer
 
-        private static IncomeExpenseSummary GetIncomeExpenseSummary<TViewModel>() where TViewModel : class
+        public static async Task<ExpenseViewModel> GetExpenseSummaryAsync()
         {
-            TViewModel? temp = null;
-            Task.Run(async () => temp = await LocalStorage.GetData<TViewModel>()).Wait();
-
-            if (temp == null)
-            {
-                return new IncomeExpenseSummary();
-            }
-
-            var transactionRecords = (temp as dynamic)?.TransactionRecords;
-            transactionRecords?.SumUpData();
-            return transactionRecords?.IncomeExpenseSummary;
+            var temp = await LocalStorage.GetData<ExpenseViewModel>().ConfigureAwait(false);
+            if (temp == null) return new ExpenseViewModel();
+            temp.TransactionRecords?.SumUpData();
+            return temp;
         }
 
-        public static ExpenseViewModel ExpenseSummary
+        public static async Task<IncomeViewModel> GetIncomeSummaryAsync()
         {
-            get
-            {
-                ExpenseViewModel? temp = null;
-                Task.Run(async () => temp = await LocalStorage.GetData<ExpenseViewModel>()).Wait();
-
-                if (temp == null)
-                {
-                    return new ExpenseViewModel();
-                }
-                temp.TransactionRecords?.SumUpData();
-                return temp;
-            }
+            var temp = await LocalStorage.GetData<IncomeViewModel>().ConfigureAwait(false);
+            if (temp == null) return new IncomeViewModel();
+            temp.TransactionRecords?.SumUpData();
+            return temp;
         }
 
-        public static IncomeViewModel IncomeSummary
+        public static async Task<(IncomeExpenseSummary?, PaymentOutput?)> GetLoanViewModelAsync()
         {
-            get
-            {
-                IncomeViewModel? temp = null;
-                Task.Run(async () => temp = await LocalStorage.GetData<IncomeViewModel>()).Wait();
-
-                if (temp == null)
-                {
-                    return new IncomeViewModel();
-                }
-                temp.TransactionRecords?.SumUpData();
-                return temp;
-            }
+            var temp = await LocalStorage.GetData<LoanViewModel>().ConfigureAwait(false);
+            if (temp == null) return (new IncomeExpenseSummary(), new PaymentOutput());
+            temp.TransactionRecords?.SumUpData();
+            return (temp.TransactionRecords?.IncomeExpenseSummary, temp.HomeLoanInfo?.PaymentSummary?.Payment);
         }
-
-        //public static IncomeExpenseSummary LoanPropertyExpenseSummary => GetIncomeExpenseSummary<LoanViewModel>();
-
-        public static (IncomeExpenseSummary?, PaymentOutput?) GetLoanViewModel()
-        {
-            LoanViewModel? temp = null;
-            Task.Run(async () => temp = await LocalStorage.GetData<LoanViewModel>()).Wait();
-            if (temp == null)
-            {
-                return (new IncomeExpenseSummary(), new PaymentOutput());
-            }
-            else
-            {
-                temp?.TransactionRecords?.SumUpData();
-                return (temp?.TransactionRecords?.IncomeExpenseSummary, temp?.HomeLoanInfo?.PaymentSummary?.Payment);
-            }
-        }
-
 
         #endregion
 
@@ -162,6 +123,24 @@ namespace LoanCalculator.Core.Services
             if (NameValueDataService != null)
             {
                 NameValueDataService.NameValueDataModel.HasShowAppLaunchDisclaimer = true;
+                NameValueDataService.SaveNameValueData();
+            }
+            DisclaimerAccepted?.Invoke(null, EventArgs.Empty);
+        }
+
+        // Fired when the user accepts the disclaimer — used to auto-show the wizard on first launch.
+        public static event EventHandler? DisclaimerAccepted;
+
+        public static bool ShouldShowWizard()
+        {
+            return NameValueDataService != null && NameValueDataService.NameValueDataModel.HasShownWizard != true;
+        }
+
+        public static void SetWizardShown()
+        {
+            if (NameValueDataService != null)
+            {
+                NameValueDataService.NameValueDataModel.HasShownWizard = true;
                 NameValueDataService.SaveNameValueData();
             }
         }
@@ -214,20 +193,47 @@ namespace LoanCalculator.Core.Services
         #endregion
 
         #region Premium
+
+        // ╔══════════════════════════════════════════════════════════════════════╗
+        // ║  ⚠️  TESTING ONLY — COMMENT OUT BEFORE RELEASE / APP STORE SUBMIT  ⚠️  ║
+        // ║  Set to true to bypass all trial restrictions during local testing.   ║
+        // ║  Search for TESTING_PREMIUM_OVERRIDE to find this flag.              ║
+        // ╚══════════════════════════════════════════════════════════════════════╝
+        private const bool TESTING_PREMIUM_OVERRIDE = true; // ← comment out for release
+        // ────────────────────────────────────────────────────────────────────────
+
         public static bool IsTrialUser => !IsPremiumUser();
 
         public static bool IsPremiumUser()
         {
             try
             {
+                if (TESTING_PREMIUM_OVERRIDE) return true; // ← comment out for release
+
                 if (AppInformation is { IsFullyPaidApplication: true }) return true;
 
-                var value = Task.Run(() => SecureStorage.GetAsync("IsPremium")).Result;
+                var value = SecureStorage.GetAsync("IsPremium").GetAwaiter().GetResult();
                 return value == "true";
             }
             catch (Exception ex)
             {
-                ErrorHandlingService.HandleException(ex, "Failed to get IsPremium from SecureStorage.");
+                System.Diagnostics.Debug.WriteLine($"[SecureStorage] IsPremium read failed: {ex.Message}");
+                return false;
+            }
+        }
+
+        public static async Task<bool> IsPremiumUserAsync()
+        {
+            try
+            {
+                if (AppInformation is { IsFullyPaidApplication: true }) return true;
+
+                var value = await SecureStorage.GetAsync("IsPremium").ConfigureAwait(false);
+                return value == "true";
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"[SecureStorage] IsPremium read failed: {ex.Message}");
                 return false;
             }
         }
@@ -236,11 +242,11 @@ namespace LoanCalculator.Core.Services
         {
             try
             {
-                Task.Run(() => SecureStorage.SetAsync("IsPremium", "true")).Wait();
+                _ = Task.Run(() => SecureStorage.SetAsync("IsPremium", "true"));
             }
             catch (Exception ex)
             {
-                ErrorHandlingService.HandleException(ex, "Failed to set IsPremium in SecureStorage.");
+                System.Diagnostics.Debug.WriteLine($"[SecureStorage] IsPremium write failed: {ex.Message}");
             }
         }
 
@@ -250,53 +256,44 @@ namespace LoanCalculator.Core.Services
 
         private const string LastAccessKey = "LastAccessDate";
 
-        public static bool IsCurrentDay()
+        public static async Task<bool> IsCurrentDayAsync()
         {
             try
             {
-                var storedDateStr = Task.Run(() => SecureStorage.GetAsync(LastAccessKey)).Result;
-
+                var storedDateStr = await SecureStorage.GetAsync(LastAccessKey).ConfigureAwait(false);
                 var todayStr = DateTime.UtcNow.Date.ToString("yyyy-MM-dd");
 
-                if (storedDateStr == todayStr)
-                {
-                    return true;
-                }
+                if (storedDateStr == todayStr) return true;
 
                 // It's a new day; update the stored value
-                Task.Run(() => SecureStorage.SetAsync(LastAccessKey, todayStr)).Wait();
-
+                await SecureStorage.SetAsync(LastAccessKey, todayStr).ConfigureAwait(false);
                 return false;
             }
             catch (Exception ex)
             {
-                ErrorHandlingService.HandleException(ex, "Failed to get or set LastAccessDate in SecureStorage.");
+                System.Diagnostics.Debug.WriteLine($"[SecureStorage] LastAccessDate failed: {ex.Message}");
                 return false;
             }
         }
 
         private const string DataWipeAlertKey = "DataWipeAlertDate";
 
-        public static bool HasAlertedUserForDataWipe()
+        public static async Task<bool> HasAlertedUserForDataWipeAsync()
         {
             try
             {
-                var storedDateStr = Task.Run(() => SecureStorage.GetAsync(DataWipeAlertKey)).Result;
+                var storedDateStr = await SecureStorage.GetAsync(DataWipeAlertKey).ConfigureAwait(false);
                 var todayStr = DateTime.UtcNow.Date.ToString("yyyy-MM-dd");
 
-                if (storedDateStr == todayStr)
-                {
-                    // Already alerted today
-                    return true;
-                }
+                if (storedDateStr == todayStr) return true;
 
-                // New day or never alerted, update the stored value
-                Task.Run(() => SecureStorage.SetAsync(DataWipeAlertKey, todayStr)).Wait();
+                // New day or never alerted; update the stored value
+                await SecureStorage.SetAsync(DataWipeAlertKey, todayStr).ConfigureAwait(false);
                 return false;
             }
             catch (Exception ex)
             {
-                ErrorHandlingService.HandleException(ex, "Failed to get or set DataWipeAlertDate in SecureStorage.");
+                System.Diagnostics.Debug.WriteLine($"[SecureStorage] DataWipeAlertDate failed: {ex.Message}");
                 return false;
             }
         }
@@ -311,7 +308,7 @@ namespace LoanCalculator.Core.Services
             }
             catch (Exception ex)
             {
-                ErrorHandlingService.HandleException(ex, "Failed to get or set DataWipeAlertDate in SecureStorage.");
+                System.Diagnostics.Debug.WriteLine($"[SecureStorage] DataWipeAlertDate failed: {ex.Message}");
                 return false;
             }
         }
@@ -323,48 +320,85 @@ namespace LoanCalculator.Core.Services
         public const string SelectedCurrencyKey = "SelectedCurrencyISO";
         private static List<CurrencyModel?>? _currencies;
 
+        private static readonly string[] TopISO =
+        {
+            "USD", "EUR", "JPY", "GBP", "AUD", "CAD", "CHF", "CNY", "HKD", "NZD",
+            "SEK", "KRW", "SGD", "NOK", "MXN", "INR", "RUB", "ZAR", "TRY", "BRL"
+        };
+
+        // .NET resolves a currency symbol per culture, and CultureInfo.GetCultures returns them
+        // in an unpredictable order. For some ISO codes the first culture reports the ISO code
+        // itself ("USD") or a region-prefixed glyph ("JP¥", "CN¥") instead of the clean symbol.
+        // This curated map guarantees the canonical symbol for the common currencies.
+        private static readonly Dictionary<string, string> CuratedSymbols = new()
+        {
+            // Top 20 — guarantee the clean glyph regardless of culture order.
+            ["USD"] = "$",   ["EUR"] = "€",   ["JPY"] = "¥",   ["GBP"] = "£",
+            ["AUD"] = "$",   ["CAD"] = "CA$", ["CHF"] = "CHF", ["CNY"] = "¥",
+            ["HKD"] = "HK$", ["NZD"] = "$",   ["SEK"] = "kr",  ["KRW"] = "₩",
+            ["SGD"] = "$",   ["NOK"] = "kr",  ["MXN"] = "$",   ["INR"] = "₹",
+            ["RUB"] = "₽",   ["ZAR"] = "R",   ["TRY"] = "₺",   ["BRL"] = "R$",
+
+            // Currencies where .NET has no glyph and falls back to the bare ISO code —
+            // supply the established symbol so the dropdown doesn't read e.g. "(RON) RON".
+            ["RON"] = "lei", ["RSD"] = "дин.", ["KPW"] = "₩",  ["TMT"] = "m",
+            ["ZWG"] = "ZiG",
+        };
+
+        // Pick the cleanest symbol .NET offers for an ISO code: prefer one that is NOT the
+        // ISO code itself and is the shortest (glyphs like "$", "¥" over "US$", "JP¥").
+        private static string BestSymbolForIso(string iso, IEnumerable<string> candidates)
+        {
+            if (CuratedSymbols.TryGetValue(iso, out var curated)) return curated;
+
+            var usable = candidates
+                .Where(s => !string.IsNullOrWhiteSpace(s) && s != iso)
+                .OrderBy(s => s.Length)
+                .ToList();
+
+            return usable.FirstOrDefault() ?? iso;
+        }
+
         public static List<CurrencyModel?>? Currencies
         {
             get
             {
                 if (_currencies == null)
                 {
-                    var topISO = new[]
-                    {
-                        "USD", "EUR", "JPY", "GBP", "AUD", "CAD", "CHF", "CNY", "HKD", "NZD",
-                        "SEK", "KRW", "SGD", "NOK", "MXN", "INR", "RUB", "ZAR", "TRY", "BRL"
-                    };
-
-                    var allCurrencies = CultureInfo
+                    // Group all specific cultures by ISO currency so we can choose the best symbol.
+                    var byIso = CultureInfo
                         .GetCultures(CultureTypes.SpecificCultures)
                         .Select(culture =>
                         {
                             try
                             {
                                 var region = new RegionInfo(culture.Name);
-                                return new CurrencyModel(region.CurrencyEnglishName, region.CurrencySymbol,
-                                    region.ISOCurrencySymbol);
+                                return (region.ISOCurrencySymbol, region.CurrencySymbol, region.CurrencyEnglishName);
                             }
                             catch
                             {
-                                return null;
+                                return default;
                             }
                         })
-                        .Where(x => x != null)
-                        .DistinctBy(x => x.IsoCode)
+                        .Where(x => !string.IsNullOrEmpty(x.ISOCurrencySymbol))
+                        .GroupBy(x => x.ISOCurrencySymbol)
+                        .Select(g => new CurrencyModel(
+                            g.First().CurrencyEnglishName,
+                            BestSymbolForIso(g.Key, g.Select(x => x.CurrencySymbol)),
+                            g.Key))
                         .ToList();
 
-                    var topCurrencies = allCurrencies
-                        .Where(c => topISO.Contains(c.IsoCode))
-                        .OrderBy(c => Array.IndexOf(topISO, c.IsoCode))
+                    var topCurrencies = byIso
+                        .Where(c => TopISO.Contains(c.IsoCode))
+                        .OrderBy(c => Array.IndexOf(TopISO, c.IsoCode))
                         .ToList();
 
-                    var otherCurrencies = allCurrencies
-                        .Where(c => !topISO.Contains(c.IsoCode))
+                    var otherCurrencies = byIso
+                        .Where(c => !TopISO.Contains(c.IsoCode))
                         .OrderBy(c => c.Name)
                         .ToList();
 
-                    _currencies = topCurrencies.Concat(otherCurrencies).ToList();
+                    _currencies = topCurrencies.Concat(otherCurrencies).Cast<CurrencyModel?>().ToList();
                 }
                 return _currencies;
             }
@@ -376,8 +410,30 @@ namespace LoanCalculator.Core.Services
             {
                 return "$";
             }
+            if (CuratedSymbols.TryGetValue(isoCode, out var curated)) return curated;
             var currency = Currencies?.FirstOrDefault(c => c?.IsoCode == isoCode);
             return currency?.Symbol ?? "$";
+        }
+
+        // The ISO currency code for the device's current region (e.g. "USD", "GBP", "INR"),
+        // used as the first-launch default before the user picks one explicitly. Falls back
+        // to AUD if the device region can't be resolved or isn't in our currency list.
+        public static string GetDefaultCurrencyIso()
+        {
+            try
+            {
+                var iso = RegionInfo.CurrentRegion?.ISOCurrencySymbol;
+                if (!string.IsNullOrWhiteSpace(iso) &&
+                    Currencies?.Any(c => c?.IsoCode == iso) == true)
+                {
+                    return iso;
+                }
+            }
+            catch
+            {
+                // ignore — fall through to default
+            }
+            return "AUD";
         }
 
         public static CultureInfo? GetCultureFromIsoCurrency(string isoCode)

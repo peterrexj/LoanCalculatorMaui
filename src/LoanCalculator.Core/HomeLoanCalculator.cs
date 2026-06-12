@@ -14,6 +14,9 @@ namespace LoanCalculator.Core
         {
             PaymentOutput? paymentOutput = new PaymentOutput();
 
+            if (principal <= 0 || repaymentInput.TotalNumberOfPaymentsWithInTermPeriod <= 0 || repaymentInput.TotalNumberPaymentPerYear <= 0)
+                return paymentOutput;
+
             if (repaymentInput.InterestRate == 0)
             {
                 paymentOutput.InterestRatePercentage = 0;

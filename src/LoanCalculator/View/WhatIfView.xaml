@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Name="thisPage"
+    x:Class="LoanCalculatorMaui.View.WhatIfView"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:core="http://schemas.syncfusion.com/maui"
+    xmlns:customControls="clr-namespace:LoanCalculatorMaui.Controls"
+    xmlns:primaryModels="clr-namespace:LoanCalculator.Core.Models.ViewModels.PrimaryModels;assembly=LoanCalculator.Core"
+    Title="What If"
+    x:DataType="primaryModels:WhatIfViewModel">
+    <ContentPage.Content>
+        <Grid BackgroundColor="{DynamicResource LoanAppDefaultBackgroundColor}">
+            <customControls:InAppPurchaseView x:Name="PremiumWindow" />
+
+            <ScrollView>
+                <VerticalStackLayout Padding="16,16,16,32" Spacing="0">
+
+                    <!--  Page title  -->
+                    <Label
+                        Margin="0,0,0,4"
+                        FontAttributes="Bold"
+                        FontSize="{StaticResource FontSizeHeading}"
+                        Text="What If?"
+                        TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                    <Label
+                        Margin="0,0,0,20"
+                        FontSize="{StaticResource FontSizeSmall}"
+                        Opacity="0.55"
+                        Text="Explore scenarios based on your current loan"
+                        TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+
+                    <!--  No data placeholder  -->
+                    <Border
+                        IsVisible="{Binding HasNoLoanData}"
+                        Margin="0,20,0,0"
+                        Padding="20"
+                        BackgroundColor="{DynamicResource LoanAppAppShellBgColor}"
+                        StrokeShape="RoundRectangle 12"
+                        StrokeThickness="0">
+                        <VerticalStackLayout Spacing="8" HorizontalOptions="Center">
+                            <Label
+                                FontSize="{StaticResource FontSizeLarge}"
+                                HorizontalTextAlignment="Center"
+                                Text="No loan data yet"
+                                TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                            <Label
+                                FontSize="{StaticResource FontSizeBody}"
+                                HorizontalTextAlignment="Center"
+                                Opacity="0.6"
+                                Text="Enter your asset value and loan details on the Loan tab first."
+                                TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <!--  ── Scenario 1: Rate Change ──────────────────────  -->
+                    <Border
+                        IsVisible="{Binding HasLoanData}"
+                        Margin="0,0,0,16"
+                        Padding="16"
+                        BackgroundColor="{DynamicResource LoanAppAppShellBgColor}"
+                        StrokeShape="RoundRectangle 12"
+                        StrokeThickness="0">
+                        <VerticalStackLayout Spacing="12">
+                            <Label FontAttributes="Bold" FontSize="{StaticResource FontSizeMedium}" Text="📈  Rate Change Impact" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                            <Label FontSize="{StaticResource FontSizeSmall}" Opacity="0.6" Text="What happens if rates move?" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+
+                            <!--  Rate delta slider  -->
+                            <HorizontalStackLayout Spacing="8">
+                                <Label Text="Change:" FontSize="{StaticResource FontSizeBody}" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" VerticalOptions="Center" />
+                                <Button Text="-" Clicked="OnRateDeltaDecrease" BackgroundColor="Transparent" TextColor="{DynamicResource LoanAppNavigationButtonBackgroundColor}" FontAttributes="Bold" FontSize="{StaticResource FontSizeXL}" WidthRequest="40" />
+                                <Label Text="{Binding RateChangeDelta, StringFormat='{0:+0.00;-0.00;0.00}%'}" FontAttributes="Bold" FontSize="{StaticResource FontSizeLarge}" TextColor="{DynamicResource LoanAppNavigationButtonBackgroundColor}" VerticalOptions="Center" MinimumWidthRequest="70" HorizontalTextAlignment="Center" />
+                                <Button Text="+" Clicked="OnRateDeltaIncrease" BackgroundColor="Transparent" TextColor="{DynamicResource LoanAppNavigationButtonBackgroundColor}" FontAttributes="Bold" FontSize="{StaticResource FontSizeXL}" WidthRequest="40" />
+                            </HorizontalStackLayout>
+
+                            <BoxView HeightRequest="1" Opacity="0.1" Color="{DynamicResource LoanAppDefaultForegroundColor}" />
+
+                            <Grid ColumnSpacing="8">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <VerticalStackLayout Grid.Column="0" Spacing="2">
+                                    <Label Text="NEW RATE" FontSize="{StaticResource FontSizeSmall}" Opacity="0.45" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                                    <Label Text="{Binding RateChangeNewRate}" FontAttributes="Bold" FontSize="{StaticResource FontSizeLarge}" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                                </VerticalStackLayout>
+                                <VerticalStackLayout Grid.Column="1" Spacing="2">
+                                    <Label Text="MONTHLY CHANGE" FontSize="{StaticResource FontSizeSmall}" Opacity="0.45" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                                    <Label Text="{Binding RateChangeMonthlyDiff}" FontAttributes="Bold" FontSize="{StaticResource FontSizeLarge}" TextColor="{DynamicResource LoanAppNavigationButtonBackgroundColor}" />
+                                </VerticalStackLayout>
+                            </Grid>
+                            <Grid ColumnSpacing="8">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <VerticalStackLayout Grid.Column="0" Spacing="2">
+                                    <Label Text="NEW MONTHLY" FontSize="{StaticResource FontSizeSmall}" Opacity="0.45" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                                    <Label Text="{Binding RateChangeMonthlyRepayment}" FontAttributes="Bold" FontSize="{StaticResource FontSizeMedium}" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                                </VerticalStackLayout>
+                                <VerticalStackLayout Grid.Column="1" Spacing="2">
+                                    <Label Text="TOTAL INTEREST" FontSize="{StaticResource FontSizeSmall}" Opacity="0.45" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                                    <Label Text="{Binding RateChangeTotalInterest}" FontAttributes="Bold" FontSize="{StaticResource FontSizeMedium}" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                                </VerticalStackLayout>
+                            </Grid>
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <!--  ── Scenario 2: Extra Repayment ──────────────────  -->
+                    <Border
+                        IsVisible="{Binding HasLoanData}"
+                        Margin="0,0,0,16"
+                        Padding="16"
+                        BackgroundColor="{DynamicResource LoanAppAppShellBgColor}"
+                        StrokeShape="RoundRectangle 12"
+                        StrokeThickness="0">
+                        <VerticalStackLayout Spacing="12">
+                            <Label FontAttributes="Bold" FontSize="{StaticResource FontSizeMedium}" Text="💰  Extra Repayment Savings" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                            <Label FontSize="{StaticResource FontSizeSmall}" Opacity="0.6" Text="How much time and interest could you save?" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+
+                            <HorizontalStackLayout Spacing="8">
+                                <Label Text="Extra/mo:" FontSize="{StaticResource FontSizeBody}" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" VerticalOptions="Center" />
+                                <Button Text="-" Clicked="OnExtraRepaymentDecrease" BackgroundColor="Transparent" TextColor="{DynamicResource LoanAppNavigationButtonBackgroundColor}" FontAttributes="Bold" FontSize="{StaticResource FontSizeXL}" WidthRequest="40" />
+                                <Label Text="{Binding ExtraRepaymentMonthly, StringFormat='{0:N0}'}" FontAttributes="Bold" FontSize="{StaticResource FontSizeLarge}" TextColor="{DynamicResource LoanAppNavigationButtonBackgroundColor}" VerticalOptions="Center" MinimumWidthRequest="70" HorizontalTextAlignment="Center" />
+                                <Button Text="+" Clicked="OnExtraRepaymentIncrease" BackgroundColor="Transparent" TextColor="{DynamicResource LoanAppNavigationButtonBackgroundColor}" FontAttributes="Bold" FontSize="{StaticResource FontSizeXL}" WidthRequest="40" />
+                            </HorizontalStackLayout>
+
+                            <BoxView HeightRequest="1" Opacity="0.1" Color="{DynamicResource LoanAppDefaultForegroundColor}" />
+
+                            <Grid ColumnSpacing="8">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <VerticalStackLayout Grid.Column="0" Spacing="2">
+                                    <Label Text="TIME SAVED" FontSize="{StaticResource FontSizeSmall}" Opacity="0.45" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                                    <Label Text="{Binding ExtraRepaymentTimeSaved}" FontAttributes="Bold" FontSize="{StaticResource FontSizeLarge}" TextColor="{DynamicResource LoanAppNavigationButtonBackgroundColor}" />
+                                </VerticalStackLayout>
+                                <VerticalStackLayout Grid.Column="1" Spacing="2">
+                                    <Label Text="INTEREST SAVED" FontSize="{StaticResource FontSizeSmall}" Opacity="0.45" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                                    <Label Text="{Binding ExtraRepaymentInterestSaved}" FontAttributes="Bold" FontSize="{StaticResource FontSizeLarge}" TextColor="{DynamicResource LoanAppNavigationButtonBackgroundColor}" />
+                                </VerticalStackLayout>
+                            </Grid>
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <!--  ── Scenario 3: Loan Term Comparison ─────────────  -->
+                    <Border
+                        IsVisible="{Binding HasLoanData}"
+                        Margin="0,0,0,16"
+                        Padding="16"
+                        BackgroundColor="{DynamicResource LoanAppAppShellBgColor}"
+                        StrokeShape="RoundRectangle 12"
+                        StrokeThickness="0">
+                        <VerticalStackLayout Spacing="12">
+                            <Label FontAttributes="Bold" FontSize="{StaticResource FontSizeMedium}" Text="📅  Loan Term Comparison" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                            <Label FontSize="{StaticResource FontSizeSmall}" Opacity="0.6" Text="Same loan, different terms" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+
+                            <Grid ColumnSpacing="8">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <VerticalStackLayout Grid.Column="0" Spacing="4">
+                                    <Label Text="20 YEARS" FontAttributes="Bold" FontSize="{StaticResource FontSizeSmall}" Opacity="0.55" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" HorizontalTextAlignment="Center" />
+                                    <Label Text="{Binding TermComparison20Monthly}" FontAttributes="Bold" FontSize="{StaticResource FontSizeBody}" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" HorizontalTextAlignment="Center" />
+                                    <Label Text="{Binding TermComparison20Interest}" FontSize="{StaticResource FontSizeSmall}" Opacity="0.6" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" HorizontalTextAlignment="Center" />
+                                    <Label Text="interest" FontSize="{StaticResource FontSizeSmall}" Opacity="0.4" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" HorizontalTextAlignment="Center" />
+                                </VerticalStackLayout>
+                                <VerticalStackLayout Grid.Column="1" Spacing="4">
+                                    <Label Text="25 YEARS" FontAttributes="Bold" FontSize="{StaticResource FontSizeSmall}" Opacity="0.55" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" HorizontalTextAlignment="Center" />
+                                    <Label Text="{Binding TermComparison25Monthly}" FontAttributes="Bold" FontSize="{StaticResource FontSizeBody}" TextColor="{DynamicResource LoanAppNavigationButtonBackgroundColor}" HorizontalTextAlignment="Center" />
+                                    <Label Text="{Binding TermComparison25Interest}" FontSize="{StaticResource FontSizeSmall}" Opacity="0.6" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" HorizontalTextAlignment="Center" />
+                                    <Label Text="interest" FontSize="{StaticResource FontSizeSmall}" Opacity="0.4" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" HorizontalTextAlignment="Center" />
+                                </VerticalStackLayout>
+                                <VerticalStackLayout Grid.Column="2" Spacing="4">
+                                    <Label Text="30 YEARS" FontAttributes="Bold" FontSize="{StaticResource FontSizeSmall}" Opacity="0.55" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" HorizontalTextAlignment="Center" />
+                                    <Label Text="{Binding TermComparison30Monthly}" FontAttributes="Bold" FontSize="{StaticResource FontSizeBody}" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" HorizontalTextAlignment="Center" />
+                                    <Label Text="{Binding TermComparison30Interest}" FontSize="{StaticResource FontSizeSmall}" Opacity="0.6" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" HorizontalTextAlignment="Center" />
+                                    <Label Text="interest" FontSize="{StaticResource FontSizeSmall}" Opacity="0.4" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" HorizontalTextAlignment="Center" />
+                                </VerticalStackLayout>
+                            </Grid>
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <!--  ── Scenario 4: Deposit Scenarios ────────────────  -->
+                    <Border
+                        IsVisible="{Binding HasLoanData}"
+                        Margin="0,0,0,16"
+                        Padding="16"
+                        BackgroundColor="{DynamicResource LoanAppAppShellBgColor}"
+                        StrokeShape="RoundRectangle 12"
+                        StrokeThickness="0">
+                        <VerticalStackLayout Spacing="12">
+                            <Label FontAttributes="Bold" FontSize="{StaticResource FontSizeMedium}" Text="🏦  Deposit Scenarios" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                            <Label FontSize="{StaticResource FontSizeSmall}" Opacity="0.6" Text="Impact of different deposit percentages" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+
+                            <Grid ColumnSpacing="8">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <VerticalStackLayout Grid.Column="0" Spacing="4">
+                                    <Label Text="10%" FontAttributes="Bold" FontSize="{StaticResource FontSizeSmall}" Opacity="0.55" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" HorizontalTextAlignment="Center" />
+                                    <Label Text="{Binding Deposit10PcLoan}" FontAttributes="Bold" FontSize="{StaticResource FontSizeSmall}" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" HorizontalTextAlignment="Center" />
+                                    <Label Text="{Binding Deposit10PcMonthly}" FontSize="{StaticResource FontSizeBody}" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" HorizontalTextAlignment="Center" />
+                                </VerticalStackLayout>
+                                <VerticalStackLayout Grid.Column="1" Spacing="4">
+                                    <Label Text="20%" FontAttributes="Bold" FontSize="{StaticResource FontSizeSmall}" Opacity="0.55" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" HorizontalTextAlignment="Center" />
+                                    <Label Text="{Binding Deposit20PcLoan}" FontAttributes="Bold" FontSize="{StaticResource FontSizeSmall}" TextColor="{DynamicResource LoanAppNavigationButtonBackgroundColor}" HorizontalTextAlignment="Center" />
+                                    <Label Text="{Binding Deposit20PcMonthly}" FontSize="{StaticResource FontSizeBody}" TextColor="{DynamicResource LoanAppNavigationButtonBackgroundColor}" HorizontalTextAlignment="Center" />
+                                </VerticalStackLayout>
+                                <VerticalStackLayout Grid.Column="2" Spacing="4">
+                                    <Label Text="30%" FontAttributes="Bold" FontSize="{StaticResource FontSizeSmall}" Opacity="0.55" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" HorizontalTextAlignment="Center" />
+                                    <Label Text="{Binding Deposit30PcLoan}" FontAttributes="Bold" FontSize="{StaticResource FontSizeSmall}" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" HorizontalTextAlignment="Center" />
+                                    <Label Text="{Binding Deposit30PcMonthly}" FontSize="{StaticResource FontSizeBody}" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" HorizontalTextAlignment="Center" />
+                                </VerticalStackLayout>
+                            </Grid>
+                        </VerticalStackLayout>
+                    </Border>
+
+                </VerticalStackLayout>
+            </ScrollView>
+        </Grid>
+    </ContentPage.Content>
+</ContentPage>

@@ -93,6 +93,12 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
         [JsonIgnore]
         public List<IncomeExpenseProjectionOutput> IncomeProjectList => TransactionRecords?.IncomeExpenseSummary?.ProjectionTerms ?? new List<IncomeExpenseProjectionOutput>();
 
+        // Wizard — existing-value indicators for the Quick Setup wizard in LoanView
+        [JsonIgnore] public bool WizardExpenseHasValue => (TransactionRecords?.IncomeExpenseSummary?.TotalMonthly ?? 0) > 0;
+        [JsonIgnore] public bool WizardExpenseEditable => !WizardExpenseHasValue;
+        [JsonIgnore] public string WizardExpenseSummary =>
+            $"Recorded: {CurrencySymbol}{TransactionRecords?.IncomeExpenseSummary?.TotalMonthly ?? 0:N0}/mo";
+
         #region Income after Expense
 
         private bool _showIncomeAfterExpense;
@@ -107,7 +113,7 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
                 {
                     isUpdating = true;
                     OnPropertyChanged(nameof(ShowIncomeAfterExpense)); //TODO: required to call this as the refreshincomeproperty is called anyways
-                    RefreshIncomePropertyChangedAsync();
+                    _ = RefreshIncomePropertyChangedAsync();
                     isUpdating = false;
                 }
             }
@@ -125,7 +131,7 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
                 {
                     isUpdating = true;
                     OnPropertyChanged(nameof(ShowPropertyExpense));
-                    RefreshIncomePropertyChangedAsync();
+                    _ = RefreshIncomePropertyChangedAsync();
                     isUpdating = false;
                 }
             }
@@ -143,7 +149,7 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
                 {
                     isUpdating = true;
                     OnPropertyChanged(nameof(IncludeIncomeInProjection));
-                    UpdateProjectionDataAsync();
+                    _ = UpdateProjectionDataAsync();
                     isUpdating = false;
                 }
             }
@@ -161,7 +167,7 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
                 {
                     isUpdating = true;
                     OnPropertyChanged(nameof(IncludePropertyExpenses));
-                    UpdateProjectionDataAsync();
+                    _ = UpdateProjectionDataAsync();
                     isUpdating = false;
                 }
             }
@@ -430,20 +436,22 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
 
         #region Live Updates
 
-        private async void UpdateProjectionDataAsync()
+        private async Task UpdateProjectionDataAsync()
         {
             try
             {
+                // Do CPU work off the UI thread
                 await Task.Run(() =>
                 {
-                    if (PageHelper.IsFormLoading == false)
-                    {
-                        if (!SharedServiceCore.LoadSafe)
-                        {
-                            UpdateProjectionData();
-                            TriggerPropertyChangedOnProjectionTab();
-                        }
-                    }
+                    if (PageHelper.IsFormLoading || SharedServiceCore.LoadSafe) return;
+                    UpdateProjectionData();
+                }).ConfigureAwait(false);
+
+                // Marshal UI notifications back to the main thread
+                MainThread.BeginInvokeOnMainThread(() =>
+                {
+                    if (PageHelper.IsFormLoading || SharedServiceCore.LoadSafe) return;
+                    TriggerPropertyChangedOnProjectionTab();
                 });
             }
             catch (Exception e)
@@ -451,16 +459,22 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
                 _errorHandlingService.HandleException(e);
             }
         }
-        private async void RefreshIncomePropertyChangedAsync()
+
+        private async Task RefreshIncomePropertyChangedAsync()
         {
             try
             {
-                if (PageHelper.IsFormLoading == false)
-                {
-                    if (SharedServiceCore.LoadSafe) return;
+                if (PageHelper.IsFormLoading || SharedServiceCore.LoadSafe) return;
 
-                    await Task.Run(RefreshIncomePropertyChanged);
-                }
+                // Do the data summing off the UI thread
+                await Task.Run(() =>
+                {
+                    if (PageHelper.IsFormLoading || SharedServiceCore.LoadSafe) return;
+                    TransactionRecords?.SumUpData();
+                }).ConfigureAwait(false);
+
+                // Fire all notifications on the UI thread
+                MainThread.BeginInvokeOnMainThread(() => RefreshIncomePropertyChanged());
             }
             catch (Exception e)
             {
@@ -483,18 +497,22 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
             OnPropertyChanged(nameof(IncomeEntryName));
             OnPropertyChanged(nameof(HasErrorIncomeDescription));
             OnPropertyChanged(nameof(IncomeEntryAmount));
+            OnPropertyChanged(nameof(IncomeEntryAmountText));
             OnPropertyChanged(nameof(HasErrorIncomeAmount));
             OnPropertyChanged(nameof(IsExpenseDataFormReadyToSubmit));
+            OnPropertyChanged(nameof(IsEditMode));
             OnPropertyChanged(nameof(TotalMonthlyIncomeWithComma));
             OnPropertyChanged(nameof(TotalMonthlySumExpenseWithComma));
             OnPropertyChanged(nameof(TotalYearlyIncomeWithComma));
             OnPropertyChanged(nameof(TotalIncomeMonthlyWithComma));
             OnPropertyChanged(nameof(IncomeExpenseFrequencySelectedIndex));
             OnPropertyChanged(nameof(Transactions));
+            OnPropertyChanged(nameof(FilteredTransactions));
+            OnPropertyChanged(nameof(AutocompleteNameList));
             OnPropertyChanged(nameof(ShowIncomeAfterExpense));
             OnPropertyChanged(nameof(StringIncomeTextOnTopBox));
 
-            SharedServiceCore.SaveData(this);
+            ScheduleSave(() => SharedServiceCore.SaveData(this));
         }
 
         public void RefreshTransactionEntry()
@@ -506,6 +524,7 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
             OnPropertyChanged(nameof(IncomeEntryName));
             OnPropertyChanged(nameof(HasErrorIncomeDescription));
             OnPropertyChanged(nameof(IncomeEntryAmount));
+            OnPropertyChanged(nameof(IncomeEntryAmountText));
             OnPropertyChanged(nameof(HasErrorIncomeAmount));
             OnPropertyChanged(nameof(IsExpenseDataFormReadyToSubmit));
         }
@@ -552,7 +571,7 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
             OnPropertyChanged(nameof(AnnualGrowthRate));
             OnPropertyChanged(nameof(IncomeProjectList));
 
-            SharedServiceCore.SaveData(this);
+            ScheduleSave(() => SharedServiceCore.SaveData(this));
         }
 
         #endregion

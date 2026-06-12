@@ -96,7 +96,8 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
 
         public void LoadSelectedCurrency()
         {
-            SelectedCurrency = Currencies.FirstOrDefault(c => c.IsoCode == Preferences.Get(SharedServiceCore.SelectedCurrencyKey, "AUD"));
+            SelectedCurrency = Currencies.FirstOrDefault(c => c.IsoCode ==
+                Preferences.Get(SharedServiceCore.SelectedCurrencyKey, SharedServiceCore.GetDefaultCurrencyIso()));
             OnPropertyChanged(nameof(SelectedCurrency));
         }
 
@@ -108,7 +109,8 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
 
         private void InitializeSelectedTheme()
         {
-            var currentTheme = Task.Run(() => _themeHandler.GetCurrentThemeAsync()).Result;
+            // Called during startup on the main thread — Task.Run avoids sync-context deadlock.
+            var currentTheme = Task.Run(() => _themeHandler.GetCurrentThemeAsync()).GetAwaiter().GetResult();
             _selectedTheme = currentTheme != null
                 ? Themes.FirstOrDefault(t => t == currentTheme.ToString())
                 : Themes.FirstOrDefault(t => t == SharedServiceCore.DefaultAppTheme.ToString());
@@ -143,7 +145,7 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
                 // Await the theme change operation
                 MainThread.BeginInvokeOnMainThread(async void () =>
                 {
-                    IsBusy = true; // Show spinner
+                    IsPageBusy = true;
                     IsUpdating = true;
 
                     await Task.Delay(500);
@@ -168,13 +170,13 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
             finally
             {
                 IsUpdating = false;
-                IsBusy = false; // Hide spinner
+                IsPageBusy = false;
             }
         }
 
         private async Task SaveAndApplyApplicationThemeAsync(AppThemes theme)
         {
-            await SharedServiceCore.SaveData(new ThemeSelect { Theme = theme });
+            SharedServiceCore.SaveData(new ThemeSelect { Theme = theme });
             await ApplyApplicationThemeAsync(theme);
         }
 
@@ -245,7 +247,86 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
         public void RefreshProperties()
         {
             OnPropertyChanged(nameof(SelectedTheme));
+            LoadAustralianModeSetting();
+            LoadStampDutySetting();
         }
+
+        #region Australian Mode
+
+        private const string AustralianModeKey = "IsAustralianModeEnabled";
+
+        [JsonIgnore]
+        private bool _isAustralianModeEnabled;
+
+        [JsonIgnore]
+        public bool IsAustralianModeEnabled
+        {
+            get => _isAustralianModeEnabled;
+            set
+            {
+                if (_isAustralianModeEnabled == value) return;
+                _isAustralianModeEnabled = value;
+                Preferences.Set(AustralianModeKey, value);
+                OnPropertyChanged(nameof(IsAustralianModeEnabled));
+
+                // When Australian mode changes, stamp duty toggle state and visibility also change
+                LoadStampDutySetting();
+                OnPropertyChanged(nameof(IsStampDutyToggleEnabled));
+
+                // Push immediately to LoanViewModel so segment reacts without tab switch
+                var loanViewModel = ServiceLocator.GetService<LoanViewModel>();
+                if (loanViewModel != null)
+                    loanViewModel.IsAustralianModeEnabled = value;
+            }
+        }
+
+        public void LoadAustralianModeSetting()
+        {
+            _isAustralianModeEnabled = Preferences.Get(AustralianModeKey, false);
+            OnPropertyChanged(nameof(IsAustralianModeEnabled));
+        }
+
+        #endregion
+
+        #region Stamp Duty Toggle
+
+        private const string StampDutyKey = "IsStampDutyEnabled";
+
+        [JsonIgnore]
+        private bool _isStampDutyEnabled;
+
+        [JsonIgnore]
+        public bool IsStampDutyEnabled
+        {
+            get => _isStampDutyEnabled;
+            set
+            {
+                if (_isStampDutyEnabled == value) return;
+                _isStampDutyEnabled = value;
+                Preferences.Set(StampDutyKey, value);
+                OnPropertyChanged(nameof(IsStampDutyEnabled));
+
+                var loanViewModel = ServiceLocator.GetService<LoanViewModel>();
+                if (loanViewModel != null)
+                {
+                    loanViewModel.IsStampDutyEnabled = value;
+                    loanViewModel.LoadStampDutySetting();
+                }
+            }
+        }
+
+        // User cannot turn OFF stamp duty when Australian mode is active
+        [JsonIgnore]
+        public bool IsStampDutyToggleEnabled => !_isAustralianModeEnabled;
+
+        public void LoadStampDutySetting()
+        {
+            _isStampDutyEnabled = _isAustralianModeEnabled || Preferences.Get(StampDutyKey, false);
+            OnPropertyChanged(nameof(IsStampDutyEnabled));
+            OnPropertyChanged(nameof(IsStampDutyToggleEnabled));
+        }
+
+        #endregion
 
         private async void OnShareAppRequest()
         {

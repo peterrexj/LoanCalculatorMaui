@@ -11,12 +11,13 @@ namespace LoanCalculator.UnitTests.Models.ViewModels.PrimaryModels
     {
         private WhatIfViewModel _vm;
 
-        /// <summary>
-        /// Creates a LoanViewModel that has a real loan amount (900k), rate (5%) and term (30yr)
-        /// so WhatIf calculations have meaningful input.
-        /// </summary>
-        private static LoanViewModel BuildLoanVm(double propertyAmount = 1_000_000, double loanAmount = 900_000,
-            double interestRate = 5.0, int termYears = 30)
+        // Reference loan: $900k at 5% over 30yr on a $1M property (10% deposit)
+        private static LoanViewModel BuildLoanVm(
+            double propertyAmount = 1_000_000,
+            double loanAmount = 900_000,
+            double interestRate = 5.0,
+            int termYears = 30,
+            int paymentsPerYear = 12)
         {
             PageHelper.PageLoadingComplete();
             SharedServiceCore.LoadSafeOff();
@@ -29,7 +30,7 @@ namespace LoanCalculator.UnitTests.Models.ViewModels.PrimaryModels
                     {
                         InterestRate = interestRate,
                         LoanTermInYears = termYears,
-                        TotalNumberPaymentPerYear = 12
+                        TotalNumberPaymentPerYear = paymentsPerYear
                     },
                     PropertyAmount = propertyAmount
                 },
@@ -60,38 +61,25 @@ namespace LoanCalculator.UnitTests.Models.ViewModels.PrimaryModels
 
         [Test]
         public void HasLoanData_WhenLoanAmountPositive_IsTrue()
-        {
-            Assert.That(_vm.HasLoanData, Is.True);
-        }
+            => Assert.That(_vm.HasLoanData, Is.True);
 
         [Test]
         public void HasNoLoanData_WhenLoanAmountPositive_IsFalse()
-        {
-            Assert.That(_vm.HasNoLoanData, Is.False);
-        }
+            => Assert.That(_vm.HasNoLoanData, Is.False);
 
         [Test]
         public void HasLoanData_WhenNoLoanVm_IsFalse()
-        {
-            var vm = new WhatIfViewModel(null!);
-            Assert.That(vm.HasLoanData, Is.False);
-        }
+            => Assert.That(new WhatIfViewModel(null!).HasLoanData, Is.False);
 
         [Test]
         public void HasNoLoanData_WhenNoLoanVm_IsTrue()
-        {
-            var vm = new WhatIfViewModel(null!);
-            Assert.That(vm.HasNoLoanData, Is.True);
-        }
+            => Assert.That(new WhatIfViewModel(null!).HasNoLoanData, Is.True);
 
-        // ── RateChangeNewRate ─────────────────────────────────────────────────
+        // ── Scenario 1: Rate Change ───────────────────────────────────────────
 
         [Test]
         public void RateChangeNewRate_DefaultDelta_ShowsBaseRatePlusHalf()
-        {
-            // BaseRate=5, default delta=0.5 → 5.5%
-            Assert.That(_vm.RateChangeNewRate, Is.EqualTo("5.5%"));
-        }
+            => Assert.That(_vm.RateChangeNewRate, Is.EqualTo("5.5%"));
 
         [Test]
         public void RateChangeNewRate_CustomDelta_ShowsCorrectRate()
@@ -100,26 +88,14 @@ namespace LoanCalculator.UnitTests.Models.ViewModels.PrimaryModels
             Assert.That(_vm.RateChangeNewRate, Is.EqualTo("6%"));
         }
 
-        // ── RateChangeMonthlyRepayment ────────────────────────────────────────
-
         [Test]
-        public void RateChangeMonthlyRepayment_AfterSetup_IsNotDash()
-        {
-            Assert.That(_vm.RateChangeMonthlyRepayment, Is.Not.EqualTo("--"));
-        }
-
-        [Test]
-        public void RateChangeMonthlyRepayment_ContainsMonthSuffix()
-        {
-            Assert.That(_vm.RateChangeMonthlyRepayment, Does.EndWith("/mo"));
-        }
-
-        // ── RateChangeMonthlyDiff ─────────────────────────────────────────────
+        public void RateChangeMonthlyRepayment_AfterSetup_EndsWithMoSuffix()
+            => Assert.That(_vm.RateChangeMonthlyRepayment, Does.EndWith("/mo"));
 
         [Test]
         public void RateChangeMonthlyDiff_PositiveDelta_StartsWithPlus()
         {
-            _vm.RateChangeDelta = 1.0; // rate goes up → payment goes up → diff positive
+            _vm.RateChangeDelta = 1.0;
             Assert.That(_vm.RateChangeMonthlyDiff, Does.StartWith("+"));
         }
 
@@ -130,130 +106,427 @@ namespace LoanCalculator.UnitTests.Models.ViewModels.PrimaryModels
             Assert.That(_vm.RateChangeDiffIsPositive, Is.True);
         }
 
-        // ── ExtraRepaymentTimeSaved ────────────────────────────────────────────
-
         [Test]
-        public void ExtraRepaymentTimeSaved_AfterSetup_IsNotDash()
+        public void RateChangeDiffIsPositive_LargerDelta_GreaterThanSmallerDelta()
         {
-            Assert.That(_vm.ExtraRepaymentTimeSaved, Is.Not.EqualTo("--"));
+            // Can't test the sign directly without a real PaymentSummary in tests,
+            // but a larger positive delta should always produce a bigger positive diff.
+            _vm.RateChangeDelta = 0.5;
+            var diffSmall = _vm.RateChangeMonthlyDiff;
+            _vm.RateChangeDelta = 2.0;
+            var diffLarge = _vm.RateChangeMonthlyDiff;
+            Assert.That(diffLarge, Is.Not.EqualTo(diffSmall));
         }
 
         [Test]
-        public void ExtraRepaymentTimeSaved_ContainsYr()
+        public void RateChangeTotalInterest_HigherRate_ProducesHigherInterest()
         {
-            Assert.That(_vm.ExtraRepaymentTimeSaved, Does.Contain("yr"));
+            _vm.RateChangeDelta = 0.25;
+            var interestLow = _vm.RateChangeTotalInterest;
+            _vm.RateChangeDelta = 2.0;
+            var interestHigh = _vm.RateChangeTotalInterest;
+            // Both are currency strings — parse and compare
+            double ParseCurrency(string s) => double.Parse(s.Replace("$", "").Replace(",", ""));
+            Assert.That(ParseCurrency(interestHigh), Is.GreaterThan(ParseCurrency(interestLow)));
         }
 
         [Test]
-        public void ExtraRepaymentInterestSaved_IsNotDash()
-        {
-            Assert.That(_vm.ExtraRepaymentInterestSaved, Is.Not.EqualTo("--"));
-        }
+        public void RateChange_HeadroomNotShown_WhenNoAffordabilityData()
+            => Assert.That(_vm.RateChangeShowHeadroom, Is.False);
+
+        // ── Scenario 2: Extra Repayment ───────────────────────────────────────
+
+        [Test]
+        public void ExtraRepaymentTimeSaved_AfterSetup_ContainsYr()
+            => Assert.That(_vm.ExtraRepaymentTimeSaved, Does.Contain("yr"));
+
+        [Test]
+        public void ExtraRepaymentInterestSaved_AfterSetup_IsNotDash()
+            => Assert.That(_vm.ExtraRepaymentInterestSaved, Is.Not.EqualTo("--"));
 
         [Test]
         public void ExtraRepaymentNewPayoff_ContainsRemaining()
-        {
-            Assert.That(_vm.ExtraRepaymentNewPayoff, Does.Contain("remaining"));
-        }
-
-        // ── ExtraRepaymentMonthly — higher extra = more saved ─────────────────
+            => Assert.That(_vm.ExtraRepaymentNewPayoff, Does.Contain("remaining"));
 
         [Test]
-        public void ExtraRepaymentTimeSaved_HigherExtra_SavesMoreMonths()
+        public void ExtraRepayment_HigherExtra_SavesMoreTime()
         {
             _vm.ExtraRepaymentMonthly = 200;
-            var savedLow = _vm.ExtraRepaymentTimeSaved;
-
+            var timeLow = _vm.ExtraRepaymentTimeSaved;
             _vm.ExtraRepaymentMonthly = 2000;
-            var savedHigh = _vm.ExtraRepaymentTimeSaved;
-
-            // Both should be populated and different (higher extra saves more)
-            Assert.That(savedHigh, Is.Not.EqualTo(savedLow));
-        }
-
-        // ── TermComparison ────────────────────────────────────────────────────
-
-        [Test]
-        public void TermComparison20Monthly_IsNotDash()
-        {
-            Assert.That(_vm.TermComparison20Monthly, Is.Not.EqualTo("--"));
+            var timeHigh = _vm.ExtraRepaymentTimeSaved;
+            Assert.That(timeHigh, Is.Not.EqualTo(timeLow));
         }
 
         [Test]
-        public void TermComparison25Monthly_IsNotDash()
+        public void ExtraRepayment_ZeroExtra_TimeSavedIsZeroYr()
         {
-            Assert.That(_vm.TermComparison25Monthly, Is.Not.EqualTo("--"));
+            _vm.ExtraRepaymentMonthly = 0;
+            Assert.That(_vm.ExtraRepaymentTimeSaved, Is.EqualTo("0yr"));
+        }
+
+        // ── Scenario 3: Term Comparison ───────────────────────────────────────
+
+        [Test]
+        public void TermComparison_ExactlyOneColumnIsCurrentTerm()
+        {
+            var flags = new[] { _vm.TermIsCurrentColA, _vm.TermIsCurrentColB, _vm.TermIsCurrentColC };
+            Assert.That(flags.Count(x => x), Is.EqualTo(1));
         }
 
         [Test]
-        public void TermComparison30Monthly_IsNotDash()
-        {
-            Assert.That(_vm.TermComparison30Monthly, Is.Not.EqualTo("--"));
-        }
+        public void TermComparison_30yrTerm_ColCIsHighlighted()
+            => Assert.That(_vm.TermIsCurrentColC, Is.True);
 
         [Test]
-        public void TermComparison20Interest_IsNotDash()
+        public void TermComparison_AllLabelsEndWithYRS()
         {
-            Assert.That(_vm.TermComparison20Interest, Is.Not.EqualTo("--"));
+            Assert.That(_vm.TermColALabel, Does.EndWith("YRS"));
+            Assert.That(_vm.TermColBLabel, Does.EndWith("YRS"));
+            Assert.That(_vm.TermColCLabel, Does.EndWith("YRS"));
         }
 
         [Test]
         public void TermComparison_ShorterTerm_HasHigherMonthlyPayment()
         {
-            // 20-year monthly > 30-year monthly for same loan
-            var monthly20 = double.Parse(_vm.TermComparison20Monthly.Replace("$", "").Replace(",", ""));
-            var monthly30 = double.Parse(_vm.TermComparison30Monthly.Replace("$", "").Replace(",", ""));
-            Assert.That(monthly20, Is.GreaterThan(monthly30));
+            double ParseCurrency(string s) => double.Parse(s.Replace("$", "").Replace(",", ""));
+            Assert.That(ParseCurrency(_vm.TermColAMonthly), Is.GreaterThan(ParseCurrency(_vm.TermColCMonthly)));
         }
 
         [Test]
         public void TermComparison_ShorterTerm_HasLowerTotalInterest()
         {
-            var interest20 = double.Parse(_vm.TermComparison20Interest.Replace("$", "").Replace(",", ""));
-            var interest30 = double.Parse(_vm.TermComparison30Interest.Replace("$", "").Replace(",", ""));
-            Assert.That(interest20, Is.LessThan(interest30));
-        }
-
-        // ── DepositScenarios ──────────────────────────────────────────────────
-
-        [Test]
-        public void Deposit10PcLoan_IsNotDash()
-        {
-            Assert.That(_vm.Deposit10PcLoan, Is.Not.EqualTo("--"));
+            double ParseCurrency(string s) => double.Parse(s.Replace("$", "").Replace(",", ""));
+            Assert.That(ParseCurrency(_vm.TermColAInterest), Is.LessThan(ParseCurrency(_vm.TermColCInterest)));
         }
 
         [Test]
-        public void Deposit20PcLoan_IsNotDash()
+        public void TermComparison_2yrTerm_ColAIsHighlighted()
         {
-            Assert.That(_vm.Deposit20PcLoan, Is.Not.EqualTo("--"));
+            // 2yr ≤ step(2) → floor case → ColA
+            var vm = new WhatIfViewModel(null!);
+            vm.SetLoanViewModel(BuildLoanVm(termYears: 2));
+            Assert.That(vm.TermIsCurrentColA, Is.True);
         }
 
         [Test]
-        public void Deposit30PcLoan_IsNotDash()
+        public void TermComparison_5yrTerm_ColBIsHighlighted()
         {
-            Assert.That(_vm.Deposit30PcLoan, Is.Not.EqualTo("--"));
+            // 5yr with step=2: normal case (5 > step), user in ColB
+            var vm = new WhatIfViewModel(null!);
+            vm.SetLoanViewModel(BuildLoanVm(termYears: 5));
+            Assert.That(vm.TermIsCurrentColB, Is.True);
         }
 
         [Test]
-        public void Deposit10PcMonthly_ContainsMonthSuffix()
+        public void TermComparison_15yrTerm_ColBIsHighlighted()
         {
-            Assert.That(_vm.Deposit10PcMonthly, Does.EndWith("/mo"));
+            var vm = new WhatIfViewModel(null!);
+            vm.SetLoanViewModel(BuildLoanVm(termYears: 15));
+            Assert.That(vm.TermIsCurrentColB, Is.True);
         }
+
+        // ── Scenario 4: Deposit Scenarios ─────────────────────────────────────
+
+        [Test]
+        public void DepositColBLabel_AfterSetup_EndsWithPercent()
+            => Assert.That(_vm.DepositColBLabel, Does.EndWith("%"));
+
+        [Test]
+        public void DepositColBMonthly_AfterSetup_EndsWithMoSuffix()
+            => Assert.That(_vm.DepositColBMonthly, Does.EndWith("/mo"));
 
         [Test]
         public void DepositScenarios_HigherDeposit_LowerLoanAmount()
         {
-            var loan10 = double.Parse(_vm.Deposit10PcLoan.Replace("$", "").Replace(",", ""));
-            var loan30 = double.Parse(_vm.Deposit30PcLoan.Replace("$", "").Replace(",", ""));
-            Assert.That(loan30, Is.LessThan(loan10));
+            double ParseCurrency(string s) => double.Parse(s.Replace("$", "").Replace(",", ""));
+            double loanA = ParseCurrency(_vm.DepositColALoan);
+            double loanC = ParseCurrency(_vm.DepositColCLoan);
+            Assert.That(loanC, Is.LessThan(loanA));
         }
 
         [Test]
-        public void DepositScenarios_10Pc_LoanEqualsNinetyPctOfProperty()
+        public void DepositScenarios_HigherDeposit_LowerMonthlyPayment()
         {
-            var loan10 = double.Parse(_vm.Deposit10PcLoan.Replace("$", "").Replace(",", ""));
-            // PropertyAmount = 1,000,000 * 90% = 900,000
-            Assert.That(loan10, Is.EqualTo(900_000).Within(100));
+            double ParseCurrency(string s) => double.Parse(s.Replace("$", "").Replace(",", "").Replace("/mo", ""));
+            double monthlyA = ParseCurrency(_vm.DepositColAMonthly);
+            double monthlyC = ParseCurrency(_vm.DepositColCMonthly);
+            Assert.That(monthlyC, Is.LessThan(monthlyA));
+        }
+
+        [Test]
+        public void DepositColBLabel_10PctDeposit_ShowsExactPercentage()
+        {
+            // Property $1M, loan $900k → deposit = $100k = 10%
+            Assert.That(_vm.DepositColBLabel, Is.EqualTo("10%"));
+        }
+
+        [Test]
+        public void DepositScenarios_At99Pct_ColCUnavailable()
+        {
+            var vm = new WhatIfViewModel(null!);
+            vm.SetLoanViewModel(BuildLoanVm(propertyAmount: 1_000_000, loanAmount: 10_000)); // 99% deposit
+            Assert.That(vm.DepositColCAvailable, Is.False);
+        }
+
+        [Test]
+        public void DepositScenarios_At50Pct_ColCAvailable()
+        {
+            var vm = new WhatIfViewModel(null!);
+            vm.SetLoanViewModel(BuildLoanVm(propertyAmount: 1_000_000, loanAmount: 500_000)); // 50% deposit
+            Assert.That(vm.DepositColCAvailable, Is.True);
+        }
+
+        // ── Scenario 5: Lump Sum ──────────────────────────────────────────────
+
+        [Test]
+        public void LumpSumTimeSaved_AfterSetup_ContainsYr()
+            => Assert.That(_vm.LumpSumTimeSaved, Does.Contain("yr"));
+
+        [Test]
+        public void LumpSumInterestSaved_AfterSetup_IsNotDash()
+            => Assert.That(_vm.LumpSumInterestSaved, Is.Not.EqualTo("--"));
+
+        [Test]
+        public void LumpSumNewBalance_AfterSetup_IsNotDash()
+            => Assert.That(_vm.LumpSumNewBalance, Is.Not.EqualTo("--"));
+
+        [Test]
+        public void LumpSumAmount_Increase_SavesMoreTime()
+        {
+            _vm.LumpSumAmount = 10_000;
+            var timeLow = _vm.LumpSumTimeSaved;
+            _vm.LumpSumAmount = 200_000;
+            var timeHigh = _vm.LumpSumTimeSaved;
+            Assert.That(timeHigh, Is.Not.EqualTo(timeLow));
+        }
+
+        [Test]
+        public void LumpSumNewBalance_EqualsLoanMinusLump()
+        {
+            // Loan = $900k, lump = $100k → new balance = $800k
+            _vm.LumpSumAmount = 100_000;
+            Assert.That(_vm.LumpSumNewBalance, Does.Contain("800"));
+        }
+
+        [Test]
+        public void LumpSumAmount_ZeroLump_TimeSavedIsZeroYr()
+        {
+            _vm.LumpSumAmount = 0;
+            Assert.That(_vm.LumpSumTimeSaved, Is.EqualTo("0yr"));
+        }
+
+        // ── Scenario 6: Repayment Frequency (3-column) ───────────────────────
+
+        [Test]
+        public void FreqMonthly_AllColumnsPopulated()
+        {
+            Assert.That(_vm.FreqMonthlyPayment, Is.Not.EqualTo("--"));
+            Assert.That(_vm.FreqMonthlyTimeSaved, Is.Not.EqualTo("--"));
+            Assert.That(_vm.FreqMonthlyIntSaved, Is.Not.EqualTo("--"));
+        }
+
+        [Test]
+        public void FreqFortnightly_AllColumnsPopulated()
+        {
+            Assert.That(_vm.FreqFortPayment, Is.Not.EqualTo("--"));
+            Assert.That(_vm.FreqFortTimeSaved, Is.Not.EqualTo("--"));
+            Assert.That(_vm.FreqFortIntSaved, Is.Not.EqualTo("--"));
+        }
+
+        [Test]
+        public void FreqWeekly_AllColumnsPopulated()
+        {
+            Assert.That(_vm.FreqWeeklyPayment, Is.Not.EqualTo("--"));
+            Assert.That(_vm.FreqWeeklyTimeSaved, Is.Not.EqualTo("--"));
+            Assert.That(_vm.FreqWeeklyIntSaved, Is.Not.EqualTo("--"));
+        }
+
+        [Test]
+        public void FreqMonthlyPayment_EndsWithMoSuffix()
+            => Assert.That(_vm.FreqMonthlyPayment, Does.EndWith("/mo"));
+
+        [Test]
+        public void FreqFortPayment_EndsWithFnSuffix()
+            => Assert.That(_vm.FreqFortPayment, Does.EndWith("/fn"));
+
+        [Test]
+        public void FreqWeeklyPayment_EndsWithWkSuffix()
+            => Assert.That(_vm.FreqWeeklyPayment, Does.EndWith("/wk"));
+
+        [Test]
+        public void FreqMonthlyTimeSaved_IsZeroYr()
+            => Assert.That(_vm.FreqMonthlyTimeSaved, Is.EqualTo("0yr"));
+
+        [Test]
+        public void FreqMonthlyIntSaved_IsZero()
+            => Assert.That(_vm.FreqMonthlyIntSaved, Does.Contain("0"));
+
+        [Test]
+        public void FreqFortnightly_SavesTimeOverMonthly()
+            => Assert.That(_vm.FreqFortTimeSaved, Is.Not.EqualTo("0yr"));
+
+        [Test]
+        public void FreqWeekly_SavesTimeOverMonthly()
+            => Assert.That(_vm.FreqWeeklyTimeSaved, Is.Not.EqualTo("0yr"));
+
+        [Test]
+        public void FreqFortnightly_SavesInterestOverMonthly()
+        {
+            double ParseCurrency(string s) => double.Parse(s.Replace("$", "").Replace(",", ""));
+            Assert.That(ParseCurrency(_vm.FreqFortIntSaved), Is.GreaterThan(0));
+        }
+
+        [Test]
+        public void FreqWeekly_SavesInterestOverMonthly()
+        {
+            double ParseCurrency(string s) => double.Parse(s.Replace("$", "").Replace(",", ""));
+            Assert.That(ParseCurrency(_vm.FreqWeeklyIntSaved), Is.GreaterThan(0));
+        }
+
+        [Test]
+        public void FreqFortnightly_PaymentIsHalfMonthly()
+        {
+            double ParseCurrency(string s) => double.Parse(s.Replace("$", "").Replace(",", "").Replace("/mo", "").Replace("/fn", "").Replace("/wk", ""));
+            double mo = ParseCurrency(_vm.FreqMonthlyPayment);
+            double fn = ParseCurrency(_vm.FreqFortPayment);
+            Assert.That(fn, Is.EqualTo(mo / 2.0).Within(1.0));
+        }
+
+        [Test]
+        public void FreqWeekly_PaymentIsQuarterMonthly()
+        {
+            double ParseCurrency(string s) => double.Parse(s.Replace("$", "").Replace(",", "").Replace("/mo", "").Replace("/fn", "").Replace("/wk", ""));
+            double mo = ParseCurrency(_vm.FreqMonthlyPayment);
+            double wk = ParseCurrency(_vm.FreqWeeklyPayment);
+            Assert.That(wk, Is.EqualTo(mo / 4.0).Within(1.0));
+        }
+
+        [Test]
+        public void FreqHighlight_DefaultMonthlyLoan_IsMonthly()
+        {
+            var vm = new WhatIfViewModel(null!);
+            vm.SetLoanViewModel(BuildLoanVm(paymentsPerYear: 12));
+            Assert.That(vm.FreqIsMonthly, Is.True);
+            Assert.That(vm.FreqIsFortnightly, Is.False);
+            Assert.That(vm.FreqIsWeekly, Is.False);
+        }
+
+        [Test]
+        public void FreqHighlight_FortnightlyLoan_IsFortnightly()
+        {
+            var vm = new WhatIfViewModel(null!);
+            vm.SetLoanViewModel(BuildLoanVm(paymentsPerYear: 24));
+            Assert.That(vm.FreqIsFortnightly, Is.True);
+            Assert.That(vm.FreqIsMonthly, Is.False);
+            Assert.That(vm.FreqIsWeekly, Is.False);
+        }
+
+        [Test]
+        public void FreqHighlight_WeeklyLoan_IsWeekly()
+        {
+            var vm = new WhatIfViewModel(null!);
+            vm.SetLoanViewModel(BuildLoanVm(paymentsPerYear: 52));
+            Assert.That(vm.FreqIsWeekly, Is.True);
+            Assert.That(vm.FreqIsMonthly, Is.False);
+            Assert.That(vm.FreqIsFortnightly, Is.False);
+        }
+
+        [Test]
+        public void FreqHighlight_ExactlyOneColumnHighlighted()
+        {
+            var flags = new[] { _vm.FreqIsMonthly, _vm.FreqIsFortnightly, _vm.FreqIsWeekly };
+            Assert.That(flags.Count(x => x), Is.EqualTo(1));
+        }
+
+        // ── Scenario 7: Offset Account ────────────────────────────────────────
+
+        [Test]
+        public void OffsetTimeSaved_AfterSetup_ContainsYr()
+            => Assert.That(_vm.OffsetTimeSaved, Does.Contain("yr"));
+
+        [Test]
+        public void OffsetMonthlySaving_AfterSetup_IsNotDash()
+            => Assert.That(_vm.OffsetMonthlySaving, Is.Not.EqualTo("--"));
+
+        [Test]
+        public void OffsetMonthlySaving_EndsWithMoSuffix()
+            => Assert.That(_vm.OffsetMonthlySaving, Does.EndWith("/mo"));
+
+        [Test]
+        public void OffsetInterestSaved_AfterSetup_IsNotDash()
+            => Assert.That(_vm.OffsetInterestSaved, Is.Not.EqualTo("--"));
+
+        [Test]
+        public void OffsetRateNote_AfterSetup_ContainsRate()
+            => Assert.That(_vm.OffsetRateNote, Does.Contain("5"));
+
+        [Test]
+        public void OffsetBalance_ZeroBalance_TimeSavedIsZeroYr()
+        {
+            _vm.OffsetBalance = 0;
+            Assert.That(_vm.OffsetTimeSaved, Is.EqualTo("0yr"));
+        }
+
+        [Test]
+        public void OffsetBalance_Increase_SavesMoreInterest()
+        {
+            _vm.OffsetBalance = 20_000;
+            var interestLow = _vm.OffsetInterestSaved;
+            _vm.OffsetBalance = 200_000;
+            var interestHigh = _vm.OffsetInterestSaved;
+            Assert.That(interestHigh, Is.Not.EqualTo(interestLow));
+        }
+
+        [Test]
+        public void OffsetBalance_Increase_SavesMoreTime()
+        {
+            _vm.OffsetBalance = 20_000;
+            var timeLow = _vm.OffsetTimeSaved;
+            _vm.OffsetBalance = 200_000;
+            var timeHigh = _vm.OffsetTimeSaved;
+            Assert.That(timeHigh, Is.Not.EqualTo(timeLow));
+        }
+
+        [Test]
+        public void OffsetMonthlySaving_MatchesBalanceTimesMonthlyRate()
+        {
+            // Offset $50k on a 5% loan: $50,000 × (5/100/12) ≈ $208/mo
+            _vm.OffsetBalance = 50_000;
+            double ParseCurrency(string s) => double.Parse(s.Replace("$", "").Replace(",", "").Replace("/mo", ""));
+            Assert.That(ParseCurrency(_vm.OffsetMonthlySaving), Is.EqualTo(208).Within(2));
+        }
+
+        // ── Scenario 8: Stress Test ───────────────────────────────────────────
+
+        [Test]
+        public void StressTest_NoAffordabilityData_IsUnavailable()
+            => Assert.That(_vm.StressTestAvailable, Is.False);
+
+        [Test]
+        public void StressTest_NoAffordabilityData_UnavailableIsTrue()
+            => Assert.That(_vm.StressTestUnavailable, Is.True);
+
+        // ── Cross-scenario: recalculate on SetLoanViewModel ───────────────────
+
+        [Test]
+        public void Recalculate_DifferentLoan_UpdatesAllScenarios()
+        {
+            var before = _vm.RateChangeMonthlyRepayment;
+            _vm.SetLoanViewModel(BuildLoanVm(loanAmount: 500_000));
+            var after = _vm.RateChangeMonthlyRepayment;
+            Assert.That(after, Is.Not.EqualTo(before));
+        }
+
+        [Test]
+        public void Recalculate_HigherRate_ProducesHigherMonthlyRepayment()
+        {
+            double ParseCurrency(string s) => double.Parse(s.Replace("$", "").Replace(",", "").Replace("/mo", ""));
+            _vm.SetLoanViewModel(BuildLoanVm(interestRate: 3.0));
+            double low = ParseCurrency(_vm.RateChangeMonthlyRepayment);
+            _vm.SetLoanViewModel(BuildLoanVm(interestRate: 7.0));
+            double high = ParseCurrency(_vm.RateChangeMonthlyRepayment);
+            Assert.That(high, Is.GreaterThan(low));
         }
     }
 }

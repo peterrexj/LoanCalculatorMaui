@@ -66,10 +66,14 @@ public partial class ExpenseView : ContentPage
             }
             else
             {
-                // Subsequent visits — just re-fire UI notifications, no disk read
+                // Subsequent visits — re-fetch chart colors (theme may have changed), re-fire UI
+                _viewModel.CustomChartColors = _themeHandler.GetChartColors();
                 _viewModel.RefreshIncomePropertyChanged();
                 _viewModel.TriggerPropertyChangedOnProjectionTab();
             }
+
+            // Re-apply slider colors after a possible theme change (Syncfusion caches these).
+            LoanCalculatorMaui.Extensions.SliderThemeRefresher.Refresh(this);
         }
         catch (Exception ex)
         {

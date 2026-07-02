@@ -16,22 +16,17 @@
             </LinearGradientBrush>
         </Grid.Background>
 
-        <!--  Soft radial glow behind the logo  -->
+        <!--  Soft glow behind the logo. A plain low-opacity solid ellipse — NOT a
+              RadialGradientBrush, which misrenders on Android (collapses to a ring).  -->
         <Ellipse
             x:Name="GlowEllipse"
             HorizontalOptions="Center"
             VerticalOptions="Center"
             Margin="0,-140,0,0"
-            WidthRequest="360"
-            HeightRequest="360"
-            Opacity="0">
-            <Ellipse.Fill>
-                <RadialGradientBrush Center="0.5,0.5" Radius="0.5">
-                    <GradientStop Offset="0.0" Color="#3316BAC5" />
-                    <GradientStop Offset="1.0" Color="#0016BAC5" />
-                </RadialGradientBrush>
-            </Ellipse.Fill>
-        </Ellipse>
+            WidthRequest="300"
+            HeightRequest="300"
+            Fill="#16BAC5"
+            Opacity="0" />
 
         <Grid
             RowDefinitions="*,Auto,Auto,Auto,*"
@@ -39,7 +34,8 @@
             VerticalOptions="Fill"
             Padding="32,0">
 
-            <!--  Logo card — scales + fades in  -->
+            <!--  Logo card — scales + fades in. No colored Shadow: MAUI renders a colored
+                  shadow with a large radius as a diagonal streak on Android.  -->
             <Border
                 x:Name="LogoCard"
                 Grid.Row="1"
@@ -55,13 +51,6 @@
                 <Border.StrokeShape>
                     <RoundRectangle CornerRadius="34" />
                 </Border.StrokeShape>
-                <Border.Shadow>
-                    <Shadow
-                        Brush="#16BAC5"
-                        Offset="0,12"
-                        Radius="32"
-                        Opacity="0.45" />
-                </Border.Shadow>
                 <Image
                     Source="splash_icon.png"
                     Aspect="AspectFit"

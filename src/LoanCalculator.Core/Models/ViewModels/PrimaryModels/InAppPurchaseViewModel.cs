@@ -25,12 +25,12 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
             Features = new ObservableCollection<string>
             {
                 "Instantly understand your affordability status",
-                "Gain complete access to every powerful feature",
+                "Explore What If scenarios — extra repayments, offset, lump sum & more",
                 "Export and share detailed PDF reports with ease",
                 "Securely save your financial data for future access",
-                "Track new investment costs",
-                "Project your income over a period of time",
-                "Visualize your long-term financial health"
+                "Track new investment costs and project income over time",
+                "Visualize your long-term financial health",
+                "Gain complete access to every powerful feature"
             };
 
 

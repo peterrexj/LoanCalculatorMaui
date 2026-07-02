@@ -97,6 +97,14 @@ public partial class LoanView : ContentPage
                 _viewModel.TriggerPropertyChangedOnPropertyTab();
             }
 
+            // Re-fetch chart colors on every appearance so a theme change (applied on the
+            // Settings tab) is reflected when returning to the Loan charts.
+            if (_hasLoadedOnce)
+                _viewModel.CustomChartColors = _themeHandler.GetChartColors();
+
+            // Re-apply slider colors after a possible theme change (Syncfusion caches these).
+            LoanCalculatorMaui.Extensions.SliderThemeRefresher.Refresh(this);
+
             if (SharedServiceCore.IsTrialUser)
             {
                 await ServiceLocator.GetService<IInAppPurchaseService>().CheckPendingPurchasesAsync(isSilentMode: true);

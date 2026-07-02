@@ -1,15 +1,17 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentView
+    x:Name="disclaimerRoot"
     x:Class="LoanCalculatorMaui.Controls.PopupDisclaimerView"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    xmlns:sfPopup="clr-namespace:Syncfusion.Maui.Popup;assembly=Syncfusion.Maui.Popup">
+    xmlns:primaryModels="clr-namespace:LoanCalculator.Core.Models.ViewModels.PrimaryModels;assembly=LoanCalculator.Core"
+    xmlns:sfPopup="clr-namespace:Syncfusion.Maui.Popup;assembly=Syncfusion.Maui.Popup"
+    IsVisible="{Binding IsPopupRequired}">
     <sfPopup:SfPopup
         Padding="10,25,10,20"
-        AcceptButtonText="Accept"
         AnimationMode="Zoom"
         AppearanceMode="OneButton"
-        BackgroundColor="{DynamicResource LoanAppDefaultBackgroundColor}"
+        BackgroundColor="{DynamicResource LoanAppPopupBg}"
         IsFullScreen="True"
         IsOpen="{Binding IsPopupRequired}"
         ShowCloseButton="False"
@@ -18,45 +20,82 @@
         StaysOpen="True">
         <sfPopup:SfPopup.HeaderTemplate>
             <DataTemplate>
-                <Grid BackgroundColor="{DynamicResource LoanAppDefaultBackgroundColor}">
+                <!--  Top padding clears the iOS status bar / notch (full-screen popup).  -->
+                <Grid
+                    Padding="{OnPlatform iOS='0,50,0,8', MacCatalyst='0,50,0,8', Default='0,8,0,8'}"
+                    BackgroundColor="{DynamicResource LoanAppPopupBg}">
                     <Label
                         BackgroundColor="Transparent"
                         FontAttributes="Bold"
                         FontFamily="{DynamicResource DefaultFontFamily}"
-                        FontSize="18"
+                        FontSize="{OnIdiom Phone=18, Tablet=26, Desktop=26, Default=18}"
                         HorizontalTextAlignment="Center"
                         Text="Disclaimer"
-                        TextColor="{DynamicResource LoanAppDefaultForegroundColor}"
+                        TextColor="{DynamicResource LoanAppPopupFg}"
                         VerticalTextAlignment="Center" />
                 </Grid>
             </DataTemplate>
         </sfPopup:SfPopup.HeaderTemplate>
         <sfPopup:SfPopup.FooterTemplate>
             <DataTemplate>
-                <Grid BackgroundColor="{DynamicResource LoanAppDefaultBackgroundColor}">
+                <Grid
+                    BackgroundColor="{DynamicResource LoanAppPopupBg}"
+                    BindingContext="{Binding Source={x:Reference disclaimerRoot}, Path=BindingContext}">
                     <Button
-                        BackgroundColor="Transparent"
+                        BackgroundColor="{DynamicResource LoanAppPopupButtonBg}"
                         Command="{Binding PopupAcceptCommand}"
+                        CornerRadius="8"
                         FontAttributes="Bold"
                         FontFamily="{DynamicResource DefaultFontFamily}"
-                        FontSize="16"
+                        FontSize="{OnIdiom Phone=16, Tablet=22, Desktop=22, Default=16}"
                         IsVisible="{Binding IsActive}"
+                        Margin="{OnIdiom Phone='20,6,20,6', Tablet='40,10,40,10', Default='20,6,20,6'}"
                         Text="Accept"
-                        TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                        TextColor="{DynamicResource LoanAppPopupButtonFg}" />
                 </Grid>
             </DataTemplate>
         </sfPopup:SfPopup.FooterTemplate>
         <sfPopup:SfPopup.ContentTemplate>
             <DataTemplate>
-                <Grid>
-                    <ScrollView>
-                        <WebView x:Name="htmlWebViewer">
-                            <WebView.Source>
-                                <HtmlWebViewSource Html="{Binding AppLaunchDisclaimerData}" />
-                            </WebView.Source>
-                        </WebView>
-                    </ScrollView>
-                </Grid>
+                <ScrollView
+                    BackgroundColor="{DynamicResource LoanAppPopupBg}"
+                    BindingContext="{Binding Source={x:Reference disclaimerRoot}, Path=BindingContext}">
+                    <VerticalStackLayout Padding="12,8,12,8" Spacing="0">
+                        <!--  Card surface that wraps all sections  -->
+                        <Border
+                            Padding="14,10,14,16"
+                            BackgroundColor="{DynamicResource LoanAppPopupSurface}"
+                            StrokeShape="RoundRectangle 8">
+                            <Border.Stroke>
+                                <SolidColorBrush Color="{DynamicResource LoanAppPopupMuted}" />
+                            </Border.Stroke>
+                            <VerticalStackLayout
+                                BindableLayout.ItemsSource="{Binding DisclaimerSections}"
+                                Spacing="0">
+                                <BindableLayout.ItemTemplate>
+                                    <DataTemplate x:DataType="primaryModels:DisclaimerSection">
+                                        <Label
+                                            Margin="{Binding IsHeader, Converter={StaticResource BoolToDisclaimerMarginConverter}}"
+                                            FontAttributes="{Binding IsHeader, Converter={StaticResource BoolToFontAttributesConverter}}"
+                                            FontFamily="{DynamicResource DefaultFontFamily}"
+                                            FontSize="{Binding IsHeader, Converter={StaticResource BoolToDisclaimerFontSizeConverter}}"
+                                            Text="{Binding Text}"
+                                            TextColor="{DynamicResource LoanAppPopupAccent}">
+                                            <Label.Triggers>
+                                                <DataTrigger
+                                                    Binding="{Binding IsHeader}"
+                                                    TargetType="Label"
+                                                    Value="True">
+                                                    <Setter Property="TextColor" Value="{DynamicResource LoanAppPopupFg}" />
+                                                </DataTrigger>
+                                            </Label.Triggers>
+                                        </Label>
+                                    </DataTemplate>
+                                </BindableLayout.ItemTemplate>
+                            </VerticalStackLayout>
+                        </Border>
+                    </VerticalStackLayout>
+                </ScrollView>
             </DataTemplate>
         </sfPopup:SfPopup.ContentTemplate>
     </sfPopup:SfPopup>

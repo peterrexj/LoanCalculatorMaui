@@ -296,7 +296,7 @@
                                                 </Grid>
                                                 <range:SfSlider
                                                     HeightRequest="36"
-                                                    Maximum="50"
+                                                    Maximum="99"
                                                     Minimum="0"
                                                     StepSize="1"
                                                     Value="{Binding DepositPercentage}">
@@ -798,11 +798,7 @@
                 x:Name="TabView"
                 HeaderHorizontalTextAlignment="Center"
                 SelectionChanging="TabView_OnSelectionChanging">
-                <tabView:SfTabItem
-                    Header="Asset"
-                    ImagePosition="Left"
-                    ImageSize="15"
-                    ImageSource="{DynamicResource LoanAppAssetIcon}">
+                <tabView:SfTabItem Header="Asset">
                     <tabView:SfTabItem.Content>
                         <Grid>
                         <ScrollView>
@@ -815,7 +811,7 @@
                                 <customControls:ThreeColumnBorderedContentView>
                                     <customControls:ThreeColumnBorderedContentView.FormattedText1>
                                         <FormattedString>
-                                            <Span Style="{DynamicResource SpanThreeBoxCurrencyStyle}" Text="{Binding CurrencySymbol}" />
+                                            <Span Style="{DynamicResource SpanThreeBoxAmountStyle}" Text="{Binding CurrencySymbol}" />
                                             <Span Style="{DynamicResource SpanThreeBoxAmountStyle}" Text="{Binding TermPaymentRoundedWithComma}" />
                                             <Span Text="{Binding NewLine}" />
                                             <Span Style="{DynamicResource SpanThreeBoxTextStyle}" Text="{Binding RepaymentFrequencySelected}" />
@@ -834,7 +830,8 @@
                                     </customControls:ThreeColumnBorderedContentView.FormattedText1>
                                     <customControls:ThreeColumnBorderedContentView.FormattedText2>
                                         <FormattedString>
-                                            <Span Style="{DynamicResource SpanThreeBoxCurrencyStyle}" Text="{Binding CurrencySymbol}" />
+                                            <!--  LoanAmountStrFormatted / DepositAmountStrFormatted already include the
+                                                  currency symbol, so no separate symbol span here (avoids "$$").  -->
                                             <Span Style="{DynamicResource SpanThreeBoxAmountStyle}" Text="{Binding LoanAmountStrFormatted}" />
                                             <Span Style="{DynamicResource SpanThreeBoxTextStyle}" Text=" loan with " />
                                             <Span Style="{DynamicResource SpanThreeBoxAmountStyle}" Text="{Binding DepositAmountStrFormatted}" />
@@ -843,7 +840,7 @@
                                     </customControls:ThreeColumnBorderedContentView.FormattedText2>
                                     <customControls:ThreeColumnBorderedContentView.FormattedText3>
                                         <FormattedString>
-                                            <Span Style="{DynamicResource SpanThreeBoxCurrencyStyle}" Text="{Binding AffordabilityCurrencySymbol}" />
+                                            <Span Style="{DynamicResource SpanThreeBoxAmountStyle}" Text="{Binding AffordabilityCurrencySymbol}" />
                                             <Span Style="{DynamicResource SpanThreeBoxAmountStyle}" Text="{Binding Affordability}" />
                                             <Span Style="{DynamicResource SpanThreeBoxTextStyle}" Text="{Binding AffordabilityTextDescription}" />
                                         </FormattedString>
@@ -891,7 +888,7 @@
                                                             FontAttributes="Bold"
                                                             FontSize="{StaticResource FontSizeLarge}"
                                                             HorizontalTextAlignment="Center"
-                                                            Text="{Binding PropertyAmount, StringFormat='{0:N0}'}"
+                                                            Text="{Binding PropertyAmountFormatted}"
                                                             TextColor="{DynamicResource LoanAppHighlightFgColor}" />
                                                     </StackLayout>
                                                 </Border>
@@ -975,7 +972,7 @@
                                                                     <range:SfSlider
                                                                         Grid.Column="1"
                                                                         HeightRequest="44"
-                                                                        Maximum="50"
+                                                                        Maximum="99"
                                                                         Minimum="0"
                                                                         StepSize="1"
                                                                         Value="{Binding DepositPercentage}">
@@ -1490,7 +1487,7 @@
                                     <pager:SfDataPager
                                         x:Name="dataPager"
                                         Grid.Row="0"
-                                        Margin="0,3,0,3"
+                                        Margin="{OnIdiom Phone='0,3,0,3', Tablet='0,3,0,14', Default='0,3,0,3'}"
                                         ButtonFontSize="{StaticResource FontSizeSmall}"
                                         ButtonShape="Circle"
                                         HorizontalOptions="Center"
@@ -1601,7 +1598,7 @@
                     </tabView:SfTabItem.Content>
                 </tabView:SfTabItem>
 
-                <tabView:SfTabItem Header="Expense on Asset">
+                <tabView:SfTabItem Header="Running Cost">
                     <tabView:SfTabItem.Content>
                         <Grid>
                             <Grid.RowDefinitions>
@@ -1697,7 +1694,6 @@
                                     StrokeShape="RoundRectangle 10"
                                     StrokeThickness="1">
                                     <VerticalStackLayout HorizontalOptions="Center" Spacing="8">
-                                        <Label FontSize="{StaticResource FontSizeHeading}" HorizontalOptions="Center" Text="🏠" />
                                         <Label
                                             FontAttributes="Bold"
                                             FontSize="{StaticResource FontSizeMedium}"
@@ -1794,6 +1790,7 @@
                                     x:Name="FabAddAssetExpense"
                                     Grid.RowSpan="3"
                                     Margin="0,0,20,20"
+                                    Opacity="0.5"
                                     BackgroundColor="{DynamicResource LoanAppInputTextFgColor}"
                                     Clicked="OnAddAssetExpenseFab_Clicked"
                                     CornerRadius="28"
@@ -1818,11 +1815,7 @@
                     </tabView:SfTabItem.Content>
                 </tabView:SfTabItem>
 
-                <tabView:SfTabItem
-                    Header="Insights"
-                    ImagePosition="Left"
-                    ImageSize="15"
-                    ImageSource="{DynamicResource LoanAppInsightIcon}">
+                <tabView:SfTabItem Header="Insights">
                     <tabView:SfTabItem.Content>
                         <ScrollView>
                             <StackLayout>

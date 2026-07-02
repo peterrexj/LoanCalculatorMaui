@@ -138,7 +138,10 @@ namespace LoanCalculator.Core.Pdf
             RectangleF headerBounds = new RectangleF(0, 0, PageWidth, 70);
             PdfPageTemplateElement header = new PdfPageTemplateElement(headerBounds);
 
-            await using var stream = await SharedServiceCore.LocalStorage.LoadFileFromFileSystem("Resources/AppIcon/appiconfg.png");
+            // Load the logo from Resources/Raw (a flat MauiAsset, openable on every platform).
+            // appiconfg.png is consumed by MauiIcon and is not reliably openable as a package
+            // file on Android, which threw FileNotFoundException during PDF export.
+            await using var stream = await SharedServiceCore.LocalStorage.LoadFileFromFileSystem("pdf_logo.png");
 
             // Copy the original stream to a MemoryStream
             using var memoryStream = new MemoryStream();

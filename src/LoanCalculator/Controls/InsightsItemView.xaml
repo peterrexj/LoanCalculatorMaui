@@ -31,28 +31,46 @@
             HorizontalOptions="Center"
             VerticalOptions="Center"
             WidthRequest="2" />
-        <Label
-            x:Name="InnerInsightsLabel"
-            Grid.Column="2"
-            Margin="15,0,10,0"
-            HorizontalOptions="Start"
-            HorizontalTextAlignment="Start"
-            VerticalOptions="Center">
-            <Label.FormattedText>
-                <FormattedString>
-                    <Span
-                        x:Name="InnerInsightsNameLabel"
-                        FontAttributes="Bold"
-                        FontSize="{OnIdiom Phone=16,
-                                           Tablet=24,
-                                           Desktop=24,
-                                           TV=24,
-                                           Watch=12,
-                                           Default=16}" />
-                    <Span Text="  " />
-                    <Span x:Name="InnerInsightsDescriptionLabel" FontSize="{OnIdiom Phone=12, Tablet=22, Desktop=22, TV=22, Watch=12, Default=12}" />
-                </FormattedString>
-            </Label.FormattedText>
-        </Label>
+
+        <VerticalStackLayout Grid.Column="2" Margin="15,0,10,0" Spacing="2" VerticalOptions="Center">
+            <!--  Name + tappable info toggle  -->
+            <Label x:Name="InnerInsightsLabel">
+                <Label.FormattedText>
+                    <FormattedString>
+                        <Span
+                            x:Name="InnerInsightsNameLabel"
+                            FontAttributes="Bold"
+                            FontSize="{OnIdiom Phone=16,
+                                               Tablet=24,
+                                               Desktop=24,
+                                               TV=24,
+                                               Watch=12,
+                                               Default=16}" />
+                        <Span Text="  " />
+                        <Span
+                            x:Name="InnerInsightsInfoToggle"
+                            FontFamily="{DynamicResource DefaultFontFamily}"
+                            FontSize="{OnIdiom Phone=14, Tablet=22, Desktop=22, TV=22, Watch=12, Default=14}"
+                            Text="ⓘ" />
+                    </FormattedString>
+                </Label.FormattedText>
+                <Label.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnInfoToggleTapped" />
+                </Label.GestureRecognizers>
+            </Label>
+
+            <!--  Short summary — always visible  -->
+            <Label
+                x:Name="InnerInsightsShortLabel"
+                FontSize="{OnIdiom Phone=12, Tablet=22, Desktop=22, TV=22, Watch=12, Default=12}"
+                Opacity="0.75" />
+
+            <!--  Full description — collapsed by default, expands on ⓘ tap  -->
+            <Label
+                x:Name="InnerInsightsDescriptionLabel"
+                FontSize="{OnIdiom Phone=12, Tablet=22, Desktop=22, TV=22, Watch=12, Default=12}"
+                IsVisible="False"
+                Opacity="0.6" />
+        </VerticalStackLayout>
     </Grid>
 </ContentView>

@@ -28,7 +28,10 @@
             StaysOpen="True">
             <sfPopup:SfPopup.HeaderTemplate>
                 <DataTemplate>
-                    <Grid BackgroundColor="{DynamicResource LoanAppDefaultBackgroundColor}">
+                    <!--  Top padding clears the iOS status bar / notch (full-screen popup).  -->
+                    <Grid
+                        Padding="{OnPlatform iOS='0,50,0,8', MacCatalyst='0,50,0,8', Default='0,8,0,8'}"
+                        BackgroundColor="{DynamicResource LoanAppDefaultBackgroundColor}">
                         <Label
                             BackgroundColor="Transparent"
                             FontAttributes="Bold"

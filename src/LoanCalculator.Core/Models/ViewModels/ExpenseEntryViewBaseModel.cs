@@ -36,8 +36,13 @@ namespace LoanCalculator.Core.Models.ViewModels
             }
         }
 
+        [JsonIgnore] private ObservableCollection<Brush> _customChartColors;
         [JsonIgnore]
-        public ObservableCollection<Brush> CustomChartColors { get; set; }
+        public ObservableCollection<Brush> CustomChartColors
+        {
+            get => _customChartColors;
+            set { _customChartColors = value; OnPropertyChanged(nameof(CustomChartColors)); }
+        }
 
         public void TriggerOneTimeUpdateOnPage()
         {

@@ -6,6 +6,8 @@ namespace LoanCalculatorMaui.Controls;
 
 public partial class InAppPurchaseView : ContentView
 {
+    public event EventHandler? Dismissed;
+
     private readonly InAppPurchaseViewModel _viewModel;
 
 
@@ -63,11 +65,11 @@ public partial class InAppPurchaseView : ContentView
     {
         _viewModel.ShowPremiumBuyWindow = false;
         ShowPremiumBuyWindow = false;
+        Dismissed?.Invoke(this, EventArgs.Empty);
     }
 
     private void IgnoreOffer_OnClicked(object? sender, EventArgs e)
     {
         _viewModel.ShowPremiumBuyWindow = false;
-
     }
 }

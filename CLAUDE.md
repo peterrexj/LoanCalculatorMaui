@@ -8,6 +8,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 All commands run from `src/LoanCalculator/` unless noted.
 
+> **Do not build or run the app unless the user explicitly asks.** Builds here are slow
+> (MAUI multi-target) and the user typically builds/runs themselves. After making code
+> changes, stop and report what changed — do not kick off `dotnet build`, `dotnet run`,
+> `run-ios.sh`, `run-android.ps1`, or deploy to a simulator/emulator on your own. Only do so
+> when the user says to build, run, test, or deploy.
+
 ### Build
 
 ```bash

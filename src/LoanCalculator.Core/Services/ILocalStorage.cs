@@ -14,6 +14,7 @@
         string DefaultDataFilePath { get; }
         string NameValueDataFilePath { get; }
         string ThemeSelectDataFilePath { get; }
+        string WhatIfDataFilePath { get; }
 
         string FilePathBasedOnType<T>();
         Task<T?> GetData<T>();

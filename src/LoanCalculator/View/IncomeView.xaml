@@ -220,7 +220,7 @@
                                             </buttons:SfSwitch>
                                             <VerticalStackLayout Grid.Column="1" Spacing="1" VerticalOptions="Center">
                                                 <Label FontSize="{StaticResource FontSizeBody}" Text="Show income after expenses" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
-                                                <Label FontSize="{StaticResource FontSizeSmall}" Opacity="0.55" Text="Display remaining income in summary" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                                                <Label FontSize="{StaticResource FontSizeSmall}" Opacity="0.7" Text="Display remaining income in summary" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
                                             </VerticalStackLayout>
                                         </Grid>
 
@@ -266,7 +266,7 @@
                                             </buttons:SfSwitch>
                                             <VerticalStackLayout Grid.Column="1" Spacing="1" VerticalOptions="Center">
                                                 <Label FontSize="{StaticResource FontSizeBody}" Text="Income after new asset expense" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
-                                                <Label FontSize="{StaticResource FontSizeSmall}" Opacity="0.55" Text="Include property loan costs in calculation" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                                                <Label FontSize="{StaticResource FontSizeSmall}" Opacity="0.7" Text="Include property loan costs in calculation" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
                                             </VerticalStackLayout>
                                         </Grid>
 
@@ -328,7 +328,6 @@
                                     StrokeShape="RoundRectangle 10"
                                     StrokeThickness="1">
                                     <VerticalStackLayout HorizontalOptions="Center" Spacing="8">
-                                        <Label FontSize="{StaticResource FontSizeHeading}" HorizontalOptions="Center" Text="💰" />
                                         <Label
                                             FontAttributes="Bold"
                                             FontSize="{StaticResource FontSizeMedium}"
@@ -340,7 +339,7 @@
                                             FontSize="{StaticResource FontSizeBody}"
                                             HorizontalOptions="Center"
                                             HorizontalTextAlignment="Center"
-                                            Opacity="0.55"
+                                            Opacity="0.7"
                                             Text="Add your first income entry above to get started"
                                             TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
                                     </VerticalStackLayout>
@@ -381,7 +380,7 @@
                                                             TextColor="{DynamicResource LstForegroundColor}" />
                                                         <Label
                                                             FontSize="{StaticResource FontSizeSmall}"
-                                                            Opacity="0.55"
+                                                            Opacity="0.7"
                                                             Text="{Binding Frequency}"
                                                             TextColor="{DynamicResource LstForegroundColor}" />
                                                     </VerticalStackLayout>
@@ -505,7 +504,7 @@
                                                 <ColumnDefinition Width="Auto" />
                                                 <ColumnDefinition Width="44" />
                                             </Grid.ColumnDefinitions>
-                                            <Label Grid.Column="0" FontSize="{StaticResource FontSizeSmall}" Opacity="0.55" Text="Annual growth %" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" VerticalOptions="Center" />
+                                            <Label Grid.Column="0" FontSize="{StaticResource FontSizeSmall}" Opacity="0.7" Text="Annual growth %" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" VerticalOptions="Center" />
                                             <Button Grid.Column="1" BackgroundColor="Transparent" Clicked="OnGrowthRateDecrease" FontAttributes="Bold" FontSize="{StaticResource FontSizeHeading}" Text="−" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
                                             <Label
                                                 Grid.Column="2"
@@ -562,7 +561,7 @@
                                             </buttons:SfSwitch>
                                             <VerticalStackLayout Grid.Column="1" Spacing="1" VerticalOptions="Center">
                                                 <Label FontSize="{StaticResource FontSizeBody}" Text="Include expenses" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
-                                                <Label FontSize="{StaticResource FontSizeSmall}" Opacity="0.55" Text="Deduct living expenses from projection" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                                                <Label FontSize="{StaticResource FontSizeSmall}" Opacity="0.7" Text="Deduct living expenses from projection" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
                                             </VerticalStackLayout>
                                         </Grid>
 
@@ -608,7 +607,7 @@
                                             </buttons:SfSwitch>
                                             <VerticalStackLayout Grid.Column="1" Spacing="1" VerticalOptions="Center">
                                                 <Label FontSize="{StaticResource FontSizeBody}" Text="Include new asset expenses" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
-                                                <Label FontSize="{StaticResource FontSizeSmall}" Opacity="0.55" Text="Add property loan costs to projection" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                                                <Label FontSize="{StaticResource FontSizeSmall}" Opacity="0.7" Text="Add property loan costs to projection" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
                                             </VerticalStackLayout>
                                         </Grid>
 
@@ -686,7 +685,7 @@
                                     Margin="20,16,20,4"
                                     FontAttributes="Bold"
                                     FontSize="{StaticResource FontSizeSmall}"
-                                    Opacity="0.55"
+                                    Opacity="0.7"
                                     Text="INCOME PROJECTION"
                                     TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
                                 <Border Style="{DynamicResource LoanAppChartBorderStyle}">
@@ -778,7 +777,7 @@
                                     Margin="20,16,20,4"
                                     FontAttributes="Bold"
                                     FontSize="{StaticResource FontSizeSmall}"
-                                    Opacity="0.55"
+                                    Opacity="0.7"
                                     Text="YEAR-BY-YEAR BREAKDOWN"
                                     TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
 

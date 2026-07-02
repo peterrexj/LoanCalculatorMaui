@@ -66,9 +66,14 @@ public partial class IncomeView : ContentPage
             }
             else
             {
+                // Re-fetch chart colors so a theme change is reflected on return.
+                _viewModel.CustomChartColors = _themeHandler.GetChartColors();
                 _viewModel.RefreshIncomePropertyChanged();
                 _viewModel.TriggerPropertyChangedOnProjectionTab();
             }
+
+            // Re-apply slider colors after a possible theme change (Syncfusion caches these).
+            LoanCalculatorMaui.Extensions.SliderThemeRefresher.Refresh(this);
         }
         catch (Exception ex)
         {

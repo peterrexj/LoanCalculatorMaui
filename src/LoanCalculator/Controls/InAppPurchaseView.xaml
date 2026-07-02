@@ -11,7 +11,7 @@
         HeaderTitle=""
         IsFullScreen="True"
         IsOpen="{Binding ShowPremiumBuyWindow}"
-        ShowCloseButton="True"
+        ShowCloseButton="False"
         StaysOpen="True">
         <sfPopup:SfPopup.PopupStyle>
             <sfPopup:PopupStyle
@@ -21,156 +21,125 @@
         </sfPopup:SfPopup.PopupStyle>
         <sfPopup:SfPopup.ContentTemplate>
             <DataTemplate>
-                <ScrollView>
-                    <StackLayout Padding="10">
-                        <!--  Header with Icon  -->
-                        <HorizontalStackLayout
-                            Margin="{OnIdiom Phone='0,5,5,10',
-                                             Tablet='0,5,5,10',
-                                             Desktop='0,5,5,10',
-                                             TV='0,5,5,10',
-                                             Default='0,5,5,10'}"
-                            HorizontalOptions="Start"
-                            Spacing="10">
+                <!--  Top padding clears the iOS status bar / notch since the popup is full-screen.
+                      No close button — the user dismisses via "Maybe later".  -->
+                <ScrollView Padding="{OnPlatform iOS='0,12,0,0', MacCatalyst='0,12,0,0', Default='0,4,0,0'}">
+                    <Grid Padding="24,4,24,16" RowDefinitions="Auto,Auto,Auto" RowSpacing="0">
+
+                        <!--  ── Hero: icon badge + title + subtitle ──  -->
+                        <VerticalStackLayout Grid.Row="0" HorizontalOptions="Center" Spacing="8">
+                            <!--  Circular icon badge  -->
+                            <Border
+                                HeightRequest="68"
+                                WidthRequest="68"
+                                HorizontalOptions="Center"
+                                BackgroundColor="{DynamicResource LoanAppPurchaseButtonPrimaryBgColor}"
+                                StrokeThickness="0">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="34" />
+                                </Border.StrokeShape>
+                                <Image
+                                    HeightRequest="32"
+                                    WidthRequest="32"
+                                    HorizontalOptions="Center"
+                                    VerticalOptions="Center"
+                                    Source="icon_premium.png" />
+                            </Border>
+
                             <Label
                                 FontAttributes="Bold"
                                 FontFamily="{DynamicResource DefaultFontFamily}"
-                                FontSize="{OnIdiom Phone=32,
-                                                   Tablet=38,
-                                                   Desktop=38,
-                                                   TV=38,
-                                                   Watch=24,
-                                                   Default=32}"
+                                FontSize="{OnIdiom Phone=26, Tablet=34, Desktop=34, TV=34, Watch=20, Default=26}"
+                                HorizontalTextAlignment="Center"
                                 Text="Try Premium"
-                                TextColor="{DynamicResource LoanAppPurchaseTextFontColor}"
-                                VerticalOptions="Center" />
+                                TextColor="{DynamicResource LoanAppPurchaseTextFontColor}" />
 
-                            <Image
-                                HeightRequest="{OnIdiom Phone=32,
-                                                        Tablet=38,
-                                                        Desktop=38,
-                                                        TV=38,
-                                                        Watch=24,
-                                                        Default=32}"
-                                Source="icon_premium.png"
-                                VerticalOptions="Center"
-                                WidthRequest="{OnIdiom Phone=32,
-                                                       Tablet=38,
-                                                       Desktop=38,
-                                                       TV=38,
-                                                       Watch=24,
-                                                       Default=32}" />
-                        </HorizontalStackLayout>
+                            <Label
+                                FontFamily="{DynamicResource DefaultFontFamily}"
+                                FontSize="{OnIdiom Phone=13, Tablet=18, Desktop=18, TV=18, Watch=11, Default=13}"
+                                HorizontalTextAlignment="Center"
+                                Opacity="0.75"
+                                Text="Unlock every feature and get the most out of your numbers."
+                                TextColor="{DynamicResource LoanAppPurchaseTextFontColor}" />
+                        </VerticalStackLayout>
 
-                        <!--  Subheader  -->
-                        <Label
-                            FontFamily="{DynamicResource DefaultFontFamily}"
-                            FontSize="{OnIdiom Phone=18,
-                                               Tablet=23,
-                                               Desktop=23,
-                                               TV=23,
-                                               Watch=14,
-                                               Default=18}"
-                            HorizontalOptions="Start"
-                            Text="Get all the new exciting features"
-                            TextColor="{DynamicResource LoanAppPurchaseTextFontColor}" />
+                        <!--  ── Features card ──  -->
+                        <Border
+                            Grid.Row="1"
+                            Margin="0,14,0,0"
+                            Padding="16,10"
+                            VerticalOptions="Start"
+                            BackgroundColor="{DynamicResource LoanAppPurchaseButtonSecondaryBgColor}"
+                            Stroke="{DynamicResource LoanAppPurchaseButtonSecondaryBorderColor}"
+                            StrokeThickness="1">
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="16" />
+                            </Border.StrokeShape>
+                            <StackLayout
+                                BindableLayout.ItemsSource="{Binding Features}"
+                                Spacing="0">
+                                <BindableLayout.ItemTemplate>
+                                    <DataTemplate>
+                                        <Grid Padding="0,6" ColumnSpacing="12">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="*" />
+                                            </Grid.ColumnDefinitions>
+                                            <Image
+                                                Grid.Column="0"
+                                                HeightRequest="{OnIdiom Phone=15, Tablet=19, Desktop=19, TV=19, Watch=11, Default=15}"
+                                                VerticalOptions="Center"
+                                                Source="icon_ticks.png"
+                                                WidthRequest="{OnIdiom Phone=15, Tablet=19, Desktop=19, TV=19, Watch=11, Default=15}" />
+                                            <Label
+                                                Grid.Column="1"
+                                                FontFamily="{DynamicResource DefaultFontFamily}"
+                                                FontSize="{OnIdiom Phone=14, Tablet=19, Desktop=19, TV=19, Watch=11, Default=14}"
+                                                Text="{Binding}"
+                                                TextColor="{DynamicResource LoanAppPurchaseTextFontColor}"
+                                                VerticalOptions="Center" />
+                                        </Grid>
+                                    </DataTemplate>
+                                </BindableLayout.ItemTemplate>
+                            </StackLayout>
+                        </Border>
 
-                        <!--  Promotional Image  -->
-                        <Image
-                            Margin="{OnIdiom Phone='0,10,10,0',
-                                             Tablet='0,25,10,0',
-                                             Desktop='0,25,10,0',
-                                             TV='0,25,10,0',
-                                             Default='0,10,10,0'}"
-                            Aspect="AspectFill"
-                            HeightRequest="{OnIdiom Phone=150,
-                                                    Tablet=280,
-                                                    Desktop=280,
-                                                    TV=280,
-                                                    Watch=100,
-                                                    Default=150}"
-                            HorizontalOptions="FillAndExpand"
-                            Opacity="0.75"
-                            Source="premiumbuyads.jpeg" />
-
-                        <!--  Features List  -->
-                        <StackLayout
-                            Margin="0,20,10,20"
-                            BindableLayout.ItemsSource="{Binding Features}"
-                            HorizontalOptions="Center">
-                            <BindableLayout.ItemTemplate>
-                                <DataTemplate>
-                                    <Grid Margin="{OnIdiom Phone='0,2,0,0', Tablet='0,13,0,0', Desktop='0,13,0,0', TV='0,13,0,0', Default='0,2,0,0'}" ColumnSpacing="10">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="Auto" />
-                                            <ColumnDefinition Width="*" />
-                                        </Grid.ColumnDefinitions>
-                                        <!--  Static Icon  -->
-                                        <Image
-                                            Grid.Column="0"
-                                            HeightRequest="{OnIdiom Phone=14,
-                                                                    Tablet=19,
-                                                                    Desktop=19,
-                                                                    TV=19,
-                                                                    Watch=12,
-                                                                    Default=14}"
-                                            Source="icon_ticks.png"
-                                            WidthRequest="{OnIdiom Phone=14,
-                                                                   Tablet=19,
-                                                                   Desktop=19,
-                                                                   TV=19,
-                                                                   Watch=12,
-                                                                   Default=14}" />
-                                        <!--  Dynamic Text  -->
-                                        <Label
-                                            Grid.Column="1"
-                                            FontFamily="{DynamicResource DefaultFontFamily}"
-                                            FontSize="{OnIdiom Phone=14,
-                                                               Tablet=19,
-                                                               Desktop=19,
-                                                               TV=19,
-                                                               Watch=12,
-                                                               Default=14}"
-                                            Text="{Binding}"
-                                            TextColor="{DynamicResource LoanAppPurchaseTextFontColor}"
-                                            VerticalOptions="Center" />
-                                    </Grid>
-                                </DataTemplate>
-                            </BindableLayout.ItemTemplate>
-                        </StackLayout>
-
-                        <!--  Buttons  -->
-                        <StackLayout
-                            Padding="10"
-                            HorizontalOptions="FillAndExpand"
-                            Orientation="Vertical"
-                            Spacing="10">
+                        <!--  ── Actions ──  -->
+                        <VerticalStackLayout Grid.Row="2" Margin="0,14,0,0" Spacing="10">
                             <Button
-                                Margin="15,0,20,0"
+                                HeightRequest="54"
+                                CornerRadius="14"
+                                FontAttributes="Bold"
+                                FontFamily="{DynamicResource DefaultFontFamily}"
+                                FontSize="{OnIdiom Phone=17, Tablet=22, Desktop=22, TV=22, Watch=13, Default=17}"
                                 Background="{DynamicResource LoanAppPurchaseButtonPrimaryBgColor}"
                                 Command="{Binding PurchaseCommand}"
-                                Style="{DynamicResource ExportButtonStyle}"
                                 Text="Buy Now"
                                 TextColor="{DynamicResource LoanAppPurchaseButtonPrimaryFgColor}" />
 
                             <Button
-                                Margin="15,0,20,0"
-                                Background="{DynamicResource LoanAppPurchaseButtonPrimaryBgColor}"
-                                Command="{Binding RestoreCommand}"
-                                Style="{DynamicResource ExportButtonStyle}"
-                                Text="Restore purchases"
-                                TextColor="{DynamicResource LoanAppPurchaseButtonPrimaryFgColor}" />
-
-                            <Button
-                                Margin="15,0,20,0"
+                                HeightRequest="50"
+                                CornerRadius="14"
+                                BorderWidth="1"
+                                FontFamily="{DynamicResource DefaultFontFamily}"
+                                FontSize="{OnIdiom Phone=16, Tablet=21, Desktop=21, TV=21, Watch=12, Default=16}"
                                 Background="{DynamicResource LoanAppPurchaseButtonSecondaryBgColor}"
                                 BorderColor="{DynamicResource LoanAppPurchaseButtonSecondaryBorderColor}"
-                                Command="{Binding IgnoreOfferCommand}"
-                                Style="{DynamicResource ExportButtonStyle}"
-                                Text="Ignore offer!"
+                                Command="{Binding RestoreCommand}"
+                                Text="Restore purchases"
                                 TextColor="{DynamicResource LoanAppPurchaseButtonSecondaryFgColor}" />
-                        </StackLayout>
-                    </StackLayout>
+
+                            <Button
+                                Margin="0,4,0,0"
+                                BackgroundColor="Transparent"
+                                FontFamily="{DynamicResource DefaultFontFamily}"
+                                FontSize="{OnIdiom Phone=14, Tablet=19, Desktop=19, TV=19, Watch=11, Default=14}"
+                                Command="{Binding IgnoreOfferCommand}"
+                                Opacity="0.7"
+                                Text="Continue with current version"
+                                TextColor="{DynamicResource LoanAppPurchaseTextFontColor}" />
+                        </VerticalStackLayout>
+                    </Grid>
                 </ScrollView>
             </DataTemplate>
         </sfPopup:SfPopup.ContentTemplate>

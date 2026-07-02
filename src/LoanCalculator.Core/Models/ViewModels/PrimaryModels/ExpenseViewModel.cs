@@ -311,7 +311,7 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
         public string TotalProjectedYearlyIncomeWithComma => TransactionRecords?.IncomeExpenseSummary?.ProjectTotalYearlyWithComma ?? "";
 
         [JsonIgnore]
-        public string TotalIncomeMonthlyWithComma
+        public double TotalIncomeMonthlyValue
         {
             get
             {
@@ -328,9 +328,19 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
                     }
                 }
 
-                return $"{Math.Round(income, 0):N0}";
+                return Math.Round(income, 0);
             }
         }
+
+        // Absolute amount — the sign lives with the symbol (TotalIncomeMonthlyCurrencySymbol)
+        // so a negative net income reads "-$233" rather than "$-233".
+        [JsonIgnore]
+        public string TotalIncomeMonthlyWithComma => $"{Math.Abs(TotalIncomeMonthlyValue):N0}";
+
+        // Currency symbol for the net-income box, carrying the minus when income is negative.
+        [JsonIgnore]
+        public string TotalIncomeMonthlyCurrencySymbol =>
+            TotalIncomeMonthlyValue < 0 ? $"-{CurrencySymbol}" : CurrencySymbol;
 
 
         #endregion
@@ -505,6 +515,7 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
             OnPropertyChanged(nameof(TotalMonthlySumExpenseWithComma));
             OnPropertyChanged(nameof(TotalYearlyIncomeWithComma));
             OnPropertyChanged(nameof(TotalIncomeMonthlyWithComma));
+            OnPropertyChanged(nameof(TotalIncomeMonthlyCurrencySymbol));
             OnPropertyChanged(nameof(IncomeExpenseFrequencySelectedIndex));
             OnPropertyChanged(nameof(Transactions));
             OnPropertyChanged(nameof(FilteredTransactions));

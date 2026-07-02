@@ -9,7 +9,9 @@ public partial class InsightsItemView : ContentView
 		InitializeComponent();
 
         InnerInsightsValueLabel.SetBinding(Label.TextColorProperty, new Binding("TextColor", source: this));
-        InnerInsightsNameLabel.SetBinding(Label.TextColorProperty, new Binding("TextColor", source: this));
+        InnerInsightsNameLabel.SetBinding(Span.TextColorProperty, new Binding("TextColor", source: this));
+        InnerInsightsInfoToggle.SetBinding(Span.TextColorProperty, new Binding("TextColor", source: this));
+        InnerInsightsShortLabel.SetBinding(Label.TextColorProperty, new Binding("TextColor", source: this));
         InnerInsightsDescriptionLabel.SetBinding(Label.TextColorProperty, new Binding("TextColor", source: this));
     }
 
@@ -27,7 +29,28 @@ public partial class InsightsItemView : ContentView
 
         control.InnerInsightsValueLabel.Text = value.Value;
         control.InnerInsightsNameLabel.Text = value.Name;
+
+        // Short summary shown by default; fall back to the full description if no short text.
+        var shortText = string.IsNullOrWhiteSpace(value.ShortDescription)
+            ? value.Description
+            : value.ShortDescription;
+        control.InnerInsightsShortLabel.Text = shortText;
         control.InnerInsightsDescriptionLabel.Text = value.Description;
+
+        // Only offer the ⓘ expand when there is extra detail beyond the short summary.
+        var hasMoreDetail = !string.IsNullOrWhiteSpace(value.Description)
+            && !string.Equals(value.Description, shortText, System.StringComparison.Ordinal);
+        control.InnerInsightsInfoToggle.Text = hasMoreDetail ? "ⓘ" : string.Empty;
+
+        // Reset to collapsed when the item is (re)assigned.
+        control.InnerInsightsDescriptionLabel.IsVisible = false;
+    }
+
+    private void OnInfoToggleTapped(object? sender, System.EventArgs e)
+    {
+        // Toggle only when there is a full description to reveal.
+        if (string.IsNullOrWhiteSpace(InnerInsightsDescriptionLabel.Text)) return;
+        InnerInsightsDescriptionLabel.IsVisible = !InnerInsightsDescriptionLabel.IsVisible;
     }
 
     public InsightsViewModel InsightItem

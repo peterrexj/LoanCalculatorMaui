@@ -41,8 +41,9 @@ public partial class SplashPage : ContentPage
         // Kick off the pulsing dots loop (fires later once dots are visible).
         var dotsCts = new CancellationTokenSource();
 
-        // Glow fades up gently behind the logo.
-        _ = GlowEllipse.FadeTo(1, 600, Easing.CubicOut);
+        // Glow fades up gently behind the logo (soft halo — capped low so the solid
+        // teal ellipse reads as a glow, not a bright disc).
+        _ = GlowEllipse.FadeTo(0.22, 600, Easing.CubicOut);
 
         // Logo: pop-in with a subtle overshoot (scale + fade together).
         var logoFade = LogoCard.FadeTo(1, 450, Easing.CubicOut);

@@ -818,8 +818,38 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
         {
             get
             {
-                if (IsAffordabilityAvailable) return CurrencySymbol;
-                else return string.Empty;
+                if (!IsAffordabilityAvailable) return string.Empty;
+
+                // The amount is rendered in a separate span (see Affordability), so when the
+                // affordability is negative the minus must live with the symbol here to read
+                // "-$6,328" rather than "$-6,328".
+                var amount = AffordabilityRawValue;
+                return amount < 0 ? $"-{CurrencySymbol}" : CurrencySymbol;
+            }
+        }
+
+        // Exposed for WhatIfViewModel — monthly surplus after all income/expenses/loan repayment.
+        // Returns 0 when income/expense data is not available.
+        [JsonIgnore]
+        public double MonthlySurplus => IsAffordabilityAvailable ? AffordabilityRawValue : 0;
+
+        // Raw affordability value (monthly, after all expenses incl. property/loan) used to
+        // decide sign placement and to render the absolute amount.
+        [JsonIgnore]
+        private double AffordabilityRawValue
+        {
+            get
+            {
+                if (!IsAffordabilityAvailable) return 0;
+                // Reset both records to their raw entry sums before building the model,
+                // as prior SumUpData(deduction) calls in BuildInsights may have left them
+                // in a mutated state, causing affordability to be computed from stale totals.
+                IncomeSummary.TransactionRecords?.SumUpData();
+                ExpenseSummary.TransactionRecords?.SumUpData();
+                TransactionRecords?.SumUpData();
+                var pdf = new PdfDataInsightsModel(this, IncomeSummary, ExpenseSummary);
+                pdf.InitializeLocalDataSet();
+                return pdf?.Income?.TotalAfterExpenseIncludingPropertyMonthly ?? 0;
             }
         }
         [JsonIgnore]
@@ -840,14 +870,8 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
             {
                 if (IsAffordabilityAvailable == false) return "Affordability";
 
-                PdfDataInsightsModel pdfDataInsights = new PdfDataInsightsModel(this, IncomeSummary, ExpenseSummary);
-                pdfDataInsights.InitializeLocalDataSet();
-
-                var t01 = pdfDataInsights?.Income?.TotalAfterExpenseIncludingPropertyMonthly ?? 0;
-                //var t02 = pdfDataInsights.Income.TotalAfterExpenseIncludingPropertyYearly
-                //    .ToCustomCurrencyRounded();
-
-                return $"{t01:N0}";
+                // Absolute value — the sign (and symbol) are rendered by AffordabilityCurrencySymbol.
+                return $"{Math.Abs(AffordabilityRawValue):N0}";
             }
         }
 
@@ -915,19 +939,19 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
 
             InsightsDetails.IncomeAfterExpenseMonthly.Value = pdfDataInsights.Income.TotalAfterExpenseMonthly.ToCustomCurrencyRounded();
             InsightsDetails.IncomeAfterExpenseMonthly.Description =
-                $"{pdfDataInsights.Income.TotalAfterExpenseMonthly.ToCustomCurrencyRounded()} This represents the net earnings remaining after deducting {pdfDataInsights.Expense.TotalMonthly.ToCustomCurrencyRounded()} in monthly expenses from the total monthly income of {pdfDataInsights.Income.TotalMonthly.ToCustomCurrencyRounded()}.";
+                $"The net earnings remaining after deducting {pdfDataInsights.Expense.TotalMonthly.ToCustomCurrencyRounded()} in monthly expenses from the total monthly income of {pdfDataInsights.Income.TotalMonthly.ToCustomCurrencyRounded()}.";
 
             InsightsDetails.IncomeAfterExpenseYearly.Value = pdfDataInsights.Income.TotalAfterExpenseYearly.ToCustomCurrencyRounded();
             InsightsDetails.IncomeAfterExpenseYearly.Description =
-                $"{pdfDataInsights.Income.TotalAfterExpenseYearly.ToCustomCurrencyRounded()} This reflects the total annual income after subtracting {pdfDataInsights.Expense.TotalYearly.ToCustomCurrencyRounded()} in yearly expenses from the total annual income of {pdfDataInsights.Income.TotalYearly.ToCustomCurrencyRounded()}.";
+                $"The total annual income after subtracting {pdfDataInsights.Expense.TotalYearly.ToCustomCurrencyRounded()} in yearly expenses from the total annual income of {pdfDataInsights.Income.TotalYearly.ToCustomCurrencyRounded()}.";
 
             InsightsDetails.IncomeAfterExpenseWithLoanMonthly.Value = pdfDataInsights.Income.TotalAfterExpenseIncludingPropertyMonthly.ToCustomCurrencyRounded();
             InsightsDetails.IncomeAfterExpenseWithLoanMonthly.Description =
-                $"{pdfDataInsights.Income.TotalAfterExpenseIncludingPropertyMonthly.ToCustomCurrencyRounded()} represents the remaining income after deducting monthly expenses, loan repayments, and investment expenses from the total monthly income of {pdfDataInsights.Income.TotalMonthly.ToCustomCurrencyRounded()}.";
+                $"The remaining income after deducting monthly expenses, loan repayments, and investment expenses from the total monthly income of {pdfDataInsights.Income.TotalMonthly.ToCustomCurrencyRounded()}.";
 
             InsightsDetails.IncomeAfterExpenseWithLoanYearly.Value = pdfDataInsights.Income.TotalAfterExpenseIncludingPropertyYearly.ToCustomCurrencyRounded();
             InsightsDetails.IncomeAfterExpenseWithLoanYearly.Description =
-                $"{pdfDataInsights.Income.TotalAfterExpenseIncludingPropertyYearly.ToCustomCurrencyRounded()} reflects the total annual income after subtracting yearly expenses, loan repayments, and investment expenses from the total annual income of {pdfDataInsights.Income.TotalYearly.ToCustomCurrencyRounded()}.";
+                $"The total annual income after subtracting yearly expenses, loan repayments, and investment expenses from the total annual income of {pdfDataInsights.Income.TotalYearly.ToCustomCurrencyRounded()}.";
             #endregion
 
             #region Expense
@@ -950,11 +974,11 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
 
 
             InsightsDetails.ExpenseOverallTotalMonthly.Description =
-                $"is your overall financial outflows within a given month, covering loan repayments and all other expenses. {Environment.NewLine}(Calculation: {InsightsDetails.RepaymentDetailMonthly.Value} repayment + {InsightsDetails.ExpenseCostOfNewPropertyOwnershipMonthly.Value} cost of ownership + {InsightsDetails.ExpenseCurrentFinancialOutflowsMonthly.Value} current monthly expenses)";
+                $"Your overall financial outflows within a given month, covering loan repayments and all other expenses. {Environment.NewLine}(Calculation: {InsightsDetails.RepaymentDetailMonthly.Value} repayment + {InsightsDetails.ExpenseCostOfNewPropertyOwnershipMonthly.Value} cost of ownership + {InsightsDetails.ExpenseCurrentFinancialOutflowsMonthly.Value} current monthly expenses)";
 
 
             InsightsDetails.ExpenseOverallTotalYearly.Description =
-                $"is your overall financial outflows within a given year, covering loan repayments and all other expenses. {Environment.NewLine}(Calculation: {InsightsDetails.RepaymentDetailYearly.Value} repayment + {InsightsDetails.ExpenseCostOfNewPropertyOwnershipYearly.Value} cost of ownership + {InsightsDetails.ExpenseCurrentFinancialOutflowsYearly.Value} current monthly expenses)";
+                $"Your overall financial outflows within a given year, covering loan repayments and all other expenses. {Environment.NewLine}(Calculation: {InsightsDetails.RepaymentDetailYearly.Value} repayment + {InsightsDetails.ExpenseCostOfNewPropertyOwnershipYearly.Value} cost of ownership + {InsightsDetails.ExpenseCurrentFinancialOutflowsYearly.Value} current yearly expenses)";
 
 
             UpdateInsightCharts();
@@ -1322,6 +1346,7 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
 
             // Always notify — these drive the Asset tab which is always visible
             OnPropertyChanged(nameof(PropertyAmount));
+            OnPropertyChanged(nameof(PropertyAmountFormatted));
             OnPropertyChanged(nameof(LoanTermInYears));
             OnPropertyChanged(nameof(InterestRate));
             OnPropertyChanged(nameof(StampDuty));

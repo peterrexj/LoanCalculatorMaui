@@ -16,6 +16,9 @@
             <localConverters:BoolToEditAddTitleConverter x:Key="BoolToEditAddTitleConverter" />
             <localConverters:IntToIsEmptyConverter x:Key="IntToIsEmptyConverter" />
             <localConverters:NumberToWordsConverter x:Key="NumberToWordsConverter" />
+            <localConverters:BoolToFontAttributesConverter x:Key="BoolToFontAttributesConverter" />
+            <localConverters:BoolToDisclaimerFontSizeConverter x:Key="BoolToDisclaimerFontSizeConverter" />
+            <localConverters:BoolToDisclaimerMarginConverter x:Key="BoolToDisclaimerMarginConverter" />
         </ResourceDictionary>
     </Application.Resources>
 </Application>

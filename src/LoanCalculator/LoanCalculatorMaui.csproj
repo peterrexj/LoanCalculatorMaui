@@ -114,15 +114,24 @@
 		<!-- App Icon -->
 		<MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.png" Color="#E0F7F7" />
 
-		<!-- Splash Screen — dark brand color matches SplashPage gradient so there is no
-		     white/black flash on launch or during the hand-off to AppShell. -->
-		<MauiSplashScreen Include="Resources\Splash\splash.png" Color="#0A1A20" BaseSize="300,194" />
+		<!-- Splash Screen — centered app-icon glyph on the dark brand color. Matches the
+		     MAUI SplashPage (centered logo on #0A1A20) so the native launch screen flows
+		     seamlessly into it, with no white/black flash and no dated wide banner. -->
+		<MauiSplashScreen Include="Resources\AppIcon\appiconfg.png" Color="#0A1A20" BaseSize="160,160" />
 
 		<!-- Images -->
 		<MauiImage Include="Resources\Images\*" />
 
 		<!-- Custom Fonts -->
 		<MauiFont Include="Resources\Fonts\*" />
+
+		<!-- Also bundle the PDF fonts as raw assets so the PDF generator can open them by
+		     filename via FileSystem.OpenAppPackageFileAsync. MauiFont alone registers them
+		     into the font system but does not make the .ttf openable as a package file on
+		     Android, which threw FileNotFoundException: NotoSans-Regular.ttf. -->
+		<MauiAsset Include="Resources\Fonts\NotoSans-Regular.ttf" LogicalName="NotoSans-Regular.ttf" />
+		<MauiAsset Include="Resources\Fonts\NotoSans-Bold.ttf" LogicalName="NotoSans-Bold.ttf" />
+		<MauiAsset Include="Resources\Fonts\NotoSans-Italic.ttf" LogicalName="NotoSans-Italic.ttf" />
 
 		<!-- Raw Assets (also remove the "Resources\Raw" prefix) -->
 		<MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />

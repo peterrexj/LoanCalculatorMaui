@@ -71,12 +71,16 @@ public partial class BudgetView : ContentPage
                 await _viewModel.EnsureSubVmsLoadedAsync();
 
                 _viewModel.InitializeBudget();
-                _viewModel.CustomChartColors = _themeHandler.GetChartColors();
-                _viewModel.Income.CustomChartColors = _viewModel.CustomChartColors;
-                _viewModel.Expense.CustomChartColors = _viewModel.CustomChartColors;
 
                 PageHelper.PageLoadingComplete();
             }
+
+            // Re-fetch chart colors on EVERY appearance so a theme change applied on the
+            // Settings tab is reflected when returning here (GetChartColors reads the live
+            // Application.Current.Resources for the current theme).
+            _viewModel.CustomChartColors = _themeHandler.GetChartColors();
+            _viewModel.Income.CustomChartColors = _viewModel.CustomChartColors;
+            _viewModel.Expense.CustomChartColors = _viewModel.CustomChartColors;
 
             // Release the guards set in the constructor so bindings become live
             _viewModel.Income.IsUpdating = false;
@@ -100,6 +104,10 @@ public partial class BudgetView : ContentPage
             _viewModel.RecalculateSummary();
             UpdateSummaryLabels();
             LblProjectionYears.Text = _viewModel.ProjectionYears.ToString();
+
+            // Re-apply slider track/thumb colors so a theme change is reflected (Syncfusion
+            // caches these from DynamicResource and won't update them live).
+            LoanCalculatorMaui.Extensions.SliderThemeRefresher.Refresh(this);
         }
         catch (Exception ex)
         {
@@ -414,7 +422,10 @@ public partial class BudgetView : ContentPage
         if (_viewModel.IsAffordabilityAvailable)
         {
             AffordabilityCard.IsVisible = true;
-            LblAffordability.Text = _viewModel.Affordability;
+            LblAffordability.Text = $"{_viewModel.AffordabilityCurrencySymbol}{_viewModel.Affordability}";
+            LblAffordability.TextColor = _viewModel.AffordabilityCurrencySymbol.StartsWith("-")
+                ? Microsoft.Maui.Graphics.Colors.Red
+                : Microsoft.Maui.Graphics.Colors.Green;
             LblAffordabilityDesc.Text = _viewModel.AffordabilityTextDescription?.Trim();
         }
 
@@ -442,7 +453,13 @@ public partial class BudgetView : ContentPage
                 case 1: // Expenses
                     _viewModel.Expense.RefreshIncomePropertyChanged();
                     break;
-                case 2: // Summary
+                case 2: // Summary — premium gated
+                    if (SharedServiceCore.IsTrialUser)
+                    {
+                        PremiumWindow.ShowPremiumBuyWindow = true;
+                        e.Cancel = true;
+                        return;
+                    }
                     _viewModel.RecalculateSummary();
                     UpdateSummaryLabels();
                     break;
@@ -563,6 +580,12 @@ public partial class BudgetView : ContentPage
                 ProjExpenseSeries.ItemsSource = null;
                 IncomeDataPager.Source = null;
                 ExpenseDataPager.Source = null;
+
+                // Sync the sub-VMs to the Budget's ProjectionYears every refresh. On the first
+                // visit the slider shows 10 but the sub-VMs still hold their own (low) default,
+                // so the chart/grid would otherwise show only 1-2 years until the slider moves.
+                _viewModel.Income.TotalYearsToProject = _viewModel.ProjectionYears;
+                _viewModel.Expense.TotalYearsToProject = _viewModel.ProjectionYears;
 
                 _viewModel.Income.UpdateProjectionData();
                 _viewModel.Expense.UpdateProjectionData();

@@ -21,14 +21,6 @@ public partial class PopupDisclaimerView : ContentView
 
         BindingContext = _viewModel;
 
-        //_viewModel.PropertyChanged += (s, e) =>
-        //{
-        //    if (e.PropertyName == nameof(_viewModel.AppLaunchDisclaimerData))
-        //    {
-        //        htmlWebViewer.Source = new HtmlWebViewSource { Html = _viewModel.AppLaunchDisclaimerData };
-        //    }
-        //};
-
         Loaded += OnLoaded;
     }
     private async void OnLoaded(object sender, EventArgs e)

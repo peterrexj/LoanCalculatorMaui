@@ -35,28 +35,34 @@
     <TabBar>
         <ShellContent
             Title="Loan"
+            Route="Loan"
             ContentTemplate="{DataTemplate localview:LoanView}"
             Icon="icon_loan.png" />
         <!--
         <ShellContent
             Title="Income"
+            Route="Income"
             ContentTemplate="{DataTemplate localview:IncomeView}"
             Icon="icon_income.png" />
         <ShellContent
             Title="Expense"
+            Route="Expense"
             ContentTemplate="{DataTemplate localview:ExpenseView}"
             Icon="icon_expense.png" />
         -->
         <ShellContent
             Title="Budget"
+            Route="Budget"
             ContentTemplate="{DataTemplate localview:BudgetView}"
             Icon="icon_income.png" />
         <ShellContent
             Title="What If"
+            Route="WhatIf"
             ContentTemplate="{DataTemplate localview:WhatIfView}"
             Icon="icon_whatif.png" />
         <ShellContent
             Title="Settings"
+            Route="Settings"
             ContentTemplate="{DataTemplate localview:SettingsView}"
             Icon="icon_settings.png" />
     </TabBar>

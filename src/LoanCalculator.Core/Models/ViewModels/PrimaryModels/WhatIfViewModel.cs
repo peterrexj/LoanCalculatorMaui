@@ -1,3 +1,4 @@
+using LoanCalculator.Core.Exts;
 using LoanCalculator.Core.Models.ViewModels.PrimaryModels;
 using LoanCalculator.Core.Services;
 using System.Text.Json.Serialization;
@@ -9,6 +10,9 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
         [JsonIgnore] private readonly IErrorHandlingService _errorHandlingService;
         [JsonIgnore] private LoanViewModel? _loanVm;
 
+        [JsonConstructor]
+        public WhatIfViewModel() { }
+
         public WhatIfViewModel(IErrorHandlingService errorHandlingService)
         {
             _errorHandlingService = errorHandlingService;
@@ -17,6 +21,9 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
         public void SetLoanViewModel(LoanViewModel loanVm)
         {
             _loanVm = loanVm;
+            // Always reflect the loan's actual payment frequency so the card highlights
+            // the user's real position as the baseline for comparison.
+            _currentFreqIndex = BasePaymentsPerYear switch { 24 => 1, 52 => 2, _ => 0 };
             Recalculate();
         }
 
@@ -29,21 +36,27 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
         private double BaseMonthlyRepayment => _loanVm?.HomeLoanInfo?.PaymentSummary?.Payment?.TermPaymentMonthly ?? 0;
         private double BaseTotalInterest => _loanVm?.HomeLoanInfo?.PaymentSummary?.Payment?.TotalInterestPayment ?? 0;
         private double BaseDeposit => _loanVm?.DepositAmountDirectInput ?? 0;
+        private double BaseMonthlySurplus => _loanVm?.MonthlySurplus ?? 0;
+        private bool HasAffordabilityData => _loanVm?.IsAffordabilityAvailable ?? false;
 
         // ── Scenario 1: Rate Change ────────────────────────────────────────
         [JsonIgnore] private double _rateChangeDelta = 0.5;
-        [JsonIgnore]
         public double RateChangeDelta
         {
             get => _rateChangeDelta;
             set { _rateChangeDelta = Math.Round(value, 2); OnPropertyChanged(nameof(RateChangeDelta)); RecalculateRateScenario(); }
         }
 
-        [JsonIgnore] public string RateChangeNewRate => $"{Math.Round(BaseRate + RateChangeDelta, 2)}%";
-        [JsonIgnore] public string RateChangeMonthlyRepayment { get; private set; } = "--";
-        [JsonIgnore] public string RateChangeMonthlyDiff { get; private set; } = "--";
-        [JsonIgnore] public string RateChangeTotalInterest { get; private set; } = "--";
-        [JsonIgnore] public bool RateChangeDiffIsPositive { get; private set; }
+        [JsonIgnore] public string RateChangeNewRate          => $"{Math.Round(BaseRate + RateChangeDelta, 2)}%";
+        [JsonIgnore] public string RateChangeMonthlyRepayment  { get; private set; } = "--";
+        [JsonIgnore] public string RateChangeMonthlyDiff       { get; private set; } = "--";
+        [JsonIgnore] public string RateChangeTotalInterest     { get; private set; } = "--";
+        [JsonIgnore] public bool   RateChangeDiffIsPositive    { get; private set; }
+        // Headroom indicator — only shown when income/expense data is present
+        [JsonIgnore] public string RateChangeHeadroom          { get; private set; } = "";
+        [JsonIgnore] public bool   RateChangeShowHeadroom      { get; private set; }
+        // -1 = comfortable, 0 = tight (≤25% of original surplus), 1 = unaffordable
+        [JsonIgnore] public int    RateChangeHeadroomStatus    { get; private set; }
 
         private void RecalculateRateScenario()
         {
@@ -55,18 +68,47 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
             var diff = newMonthly - BaseMonthlyRepayment;
             RateChangeDiffIsPositive = diff > 0;
             RateChangeMonthlyRepayment = $"{CurrencySymbol}{newMonthly:N0}/mo";
-            RateChangeMonthlyDiff = $"{(diff >= 0 ? "+" : "")}{CurrencySymbol}{diff:N0}/mo";
+            RateChangeMonthlyDiff = $"{diff.ToSignedCurrencyRounded()}/mo";
             RateChangeTotalInterest = $"{CurrencySymbol}{(newTotal - BaseLoanAmount):N0}";
+
+            if (HasAffordabilityData && BaseMonthlySurplus != 0)
+            {
+                var newSurplus = BaseMonthlySurplus - diff;
+                RateChangeShowHeadroom = true;
+                if (newSurplus < 0)
+                {
+                    RateChangeHeadroom = $"Unaffordable — {CurrencySymbol}{Math.Abs(newSurplus):N0}/mo over budget";
+                    RateChangeHeadroomStatus = 1;
+                }
+                else if (newSurplus < BaseMonthlySurplus * 0.25)
+                {
+                    RateChangeHeadroom = $"Tight — only {CurrencySymbol}{newSurplus:N0}/mo headroom";
+                    RateChangeHeadroomStatus = 0;
+                }
+                else
+                {
+                    RateChangeHeadroom = $"{CurrencySymbol}{newSurplus:N0}/mo headroom remaining";
+                    RateChangeHeadroomStatus = -1;
+                }
+            }
+            else
+            {
+                RateChangeShowHeadroom = false;
+                RateChangeHeadroom = "";
+            }
+
             OnPropertyChanged(nameof(RateChangeNewRate));
             OnPropertyChanged(nameof(RateChangeMonthlyRepayment));
             OnPropertyChanged(nameof(RateChangeMonthlyDiff));
             OnPropertyChanged(nameof(RateChangeTotalInterest));
             OnPropertyChanged(nameof(RateChangeDiffIsPositive));
+            OnPropertyChanged(nameof(RateChangeHeadroom));
+            OnPropertyChanged(nameof(RateChangeShowHeadroom));
+            OnPropertyChanged(nameof(RateChangeHeadroomStatus));
         }
 
         // ── Scenario 2: Extra Repayment ───────────────────────────────────
         [JsonIgnore] private double _extraRepaymentMonthly = 500;
-        [JsonIgnore]
         public double ExtraRepaymentMonthly
         {
             get => _extraRepaymentMonthly;
@@ -93,58 +135,320 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
         }
 
         // ── Scenario 3: Loan Term Comparison ─────────────────────────────
-        [JsonIgnore] public string TermComparison20Monthly { get; private set; } = "--";
-        [JsonIgnore] public string TermComparison25Monthly { get; private set; } = "--";
-        [JsonIgnore] public string TermComparison30Monthly { get; private set; } = "--";
-        [JsonIgnore] public string TermComparison20Interest { get; private set; } = "--";
-        [JsonIgnore] public string TermComparison25Interest { get; private set; } = "--";
-        [JsonIgnore] public string TermComparison30Interest { get; private set; } = "--";
+        // Three columns always show distinct terms in ascending order.
+        // The user's actual term is always one of them; TermCurrentColIndex (0/1/2) marks which.
+        [JsonIgnore] public string TermColALabel    { get; private set; } = "--";
+        [JsonIgnore] public string TermColBLabel    { get; private set; } = "--";
+        [JsonIgnore] public string TermColCLabel    { get; private set; } = "--";
+        [JsonIgnore] public string TermColAMonthly  { get; private set; } = "--";
+        [JsonIgnore] public string TermColBMonthly  { get; private set; } = "--";
+        [JsonIgnore] public string TermColCMonthly  { get; private set; } = "--";
+        [JsonIgnore] public string TermColAInterest { get; private set; } = "--";
+        [JsonIgnore] public string TermColBInterest { get; private set; } = "--";
+        [JsonIgnore] public string TermColCInterest { get; private set; } = "--";
+        [JsonIgnore] public bool TermIsCurrentColA  { get; private set; }
+        [JsonIgnore] public bool TermIsCurrentColB  { get; private set; }
+        [JsonIgnore] public bool TermIsCurrentColC  { get; private set; }
 
         private void RecalculateTermComparison()
         {
             if (BaseLoanAmount <= 0 || BaseRate <= 0) return;
-            foreach (var (term, suffix) in new[] { (20, "20"), (25, "25"), (30, "30") })
+
+            const int MaxTerm = 30;
+            var step = BaseTerm >= 15 ? 5 : 2;
+            var clamped = Math.Min(BaseTerm, MaxTerm);
+
+            // Build three distinct ascending terms; user's term is always included.
+            int t1, t2, t3;
+            if (clamped >= MaxTerm)
             {
-                var m = HomeLoanCalculatorHelper.CalculateMonthlyRepayment(BaseLoanAmount, BaseRate, term);
-                var interest = m * term * 12 - BaseLoanAmount;
-                switch (suffix)
-                {
-                    case "20": TermComparison20Monthly = $"{CurrencySymbol}{m:N0}"; TermComparison20Interest = $"{CurrencySymbol}{interest:N0}"; break;
-                    case "25": TermComparison25Monthly = $"{CurrencySymbol}{m:N0}"; TermComparison25Interest = $"{CurrencySymbol}{interest:N0}"; break;
-                    case "30": TermComparison30Monthly = $"{CurrencySymbol}{m:N0}"; TermComparison30Interest = $"{CurrencySymbol}{interest:N0}"; break;
-                }
+                // At ceiling — user is in col C, show two steps below
+                t3 = MaxTerm;
+                t2 = Math.Max(1, MaxTerm - step);
+                t1 = Math.Max(1, MaxTerm - 2 * step);
+                TermIsCurrentColA = false; TermIsCurrentColB = false; TermIsCurrentColC = true;
             }
-            OnPropertyChanged(nameof(TermComparison20Monthly)); OnPropertyChanged(nameof(TermComparison20Interest));
-            OnPropertyChanged(nameof(TermComparison25Monthly)); OnPropertyChanged(nameof(TermComparison25Interest));
-            OnPropertyChanged(nameof(TermComparison30Monthly)); OnPropertyChanged(nameof(TermComparison30Interest));
+            else if (clamped <= step)
+            {
+                // At or near floor — user is in col A, show two steps above
+                t1 = clamped;
+                t2 = Math.Min(MaxTerm, clamped + step);
+                t3 = Math.Min(MaxTerm, clamped + 2 * step);
+                TermIsCurrentColA = true; TermIsCurrentColB = false; TermIsCurrentColC = false;
+            }
+            else
+            {
+                // Normal case — user in centre col B
+                t1 = clamped - step;
+                t2 = clamped;
+                t3 = Math.Min(MaxTerm, clamped + step);
+                TermIsCurrentColA = false; TermIsCurrentColB = true; TermIsCurrentColC = false;
+            }
+
+            (TermColALabel, TermColAMonthly, TermColAInterest) = BuildTermColumn(t1);
+            (TermColBLabel, TermColBMonthly, TermColBInterest) = BuildTermColumn(t2);
+            (TermColCLabel, TermColCMonthly, TermColCInterest) = BuildTermColumn(t3);
+
+            foreach (var n in new[]
+            {
+                nameof(TermColALabel), nameof(TermColAMonthly), nameof(TermColAInterest),
+                nameof(TermColBLabel), nameof(TermColBMonthly), nameof(TermColBInterest),
+                nameof(TermColCLabel), nameof(TermColCMonthly), nameof(TermColCInterest),
+                nameof(TermIsCurrentColA), nameof(TermIsCurrentColB), nameof(TermIsCurrentColC),
+            })
+                OnPropertyChanged(n);
+        }
+
+        private (string label, string monthly, string interest) BuildTermColumn(int term)
+        {
+            var m = HomeLoanCalculatorHelper.CalculateMonthlyRepayment(BaseLoanAmount, BaseRate, term);
+            var interest = m * term * 12 - BaseLoanAmount;
+            return ($"{term} YRS", $"{CurrencySymbol}{m:N0}", $"{CurrencySymbol}{interest:N0}");
         }
 
         // ── Scenario 4: Deposit Scenarios ────────────────────────────────
-        [JsonIgnore] public string Deposit10PcMonthly { get; private set; } = "--";
-        [JsonIgnore] public string Deposit20PcMonthly { get; private set; } = "--";
-        [JsonIgnore] public string Deposit30PcMonthly { get; private set; } = "--";
-        [JsonIgnore] public string Deposit10PcLoan { get; private set; } = "--";
-        [JsonIgnore] public string Deposit20PcLoan { get; private set; } = "--";
-        [JsonIgnore] public string Deposit30PcLoan { get; private set; } = "--";
+        // Columns are always: lower deposit | YOUR DEPOSIT | higher deposit
+        [JsonIgnore] public string DepositColALabel      { get; private set; } = "--";
+        [JsonIgnore] public string DepositColBLabel      { get; private set; } = "--";
+        [JsonIgnore] public string DepositColCLabel      { get; private set; } = "--";
+        [JsonIgnore] public string DepositColALoan       { get; private set; } = "--";
+        [JsonIgnore] public string DepositColBLoan       { get; private set; } = "--";
+        [JsonIgnore] public string DepositColCLoan       { get; private set; } = "--";
+        [JsonIgnore] public string DepositColAMonthly    { get; private set; } = "--";
+        [JsonIgnore] public string DepositColBMonthly    { get; private set; } = "--";
+        [JsonIgnore] public string DepositColCMonthly    { get; private set; } = "--";
+        // False when the deposit is already at/near the ceiling — col C shows a "Max" placeholder
+        [JsonIgnore] public bool   DepositColCAvailable  { get; private set; } = true;
 
         private void RecalculateDepositScenarios()
         {
             if (BasePropertyAmount <= 0 || BaseRate <= 0) return;
-            foreach (var pct in new[] { 0.10, 0.20, 0.30 })
+
+            // Col B = exact actual deposit. Cols A and C = nearest 5% brackets below/above.
+            var exactPct = BasePropertyAmount > 0 ? BaseDeposit / BasePropertyAmount * 100 : 20;
+            exactPct = Math.Clamp(exactPct, 1, 99);
+
+            // Floor/ceil to the nearest 5% step that is strictly below/above exact
+            var floorPct = Math.Floor(exactPct / 5.0) * 5;
+            var ceilPct  = Math.Ceiling(exactPct / 5.0) * 5;
+
+            // If exact already lands on a 5% boundary, nudge neighbours by one step
+            var lowPct    = floorPct < exactPct ? floorPct : Math.Max(5, exactPct - 5);
+            var rawHighPct = ceilPct > exactPct ? ceilPct  : exactPct + 5;
+
+            lowPct = Math.Max(5, lowPct);
+
+            // Col C is available only when a strictly-higher deposit (≤99%) makes sense
+            DepositColCAvailable = rawHighPct <= 99.0 && rawHighPct > exactPct + 0.1;
+
+            if (!DepositColCAvailable)
             {
-                var loan = BasePropertyAmount * (1 - pct);
-                var monthly = HomeLoanCalculatorHelper.CalculateMonthlyRepayment(loan, BaseRate, BaseTerm);
-                var label = pct == 0.10 ? "10Pc" : pct == 0.20 ? "20Pc" : "30Pc";
-                switch (label)
-                {
-                    case "10Pc": Deposit10PcLoan = $"{CurrencySymbol}{loan:N0}"; Deposit10PcMonthly = $"{CurrencySymbol}{monthly:N0}/mo"; break;
-                    case "20Pc": Deposit20PcLoan = $"{CurrencySymbol}{loan:N0}"; Deposit20PcMonthly = $"{CurrencySymbol}{monthly:N0}/mo"; break;
-                    case "30Pc": Deposit30PcLoan = $"{CurrencySymbol}{loan:N0}"; Deposit30PcMonthly = $"{CurrencySymbol}{monthly:N0}/mo"; break;
-                }
+                // At or near the ceiling — widen col A gap so it stays distinct from col B
+                lowPct = Math.Max(5, Math.Floor((exactPct - 10) / 5.0) * 5);
             }
-            OnPropertyChanged(nameof(Deposit10PcLoan)); OnPropertyChanged(nameof(Deposit10PcMonthly));
-            OnPropertyChanged(nameof(Deposit20PcLoan)); OnPropertyChanged(nameof(Deposit20PcMonthly));
-            OnPropertyChanged(nameof(Deposit30PcLoan)); OnPropertyChanged(nameof(Deposit30PcMonthly));
+
+            var highPct = DepositColCAvailable ? Math.Min(99, rawHighPct) : 0;
+
+            (DepositColALabel, DepositColALoan, DepositColAMonthly) = BuildDepositColumn(lowPct / 100.0);
+            (DepositColBLabel, DepositColBLoan, DepositColBMonthly) = BuildDepositColumnExact(exactPct / 100.0);
+
+            if (DepositColCAvailable)
+                (DepositColCLabel, DepositColCLoan, DepositColCMonthly) = BuildDepositColumn(highPct / 100.0);
+            else
+                (DepositColCLabel, DepositColCLoan, DepositColCMonthly) = ("Max", "—", "—");
+
+            foreach (var n in new[]
+            {
+                nameof(DepositColALabel), nameof(DepositColALoan), nameof(DepositColAMonthly),
+                nameof(DepositColBLabel), nameof(DepositColBLoan), nameof(DepositColBMonthly),
+                nameof(DepositColCLabel), nameof(DepositColCLoan), nameof(DepositColCMonthly),
+                nameof(DepositColCAvailable),
+            })
+                OnPropertyChanged(n);
+        }
+
+        private (string label, string loan, string monthly) BuildDepositColumn(double pct)
+        {
+            var loan    = BasePropertyAmount * (1 - pct);
+            var monthly = HomeLoanCalculatorHelper.CalculateMonthlyRepayment(loan, BaseRate, BaseTerm);
+            return ($"{pct * 100:0}%", $"{CurrencySymbol}{loan:N0}", $"{CurrencySymbol}{monthly:N0}/mo");
+        }
+
+        private (string label, string loan, string monthly) BuildDepositColumnExact(double pct)
+        {
+            var loan    = BasePropertyAmount * (1 - pct);
+            var monthly = HomeLoanCalculatorHelper.CalculateMonthlyRepayment(loan, BaseRate, BaseTerm);
+            var pctDisplay = pct * 100;
+            var label = pctDisplay % 1 == 0 ? $"{pctDisplay:0}%" : $"{pctDisplay:0.#}%";
+            return (label, $"{CurrencySymbol}{loan:N0}", $"{CurrencySymbol}{monthly:N0}/mo");
+        }
+
+        // ── Scenario 5: Lump Sum Payment ─────────────────────────────────
+        [JsonIgnore] private double _lumpSumAmount = 10000;
+        public double LumpSumAmount
+        {
+            get => _lumpSumAmount;
+            set { _lumpSumAmount = Math.Max(0, value); OnPropertyChanged(nameof(LumpSumAmount)); RecalculateLumpSum(); }
+        }
+
+        [JsonIgnore] public string LumpSumTimeSaved     { get; private set; } = "--";
+        [JsonIgnore] public string LumpSumInterestSaved { get; private set; } = "--";
+        [JsonIgnore] public string LumpSumNewBalance    { get; private set; } = "--";
+
+        private void RecalculateLumpSum()
+        {
+            if (BaseLoanAmount <= 0 || BaseRate <= 0) return;
+            var reducedLoan = Math.Max(0, BaseLoanAmount - LumpSumAmount);
+            LumpSumNewBalance = $"{CurrencySymbol}{reducedLoan:N0}";
+
+            var (monthsSaved, interestSaved) = HomeLoanCalculatorHelper.CalculateExtraRepaymentImpact(
+                BaseLoanAmount, BaseRate, BaseTerm, 0, LumpSumAmount);
+            var years = monthsSaved / 12;
+            var months = monthsSaved % 12;
+            LumpSumTimeSaved     = months > 0 ? $"{years}yr {months}mo" : $"{years}yr";
+            LumpSumInterestSaved = $"{CurrencySymbol}{interestSaved:N0}";
+
+            OnPropertyChanged(nameof(LumpSumTimeSaved));
+            OnPropertyChanged(nameof(LumpSumInterestSaved));
+            OnPropertyChanged(nameof(LumpSumNewBalance));
+        }
+
+        // ── Scenario 6: Repayment Frequency ──────────────────────────────
+        // Three columns always visible: Monthly | Fortnightly | Weekly
+        // The user's actual loan frequency is highlighted.
+        // 0 = Monthly, 1 = Fortnightly, 2 = Weekly
+        [JsonIgnore] private int _currentFreqIndex = 0;
+        [JsonIgnore] public bool FreqIsMonthly     => _currentFreqIndex == 0;
+        [JsonIgnore] public bool FreqIsFortnightly => _currentFreqIndex == 1;
+        [JsonIgnore] public bool FreqIsWeekly      => _currentFreqIndex == 2;
+
+        [JsonIgnore] public string FreqMonthlyPayment    { get; private set; } = "--";
+        [JsonIgnore] public string FreqMonthlyTimeSaved  { get; private set; } = "--";
+        [JsonIgnore] public string FreqMonthlyIntSaved   { get; private set; } = "--";
+
+        [JsonIgnore] public string FreqFortPayment       { get; private set; } = "--";
+        [JsonIgnore] public string FreqFortTimeSaved     { get; private set; } = "--";
+        [JsonIgnore] public string FreqFortIntSaved      { get; private set; } = "--";
+
+        [JsonIgnore] public string FreqWeeklyPayment     { get; private set; } = "--";
+        [JsonIgnore] public string FreqWeeklyTimeSaved   { get; private set; } = "--";
+        [JsonIgnore] public string FreqWeeklyIntSaved    { get; private set; } = "--";
+
+        private void RecalculateRepaymentFrequency()
+        {
+            if (BaseLoanAmount <= 0 || BaseRate <= 0) return;
+            var monthly = HomeLoanCalculatorHelper.CalculateMonthlyRepayment(BaseLoanAmount, BaseRate, BaseTerm);
+
+            // Monthly baseline — always 0 savings (it is the reference)
+            FreqMonthlyPayment   = $"{CurrencySymbol}{monthly:N0}/mo";
+            FreqMonthlyTimeSaved = "0yr";
+            FreqMonthlyIntSaved  = $"{CurrencySymbol}0";
+
+            // Fortnightly: half monthly × 26 = 13 months/yr (real-world fortnightly saving)
+            var fort = monthly / 2.0;
+            var (fortMonths, fortInt) = HomeLoanCalculatorHelper.SimulateFrequency(BaseLoanAmount, BaseRate, BaseTerm, fort, 26);
+            FreqFortPayment   = $"{CurrencySymbol}{fort:N0}/fn";
+            FreqFortTimeSaved = fortMonths % 12 > 0 ? $"{fortMonths / 12}yr {fortMonths % 12}mo" : $"{fortMonths / 12}yr";
+            FreqFortIntSaved  = $"{CurrencySymbol}{fortInt:N0}";
+
+            // Weekly: quarter monthly × 52 = 13 months/yr
+            var week = monthly / 4.0;
+            var (weekMonths, weekInt) = HomeLoanCalculatorHelper.SimulateFrequency(BaseLoanAmount, BaseRate, BaseTerm, week, 52);
+            FreqWeeklyPayment   = $"{CurrencySymbol}{week:N0}/wk";
+            FreqWeeklyTimeSaved = weekMonths % 12 > 0 ? $"{weekMonths / 12}yr {weekMonths % 12}mo" : $"{weekMonths / 12}yr";
+            FreqWeeklyIntSaved  = $"{CurrencySymbol}{weekInt:N0}";
+
+            foreach (var n in new[]
+            {
+                nameof(FreqIsMonthly), nameof(FreqIsFortnightly), nameof(FreqIsWeekly),
+                nameof(FreqMonthlyPayment), nameof(FreqMonthlyTimeSaved), nameof(FreqMonthlyIntSaved),
+                nameof(FreqFortPayment), nameof(FreqFortTimeSaved), nameof(FreqFortIntSaved),
+                nameof(FreqWeeklyPayment), nameof(FreqWeeklyTimeSaved), nameof(FreqWeeklyIntSaved),
+            })
+                OnPropertyChanged(n);
+        }
+
+        // ── Scenario 7: Offset Account ────────────────────────────────────
+        [JsonIgnore] private double _offsetBalance = 20000;
+        public double OffsetBalance
+        {
+            get => _offsetBalance;
+            set { _offsetBalance = Math.Max(0, value); OnPropertyChanged(nameof(OffsetBalance)); RecalculateOffset(); }
+        }
+
+        [JsonIgnore] public string OffsetMonthlySaving  { get; private set; } = "--";
+        [JsonIgnore] public string OffsetInterestSaved  { get; private set; } = "--";
+        [JsonIgnore] public string OffsetTimeSaved      { get; private set; } = "--";
+        [JsonIgnore] public string OffsetRateNote       { get; private set; } = "";
+
+        private void RecalculateOffset()
+        {
+            if (BaseLoanAmount <= 0 || BaseRate <= 0) return;
+            var effectiveBalance = Math.Min(_offsetBalance, BaseLoanAmount);
+            var r = BaseRate / 100.0 / 12.0;
+
+            // Monthly interest saving = offset × monthly rate
+            var monthlySaving = effectiveBalance * r;
+            OffsetMonthlySaving = $"{CurrencySymbol}{monthlySaving:N0}/mo";
+
+            // Simulate payoff: apply normal payment to reduced effective balance
+            var (monthsSaved, interestSaved) = HomeLoanCalculatorHelper.SimulateOffset(BaseLoanAmount, BaseRate, BaseTerm, effectiveBalance);
+            var years = monthsSaved / 12; var months = monthsSaved % 12;
+            OffsetTimeSaved     = months > 0 ? $"{years}yr {months}mo" : $"{years}yr";
+            OffsetInterestSaved = $"{CurrencySymbol}{interestSaved:N0}";
+            OffsetRateNote      = $"calculated at your loan rate ({BaseRate:0.##}%)";
+
+            OnPropertyChanged(nameof(OffsetMonthlySaving));
+            OnPropertyChanged(nameof(OffsetInterestSaved));
+            OnPropertyChanged(nameof(OffsetTimeSaved));
+            OnPropertyChanged(nameof(OffsetRateNote));
+        }
+
+        // ── Scenario 8: Affordability Stress Test ────────────────────────
+        [JsonIgnore] public bool   StressTestAvailable        { get; private set; }
+        [JsonIgnore] public bool   StressTestUnavailable      => !StressTestAvailable;
+        [JsonIgnore] public string StressTestBreakEvenRate    { get; private set; } = "--";
+        [JsonIgnore] public string StressTestRateBuffer       { get; private set; } = "--";
+        [JsonIgnore] public string StressTestCurrentSurplus   { get; private set; } = "--";
+        // -1 = safe (buffer > 2%), 0 = moderate (1–2%), 1 = at risk (< 1%)
+        [JsonIgnore] public int    StressTestRisk             { get; private set; }
+
+        private void RecalculateStressTest()
+        {
+            if (BaseLoanAmount <= 0 || BaseRate <= 0 || !HasAffordabilityData || BaseMonthlySurplus == 0)
+            {
+                StressTestAvailable = false;
+                OnPropertyChanged(nameof(StressTestAvailable));
+                OnPropertyChanged(nameof(StressTestUnavailable));
+                return;
+            }
+
+            StressTestAvailable = true;
+
+            // Maximum affordable monthly = current repayment + current surplus
+            var maxAffordableMonthly = BaseMonthlyRepayment + BaseMonthlySurplus;
+
+            // Binary search: find the rate where repayment = maxAffordableMonthly
+            var breakEvenRate = HomeLoanCalculatorHelper.FindBreakEvenRate(
+                BaseLoanAmount, BaseTerm, maxAffordableMonthly);
+
+            var rateBuffer = breakEvenRate - BaseRate;
+            StressTestBreakEvenRate = breakEvenRate > 0
+                ? $"{breakEvenRate:0.##}%"
+                : "Already unaffordable";
+            StressTestRateBuffer = rateBuffer > 0
+                ? $"+{rateBuffer:0.##}% buffer"
+                : $"{rateBuffer:0.##}% over limit";
+            StressTestCurrentSurplus = $"{CurrencySymbol}{BaseMonthlySurplus:N0}/mo";
+
+            StressTestRisk = rateBuffer >= 2.0 ? -1 : rateBuffer >= 1.0 ? 0 : 1;
+
+            OnPropertyChanged(nameof(StressTestAvailable));
+            OnPropertyChanged(nameof(StressTestUnavailable));
+            OnPropertyChanged(nameof(StressTestBreakEvenRate));
+            OnPropertyChanged(nameof(StressTestRateBuffer));
+            OnPropertyChanged(nameof(StressTestCurrentSurplus));
+            OnPropertyChanged(nameof(StressTestRisk));
         }
 
         public void Recalculate()
@@ -154,6 +458,10 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
             RecalculateExtraRepayment();
             RecalculateTermComparison();
             RecalculateDepositScenarios();
+            RecalculateLumpSum();
+            RecalculateRepaymentFrequency();
+            RecalculateOffset();
+            RecalculateStressTest();
             OnPropertyChanged(nameof(HasLoanData));
             OnPropertyChanged(nameof(HasNoLoanData));
         }
@@ -175,16 +483,16 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
         }
 
         public static (int monthsSaved, double interestSaved) CalculateExtraRepaymentImpact(
-            double loan, double annualRatePct, int termYears, double extraMonthly)
+            double loan, double annualRatePct, int termYears, double extraMonthly, double upfrontLumpSum = 0)
         {
-            if (annualRatePct <= 0 || extraMonthly <= 0) return (0, 0);
+            if (annualRatePct <= 0) return (0, 0);
             var r = annualRatePct / 100.0 / 12.0;
             var standardMonthly = CalculateMonthlyRepayment(loan, annualRatePct, termYears);
             var standardTotal = standardMonthly * termYears * 12;
 
-            // Simulate accelerated payoff
-            var balance = loan;
-            var totalPaid = 0.0;
+            // Apply lump sum immediately, then simulate accelerated payoff
+            var balance = Math.Max(0, loan - upfrontLumpSum);
+            var totalPaid = upfrontLumpSum;
             var months = 0;
             var payment = standardMonthly + extraMonthly;
             while (balance > 0.01 && months < termYears * 12)
@@ -199,6 +507,77 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
             var monthsSaved = termYears * 12 - months;
             var interestSaved = (standardTotal - loan) - (totalPaid - loan);
             return (Math.Max(0, monthsSaved), Math.Max(0, interestSaved));
+        }
+
+        // Simulate payoff at a given periodic payment and payments-per-year (26=fortnightly, 52=weekly)
+        public static (int monthsSaved, double interestSaved) SimulateFrequency(
+            double loan, double annualRatePct, int termYears, double periodicPayment, int paymentsPerYear)
+        {
+            if (annualRatePct <= 0 || periodicPayment <= 0) return (0, 0);
+            var rPeriod = annualRatePct / 100.0 / paymentsPerYear;
+            var standardMonthly = CalculateMonthlyRepayment(loan, annualRatePct, termYears);
+            var standardTotal = standardMonthly * termYears * 12;
+
+            var balance = loan;
+            var totalPaid = 0.0;
+            var periods = 0;
+            var maxPeriods = (termYears + 10) * paymentsPerYear;
+            while (balance > 0.01 && periods < maxPeriods)
+            {
+                var interest = balance * rPeriod;
+                balance = balance + interest - periodicPayment;
+                if (balance < 0) balance = 0;
+                totalPaid += periodicPayment;
+                periods++;
+            }
+
+            var monthsTaken = (int)Math.Round(periods * 12.0 / paymentsPerYear);
+            var monthsSaved = Math.Max(0, termYears * 12 - monthsTaken);
+            var interestSaved = Math.Max(0, (standardTotal - loan) - (totalPaid - loan));
+            return (monthsSaved, interestSaved);
+        }
+
+        // Binary search for the rate at which monthly repayment equals maxMonthly
+        public static double FindBreakEvenRate(double loan, int termYears, double maxMonthly)
+        {
+            if (loan <= 0 || maxMonthly <= 0) return 0;
+            double lo = 0, hi = 30.0;
+            for (int i = 0; i < 60; i++)
+            {
+                var mid = (lo + hi) / 2.0;
+                var payment = CalculateMonthlyRepayment(loan, mid, termYears);
+                if (payment < maxMonthly) lo = mid; else hi = mid;
+            }
+            return Math.Round((lo + hi) / 2.0, 2);
+        }
+
+        // Simulate offset: reduce effective balance each month by offset amount
+        public static (int monthsSaved, double interestSaved) SimulateOffset(
+            double loan, double annualRatePct, int termYears, double offsetBalance)
+        {
+            if (annualRatePct <= 0) return (0, 0);
+            var r = annualRatePct / 100.0 / 12.0;
+            var payment = CalculateMonthlyRepayment(loan, annualRatePct, termYears);
+            var standardTotal = payment * termYears * 12;
+
+            var balance = loan;
+            var totalPaid = 0.0;
+            var months = 0;
+            while (balance > 0.01 && months < termYears * 12)
+            {
+                // Interest only charged on (balance - offset); offset can't exceed balance
+                var effective = Math.Max(0, balance - offsetBalance);
+                var interest = effective * r;
+                // Payment stays the same — more goes to principal
+                balance = balance + interest - payment;
+                if (balance < 0) balance = 0;
+                totalPaid += payment;
+                months++;
+            }
+
+            var monthsSaved = Math.Max(0, termYears * 12 - months);
+            var interestSaved = Math.Max(0, (standardTotal - loan) - (totalPaid - loan));
+            return (monthsSaved, interestSaved);
         }
     }
 }

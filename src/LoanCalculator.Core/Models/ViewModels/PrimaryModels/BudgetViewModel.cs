@@ -184,6 +184,7 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
 
         // Affordability from loan VM
         [JsonIgnore] public string Affordability => _loanVm?.Affordability ?? "--";
+        [JsonIgnore] public string AffordabilityCurrencySymbol => _loanVm?.AffordabilityCurrencySymbol ?? string.Empty;
         [JsonIgnore] public bool IsAffordabilityAvailable => _loanVm?.IsAffordabilityAvailable ?? false;
         [JsonIgnore] public string AffordabilityTextDescription => _loanVm?.AffordabilityTextDescription ?? string.Empty;
 
@@ -226,6 +227,15 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
         {
             Income.TransactionRecords?.SumUpData();
             Expense.TransactionRecords?.SumUpData();
+
+            // Ensure LoanViewModel reads from the same live instances so
+            // Affordability reflects any income/expense changes made on this page.
+            if (_loanVm != null)
+            {
+                _loanVm.IncomeSummary = Income;
+                _loanVm.ExpenseSummary = Expense;
+            }
+
             CurrencySymbol = _loanVm?.CurrencySymbol
                 ?? Income.CurrencySymbol
                 ?? Helper.CurrencySymbol;

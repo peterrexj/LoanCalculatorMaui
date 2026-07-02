@@ -1,10 +1,18 @@
 ﻿using LoanCalculator.Core.Models.BaseExtensions;
 using LoanCalculator.Core.Services;
-using Syncfusion.Maui.Core.Carousel;
+using System.Collections.ObjectModel;
 using System.Text.Json.Serialization;
+using System.Text.RegularExpressions;
 using System.Windows.Input;
+#pragma warning disable SYSLIB1045
 
 namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels;
+
+public class DisclaimerSection
+{
+    public string Text { get; set; } = string.Empty;
+    public bool IsHeader { get; set; }
+}
 
 public class PopupDisclaimerViewModel : BaseViewModel
 {
@@ -46,25 +54,40 @@ public class PopupDisclaimerViewModel : BaseViewModel
         }
     }
 
-    private string _appLaunchDisclaimerData = string.Empty;
-    public string AppLaunchDisclaimerData
+    private ObservableCollection<DisclaimerSection> _disclaimerSections = new();
+    public ObservableCollection<DisclaimerSection> DisclaimerSections
     {
-        get
-        {
-            return _appLaunchDisclaimerData;
-        }
+        get => _disclaimerSections;
         set
         {
-            _appLaunchDisclaimerData = value;
-            OnPropertyChanged(nameof(AppLaunchDisclaimerData));
+            _disclaimerSections = value;
+            OnPropertyChanged(nameof(DisclaimerSections));
         }
     }
 
     public void TriggerChange()
     {
-        AppLaunchDisclaimerData = string.Empty;
-        AppLaunchDisclaimerData = SharedServiceCore.DisclaimerData;
-        OnPropertyChanged(nameof(AppLaunchDisclaimerData));
+        DisclaimerSections = ParseDisclaimerHtml(SharedServiceCore.DisclaimerData);
+    }
+
+    private static ObservableCollection<DisclaimerSection> ParseDisclaimerHtml(string html)
+    {
+        var sections = new ObservableCollection<DisclaimerSection>();
+        if (string.IsNullOrWhiteSpace(html))
+            return sections;
+
+        foreach (Match m in Regex.Matches(html, @"<h2[^>]*>(.*?)</h2>|<p[^>]*>(.*?)</p>", RegexOptions.Singleline | RegexOptions.IgnoreCase))
+        {
+            string raw = m.Groups[1].Success ? m.Groups[1].Value : m.Groups[2].Value;
+            string text = Regex.Replace(raw, @"<[^>]+>", string.Empty).Trim();
+            if (string.IsNullOrEmpty(text)) continue;
+            sections.Add(new DisclaimerSection
+            {
+                Text = text,
+                IsHeader = m.Groups[1].Success
+            });
+        }
+        return sections;
     }
 
     private void OnPopupAccept()

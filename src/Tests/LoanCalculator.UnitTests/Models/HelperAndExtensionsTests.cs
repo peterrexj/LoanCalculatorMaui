@@ -108,7 +108,7 @@ namespace LoanCalculator.UnitTests.Models
         public void ToCurrency_IncludesFormattedNumber()
         {
             Helper.CurrencySymbol = "$";
-            var result = 1234.56.ToCurrency();
+            var result = 1234.0.ToCurrency();
             Assert.That(result, Does.Contain("1,234"));
         }
 

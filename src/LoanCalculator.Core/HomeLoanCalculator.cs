@@ -96,6 +96,9 @@ namespace LoanCalculator.Core
             paymentSummary.PaymentAmortizationTerms = new List<PaymentAmortisationOutput>();
             var incrementDate = new DateTime(DateTime.Now.Year, 01, 01);
 
+            // Outstanding balance starts at the loan principal (total repayable minus total interest)
+            double remainingBalance = paymentSummary.Payment.TotalPayment - paymentSummary.Payment.TotalInterestPayment;
+
             paymentSummary.PaymentAmortizationTerms.Add(new PaymentAmortisationOutput
             {
                 TermNumber = 0,
@@ -104,23 +107,25 @@ namespace LoanCalculator.Core
                 PrincipalAmount = 0,
                 PaymentAmount = 0,
                 PaymentPeriod = incrementDate.Year.ToString(),
-                BalanceAmount = paymentSummary.Payment.TotalPayment
+                BalanceAmount = remainingBalance
             });
 
             for (int i = 0; i < inYearData.Count(); i++)
             {
+                var yearPrincipal = inYearData[i].Sum(x => x.PrincipalAmount);
+                remainingBalance -= yearPrincipal;
+
                 var amortizationOutput = new PaymentAmortisationOutput
                 {
                     TermNumber = i + 1,
                     DateTimeOfPayment = incrementDate.AddYears(i + 1),
                     InterestAmount = inYearData[i].Sum(x => x.InterestAmount),
-                    PrincipalAmount = inYearData[i].Sum(x => x.PrincipalAmount),
-                    PaymentAmount = inYearData[i].Sum(x => x.PaymentAmount)
+                    PrincipalAmount = yearPrincipal,
+                    PaymentAmount = inYearData[i].Sum(x => x.PaymentAmount),
+                    BalanceAmount = remainingBalance
                 };
                 amortizationOutput.PaymentPeriod = amortizationOutput.DateTimeOfPayment.Year.ToString();
                 paymentSummary.PaymentAmortizationTerms.Add(amortizationOutput);
-
-                amortizationOutput.BalanceAmount = paymentSummary.Payment.TotalPayment - paymentSummary.PaymentAmortizationTerms.Sum(f => f.PaymentAmount);
             }
             paymentSummary.PaymentAmortizationTerms.Last().BalanceAmount = 0;
         }

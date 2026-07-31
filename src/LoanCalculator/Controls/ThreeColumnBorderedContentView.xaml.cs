@@ -60,6 +60,33 @@ namespace LoanCalculatorMaui.Controls
             }
         }
 
+        public static readonly BindableProperty IsBox3DangerProperty =
+            BindableProperty.Create(nameof(IsBox3Danger), typeof(bool), typeof(ThreeColumnBorderedContentView), false, propertyChanged: OnIsBox3DangerChanged);
+
+        public bool IsBox3Danger
+        {
+            get => (bool)GetValue(IsBox3DangerProperty);
+            set => SetValue(IsBox3DangerProperty, value);
+        }
+
+        private static void OnIsBox3DangerChanged(BindableObject bindable, object oldValue, object newValue)
+        {
+            if (bindable is not ThreeColumnBorderedContentView control) return;
+            if ((bool)newValue)
+            {
+                control.Label3.SetDynamicResource(Label.TextColorProperty, "LoanAppBorderTopDangerFgColor");
+                // Walk up to the parent Border (Label → StackLayout → Grid → ContentView → Border)
+                if (control.Label3.Parent?.Parent?.Parent?.Parent is Border border3)
+                    border3.Style = (Style)Application.Current.Resources["BorderTopDangerHighlightBox"];
+            }
+            else
+            {
+                control.Label3.SetDynamicResource(Label.TextColorProperty, "LoanAppHighlightFgColor");
+                if (control.Label3.Parent?.Parent?.Parent?.Parent is Border border3)
+                    border3.Style = (Style)Application.Current.Resources["BorderTopHighlightBox"];
+            }
+        }
+
         public static readonly BindableProperty LineHeightBox1Property =
             BindableProperty.Create(nameof(LineHeightBox1), typeof(double), typeof(ThreeColumnBorderedContentView), 1.0);
 

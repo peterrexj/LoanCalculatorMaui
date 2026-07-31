@@ -78,6 +78,14 @@
     </Style>
 
     <!--  Border top highlight box styles  -->
+    <Style x:Key="BorderTopDangerHighlightBox" TargetType="Border">
+        <Setter Property="StrokeThickness" Value="2" />
+        <Setter Property="Stroke" Value="{DynamicResource BorderTopDangerGradientBrush}" />
+        <Setter Property="Background" Value="{DynamicResource BorderTopDangerBackgroundGradientBrush}" />
+        <Setter Property="HorizontalOptions" Value="FillAndExpand" />
+        <Setter Property="StrokeShape" Value="RoundRectangle 12,12,12,12" />
+        <Setter Property="VerticalOptions" Value="FillAndExpand" />
+    </Style>
     <Style x:Key="BorderTopHighlightBox" TargetType="Border">
         <Setter Property="StrokeThickness" Value="2" />
         <Setter Property="Stroke" Value="{DynamicResource BorderTopGradientBrush}" />
@@ -495,6 +503,7 @@
     </Style>
     <Style x:Key="SpanThreeBoxTextStyle" TargetType="Span">
         <Setter Property="CharacterSpacing" Value="{OnIdiom Phone=-0.2, Tablet=0, Desktop=1, TV=1, Default=-0.2}" />
+        <Setter Property="FontAttributes" Value="None" />
         <Setter Property="FontSize" Value="{OnIdiom Phone=12, Tablet=20, Desktop=16, TV=16, Watch=10, Default=12}" />
     </Style>
 

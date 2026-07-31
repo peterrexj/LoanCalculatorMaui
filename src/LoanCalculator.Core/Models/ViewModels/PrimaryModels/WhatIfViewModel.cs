@@ -1,6 +1,7 @@
 using LoanCalculator.Core.Exts;
 using LoanCalculator.Core.Models.ViewModels.PrimaryModels;
 using LoanCalculator.Core.Services;
+using System.Collections.ObjectModel;
 using System.Text.Json.Serialization;
 
 namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
@@ -57,6 +58,9 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
         [JsonIgnore] public bool   RateChangeShowHeadroom      { get; private set; }
         // -1 = comfortable, 0 = tight (≤25% of original surplus), 1 = unaffordable
         [JsonIgnore] public int    RateChangeHeadroomStatus    { get; private set; }
+        [JsonIgnore] public ObservableCollection<ChartDataModel> RateChangePrincipalData { get; } = new();
+        [JsonIgnore] public ObservableCollection<ChartDataModel> RateChangeInterestData { get; } = new();
+        [JsonIgnore] public ObservableCollection<ChartDataModel> RateChangeBalanceData { get; } = new();
 
         private void RecalculateRateScenario()
         {
@@ -97,6 +101,19 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
                 RateChangeHeadroom = "";
             }
 
+            var amortization = HomeLoanCalculatorHelper.SimulateAnnualAmortization(BaseLoanAmount, newRate, BaseTerm);
+            var balances = HomeLoanCalculatorHelper.SimulateYearlyBalances(BaseLoanAmount, newRate, BaseTerm, 0);
+            RateChangePrincipalData.Clear();
+            RateChangeInterestData.Clear();
+            RateChangeBalanceData.Clear();
+            foreach (var (year, principal, interest) in amortization)
+            {
+                RateChangePrincipalData.Add(new ChartDataModel(year.ToString(), principal));
+                RateChangeInterestData.Add(new ChartDataModel(year.ToString(), interest));
+            }
+            foreach (var (year, balance) in balances)
+                RateChangeBalanceData.Add(new ChartDataModel(year.ToString(), balance));
+
             OnPropertyChanged(nameof(RateChangeNewRate));
             OnPropertyChanged(nameof(RateChangeMonthlyRepayment));
             OnPropertyChanged(nameof(RateChangeMonthlyDiff));
@@ -118,6 +135,8 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
         [JsonIgnore] public string ExtraRepaymentTimeSaved { get; private set; } = "--";
         [JsonIgnore] public string ExtraRepaymentInterestSaved { get; private set; } = "--";
         [JsonIgnore] public string ExtraRepaymentNewPayoff { get; private set; } = "--";
+        [JsonIgnore] public ObservableCollection<ChartDataModel> ExtraRepaymentOriginalBalanceData { get; } = new();
+        [JsonIgnore] public ObservableCollection<ChartDataModel> ExtraRepaymentAcceleratedBalanceData { get; } = new();
 
         private void RecalculateExtraRepayment()
         {
@@ -129,6 +148,16 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
             ExtraRepaymentTimeSaved = months > 0 ? $"{years}yr {months}mo" : $"{years}yr";
             ExtraRepaymentInterestSaved = $"{CurrencySymbol}{interestSaved:N0}";
             ExtraRepaymentNewPayoff = $"{BaseTerm - years}yr {(12 - months) % 12}mo remaining";
+
+            var originalBalances = HomeLoanCalculatorHelper.SimulateYearlyBalances(BaseLoanAmount, BaseRate, BaseTerm, 0);
+            var acceleratedBalances = HomeLoanCalculatorHelper.SimulateYearlyBalances(BaseLoanAmount, BaseRate, BaseTerm, ExtraRepaymentMonthly);
+            ExtraRepaymentOriginalBalanceData.Clear();
+            ExtraRepaymentAcceleratedBalanceData.Clear();
+            foreach (var (year, balance) in originalBalances)
+                ExtraRepaymentOriginalBalanceData.Add(new ChartDataModel(year.ToString(), balance));
+            foreach (var (year, balance) in acceleratedBalances)
+                ExtraRepaymentAcceleratedBalanceData.Add(new ChartDataModel(year.ToString(), balance));
+
             OnPropertyChanged(nameof(ExtraRepaymentTimeSaved));
             OnPropertyChanged(nameof(ExtraRepaymentInterestSaved));
             OnPropertyChanged(nameof(ExtraRepaymentNewPayoff));
@@ -149,6 +178,7 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
         [JsonIgnore] public bool TermIsCurrentColA  { get; private set; }
         [JsonIgnore] public bool TermIsCurrentColB  { get; private set; }
         [JsonIgnore] public bool TermIsCurrentColC  { get; private set; }
+        [JsonIgnore] public ObservableCollection<ChartDataModel> TermComparisonChartData { get; } = new();
 
         private void RecalculateTermComparison()
         {
@@ -189,6 +219,11 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
             (TermColBLabel, TermColBMonthly, TermColBInterest) = BuildTermColumn(t2);
             (TermColCLabel, TermColCMonthly, TermColCInterest) = BuildTermColumn(t3);
 
+            TermComparisonChartData.Clear();
+            TermComparisonChartData.Add(new ChartDataModel($"{t1} YRS", HomeLoanCalculatorHelper.CalculateMonthlyRepayment(BaseLoanAmount, BaseRate, t1)));
+            TermComparisonChartData.Add(new ChartDataModel($"{t2} YRS", HomeLoanCalculatorHelper.CalculateMonthlyRepayment(BaseLoanAmount, BaseRate, t2)));
+            TermComparisonChartData.Add(new ChartDataModel($"{t3} YRS", HomeLoanCalculatorHelper.CalculateMonthlyRepayment(BaseLoanAmount, BaseRate, t3)));
+
             foreach (var n in new[]
             {
                 nameof(TermColALabel), nameof(TermColAMonthly), nameof(TermColAInterest),
@@ -219,6 +254,7 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
         [JsonIgnore] public string DepositColCMonthly    { get; private set; } = "--";
         // False when the deposit is already at/near the ceiling — col C shows a "Max" placeholder
         [JsonIgnore] public bool   DepositColCAvailable  { get; private set; } = true;
+        [JsonIgnore] public ObservableCollection<ChartDataModel> DepositScenariosChartData { get; } = new();
 
         private void RecalculateDepositScenarios()
         {
@@ -257,6 +293,13 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
             else
                 (DepositColCLabel, DepositColCLoan, DepositColCMonthly) = ("Max", "—", "—");
 
+            DepositScenariosChartData.Clear();
+            var pctDisplay = exactPct % 1 == 0 ? $"{exactPct:0}%" : $"{exactPct:0.#}%";
+            DepositScenariosChartData.Add(new ChartDataModel($"{lowPct:0}%", HomeLoanCalculatorHelper.CalculateMonthlyRepayment(BasePropertyAmount * (1 - lowPct / 100.0), BaseRate, BaseTerm)));
+            DepositScenariosChartData.Add(new ChartDataModel(pctDisplay, HomeLoanCalculatorHelper.CalculateMonthlyRepayment(BasePropertyAmount * (1 - exactPct / 100.0), BaseRate, BaseTerm)));
+            if (DepositColCAvailable)
+                DepositScenariosChartData.Add(new ChartDataModel($"{highPct:0}%", HomeLoanCalculatorHelper.CalculateMonthlyRepayment(BasePropertyAmount * (1 - highPct / 100.0), BaseRate, BaseTerm)));
+
             foreach (var n in new[]
             {
                 nameof(DepositColALabel), nameof(DepositColALoan), nameof(DepositColAMonthly),
@@ -294,6 +337,8 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
         [JsonIgnore] public string LumpSumTimeSaved     { get; private set; } = "--";
         [JsonIgnore] public string LumpSumInterestSaved { get; private set; } = "--";
         [JsonIgnore] public string LumpSumNewBalance    { get; private set; } = "--";
+        [JsonIgnore] public ObservableCollection<ChartDataModel> LumpSumOriginalBalanceData { get; } = new();
+        [JsonIgnore] public ObservableCollection<ChartDataModel> LumpSumReducedBalanceData { get; } = new();
 
         private void RecalculateLumpSum()
         {
@@ -307,6 +352,15 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
             var months = monthsSaved % 12;
             LumpSumTimeSaved     = months > 0 ? $"{years}yr {months}mo" : $"{years}yr";
             LumpSumInterestSaved = $"{CurrencySymbol}{interestSaved:N0}";
+
+            var originalBalances = HomeLoanCalculatorHelper.SimulateYearlyBalances(BaseLoanAmount, BaseRate, BaseTerm, 0);
+            var reducedBalances = HomeLoanCalculatorHelper.SimulateYearlyBalances(BaseLoanAmount, BaseRate, BaseTerm, 0, LumpSumAmount);
+            LumpSumOriginalBalanceData.Clear();
+            LumpSumReducedBalanceData.Clear();
+            foreach (var (year, balance) in originalBalances)
+                LumpSumOriginalBalanceData.Add(new ChartDataModel(year.ToString(), balance));
+            foreach (var (year, balance) in reducedBalances)
+                LumpSumReducedBalanceData.Add(new ChartDataModel(year.ToString(), balance));
 
             OnPropertyChanged(nameof(LumpSumTimeSaved));
             OnPropertyChanged(nameof(LumpSumInterestSaved));
@@ -333,6 +387,9 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
         [JsonIgnore] public string FreqWeeklyPayment     { get; private set; } = "--";
         [JsonIgnore] public string FreqWeeklyTimeSaved   { get; private set; } = "--";
         [JsonIgnore] public string FreqWeeklyIntSaved    { get; private set; } = "--";
+        [JsonIgnore] public ObservableCollection<ChartDataModel> FreqMonthlyBalanceData { get; } = new();
+        [JsonIgnore] public ObservableCollection<ChartDataModel> FreqFortBalanceData { get; } = new();
+        [JsonIgnore] public ObservableCollection<ChartDataModel> FreqWeeklyBalanceData { get; } = new();
 
         private void RecalculateRepaymentFrequency()
         {
@@ -358,6 +415,19 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
             FreqWeeklyTimeSaved = weekMonths % 12 > 0 ? $"{weekMonths / 12}yr {weekMonths % 12}mo" : $"{weekMonths / 12}yr";
             FreqWeeklyIntSaved  = $"{CurrencySymbol}{weekInt:N0}";
 
+            var monthlyBalances = HomeLoanCalculatorHelper.SimulateYearlyBalances(BaseLoanAmount, BaseRate, BaseTerm, 0);
+            var fortBalances = HomeLoanCalculatorHelper.SimulateYearlyBalancesForFrequency(BaseLoanAmount, BaseRate, BaseTerm, fort, 26);
+            var weekBalances = HomeLoanCalculatorHelper.SimulateYearlyBalancesForFrequency(BaseLoanAmount, BaseRate, BaseTerm, week, 52);
+            FreqMonthlyBalanceData.Clear();
+            FreqFortBalanceData.Clear();
+            FreqWeeklyBalanceData.Clear();
+            foreach (var (year, balance) in monthlyBalances)
+                FreqMonthlyBalanceData.Add(new ChartDataModel(year.ToString(), balance));
+            foreach (var (year, balance) in fortBalances)
+                FreqFortBalanceData.Add(new ChartDataModel(year.ToString(), balance));
+            foreach (var (year, balance) in weekBalances)
+                FreqWeeklyBalanceData.Add(new ChartDataModel(year.ToString(), balance));
+
             foreach (var n in new[]
             {
                 nameof(FreqIsMonthly), nameof(FreqIsFortnightly), nameof(FreqIsWeekly),
@@ -376,27 +446,51 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
             set { _offsetBalance = Math.Max(0, value); OnPropertyChanged(nameof(OffsetBalance)); RecalculateOffset(); }
         }
 
+        // 0 = auto-track BaseRate; any other value = user-set absolute rate
+        [JsonIgnore] private double _offsetRate = 0.0;
+        public double OffsetRate
+        {
+            get => _offsetRate > 0 ? _offsetRate : BaseRate;
+            set { _offsetRate = Math.Round(Math.Max(0.01, value), 2); OnPropertyChanged(nameof(OffsetRate)); RecalculateOffset(); }
+        }
+
         [JsonIgnore] public string OffsetMonthlySaving  { get; private set; } = "--";
         [JsonIgnore] public string OffsetInterestSaved  { get; private set; } = "--";
         [JsonIgnore] public string OffsetTimeSaved      { get; private set; } = "--";
         [JsonIgnore] public string OffsetRateNote       { get; private set; } = "";
+        [JsonIgnore] public ObservableCollection<ChartDataModel> OffsetWithoutBalanceData { get; } = new();
+        [JsonIgnore] public ObservableCollection<ChartDataModel> OffsetWithBalanceData { get; } = new();
 
         private void RecalculateOffset()
         {
             if (BaseLoanAmount <= 0 || BaseRate <= 0) return;
             var effectiveBalance = Math.Min(_offsetBalance, BaseLoanAmount);
-            var r = BaseRate / 100.0 / 12.0;
+            var effectiveRate = OffsetRate;
+            var r = effectiveRate / 100.0 / 12.0;
+
+            OnPropertyChanged(nameof(OffsetRate));
 
             // Monthly interest saving = offset × monthly rate
             var monthlySaving = effectiveBalance * r;
             OffsetMonthlySaving = $"{CurrencySymbol}{monthlySaving:N0}/mo";
 
             // Simulate payoff: apply normal payment to reduced effective balance
-            var (monthsSaved, interestSaved) = HomeLoanCalculatorHelper.SimulateOffset(BaseLoanAmount, BaseRate, BaseTerm, effectiveBalance);
+            var (monthsSaved, interestSaved) = HomeLoanCalculatorHelper.SimulateOffset(BaseLoanAmount, effectiveRate, BaseTerm, effectiveBalance);
             var years = monthsSaved / 12; var months = monthsSaved % 12;
             OffsetTimeSaved     = months > 0 ? $"{years}yr {months}mo" : $"{years}yr";
             OffsetInterestSaved = $"{CurrencySymbol}{interestSaved:N0}";
-            OffsetRateNote      = $"calculated at your loan rate ({BaseRate:0.##}%)";
+            OffsetRateNote      = _offsetRate == 0.0
+                ? $"calculated at your loan rate ({BaseRate:0.##}%)"
+                : $"calculated at {effectiveRate:0.##}% (loan rate: {BaseRate:0.##}%)";
+
+            var withoutOffsetBalances = HomeLoanCalculatorHelper.SimulateYearlyBalances(BaseLoanAmount, effectiveRate, BaseTerm, 0);
+            var withOffsetBalances = HomeLoanCalculatorHelper.SimulateYearlyBalancesWithOffset(BaseLoanAmount, effectiveRate, BaseTerm, effectiveBalance);
+            OffsetWithoutBalanceData.Clear();
+            OffsetWithBalanceData.Clear();
+            foreach (var (year, balance) in withoutOffsetBalances)
+                OffsetWithoutBalanceData.Add(new ChartDataModel(year.ToString(), balance));
+            foreach (var (year, balance) in withOffsetBalances)
+                OffsetWithBalanceData.Add(new ChartDataModel(year.ToString(), balance));
 
             OnPropertyChanged(nameof(OffsetMonthlySaving));
             OnPropertyChanged(nameof(OffsetInterestSaved));
@@ -412,6 +506,7 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
         [JsonIgnore] public string StressTestCurrentSurplus   { get; private set; } = "--";
         // -1 = safe (buffer > 2%), 0 = moderate (1–2%), 1 = at risk (< 1%)
         [JsonIgnore] public int    StressTestRisk             { get; private set; }
+        [JsonIgnore] public ObservableCollection<ChartDataModel> StressTestChartData { get; } = new();
 
         private void RecalculateStressTest()
         {
@@ -443,12 +538,150 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
 
             StressTestRisk = rateBuffer >= 2.0 ? -1 : rateBuffer >= 1.0 ? 0 : 1;
 
+            StressTestChartData.Clear();
+            StressTestChartData.Add(new ChartDataModel("Current Rate", BaseRate));
+            StressTestChartData.Add(new ChartDataModel("Break-even Rate", breakEvenRate > 0 ? breakEvenRate : BaseRate));
+
             OnPropertyChanged(nameof(StressTestAvailable));
             OnPropertyChanged(nameof(StressTestUnavailable));
             OnPropertyChanged(nameof(StressTestBreakEvenRate));
             OnPropertyChanged(nameof(StressTestRateBuffer));
             OnPropertyChanged(nameof(StressTestCurrentSurplus));
             OnPropertyChanged(nameof(StressTestRisk));
+        }
+
+        // ── Scenario 9: Combined Strategy ────────────────────────────────
+        [JsonIgnore] private double _combinedExtraMonthly = 500;
+        public double CombinedExtraMonthly
+        {
+            get => _combinedExtraMonthly;
+            set { _combinedExtraMonthly = Math.Max(0, value); OnPropertyChanged(nameof(CombinedExtraMonthly)); RecalculateCombined(); }
+        }
+
+        [JsonIgnore] private double _combinedLumpSum = 10000;
+        public double CombinedLumpSum
+        {
+            get => _combinedLumpSum;
+            set { _combinedLumpSum = Math.Max(0, value); OnPropertyChanged(nameof(CombinedLumpSum)); RecalculateCombined(); }
+        }
+
+        [JsonIgnore] private double _combinedOffset = 20000;
+        public double CombinedOffset
+        {
+            get => _combinedOffset;
+            set { _combinedOffset = Math.Max(0, value); OnPropertyChanged(nameof(CombinedOffset)); RecalculateCombined(); }
+        }
+
+        // 0 = auto-track BaseRate; any other value = absolute rate
+        [JsonIgnore] private double _combinedOffsetRate = 0.0;
+        public double CombinedOffsetRate
+        {
+            get => _combinedOffsetRate > 0 ? _combinedOffsetRate : BaseRate;
+            set { _combinedOffsetRate = Math.Round(Math.Max(0.01, value), 2); OnPropertyChanged(nameof(CombinedOffsetRate)); RecalculateCombined(); }
+        }
+
+        [JsonIgnore] private int _combinedFrequencyIndex = 1;
+        public int CombinedFrequencyIndex
+        {
+            get => _combinedFrequencyIndex;
+            set { _combinedFrequencyIndex = value; OnPropertyChanged(nameof(CombinedFrequencyIndex)); RecalculateCombined(); }
+        }
+
+        [JsonIgnore] private bool _combinedUseFrequency = true;
+        public bool CombinedUseFrequency
+        {
+            get => _combinedUseFrequency;
+            set { _combinedUseFrequency = value; OnPropertyChanged(nameof(CombinedUseFrequency)); RecalculateCombined(); }
+        }
+
+        [JsonIgnore] private bool _combinedUseExtra = true;
+        public bool CombinedUseExtra
+        {
+            get => _combinedUseExtra;
+            set { _combinedUseExtra = value; OnPropertyChanged(nameof(CombinedUseExtra)); RecalculateCombined(); }
+        }
+
+        [JsonIgnore] private bool _combinedUseLumpSum = true;
+        public bool CombinedUseLumpSum
+        {
+            get => _combinedUseLumpSum;
+            set { _combinedUseLumpSum = value; OnPropertyChanged(nameof(CombinedUseLumpSum)); RecalculateCombined(); }
+        }
+
+        [JsonIgnore] private bool _combinedUseOffset = true;
+        public bool CombinedUseOffset
+        {
+            get => _combinedUseOffset;
+            set { _combinedUseOffset = value; OnPropertyChanged(nameof(CombinedUseOffset)); RecalculateCombined(); }
+        }
+
+        [JsonIgnore] public string CombinedTimeSaved        { get; private set; } = "--";
+        [JsonIgnore] public string CombinedInterestSaved    { get; private set; } = "--";
+        [JsonIgnore] public string CombinedNewTerm          { get; private set; } = "--";
+        [JsonIgnore] public string CombinedFrequencyPayment { get; private set; } = "--";
+        [JsonIgnore] public string CombinedExtraDisplay     { get; private set; } = "--";
+        [JsonIgnore] public string CombinedLumpDisplay      { get; private set; } = "--";
+        [JsonIgnore] public string CombinedOffsetDisplay    { get; private set; } = "--";
+        [JsonIgnore] public ObservableCollection<ChartDataModel> CombinedBaselineData { get; } = new();
+        [JsonIgnore] public ObservableCollection<ChartDataModel> CombinedStrategyData { get; } = new();
+
+        private void RecalculateCombined()
+        {
+            if (BaseLoanAmount <= 0 || BaseRate <= 0) return;
+
+            var paymentsPerYear = !_combinedUseFrequency ? 12
+                : _combinedFrequencyIndex == 2 ? 52
+                : _combinedFrequencyIndex == 1 ? 26 : 12;
+            var extra       = _combinedUseExtra   ? _combinedExtraMonthly : 0;
+            var lump        = _combinedUseLumpSum ? _combinedLumpSum      : 0;
+            var offset      = _combinedUseOffset  ? _combinedOffset       : 0;
+            var offsetRate  = CombinedOffsetRate;
+
+            // Frequency payment display — must match the formula in SimulateCombined.
+            var standardMonthly = HomeLoanCalculatorHelper.CalculateMonthlyRepayment(BaseLoanAmount, BaseRate, BaseTerm);
+            double periodicPayment;
+            if (paymentsPerYear == 52)
+                periodicPayment = (standardMonthly + extra) / 4.0;
+            else if (paymentsPerYear == 26)
+                periodicPayment = (standardMonthly + extra) / 2.0;
+            else
+                periodicPayment = standardMonthly + extra;
+            var freqLabel = paymentsPerYear == 52 ? "wk" : paymentsPerYear == 26 ? "fn" : "mo";
+            CombinedFrequencyPayment = $"{CurrencySymbol}{periodicPayment:N0}/{freqLabel}";
+
+            // Formatted display values with currency symbol
+            CombinedExtraDisplay  = $"{CurrencySymbol}{_combinedExtraMonthly:N0}/mo";
+            CombinedLumpDisplay   = $"{CurrencySymbol}{_combinedLumpSum:N0}";
+            CombinedOffsetDisplay = $"{CurrencySymbol}{_combinedOffset:N0}";
+
+            var (monthsSaved, interestSaved, strategyBalances) =
+                HomeLoanCalculatorHelper.SimulateCombined(
+                    BaseLoanAmount, BaseRate, BaseTerm, extra, lump, offset, paymentsPerYear, offsetRate);
+
+            var yrs = monthsSaved / 12; var mos = monthsSaved % 12;
+            CombinedTimeSaved     = mos > 0 ? $"{yrs}yr {mos}mo" : $"{yrs}yr";
+            CombinedInterestSaved = $"{CurrencySymbol}{interestSaved:N0}";
+            var payoffMonths = Math.Max(0, BaseTerm * 12 - monthsSaved);
+            CombinedNewTerm = payoffMonths % 12 > 0
+                ? $"{payoffMonths / 12}yr {payoffMonths % 12}mo"
+                : $"{payoffMonths / 12}yr";
+
+            var baselineBalances = HomeLoanCalculatorHelper.SimulateYearlyBalances(BaseLoanAmount, BaseRate, BaseTerm, 0);
+            CombinedBaselineData.Clear();
+            CombinedStrategyData.Clear();
+            foreach (var (year, bal) in baselineBalances)
+                CombinedBaselineData.Add(new ChartDataModel(year.ToString(), bal));
+            foreach (var (year, bal) in strategyBalances)
+                CombinedStrategyData.Add(new ChartDataModel(year.ToString(), bal));
+
+            OnPropertyChanged(nameof(CombinedTimeSaved));
+            OnPropertyChanged(nameof(CombinedInterestSaved));
+            OnPropertyChanged(nameof(CombinedNewTerm));
+            OnPropertyChanged(nameof(CombinedFrequencyPayment));
+            OnPropertyChanged(nameof(CombinedExtraDisplay));
+            OnPropertyChanged(nameof(CombinedLumpDisplay));
+            OnPropertyChanged(nameof(CombinedOffsetDisplay));
+            OnPropertyChanged(nameof(CombinedOffsetRate));
         }
 
         public void Recalculate()
@@ -462,6 +695,7 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
             RecalculateRepaymentFrequency();
             RecalculateOffset();
             RecalculateStressTest();
+            RecalculateCombined();
             OnPropertyChanged(nameof(HasLoanData));
             OnPropertyChanged(nameof(HasNoLoanData));
         }
@@ -486,6 +720,7 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
             double loan, double annualRatePct, int termYears, double extraMonthly, double upfrontLumpSum = 0)
         {
             if (annualRatePct <= 0) return (0, 0);
+            if (extraMonthly <= 0 && upfrontLumpSum <= 0) return (0, 0);
             var r = annualRatePct / 100.0 / 12.0;
             var standardMonthly = CalculateMonthlyRepayment(loan, annualRatePct, termYears);
             var standardTotal = standardMonthly * termYears * 12;
@@ -549,6 +784,184 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
                 if (payment < maxMonthly) lo = mid; else hi = mid;
             }
             return Math.Round((lo + hi) / 2.0, 2);
+        }
+
+        // Year-by-year balance snapshots for balance curve charts
+        public static List<(int year, double balance)> SimulateYearlyBalances(
+            double loan, double annualRatePct, int termYears, double extraMonthly, double upfrontLumpSum = 0)
+        {
+            var result = new List<(int, double)> { (0, Math.Max(0, loan - upfrontLumpSum)) };
+            if (annualRatePct <= 0)
+            {
+                for (int y = 1; y <= termYears; y++)
+                    result.Add((y, 0));
+                return result;
+            }
+            var r = annualRatePct / 100.0 / 12.0;
+            var standardMonthly = CalculateMonthlyRepayment(loan, annualRatePct, termYears);
+            var payment = standardMonthly + extraMonthly;
+            var balance = Math.Max(0, loan - upfrontLumpSum);
+            for (int y = 1; y <= termYears; y++)
+            {
+                for (int m = 0; m < 12 && balance > 0.01; m++)
+                {
+                    balance = balance + balance * r - payment;
+                    if (balance < 0) balance = 0;
+                }
+                result.Add((y, balance));
+                if (balance <= 0) break;
+            }
+            return result;
+        }
+
+        // Year-by-year balance snapshots using a sub-monthly periodic frequency
+        public static List<(int year, double balance)> SimulateYearlyBalancesForFrequency(
+            double loan, double annualRatePct, int termYears, double periodicPayment, int paymentsPerYear)
+        {
+            var result = new List<(int, double)> { (0, loan) };
+            if (annualRatePct <= 0 || periodicPayment <= 0) return result;
+            var rPeriod = annualRatePct / 100.0 / paymentsPerYear;
+            var balance = loan;
+            int periodsPerYear = paymentsPerYear;
+            int maxPeriods = (termYears + 5) * periodsPerYear;
+            int periodCount = 0;
+            for (int y = 1; y <= termYears && balance > 0.01; y++)
+            {
+                for (int p = 0; p < periodsPerYear && balance > 0.01 && periodCount < maxPeriods; p++, periodCount++)
+                {
+                    balance = balance + balance * rPeriod - periodicPayment;
+                    if (balance < 0) balance = 0;
+                }
+                result.Add((y, balance));
+                if (balance <= 0) break;
+            }
+            return result;
+        }
+
+        // Annual principal and interest amounts for stacked column chart
+        public static List<(int year, double principal, double interest)> SimulateAnnualAmortization(
+            double loan, double annualRatePct, int termYears, double extraMonthly = 0, double upfrontLumpSum = 0)
+        {
+            var result = new List<(int, double, double)>();
+            if (annualRatePct <= 0 || loan <= 0) return result;
+            var r = annualRatePct / 100.0 / 12.0;
+            var standardMonthly = CalculateMonthlyRepayment(loan, annualRatePct, termYears);
+            var payment = standardMonthly + extraMonthly;
+            var balance = Math.Max(0, loan - upfrontLumpSum);
+            for (int y = 1; y <= termYears && balance > 0.01; y++)
+            {
+                double yearPrincipal = 0, yearInterest = 0;
+                for (int m = 0; m < 12 && balance > 0.01; m++)
+                {
+                    var interest = balance * r;
+                    var principal = Math.Min(payment - interest, balance);
+                    yearInterest += interest;
+                    yearPrincipal += principal;
+                    balance -= principal;
+                    if (balance < 0) balance = 0;
+                }
+                result.Add((y, yearPrincipal, yearInterest));
+            }
+            return result;
+        }
+
+        // Year-by-year balance snapshots with a constant offset applied each month
+        public static List<(int year, double balance)> SimulateYearlyBalancesWithOffset(
+            double loan, double annualRatePct, int termYears, double offsetBalance)
+        {
+            var result = new List<(int, double)> { (0, loan) };
+            if (annualRatePct <= 0) return result;
+            var r = annualRatePct / 100.0 / 12.0;
+            var payment = CalculateMonthlyRepayment(loan, annualRatePct, termYears);
+            var balance = loan;
+            for (int y = 1; y <= termYears && balance > 0.01; y++)
+            {
+                for (int m = 0; m < 12 && balance > 0.01; m++)
+                {
+                    var effective = Math.Max(0, balance - offsetBalance);
+                    var interest = effective * r;
+                    balance = balance + interest - payment;
+                    if (balance < 0) balance = 0;
+                }
+                result.Add((y, balance));
+                if (balance <= 0) break;
+            }
+            return result;
+        }
+
+        public static (int monthsSaved, double interestSaved, List<(int year, double balance)> yearlyBalances)
+            SimulateCombined(
+                double loan,
+                double annualRatePct,
+                int termYears,
+                double extraMonthly,
+                double upfrontLumpSum,
+                double offsetBalance,
+                int paymentsPerYear,
+                double offsetRatePct = 0)
+        {
+            if (annualRatePct <= 0)
+                return (0, 0, new List<(int, double)> { (0, loan) });
+
+            // The offset rate only determines the interest credit on the offset portion.
+            // The loan itself always accrues interest at the loan rate (annualRatePct).
+            var effectiveOffsetRate = offsetRatePct > 0 ? offsetRatePct : annualRatePct;
+            var standardMonthly = CalculateMonthlyRepayment(loan, annualRatePct, termYears);
+            var balance = Math.Max(0, loan - upfrontLumpSum);
+            var effectiveOffset = Math.Min(offsetBalance, balance);
+
+            // Periodic payment: real-world fortnightly/weekly convention.
+            // Fortnightly = (monthly + extra) / 2, paid 26×/yr → 13 monthly-equivalents/yr.
+            // Weekly      = (monthly + extra) / 4, paid 52×/yr → 13 monthly-equivalents/yr.
+            // Monthly     = monthly + extra, paid 12×/yr.
+            double periodicPayment;
+            if (paymentsPerYear == 52)
+                periodicPayment = (standardMonthly + extraMonthly) / 4.0;
+            else if (paymentsPerYear == 26)
+                periodicPayment = (standardMonthly + extraMonthly) / 2.0;
+            else
+                periodicPayment = standardMonthly + extraMonthly;
+
+            var loanRatePeriod   = annualRatePct / 100.0 / paymentsPerYear;
+            var offsetRatePeriod = effectiveOffsetRate / 100.0 / paymentsPerYear;
+
+            var periods = 0;
+            var totalInterestPaid = 0.0;
+            var yearlyBalances = new List<(int, double)>();
+            yearlyBalances.Add((0, balance));
+            var maxPeriods = (termYears + 10) * paymentsPerYear;
+
+            for (int p = 0; p < maxPeriods && balance > 0.001; p++)
+            {
+                // Full loan balance accrues interest at the loan rate.
+                // The offset balance provides an interest credit at the offset rate.
+                var grossInterest  = balance * loanRatePeriod;
+                var offsetCredit   = Math.Min(effectiveOffset, balance) * offsetRatePeriod;
+                var netInterest    = Math.Max(0, grossInterest - offsetCredit);
+                totalInterestPaid += netInterest;
+                balance = Math.Max(0, balance + netInterest - periodicPayment);
+                periods++;
+                if ((p + 1) % paymentsPerYear == 0)
+                    yearlyBalances.Add((yearlyBalances.Count, balance));
+            }
+
+            // Baseline: standard monthly payment, no levers, loan rate — simulate to actual payoff
+            var baselineR = annualRatePct / 100.0 / 12.0;
+            var baselineBal = loan;
+            var baselineInterest = 0.0;
+            var baselineMonths = 0;
+            for (int m = 0; m < (termYears + 10) * 12 && baselineBal > 0.001; m++)
+            {
+                var i = baselineBal * baselineR;
+                baselineInterest += i;
+                baselineBal = Math.Max(0, baselineBal + i - standardMonthly);
+                baselineMonths++;
+            }
+
+            var actualMonths = (int)Math.Round(periods * 12.0 / paymentsPerYear);
+            var monthsSaved   = Math.Max(0, baselineMonths - actualMonths);
+            var interestSaved = Math.Max(0, baselineInterest - totalInterestPaid);
+            return (monthsSaved, interestSaved, yearlyBalances);
         }
 
         // Simulate offset: reduce effective balance each month by offset amount

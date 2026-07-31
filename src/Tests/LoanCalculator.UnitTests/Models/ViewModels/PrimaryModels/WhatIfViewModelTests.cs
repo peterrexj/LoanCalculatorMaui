@@ -12,6 +12,14 @@ namespace LoanCalculator.UnitTests.Models.ViewModels.PrimaryModels
         private WhatIfViewModel _vm;
 
         // Reference loan: $900k at 5% over 30yr on a $1M property (10% deposit)
+        // Exposed for SimulateCombinedTests
+        internal static LoanViewModel BuildLoanVmPublic(
+            double propertyAmount = 1_000_000,
+            double loanAmount = 900_000,
+            double interestRate = 5.0,
+            int termYears = 30,
+            int paymentsPerYear = 12) => BuildLoanVm(propertyAmount, loanAmount, interestRate, termYears, paymentsPerYear);
+
         private static LoanViewModel BuildLoanVm(
             double propertyAmount = 1_000_000,
             double loanAmount = 900_000,

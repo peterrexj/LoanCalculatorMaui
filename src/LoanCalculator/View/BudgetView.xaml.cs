@@ -3,6 +3,7 @@ using LoanCalculator.Core.Models.ViewModels.PrimaryModels;
 using LoanCalculator.Core.Services;
 using LoanCalculator.Core.Themes;
 using Pj.Library;
+using Syncfusion.Maui.Charts;
 using Syncfusion.Maui.TabView;
 
 namespace LoanCalculatorMaui.View;
@@ -606,6 +607,17 @@ public partial class BudgetView : ContentPage
                 _errorHandlingService.HandleException(ex);
             }
         });
+    }
+
+    private void OnProjectionAxisLabelCreated(object sender, ChartAxisLabelEventArgs e)
+    {
+        if (!double.TryParse(e.Label, out var val)) return;
+        var sym = _viewModel?.CurrencySymbol ?? "$";
+        e.Label = Math.Abs(val) >= 1_000_000
+            ? $"{sym}{val / 1_000_000:0.#}M"
+            : Math.Abs(val) >= 1_000
+                ? $"{sym}{val / 1_000:0.#}K"
+                : $"{sym}{val:0}";
     }
 
 }

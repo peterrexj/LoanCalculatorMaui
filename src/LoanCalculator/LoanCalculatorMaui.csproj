@@ -34,11 +34,11 @@
 		<!-- App Identifier -->
 		<ApplicationId>com.pj.loan.afford.calc</ApplicationId>
 
-		<!-- Versions -->
-		<ApplicationDisplayVersion>1.12.0</ApplicationDisplayVersion>
-		<ApplicationVersion>1</ApplicationVersion>
-		<!-- Remove or comment out the following line to avoid PackageVersion conflict -->
-		<!--<PackageVersion>1.12.0</PackageVersion>-->
+		<!-- Versions - update per platform independently before each store release -->
+		<ApplicationDisplayVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">1.12.0</ApplicationDisplayVersion>
+		<ApplicationDisplayVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">1.12.0</ApplicationDisplayVersion>
+		<ApplicationVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">1</ApplicationVersion>
+		<ApplicationVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">1</ApplicationVersion>
 
 		<WindowsPackageType>None</WindowsPackageType>
 		
@@ -49,7 +49,8 @@
 		<TargetPlatformMinVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.19041.0</TargetPlatformMinVersion>
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'tizen'">6.5</SupportedOSPlatformVersion>
 		<DefaultLanguage>en-au</DefaultLanguage>
-		<AndroidSigningKeyStore>catholicsaints.keystore</AndroidSigningKeyStore>
+		<AndroidPackageFormat Condition="'$(Configuration)' == 'Debug'">apk</AndroidPackageFormat>
+		<AndroidPackageFormat Condition="'$(Configuration)' == 'Release'">aab</AndroidPackageFormat>
 	</PropertyGroup>
 
 	<!-- Windows (UAP) Configurations-->
@@ -79,15 +80,10 @@
 		<RuntimeIdentifiers>maccatalyst-x64;maccatalyst-arm64</RuntimeIdentifiers>
 	</PropertyGroup>
 	
-	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net9.0-android|AnyCPU' Or '$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net9.0-android36.0|AnyCPU'">
-	  <AndroidKeyStore>True</AndroidKeyStore>
-	  <AndroidSigningKeyAlias>keyalias.alias</AndroidSigningKeyAlias>
-	  <AndroidSigningStorePass>CatholicSaintsPassword@01</AndroidSigningStorePass>
-	  <AndroidSigningKeyPass>CatholicSaintsPassword@01</AndroidSigningKeyPass>
-	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net9.0-android|AnyCPU' Or '$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net9.0-android36.0|AnyCPU'">
-	  <AndroidKeyStore>True</AndroidKeyStore>
+	<!-- Android Release signing (Play Store AAB) -->
+	<PropertyGroup Condition="'$(Configuration)' == 'Release' and ($(TargetFramework.StartsWith('net9.0-android')))">
+	  <AndroidKeyStore>true</AndroidKeyStore>
+	  <AndroidSigningKeyStore>catholicsaints.keystore</AndroidSigningKeyStore>
 	  <AndroidSigningKeyAlias>keyalias.alias</AndroidSigningKeyAlias>
 	  <AndroidSigningStorePass>CatholicSaintsPassword@01</AndroidSigningStorePass>
 	  <AndroidSigningKeyPass>CatholicSaintsPassword@01</AndroidSigningKeyPass>

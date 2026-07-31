@@ -90,6 +90,7 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
                     OnPropertyChanged(nameof(SelectedCurrency));
                     Preferences.Set(SharedServiceCore.SelectedCurrencyKey, _selectedCurrency?.IsoCode);
                     Helper.CurrencySymbol = SharedServiceCore.GetCurrencySymbol(_selectedCurrency?.IsoCode);
+                    SharedServiceCore.MarkCurrencyDirty();
                 }
             }
         }

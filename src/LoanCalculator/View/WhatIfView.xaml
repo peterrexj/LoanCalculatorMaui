@@ -5,6 +5,8 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:core="http://schemas.syncfusion.com/maui"
+    xmlns:chart="clr-namespace:Syncfusion.Maui.Charts;assembly=Syncfusion.Maui.Charts"
+    xmlns:expander="clr-namespace:Syncfusion.Maui.Expander;assembly=Syncfusion.Maui.Expander"
     xmlns:customControls="clr-namespace:LoanCalculatorMaui.Controls"
     xmlns:primaryModels="clr-namespace:LoanCalculator.Core.Models.ViewModels.PrimaryModels;assembly=LoanCalculator.Core"
     Title="What If"
@@ -182,6 +184,40 @@
                                     </Border>
                                 </Grid>
 
+                                <!--  Chart: Annual principal/interest breakdown + balance at new rate  -->
+                                <Border
+                                    Margin="0,2,0,0"
+                                    Padding="8,8,8,4"
+                                    BackgroundColor="{DynamicResource LoanAppChartCardBackground}"
+                                    StrokeShape="RoundRectangle 8"
+                                    StrokeThickness="0">
+                                    <Grid>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="220"/>
+                                        </Grid.RowDefinitions>
+                                        <Grid Grid.Row="0" Margin="0,0,0,4">
+                                            <Label Text="Annual Repayment" HorizontalOptions="Start" FontSize="{StaticResource FontSizeXS}" TextColor="{DynamicResource LoanAppChartAxisTextColor}" Opacity="0.7"/>
+                                            <Label Text="Remaining Balance" HorizontalOptions="End" FontSize="{StaticResource FontSizeXS}" TextColor="{DynamicResource LoanAppChartAxisTextColor}" Opacity="0.7"/>
+                                        </Grid>
+                                        <chart:SfCartesianChart Grid.Row="1">
+                                            <chart:SfCartesianChart.Legend>
+                                                <chart:ChartLegend Placement="Bottom" LabelStyle="{chart:ChartLegendLabelStyle TextColor={DynamicResource LoanAppChartLegendTextColor}, FontSize=10}"/>
+                                            </chart:SfCartesianChart.Legend>
+                                            <chart:SfCartesianChart.XAxes>
+                                                <chart:CategoryAxis Name="rateXAxis" ShowMajorGridLines="False" LabelStyle="{chart:ChartAxisLabelStyle TextColor={DynamicResource LoanAppChartAxisTextColor}, FontSize=10}"/>
+                                            </chart:SfCartesianChart.XAxes>
+                                            <chart:SfCartesianChart.YAxes>
+                                                <chart:NumericalAxis Name="rateLeftAxis" RangePadding="None" LabelCreated="OnWhatIfAxisLabelCreated" LabelStyle="{chart:ChartAxisLabelStyle TextColor={DynamicResource LoanAppChartAxisTextColor}, FontSize=10}"/>
+                                                <chart:NumericalAxis Name="rateRightAxis" CrossAxisName="rateXAxis" CrossesAt="1.7976931348623157E+308" RenderNextToCrossingValue="True" ShowMajorGridLines="False" LabelCreated="OnWhatIfAxisLabelCreated" LabelStyle="{chart:ChartAxisLabelStyle TextColor={DynamicResource LoanAppChartAxisTextColor}, FontSize=10}"/>
+                                            </chart:SfCartesianChart.YAxes>
+                                            <chart:StackingColumnSeries ItemsSource="{Binding RateChangePrincipalData}" XBindingPath="Name" YBindingPath="Value" YAxisName="rateLeftAxis" Label="Principal" LegendIcon="Rectangle" Fill="{DynamicResource LoanAppChartColorSeries1}"/>
+                                            <chart:StackingColumnSeries ItemsSource="{Binding RateChangeInterestData}" XBindingPath="Name" YBindingPath="Value" YAxisName="rateLeftAxis" Label="Interest" LegendIcon="Rectangle" Fill="{DynamicResource LoanAppChartColorSeries2}"/>
+                                            <chart:SplineSeries ItemsSource="{Binding RateChangeBalanceData}" XBindingPath="Name" YBindingPath="Value" YAxisName="rateRightAxis" StrokeWidth="2.5" Label="Balance" LegendIcon="HorizontalLine" Fill="{DynamicResource LoanAppChartColorSeries3}"/>
+                                        </chart:SfCartesianChart>
+                                    </Grid>
+                                </Border>
+
                                 <!--  Affordability headroom — only when income/expense data exists  -->
                                 <Border
                                     IsVisible="{Binding RateChangeShowHeadroom}"
@@ -297,6 +333,35 @@
                                     </Border>
                                 </Grid>
 
+                                <!--  Chart: Loan Balance Over Time — standard vs accelerated  -->
+                                <Border
+                                    Margin="0,2,0,0"
+                                    Padding="8,8,8,4"
+                                    BackgroundColor="{DynamicResource LoanAppChartCardBackground}"
+                                    StrokeShape="RoundRectangle 8"
+                                    StrokeThickness="0">
+                                    <Grid>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="200"/>
+                                        </Grid.RowDefinitions>
+                                        <Label Grid.Row="0" Text="Loan Balance Over Time" FontSize="{StaticResource FontSizeXS}" TextColor="{DynamicResource LoanAppChartAxisTextColor}" Opacity="0.7" Margin="0,0,0,2"/>
+                                        <chart:SfCartesianChart Grid.Row="1">
+                                            <chart:SfCartesianChart.Legend>
+                                                <chart:ChartLegend LabelStyle="{chart:ChartLegendLabelStyle TextColor={DynamicResource LoanAppChartLegendTextColor}, FontSize=10}"/>
+                                            </chart:SfCartesianChart.Legend>
+                                            <chart:SfCartesianChart.XAxes>
+                                                <chart:NumericalAxis ShowMajorGridLines="False" LabelStyle="{chart:ChartAxisLabelStyle TextColor={DynamicResource LoanAppChartAxisTextColor}, FontSize=10}"/>
+                                            </chart:SfCartesianChart.XAxes>
+                                            <chart:SfCartesianChart.YAxes>
+                                                <chart:NumericalAxis RangePadding="None" LabelCreated="OnWhatIfAxisLabelCreated" LabelStyle="{chart:ChartAxisLabelStyle TextColor={DynamicResource LoanAppChartAxisTextColor}, FontSize=10}"/>
+                                            </chart:SfCartesianChart.YAxes>
+                                            <chart:SplineSeries ItemsSource="{Binding ExtraRepaymentOriginalBalanceData}" XBindingPath="Name" YBindingPath="Value" Fill="{DynamicResource LoanAppChartColorSeries1}" StrokeWidth="2.5" Label="Standard"/>
+                                            <chart:SplineSeries ItemsSource="{Binding ExtraRepaymentAcceleratedBalanceData}" XBindingPath="Name" YBindingPath="Value" Fill="{DynamicResource LoanAppChartColorSeries2}" StrokeWidth="2.5" Label="With Extra"/>
+                                        </chart:SfCartesianChart>
+                                    </Grid>
+                                </Border>
+
                             </VerticalStackLayout>
                         </Grid>
                     </Border>
@@ -395,6 +460,7 @@
                                     </Border>
 
                                 </Grid>
+
                             </VerticalStackLayout>
                         </Grid>
                     </Border>
@@ -461,6 +527,7 @@
                                     </Border>
 
                                 </Grid>
+
                             </VerticalStackLayout>
                         </Grid>
                     </Border>
@@ -515,6 +582,35 @@
                                         </VerticalStackLayout>
                                     </Border>
                                 </Grid>
+
+                                <!--  Chart: Balance payoff trajectory — standard vs after lump sum  -->
+                                <Border
+                                    Margin="0,2,0,0"
+                                    Padding="8,8,8,4"
+                                    BackgroundColor="{DynamicResource LoanAppChartCardBackground}"
+                                    StrokeShape="RoundRectangle 8"
+                                    StrokeThickness="0">
+                                    <Grid>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="200"/>
+                                        </Grid.RowDefinitions>
+                                        <Label Grid.Row="0" Text="Loan Balance Over Time" FontSize="{StaticResource FontSizeXS}" TextColor="{DynamicResource LoanAppChartAxisTextColor}" Opacity="0.7" Margin="0,0,0,2"/>
+                                        <chart:SfCartesianChart Grid.Row="1">
+                                            <chart:SfCartesianChart.Legend>
+                                                <chart:ChartLegend Placement="Bottom" LabelStyle="{chart:ChartLegendLabelStyle TextColor={DynamicResource LoanAppChartLegendTextColor}, FontSize=10}"/>
+                                            </chart:SfCartesianChart.Legend>
+                                            <chart:SfCartesianChart.XAxes>
+                                                <chart:NumericalAxis ShowMajorGridLines="False" LabelStyle="{chart:ChartAxisLabelStyle TextColor={DynamicResource LoanAppChartAxisTextColor}, FontSize=10}"/>
+                                            </chart:SfCartesianChart.XAxes>
+                                            <chart:SfCartesianChart.YAxes>
+                                                <chart:NumericalAxis RangePadding="None" LabelCreated="OnWhatIfAxisLabelCreated" LabelStyle="{chart:ChartAxisLabelStyle TextColor={DynamicResource LoanAppChartAxisTextColor}, FontSize=10}"/>
+                                            </chart:SfCartesianChart.YAxes>
+                                            <chart:SplineSeries ItemsSource="{Binding LumpSumOriginalBalanceData}" XBindingPath="Name" YBindingPath="Value" StrokeWidth="2.5" Label="Standard" LegendIcon="HorizontalLine" Fill="{DynamicResource LoanAppChartColorSeries1}"/>
+                                            <chart:SplineSeries ItemsSource="{Binding LumpSumReducedBalanceData}" XBindingPath="Name" YBindingPath="Value" StrokeWidth="2.5" Label="With Lump Sum" LegendIcon="HorizontalLine" Fill="{DynamicResource LoanAppChartColorSeries2}"/>
+                                        </chart:SfCartesianChart>
+                                    </Grid>
+                                </Border>
 
                                 <Border Padding="10,8" BackgroundColor="{DynamicResource LoanAppDefaultBackgroundColor}" StrokeShape="RoundRectangle 8" StrokeThickness="0">
                                     <VerticalStackLayout Spacing="2">
@@ -623,6 +719,50 @@
                                     </Border>
 
                                 </Grid>
+
+                                <!--  Chart: Balance payoff trajectory across frequencies  -->
+                                <Border
+                                    Margin="0,2,0,0"
+                                    Padding="8,8,8,4"
+                                    BackgroundColor="{DynamicResource LoanAppChartCardBackground}"
+                                    StrokeShape="RoundRectangle 8"
+                                    StrokeThickness="0">
+                                    <Grid>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="200"/>
+                                        </Grid.RowDefinitions>
+                                        <Label Grid.Row="0" Text="Loan Balance Over Time" FontSize="{StaticResource FontSizeXS}" TextColor="{DynamicResource LoanAppChartAxisTextColor}" Opacity="0.7" Margin="0,0,0,2"/>
+                                        <chart:SfCartesianChart Grid.Row="1">
+                                            <chart:SfCartesianChart.Legend>
+                                                <chart:ChartLegend Placement="Bottom" LabelStyle="{chart:ChartLegendLabelStyle TextColor={DynamicResource LoanAppChartLegendTextColor}, FontSize=10}"/>
+                                            </chart:SfCartesianChart.Legend>
+                                            <chart:SfCartesianChart.XAxes>
+                                                <chart:NumericalAxis ShowMajorGridLines="False" LabelStyle="{chart:ChartAxisLabelStyle TextColor={DynamicResource LoanAppChartAxisTextColor}, FontSize=10}"/>
+                                            </chart:SfCartesianChart.XAxes>
+                                            <chart:SfCartesianChart.YAxes>
+                                                <chart:NumericalAxis RangePadding="None" LabelCreated="OnWhatIfAxisLabelCreated" LabelStyle="{chart:ChartAxisLabelStyle TextColor={DynamicResource LoanAppChartAxisTextColor}, FontSize=10}"/>
+                                            </chart:SfCartesianChart.YAxes>
+                                            <chart:SplineSeries ItemsSource="{Binding FreqMonthlyBalanceData}" XBindingPath="Name" YBindingPath="Value" StrokeWidth="2.5" Label="Monthly" LegendIcon="HorizontalLine" Fill="{DynamicResource LoanAppChartColorSeries1}"/>
+                                            <chart:SplineSeries ItemsSource="{Binding FreqFortBalanceData}" XBindingPath="Name" YBindingPath="Value" StrokeWidth="2.5" Label="Fortnightly" LegendIcon="HorizontalLine" Fill="{DynamicResource LoanAppChartColorSeries2}"/>
+                                            <chart:SplineSeries ItemsSource="{Binding FreqWeeklyBalanceData}" XBindingPath="Name" YBindingPath="Value" StrokeWidth="2.5" Label="Weekly" LegendIcon="HorizontalLine" Fill="{DynamicResource LoanAppChartColorSeries3}"/>
+                                        </chart:SfCartesianChart>
+                                    </Grid>
+                                </Border>
+
+                                <Button
+                                    Text="ⓘ  How does repayment frequency save time?"
+                                    Clicked="OnFrequencyInfoTapped"
+                                    BackgroundColor="Transparent"
+                                    BorderColor="{DynamicResource LoanAppDefaultForegroundColor}"
+                                    BorderWidth="0.5"
+                                    CornerRadius="8"
+                                    FontSize="{StaticResource FontSizeSmall}"
+                                    TextColor="{DynamicResource LoanAppDefaultForegroundColor}"
+                                    Opacity="0.6"
+                                    Padding="10,6"
+                                    HorizontalOptions="Start" />
+
                             </VerticalStackLayout>
                         </Grid>
                     </Border>
@@ -657,6 +797,21 @@
                                     </HorizontalStackLayout>
                                 </Border>
 
+                                <Border
+                                    Padding="4,2"
+                                    Margin="0,4,0,0"
+                                    BackgroundColor="{DynamicResource LoanAppDefaultBackgroundColor}"
+                                    HorizontalOptions="Start"
+                                    StrokeShape="RoundRectangle 24"
+                                    StrokeThickness="0">
+                                    <HorizontalStackLayout Spacing="2" VerticalOptions="Center">
+                                        <Label FontSize="{StaticResource FontSizeSmall}" Margin="6,0,0,0" Opacity="0.7" Text="Rate:" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" VerticalOptions="Center" />
+                                        <Button BackgroundColor="Transparent" Clicked="OnOffsetRateDecrease" FontAttributes="Bold" FontSize="{StaticResource FontSizeXL}" TextColor="{DynamicResource LoanAppChartColor1}" WidthRequest="36" Text="−" />
+                                        <Label FontAttributes="Bold" FontSize="{StaticResource FontSizeLarge}" HorizontalTextAlignment="Center" MinimumWidthRequest="72" Text="{Binding OffsetRate, StringFormat='{0:0.00}%'}" TextColor="{DynamicResource LoanAppChartColor1}" VerticalOptions="Center" />
+                                        <Button BackgroundColor="Transparent" Clicked="OnOffsetRateIncrease" FontAttributes="Bold" FontSize="{StaticResource FontSizeXL}" TextColor="{DynamicResource LoanAppChartColor1}" WidthRequest="36" Text="+" />
+                                    </HorizontalStackLayout>
+                                </Border>
+
                                 <BoxView HeightRequest="1" Opacity="0.08" Color="{DynamicResource LoanAppDefaultForegroundColor}" />
 
                                 <Grid ColumnSpacing="8">
@@ -685,6 +840,48 @@
                                         <Label FontSize="{StaticResource FontSizeSmall}" Opacity="0.5" Text="{Binding OffsetRateNote}" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
                                     </VerticalStackLayout>
                                 </Border>
+
+                                <!--  Chart: Balance payoff trajectory — without vs with offset  -->
+                                <Border
+                                    Margin="0,2,0,0"
+                                    Padding="8,8,8,4"
+                                    BackgroundColor="{DynamicResource LoanAppChartCardBackground}"
+                                    StrokeShape="RoundRectangle 8"
+                                    StrokeThickness="0">
+                                    <Grid>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="200"/>
+                                        </Grid.RowDefinitions>
+                                        <Label Grid.Row="0" Text="Loan Balance Over Time" FontSize="{StaticResource FontSizeXS}" TextColor="{DynamicResource LoanAppChartAxisTextColor}" Opacity="0.7" Margin="0,0,0,2"/>
+                                        <chart:SfCartesianChart Grid.Row="1">
+                                            <chart:SfCartesianChart.Legend>
+                                                <chart:ChartLegend Placement="Bottom" LabelStyle="{chart:ChartLegendLabelStyle TextColor={DynamicResource LoanAppChartLegendTextColor}, FontSize=10}"/>
+                                            </chart:SfCartesianChart.Legend>
+                                            <chart:SfCartesianChart.XAxes>
+                                                <chart:NumericalAxis ShowMajorGridLines="False" LabelStyle="{chart:ChartAxisLabelStyle TextColor={DynamicResource LoanAppChartAxisTextColor}, FontSize=10}"/>
+                                            </chart:SfCartesianChart.XAxes>
+                                            <chart:SfCartesianChart.YAxes>
+                                                <chart:NumericalAxis RangePadding="None" LabelCreated="OnWhatIfAxisLabelCreated" LabelStyle="{chart:ChartAxisLabelStyle TextColor={DynamicResource LoanAppChartAxisTextColor}, FontSize=10}"/>
+                                            </chart:SfCartesianChart.YAxes>
+                                            <chart:SplineSeries ItemsSource="{Binding OffsetWithoutBalanceData}" XBindingPath="Name" YBindingPath="Value" StrokeWidth="2.5" Label="No Offset" LegendIcon="HorizontalLine" Fill="{DynamicResource LoanAppChartColorSeries1}"/>
+                                            <chart:SplineSeries ItemsSource="{Binding OffsetWithBalanceData}" XBindingPath="Name" YBindingPath="Value" StrokeWidth="2.5" Label="With Offset" LegendIcon="HorizontalLine" Fill="{DynamicResource LoanAppChartColorSeries2}"/>
+                                        </chart:SfCartesianChart>
+                                    </Grid>
+                                </Border>
+
+                                <Button
+                                    Text="ⓘ  How does an offset account work?"
+                                    Clicked="OnOffsetInfoTapped"
+                                    BackgroundColor="Transparent"
+                                    BorderColor="{DynamicResource LoanAppDefaultForegroundColor}"
+                                    BorderWidth="0.5"
+                                    CornerRadius="8"
+                                    FontSize="{StaticResource FontSizeSmall}"
+                                    TextColor="{DynamicResource LoanAppDefaultForegroundColor}"
+                                    Opacity="0.6"
+                                    Padding="10,6"
+                                    HorizontalOptions="Start" />
 
                             </VerticalStackLayout>
                         </Grid>
@@ -752,6 +949,45 @@
                                         <Label FontAttributes="Bold" FontSize="{StaticResource FontSizeMedium}" Text="{Binding StressTestCurrentSurplus}" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
                                     </VerticalStackLayout>
 
+                                    <!--  Chart: Rate Capacity  -->
+                                    <Border
+                                        Margin="0,2,0,0"
+                                        Padding="8,8,8,4"
+                                        BackgroundColor="{DynamicResource LoanAppChartCardBackground}"
+                                        StrokeShape="RoundRectangle 8"
+                                        StrokeThickness="0">
+                                        <Grid>
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition Height="160"/>
+                                            </Grid.RowDefinitions>
+                                            <Label Grid.Row="0" Text="Rate Capacity" FontSize="{StaticResource FontSizeXS}" TextColor="{DynamicResource LoanAppChartAxisTextColor}" Opacity="0.7" Margin="0,0,0,2"/>
+                                            <chart:SfCartesianChart Grid.Row="1">
+                                                <chart:SfCartesianChart.XAxes>
+                                                    <chart:CategoryAxis ShowMajorGridLines="False" LabelStyle="{chart:ChartAxisLabelStyle TextColor={DynamicResource LoanAppChartAxisTextColor}, FontSize=10}"/>
+                                                </chart:SfCartesianChart.XAxes>
+                                                <chart:SfCartesianChart.YAxes>
+                                                    <chart:NumericalAxis RangePadding="None" LabelCreated="OnWhatIfRateAxisLabelCreated" LabelStyle="{chart:ChartAxisLabelStyle TextColor={DynamicResource LoanAppChartAxisTextColor}, FontSize=10}"/>
+                                                </chart:SfCartesianChart.YAxes>
+                                                <chart:ColumnSeries ItemsSource="{Binding StressTestChartData}" XBindingPath="Name" YBindingPath="Value" Fill="#CC3333"/>
+                                            </chart:SfCartesianChart>
+                                        </Grid>
+                                    </Border>
+
+                                    <!--  Explainer info button  -->
+                                    <Button
+                                        Text="ⓘ  How is this calculated?"
+                                        Clicked="OnStressTestInfoTapped"
+                                        BackgroundColor="Transparent"
+                                        BorderColor="{DynamicResource LoanAppDefaultForegroundColor}"
+                                        BorderWidth="0.5"
+                                        CornerRadius="8"
+                                        FontSize="{StaticResource FontSizeSmall}"
+                                        TextColor="{DynamicResource LoanAppDefaultForegroundColor}"
+                                        Opacity="0.6"
+                                        Padding="10,6"
+                                        HorizontalOptions="Start" />
+
                                     <!--  Risk banner  -->
                                     <Border Padding="10,8" StrokeShape="RoundRectangle 8" StrokeThickness="0" BackgroundColor="{DynamicResource LoanAppChartColor1}">
                                         <Border.Triggers>
@@ -779,6 +1015,191 @@
                                         </Label>
                                     </Border>
                                 </VerticalStackLayout>
+
+                            </VerticalStackLayout>
+                        </Grid>
+                    </Border>
+
+                    <!--  ── Card 9: Combined Strategy ────────────────────  -->
+                    <Border
+                        IsVisible="{Binding HasLoanData}"
+                        Margin="0,0,0,14"
+                        Padding="0"
+                        BackgroundColor="{DynamicResource LoanAppPopupSurface}"
+                        StrokeShape="RoundRectangle 12"
+                        StrokeThickness="0">
+                        <Grid ColumnDefinitions="4,*">
+                            <BoxView Grid.Column="0" BackgroundColor="{DynamicResource LoanAppChartColorSeries3}" CornerRadius="12,0,12,0" />
+                            <VerticalStackLayout Grid.Column="1" Padding="14,14,14,16" Spacing="10">
+
+                                <Label FontAttributes="Bold" FontSize="{StaticResource FontSizeMedium}" Text="Combined Strategy" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                                <Label Margin="0,-6,0,0" FontSize="{StaticResource FontSizeSmall}" Opacity="0.6" Text="Combine multiple strategies and see the full impact" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+
+                                <BoxView HeightRequest="1" Opacity="0.08" Color="{DynamicResource LoanAppDefaultForegroundColor}" />
+
+                                <!--  Frequency row  -->
+                                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="8">
+                                    <CheckBox Grid.Column="0" IsChecked="{Binding CombinedUseFrequency}" Color="{DynamicResource LoanAppChartColorSeries3}" VerticalOptions="Center" />
+                                    <VerticalStackLayout Grid.Column="1" Spacing="6">
+                                        <Label Text="Repayment Frequency" FontSize="{StaticResource FontSizeSmall}" Opacity="0.8" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" VerticalOptions="Center" />
+                                        <HorizontalStackLayout Spacing="6">
+                                            <Border Padding="10,5" StrokeShape="RoundRectangle 8" StrokeThickness="1" Stroke="{DynamicResource LoanAppChartColorSeries3}" BackgroundColor="Transparent">
+                                                <Border.GestureRecognizers><TapGestureRecognizer Tapped="OnCombinedFreqMonthly"/></Border.GestureRecognizers>
+                                                <Border.Triggers>
+                                                    <DataTrigger Binding="{Binding CombinedFrequencyIndex}" TargetType="Border" Value="0">
+                                                        <Setter Property="BackgroundColor" Value="{DynamicResource LoanAppChartColorSeries3}"/>
+                                                    </DataTrigger>
+                                                </Border.Triggers>
+                                                <Label Text="Monthly" FontSize="{StaticResource FontSizeSmall}" TextColor="{DynamicResource LoanAppDefaultForegroundColor}">
+                                                    <Label.Triggers>
+                                                        <DataTrigger Binding="{Binding CombinedFrequencyIndex}" TargetType="Label" Value="0">
+                                                            <Setter Property="TextColor" Value="White"/>
+                                                        </DataTrigger>
+                                                    </Label.Triggers>
+                                                </Label>
+                                            </Border>
+                                            <Border Padding="10,5" StrokeShape="RoundRectangle 8" StrokeThickness="1" Stroke="{DynamicResource LoanAppChartColorSeries3}" BackgroundColor="Transparent">
+                                                <Border.GestureRecognizers><TapGestureRecognizer Tapped="OnCombinedFreqFortnightly"/></Border.GestureRecognizers>
+                                                <Border.Triggers>
+                                                    <DataTrigger Binding="{Binding CombinedFrequencyIndex}" TargetType="Border" Value="1">
+                                                        <Setter Property="BackgroundColor" Value="{DynamicResource LoanAppChartColorSeries3}"/>
+                                                    </DataTrigger>
+                                                </Border.Triggers>
+                                                <Label Text="Fortnightly" FontSize="{StaticResource FontSizeSmall}" TextColor="{DynamicResource LoanAppDefaultForegroundColor}">
+                                                    <Label.Triggers>
+                                                        <DataTrigger Binding="{Binding CombinedFrequencyIndex}" TargetType="Label" Value="1">
+                                                            <Setter Property="TextColor" Value="White"/>
+                                                        </DataTrigger>
+                                                    </Label.Triggers>
+                                                </Label>
+                                            </Border>
+                                            <Border Padding="10,5" StrokeShape="RoundRectangle 8" StrokeThickness="1" Stroke="{DynamicResource LoanAppChartColorSeries3}" BackgroundColor="Transparent">
+                                                <Border.GestureRecognizers><TapGestureRecognizer Tapped="OnCombinedFreqWeekly"/></Border.GestureRecognizers>
+                                                <Border.Triggers>
+                                                    <DataTrigger Binding="{Binding CombinedFrequencyIndex}" TargetType="Border" Value="2">
+                                                        <Setter Property="BackgroundColor" Value="{DynamicResource LoanAppChartColorSeries3}"/>
+                                                    </DataTrigger>
+                                                </Border.Triggers>
+                                                <Label Text="Weekly" FontSize="{StaticResource FontSizeSmall}" TextColor="{DynamicResource LoanAppDefaultForegroundColor}">
+                                                    <Label.Triggers>
+                                                        <DataTrigger Binding="{Binding CombinedFrequencyIndex}" TargetType="Label" Value="2">
+                                                            <Setter Property="TextColor" Value="White"/>
+                                                        </DataTrigger>
+                                                    </Label.Triggers>
+                                                </Label>
+                                            </Border>
+                                        </HorizontalStackLayout>
+                                        <Label Text="{Binding CombinedFrequencyPayment}" FontSize="{StaticResource FontSizeSmall}" FontAttributes="Bold" TextColor="{DynamicResource LoanAppChartColorSeries3}" />
+                                    </VerticalStackLayout>
+                                </Grid>
+
+                                <!--  Extra repayment row  -->
+                                <Grid ColumnDefinitions="Auto,80,*" ColumnSpacing="8" VerticalOptions="Center">
+                                    <CheckBox Grid.Column="0" IsChecked="{Binding CombinedUseExtra}" Color="{DynamicResource LoanAppChartColorSeries3}" VerticalOptions="Center" />
+                                    <Label Grid.Column="1" Text="Extra repay" FontSize="{StaticResource FontSizeSmall}" Opacity="0.8" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" VerticalOptions="Center" />
+                                    <Border Grid.Column="2" Padding="2,1" BackgroundColor="{DynamicResource LoanAppDefaultBackgroundColor}" StrokeShape="RoundRectangle 20" StrokeThickness="0" HorizontalOptions="Start">
+                                        <HorizontalStackLayout Spacing="2" VerticalOptions="Center">
+                                            <Button Text="−" Clicked="OnCombinedExtraDecrease" BackgroundColor="Transparent" FontAttributes="Bold" FontSize="{StaticResource FontSizeXL}" TextColor="{DynamicResource LoanAppChartColorSeries3}" WidthRequest="34" />
+                                            <Label Text="{Binding CombinedExtraDisplay}" FontAttributes="Bold" FontSize="{StaticResource FontSizeSmall}" MinimumWidthRequest="80" HorizontalTextAlignment="Center" TextColor="{DynamicResource LoanAppChartColorSeries3}" VerticalOptions="Center" />
+                                            <Button Text="+" Clicked="OnCombinedExtraIncrease" BackgroundColor="Transparent" FontAttributes="Bold" FontSize="{StaticResource FontSizeXL}" TextColor="{DynamicResource LoanAppChartColorSeries3}" WidthRequest="34" />
+                                        </HorizontalStackLayout>
+                                    </Border>
+                                </Grid>
+
+                                <!--  Lump sum row  -->
+                                <Grid ColumnDefinitions="Auto,80,*" ColumnSpacing="8" VerticalOptions="Center">
+                                    <CheckBox Grid.Column="0" IsChecked="{Binding CombinedUseLumpSum}" Color="{DynamicResource LoanAppChartColorSeries3}" VerticalOptions="Center" />
+                                    <Label Grid.Column="1" Text="Lump sum" FontSize="{StaticResource FontSizeSmall}" Opacity="0.8" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" VerticalOptions="Center" />
+                                    <Border Grid.Column="2" Padding="2,1" BackgroundColor="{DynamicResource LoanAppDefaultBackgroundColor}" StrokeShape="RoundRectangle 20" StrokeThickness="0" HorizontalOptions="Start">
+                                        <HorizontalStackLayout Spacing="2" VerticalOptions="Center">
+                                            <Button Text="−" Clicked="OnCombinedLumpDecrease" BackgroundColor="Transparent" FontAttributes="Bold" FontSize="{StaticResource FontSizeXL}" TextColor="{DynamicResource LoanAppChartColorSeries3}" WidthRequest="34" />
+                                            <Label Text="{Binding CombinedLumpDisplay}" FontAttributes="Bold" FontSize="{StaticResource FontSizeSmall}" MinimumWidthRequest="80" HorizontalTextAlignment="Center" TextColor="{DynamicResource LoanAppChartColorSeries3}" VerticalOptions="Center" />
+                                            <Button Text="+" Clicked="OnCombinedLumpIncrease" BackgroundColor="Transparent" FontAttributes="Bold" FontSize="{StaticResource FontSizeXL}" TextColor="{DynamicResource LoanAppChartColorSeries3}" WidthRequest="34" />
+                                        </HorizontalStackLayout>
+                                    </Border>
+                                </Grid>
+
+                                <!--  Offset row  -->
+                                <Grid ColumnDefinitions="Auto,80,*" ColumnSpacing="8" VerticalOptions="Center">
+                                    <CheckBox Grid.Column="0" IsChecked="{Binding CombinedUseOffset}" Color="{DynamicResource LoanAppChartColorSeries3}" VerticalOptions="Center" />
+                                    <Label Grid.Column="1" Text="Offset" FontSize="{StaticResource FontSizeSmall}" Opacity="0.8" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" VerticalOptions="Center" />
+                                    <VerticalStackLayout Grid.Column="2" Spacing="4">
+                                        <Border Padding="2,1" BackgroundColor="{DynamicResource LoanAppDefaultBackgroundColor}" StrokeShape="RoundRectangle 20" StrokeThickness="0" HorizontalOptions="Start">
+                                            <HorizontalStackLayout Spacing="2" VerticalOptions="Center">
+                                                <Button Text="−" Clicked="OnCombinedOffsetDecrease" BackgroundColor="Transparent" FontAttributes="Bold" FontSize="{StaticResource FontSizeXL}" TextColor="{DynamicResource LoanAppChartColorSeries3}" WidthRequest="34" />
+                                                <Label Text="{Binding CombinedOffsetDisplay}" FontAttributes="Bold" FontSize="{StaticResource FontSizeSmall}" MinimumWidthRequest="80" HorizontalTextAlignment="Center" TextColor="{DynamicResource LoanAppChartColorSeries3}" VerticalOptions="Center" />
+                                                <Button Text="+" Clicked="OnCombinedOffsetIncrease" BackgroundColor="Transparent" FontAttributes="Bold" FontSize="{StaticResource FontSizeXL}" TextColor="{DynamicResource LoanAppChartColorSeries3}" WidthRequest="34" />
+                                            </HorizontalStackLayout>
+                                        </Border>
+                                        <!--  Offset interest rate stepper  -->
+                                        <Border Padding="2,1" BackgroundColor="{DynamicResource LoanAppDefaultBackgroundColor}" StrokeShape="RoundRectangle 20" StrokeThickness="0" HorizontalOptions="Start">
+                                            <HorizontalStackLayout Spacing="2" VerticalOptions="Center">
+                                                <Label Text="Rate:" FontSize="{StaticResource FontSizeXS}" Opacity="0.6" Margin="6,0,0,0" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" VerticalOptions="Center" />
+                                                <Button Text="−" Clicked="OnCombinedOffsetRateDecrease" BackgroundColor="Transparent" FontAttributes="Bold" FontSize="{StaticResource FontSizeXL}" TextColor="{DynamicResource LoanAppChartColorSeries3}" WidthRequest="34" />
+                                                <Label Text="{Binding CombinedOffsetRate, StringFormat='{0:0.00}%'}" FontAttributes="Bold" FontSize="{StaticResource FontSizeSmall}" MinimumWidthRequest="60" HorizontalTextAlignment="Center" TextColor="{DynamicResource LoanAppChartColorSeries3}" VerticalOptions="Center" />
+                                                <Button Text="+" Clicked="OnCombinedOffsetRateIncrease" BackgroundColor="Transparent" FontAttributes="Bold" FontSize="{StaticResource FontSizeXL}" TextColor="{DynamicResource LoanAppChartColorSeries3}" WidthRequest="34" />
+                                            </HorizontalStackLayout>
+                                        </Border>
+                                    </VerticalStackLayout>
+                                </Grid>
+
+                                <BoxView HeightRequest="1" Opacity="0.08" Color="{DynamicResource LoanAppDefaultForegroundColor}" />
+
+                                <!--  KPI tiles — 3 columns  -->
+                                <Grid ColumnSpacing="8">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <Border Grid.Column="0" Padding="10,8" BackgroundColor="{DynamicResource LoanAppChartColorSeries3}" StrokeShape="RoundRectangle 8" StrokeThickness="0">
+                                        <VerticalStackLayout Spacing="2">
+                                            <Label FontSize="{StaticResource FontSizeXS}" Opacity="0.85" Text="TIME SAVED" TextColor="White" />
+                                            <Label FontAttributes="Bold" FontSize="{StaticResource FontSizeLarge}" Text="{Binding CombinedTimeSaved}" TextColor="White" />
+                                        </VerticalStackLayout>
+                                    </Border>
+                                    <Border Grid.Column="1" Padding="10,8" BackgroundColor="{DynamicResource LoanAppChartColorSeries3}" StrokeShape="RoundRectangle 8" StrokeThickness="0">
+                                        <VerticalStackLayout Spacing="2">
+                                            <Label FontSize="{StaticResource FontSizeXS}" Opacity="0.85" Text="INT. SAVED" TextColor="White" />
+                                            <Label FontAttributes="Bold" FontSize="{StaticResource FontSizeLarge}" Text="{Binding CombinedInterestSaved}" TextColor="White" />
+                                        </VerticalStackLayout>
+                                    </Border>
+                                    <Border Grid.Column="2" Padding="10,8" BackgroundColor="{DynamicResource LoanAppDefaultBackgroundColor}" StrokeShape="RoundRectangle 8" StrokeThickness="0">
+                                        <VerticalStackLayout Spacing="2">
+                                            <Label FontSize="{StaticResource FontSizeXS}" Opacity="0.6" Text="PAID OFF IN" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                                            <Label FontAttributes="Bold" FontSize="{StaticResource FontSizeLarge}" Text="{Binding CombinedNewTerm}" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                                        </VerticalStackLayout>
+                                    </Border>
+                                </Grid>
+
+                                <!--  Chart: Baseline vs Combined balance  -->
+                                <Border
+                                    Margin="0,2,0,0"
+                                    Padding="8,8,8,4"
+                                    BackgroundColor="{DynamicResource LoanAppChartCardBackground}"
+                                    StrokeShape="RoundRectangle 8"
+                                    StrokeThickness="0">
+                                    <Grid>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="220"/>
+                                        </Grid.RowDefinitions>
+                                        <Label Grid.Row="0" Text="Loan Balance Over Time" FontSize="{StaticResource FontSizeXS}" TextColor="{DynamicResource LoanAppChartAxisTextColor}" Opacity="0.7" Margin="0,0,0,2"/>
+                                        <chart:SfCartesianChart Grid.Row="1">
+                                            <chart:SfCartesianChart.Legend>
+                                                <chart:ChartLegend Placement="Bottom" LabelStyle="{chart:ChartLegendLabelStyle TextColor={DynamicResource LoanAppChartLegendTextColor}, FontSize=10}"/>
+                                            </chart:SfCartesianChart.Legend>
+                                            <chart:SfCartesianChart.XAxes>
+                                                <chart:NumericalAxis ShowMajorGridLines="False" LabelStyle="{chart:ChartAxisLabelStyle TextColor={DynamicResource LoanAppChartAxisTextColor}, FontSize=10}"/>
+                                            </chart:SfCartesianChart.XAxes>
+                                            <chart:SfCartesianChart.YAxes>
+                                                <chart:NumericalAxis LabelCreated="OnWhatIfAxisLabelCreated" LabelStyle="{chart:ChartAxisLabelStyle TextColor={DynamicResource LoanAppChartAxisTextColor}, FontSize=10}"/>
+                                            </chart:SfCartesianChart.YAxes>
+                                            <chart:SplineSeries ItemsSource="{Binding CombinedBaselineData}" XBindingPath="Name" YBindingPath="Value" StrokeWidth="2.5" Label="Baseline" LegendIcon="HorizontalLine" Fill="{DynamicResource LoanAppChartColorSeries1}"/>
+                                            <chart:SplineSeries ItemsSource="{Binding CombinedStrategyData}" XBindingPath="Name" YBindingPath="Value" StrokeWidth="2.5" Label="Combined" LegendIcon="HorizontalLine" Fill="{DynamicResource LoanAppChartColorSeries3}"/>
+                                        </chart:SfCartesianChart>
+                                    </Grid>
+                                </Border>
 
                             </VerticalStackLayout>
                         </Grid>

@@ -154,12 +154,22 @@
     <Color x:Key="LoanAppChartDataMarkerTextColor2">#FFF0E0</Color>
     <Color x:Key="LoanAppChartColor3">#883068</Color>
     <Color x:Key="LoanAppChartDataMarkerTextColor3">#F5E0F0</Color>
+    <Color x:Key="LoanAppChartCardBackground">#FBEDED</Color>
+    <Color x:Key="LoanAppChartColorSeries1">#1A8272</Color>
+    <Color x:Key="LoanAppChartColorSeries2">#9E6210</Color>
+    <Color x:Key="LoanAppChartColorSeries3">#883068</Color>
 
     <!--  Borders  -->
     <Color x:Key="LoanAppBorderTopGradientOuterLineStart">#E0B8B8</Color>
     <Color x:Key="LoanAppBorderTopGradientOuterLineEnd">#C2706B</Color>
     <Color x:Key="LoanAppBorderTopGradientBackgroundStart">#FBEDED</Color>
     <Color x:Key="LoanAppBorderTopGradientBackgroundEnd">#F6E0E0</Color>
+    <!--  Danger (negative affordability) box — deeper rose on warm theme  -->
+    <Color x:Key="LoanAppBorderTopDangerOuterLineStart">#C04040</Color>
+    <Color x:Key="LoanAppBorderTopDangerOuterLineEnd">#8F2525</Color>
+    <Color x:Key="LoanAppBorderTopDangerBackgroundStart">#F5C0C0</Color>
+    <Color x:Key="LoanAppBorderTopDangerBackgroundEnd">#FBDEDE</Color>
+    <Color x:Key="LoanAppBorderTopDangerFgColor">#5C1010</Color>
 
     <!--  Border controls box styles  -->
     <Color x:Key="LoanAppBorderControlGradientBorderLineStart">#E0B8B8</Color>
@@ -275,6 +285,14 @@
     <LinearGradientBrush x:Key="BorderTopBackgroundGradientBrush" StartPoint="0,0" EndPoint="1,1">
         <GradientStop Offset="0.0" Color="{StaticResource LoanAppBorderTopGradientBackgroundStart}" />
         <GradientStop Offset="1.0" Color="{StaticResource LoanAppBorderTopGradientBackgroundEnd}" />
+    </LinearGradientBrush>
+    <LinearGradientBrush x:Key="BorderTopDangerGradientBrush" StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Offset="0.0" Color="{StaticResource LoanAppBorderTopDangerOuterLineStart}" />
+        <GradientStop Offset="1.0" Color="{StaticResource LoanAppBorderTopDangerOuterLineEnd}" />
+    </LinearGradientBrush>
+    <LinearGradientBrush x:Key="BorderTopDangerBackgroundGradientBrush" StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Offset="0.0" Color="{StaticResource LoanAppBorderTopDangerBackgroundStart}" />
+        <GradientStop Offset="1.0" Color="{StaticResource LoanAppBorderTopDangerBackgroundEnd}" />
     </LinearGradientBrush>
 
     <!--  Border controls box styles  -->

@@ -199,11 +199,15 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
             {
                 _projectionYears = value;
                 OnPropertyChanged(nameof(ProjectionYears));
+                OnPropertyChanged(nameof(ChartProjectionSubtitle));
                 Income.TotalYearsToProject = value;
                 Expense.TotalYearsToProject = value;
                 RecalculateProjection();
             }
         }
+
+        [JsonIgnore] public string ChartProjectionSubtitle =>
+            $"Projected over {ProjectionYears} yr{(ProjectionYears == 1 ? "" : "s")}";
 
         [JsonIgnore] private ObservableCollection<ChartDataModel> _projectionIncomeAxis = new();
         [JsonIgnore] private ObservableCollection<ChartDataModel> _projectionExpenseAxis = new();
@@ -260,8 +264,8 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
 
             // Update donut chart slices
             _summaryDonutData.Clear();
-            _summaryDonutData.Add(new ChartDataModel("Income", TotalIncomeMonthly));
-            _summaryDonutData.Add(new ChartDataModel("Expenses", TotalExpenseMonthly));
+            _summaryDonutData.Add(new ChartDataModel("Monthly Income", TotalIncomeMonthly));
+            _summaryDonutData.Add(new ChartDataModel("Monthly Expenses", TotalExpenseMonthly));
             OnPropertyChanged(nameof(SummaryDonutData));
         }
 

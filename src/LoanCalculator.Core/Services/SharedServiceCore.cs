@@ -40,14 +40,17 @@ namespace LoanCalculator.Core.Services
         public static bool IsIncomeDirty { get; private set; }
         public static bool IsExpenseDirty { get; private set; }
         public static bool IsLoanDirty { get; private set; }
+        public static bool IsCurrencyDirty { get; private set; }
 
         public static void MarkIncomeDirty() => IsIncomeDirty = true;
         public static void MarkExpenseDirty() => IsExpenseDirty = true;
         public static void MarkLoanDirty() => IsLoanDirty = true;
+        public static void MarkCurrencyDirty() => IsCurrencyDirty = true;
 
         public static void ClearIncomeDirty() => IsIncomeDirty = false;
         public static void ClearExpenseDirty() => IsExpenseDirty = false;
         public static void ClearLoanDirty() => IsLoanDirty = false;
+        public static void ClearCurrencyDirty() => IsCurrencyDirty = false;
 
         public static async Task<T?> LoadDataFile<T>()
         {

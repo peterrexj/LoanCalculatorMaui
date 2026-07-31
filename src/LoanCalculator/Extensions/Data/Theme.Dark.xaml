@@ -136,10 +136,11 @@
     <Color x:Key="LoanAppExportButtonFgColor">#222831</Color>
 
     <!--  Charts — distinct pastels (teal / amber / violet) on the dark bg  -->
-    <Color x:Key="LoanAppChartAxisTextColor">#C9D8E2</Color>
-    <Color x:Key="LoanAppChartLegendTextColor">#C9D8E2</Color>
-    <Color x:Key="LoanAppChartTitleTextColor">#DDE6ED</Color>
-    <Color x:Key="LoanAppChartDataMarkerTextColor">#DDE6ED</Color>
+    <!--  Axis/legend text must be dark: the chart card background is light (#DDE6ED)  -->
+    <Color x:Key="LoanAppChartAxisTextColor">#27374D</Color>
+    <Color x:Key="LoanAppChartLegendTextColor">#27374D</Color>
+    <Color x:Key="LoanAppChartTitleTextColor">#27374D</Color>
+    <Color x:Key="LoanAppChartDataMarkerTextColor">#27374D</Color>
     <Color x:Key="LoanAppDonutCenterTextColor">#27374D</Color>
     <Color x:Key="LoanAppChartOuterBorderGradientStart">#526D82</Color>
     <Color x:Key="LoanAppChartOuterBorderGradientEnd">#9DB2BF</Color>
@@ -151,12 +152,22 @@
     <Color x:Key="LoanAppChartDataMarkerTextColor2">#3A2A10</Color>
     <Color x:Key="LoanAppChartColor3">#A98FD0</Color>
     <Color x:Key="LoanAppChartDataMarkerTextColor3">#241733</Color>
+    <Color x:Key="LoanAppChartCardBackground">#DDE6ED</Color>
+    <Color x:Key="LoanAppChartColorSeries1">#5FBDB0</Color>
+    <Color x:Key="LoanAppChartColorSeries2">#E0A85A</Color>
+    <Color x:Key="LoanAppChartColorSeries3">#A98FD0</Color>
 
     <!--  Borders  -->
     <Color x:Key="LoanAppBorderTopGradientOuterLineStart">#393E46</Color>
     <Color x:Key="LoanAppBorderTopGradientOuterLineEnd">#222831</Color>
     <Color x:Key="LoanAppBorderTopGradientBackgroundStart">#9DB2BF</Color>
     <Color x:Key="LoanAppBorderTopGradientBackgroundEnd">#DDE6ED</Color>
+    <!--  Danger (negative affordability) box — soft pastel rose on dark  -->
+    <Color x:Key="LoanAppBorderTopDangerOuterLineStart">#5C2B2B</Color>
+    <Color x:Key="LoanAppBorderTopDangerOuterLineEnd">#3D1A1A</Color>
+    <Color x:Key="LoanAppBorderTopDangerBackgroundStart">#C97A7A</Color>
+    <Color x:Key="LoanAppBorderTopDangerBackgroundEnd">#E8AEAE</Color>
+    <Color x:Key="LoanAppBorderTopDangerFgColor">#3D1A1A</Color>
 
     <!--  Border controls box styles  -->
     <Color x:Key="LoanAppBorderControlGradientBorderLineStart">#2D3B4A</Color>
@@ -272,6 +283,14 @@
     <LinearGradientBrush x:Key="BorderTopBackgroundGradientBrush" StartPoint="0,0" EndPoint="1,1">
         <GradientStop Offset="0.0" Color="{StaticResource LoanAppBorderTopGradientBackgroundStart}" />
         <GradientStop Offset="1.0" Color="{StaticResource LoanAppBorderTopGradientBackgroundEnd}" />
+    </LinearGradientBrush>
+    <LinearGradientBrush x:Key="BorderTopDangerGradientBrush" StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Offset="0.0" Color="{StaticResource LoanAppBorderTopDangerOuterLineStart}" />
+        <GradientStop Offset="1.0" Color="{StaticResource LoanAppBorderTopDangerOuterLineEnd}" />
+    </LinearGradientBrush>
+    <LinearGradientBrush x:Key="BorderTopDangerBackgroundGradientBrush" StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Offset="0.0" Color="{StaticResource LoanAppBorderTopDangerBackgroundStart}" />
+        <GradientStop Offset="1.0" Color="{StaticResource LoanAppBorderTopDangerBackgroundEnd}" />
     </LinearGradientBrush>
 
     <!--  Border controls box styles  -->

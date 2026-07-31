@@ -258,8 +258,8 @@ namespace LoanCalculator.UnitTests.Models.ViewModels.PrimaryModels
             _vm.RecalculateSummary();
 
             Assert.That(_vm.SummaryDonutData.Count, Is.EqualTo(2));
-            Assert.That(_vm.SummaryDonutData[0].Name, Is.EqualTo("Income"));
-            Assert.That(_vm.SummaryDonutData[1].Name, Is.EqualTo("Expenses"));
+            Assert.That(_vm.SummaryDonutData[0].Name, Is.EqualTo("Monthly Income"));
+            Assert.That(_vm.SummaryDonutData[1].Name, Is.EqualTo("Monthly Expenses"));
         }
     }
 }

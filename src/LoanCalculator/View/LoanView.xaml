@@ -808,7 +808,7 @@
                                     HeaderText="Disclaimer"
                                     Text="This loan calculator app is intended for informational purposes only and should not be considered a substitute for professional financial advice. It is highly recommended that you consult with your financial adviser before making any financial decisions." />
 
-                                <customControls:ThreeColumnBorderedContentView>
+                                <customControls:ThreeColumnBorderedContentView IsBox3Danger="{Binding IsAffordabilityNegative}">
                                     <customControls:ThreeColumnBorderedContentView.FormattedText1>
                                         <FormattedString>
                                             <Span Style="{DynamicResource SpanThreeBoxAmountStyle}" Text="{Binding CurrencySymbol}" />
@@ -1211,19 +1211,29 @@
                                                         </chart:DoughnutSeries.DataLabelSettings>
 
                                                         <chart:DoughnutSeries.CenterView>
-                                                            <StackLayout HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
-                                                                <Label>
+                                                            <StackLayout
+                                                                HorizontalOptions="Center"
+                                                                Spacing="1"
+                                                                VerticalOptions="Center">
+                                                                <Label
+                                                                    FontFamily="{DynamicResource DefaultFontFamily}"
+                                                                    FontSize="{StaticResource FontSizeXS}"
+                                                                    HorizontalTextAlignment="Center"
+                                                                    Opacity="0.6"
+                                                                    Text="TOTAL REPAID"
+                                                                    TextColor="{DynamicResource LoanAppChartDataMarkerTextColor}" />
+                                                                <Label HorizontalTextAlignment="Center">
                                                                     <Label.FormattedText>
                                                                         <FormattedString>
                                                                             <Span
                                                                                 FontAttributes="Bold"
-                                                                                FontSize="{StaticResource FontSizeXS}"
-                                                                                Text="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.CurrencySymbol}"
+                                                                                FontSize="{StaticResource FontSizeSmall}"
+                                                                                Text="{Binding Source={x:Reference thisPage}, Path=BindingContext.CurrencySymbol}"
                                                                                 TextColor="{DynamicResource LoanAppChartDataMarkerTextColor}" />
                                                                             <Span
                                                                                 FontAttributes="Bold"
-                                                                                FontSize="{StaticResource FontSizeXS}"
-                                                                                Text="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.TotalPaymentRoundedWithComma}"
+                                                                                FontSize="{StaticResource FontSizeSmall}"
+                                                                                Text="{Binding Source={x:Reference thisPage}, Path=BindingContext.TotalPaymentRoundedWithComma}"
                                                                                 TextColor="{DynamicResource LoanAppChartDataMarkerTextColor}" />
                                                                         </FormattedString>
                                                                     </Label.FormattedText>
@@ -1235,6 +1245,15 @@
                                             </chart:SfCircularChart>
                                         </Border.Content>
                                     </Border>
+                                    <Label
+                                        Margin="0,4,0,12"
+                                        FontFamily="{DynamicResource DefaultFontFamily}"
+                                        FontSize="{StaticResource FontSizeXS}"
+                                        HorizontalOptions="Center"
+                                        HorizontalTextAlignment="Center"
+                                        Opacity="0.5"
+                                        Text="{Binding ChartTotalCostSubtitle}"
+                                        TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
                                 </FlexLayout>
                             </StackLayout>
                         </ScrollView>
@@ -1296,14 +1315,6 @@
 
                                 <StackLayout Grid.Row="0">
 
-                                    <buttons:SfSegmentedControl
-                                        x:Name="AmortizationBreadDownFrequencySegmentCtrl"
-                                        Margin="{StaticResource MarginSection}"
-                                        ItemsSource="{Binding AmortizationBreakdownFrequencyCollection}"
-                                        SelectedIndex="{Binding AmortizationBreakdownFrequencySelectedIndex, Mode=TwoWay}"
-                                        Style="{DynamicResource SegmentDefaultStyle}"
-                                        VisibleSegmentsCount="2" />
-
                                     <FlexLayout
                                         Margin="0"
                                         AlignItems="Stretch"
@@ -1311,26 +1322,47 @@
                                         JustifyContent="Center">
                                         <Border Style="{DynamicResource LoanAppChartBorderStyle}">
                                             <Border.Content>
-                                                <Grid
-                                                    Padding="10"
-                                                    HorizontalOptions="Fill"
-                                                    VerticalOptions="Fill">
+                                                <Grid Padding="8,8,8,4">
+                                                    <Grid.RowDefinitions>
+                                                        <RowDefinition Height="Auto" />
+                                                        <RowDefinition Height="*" />
+                                                    </Grid.RowDefinitions>
+                                                    <!--  Axis titles row  -->
+                                                    <Grid Grid.Row="0" Margin="0,0,0,4">
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="*" />
+                                                            <ColumnDefinition Width="*" />
+                                                        </Grid.ColumnDefinitions>
+                                                        <Label
+                                                            Grid.Column="0"
+                                                            FontAttributes="Bold"
+                                                            FontFamily="{DynamicResource DefaultFontFamily}"
+                                                            FontSize="{StaticResource FontSizeXS}"
+                                                            HorizontalOptions="Start"
+                                                            HorizontalTextAlignment="Start"
+                                                            Opacity="0.7"
+                                                            Text="Annual Repayment"
+                                                            TextColor="{DynamicResource LoanAppChartAxisTextColor}" />
+                                                        <Label
+                                                            Grid.Column="1"
+                                                            FontAttributes="Bold"
+                                                            FontFamily="{DynamicResource DefaultFontFamily}"
+                                                            FontSize="{StaticResource FontSizeXS}"
+                                                            HorizontalOptions="End"
+                                                            HorizontalTextAlignment="End"
+                                                            Opacity="0.7"
+                                                            Text="Remaining Balance"
+                                                            TextColor="{DynamicResource LoanAppChartAxisTextColor}" />
+                                                    </Grid>
                                                     <chart:SfCartesianChart
+                                                        Grid.Row="1"
                                                         BackgroundColor="Transparent"
-                                                        HorizontalOptions="FillAndExpand"
-                                                        IsVisible="{Binding IsAmortizationYearBased}"
+                                                        HorizontalOptions="Fill"
                                                         PaletteBrushes="{Binding CustomChartColors}"
-                                                        VerticalOptions="FillAndExpand">
-                                                        <chart:SfCartesianChart.Margin>
-                                                            <OnPlatform x:TypeArguments="Thickness">
-                                                                <On Platform="Windows" Value="0,0,20,0" />
-                                                                <On Platform="Android" Value="0,0,20,0" />
-                                                                <On Platform="iOS" Value="0,0,20,0" />
-                                                            </OnPlatform>
-                                                        </chart:SfCartesianChart.Margin>
-
+                                                        VerticalOptions="Fill">
                                                         <chart:SfCartesianChart.XAxes>
                                                             <chart:CategoryAxis
+                                                                Name="xAxis"
                                                                 EdgeLabelsDrawingMode="Fit"
                                                                 LabelPlacement="BetweenTicks"
                                                                 ShowMajorGridLines="False">
@@ -1347,7 +1379,8 @@
                                                             </chart:CategoryAxis>
                                                         </chart:SfCartesianChart.XAxes>
                                                         <chart:SfCartesianChart.YAxes>
-                                                            <chart:NumericalAxis>
+                                                            <!--  Left axis: per-year principal + interest amounts  -->
+                                                            <chart:NumericalAxis Name="leftAxis" LabelCreated="OnAmortizationAxisLabelCreated" RangePadding="None">
                                                                 <chart:NumericalAxis.LabelStyle>
                                                                     <chart:ChartAxisLabelStyle
                                                                         FontAttributes="Bold"
@@ -1361,7 +1394,28 @@
                                                                 <chart:NumericalAxis.MajorTickStyle>
                                                                     <chart:ChartAxisTickStyle TickSize="0" />
                                                                 </chart:NumericalAxis.MajorTickStyle>
-
+                                                            </chart:NumericalAxis>
+                                                            <!--  Right axis: remaining balance line — CrossesAt max of xAxis pushes it to the right edge  -->
+                                                            <chart:NumericalAxis
+                                                                Name="rightAxis"
+                                                                CrossAxisName="xAxis"
+                                                                CrossesAt="1.7976931348623157E+308"
+                                                                LabelCreated="OnAmortizationAxisLabelCreated"
+                                                                RenderNextToCrossingValue="True"
+                                                                ShowMajorGridLines="False">
+                                                                <chart:NumericalAxis.LabelStyle>
+                                                                    <chart:ChartAxisLabelStyle
+                                                                        FontAttributes="Bold"
+                                                                        FontFamily="{DynamicResource DefaultFontFamily}"
+                                                                        FontSize="{StaticResource FontSizeBody}"
+                                                                        TextColor="{DynamicResource LoanAppChartAxisTextColor}" />
+                                                                </chart:NumericalAxis.LabelStyle>
+                                                                <chart:NumericalAxis.AxisLineStyle>
+                                                                    <chart:ChartLineStyle StrokeWidth="0" />
+                                                                </chart:NumericalAxis.AxisLineStyle>
+                                                                <chart:NumericalAxis.MajorTickStyle>
+                                                                    <chart:ChartAxisTickStyle TickSize="0" />
+                                                                </chart:NumericalAxis.MajorTickStyle>
                                                             </chart:NumericalAxis>
                                                         </chart:SfCartesianChart.YAxes>
                                                         <chart:SfCartesianChart.Legend>
@@ -1381,6 +1435,7 @@
                                                                 Label="Principal"
                                                                 LegendIcon="Rectangle"
                                                                 XBindingPath="Name"
+                                                                YAxisName="leftAxis"
                                                                 YBindingPath="Value" />
                                                             <chart:StackingColumnSeries
                                                                 EnableAnimation="True"
@@ -1388,88 +1443,31 @@
                                                                 Label="Interest"
                                                                 LegendIcon="Rectangle"
                                                                 XBindingPath="Name"
+                                                                YAxisName="leftAxis"
                                                                 YBindingPath="Value" />
-                                                        </chart:SfCartesianChart.Series>
-                                                    </chart:SfCartesianChart>
-
-                                                    <!--  HeightRequest="200"  -->
-                                                    <chart:SfCartesianChart
-                                                        BackgroundColor="Transparent"
-                                                        HorizontalOptions="FillAndExpand"
-                                                        IsVisible="{Binding IsAmortizationTermBased}"
-                                                        PaletteBrushes="{Binding CustomChartColors}"
-                                                        VerticalOptions="FillAndExpand">
-                                                        <!--<chart:SfCartesianChart.Title>
-                                                        <Label
-                                                            BackgroundColor="Transparent"
-                                                            FontSize="{StaticResource FontSizeSmall}"
-                                                            Text="Loan repayment breakdown"
-                                                            TextColor="{DynamicResource LoanAppChartTitleTextColor}" />
-                                                    </chart:SfCartesianChart.Title>-->
-                                                        <chart:SfCartesianChart.XAxes>
-                                                            <chart:CategoryAxis
-                                                                EdgeLabelsDrawingMode="Shift"
-                                                                LabelPlacement="BetweenTicks"
-                                                                ShowMajorGridLines="False">
-                                                                <chart:CategoryAxis.LabelStyle>
-                                                                    <chart:ChartAxisLabelStyle
-                                                                        FontAttributes="Bold"
-                                                                        FontFamily="{DynamicResource DefaultFontFamily}"
-                                                                        FontSize="{StaticResource FontSizeBody}"
-                                                                        TextColor="{DynamicResource LoanAppChartAxisTextColor}" />
-                                                                </chart:CategoryAxis.LabelStyle>
-                                                                <chart:CategoryAxis.MajorTickStyle>
-                                                                    <chart:ChartAxisTickStyle TickSize="0" />
-                                                                </chart:CategoryAxis.MajorTickStyle>
-                                                            </chart:CategoryAxis>
-                                                        </chart:SfCartesianChart.XAxes>
-                                                        <chart:SfCartesianChart.YAxes>
-                                                            <chart:NumericalAxis>
-                                                                <chart:NumericalAxis.LabelStyle>
-                                                                    <chart:ChartAxisLabelStyle
-                                                                        FontAttributes="Bold"
-                                                                        FontFamily="{DynamicResource DefaultFontFamily}"
-                                                                        FontSize="{StaticResource FontSizeBody}"
-                                                                        TextColor="{DynamicResource LoanAppChartAxisTextColor}" />
-                                                                </chart:NumericalAxis.LabelStyle>
-                                                                <chart:NumericalAxis.AxisLineStyle>
-                                                                    <chart:ChartLineStyle StrokeWidth="0" />
-                                                                </chart:NumericalAxis.AxisLineStyle>
-                                                                <chart:NumericalAxis.MajorTickStyle>
-                                                                    <chart:ChartAxisTickStyle TickSize="0" />
-                                                                </chart:NumericalAxis.MajorTickStyle>
-                                                            </chart:NumericalAxis>
-                                                        </chart:SfCartesianChart.YAxes>
-                                                        <chart:SfCartesianChart.Legend>
-                                                            <chart:ChartLegend Placement="Bottom" ToggleSeriesVisibility="True">
-                                                                <chart:ChartLegend.LabelStyle>
-                                                                    <chart:ChartLegendLabelStyle
-                                                                        FontFamily="{DynamicResource DefaultFontFamily}"
-                                                                        FontSize="{StaticResource FontSizeXS}"
-                                                                        TextColor="{DynamicResource LoanAppChartLegendTextColor}" />
-                                                                </chart:ChartLegend.LabelStyle>
-                                                            </chart:ChartLegend>
-                                                        </chart:SfCartesianChart.Legend>
-                                                        <chart:SfCartesianChart.Series>
-                                                            <chart:StackingAreaSeries
+                                                            <chart:SplineSeries
                                                                 EnableAnimation="True"
-                                                                ItemsSource="{Binding AmortizationChartAreaPrincipalAmountAxis}"
-                                                                Label="Principal"
-                                                                LegendIcon="Rectangle"
+                                                                ItemsSource="{Binding AmortizationChartBalanceAxis}"
+                                                                Label="{Binding AmortizationBalanceSubtitle}"
+                                                                LegendIcon="HorizontalLine"
+                                                                StrokeWidth="3"
                                                                 XBindingPath="Name"
-                                                                YBindingPath="Value" />
-                                                            <chart:StackingAreaSeries
-                                                                EnableAnimation="True"
-                                                                ItemsSource="{Binding AmortizationChartAreaInterestAmountAxis}"
-                                                                Label="Interest"
-                                                                LegendIcon="Rectangle"
-                                                                XBindingPath="Name"
+                                                                YAxisName="rightAxis"
                                                                 YBindingPath="Value" />
                                                         </chart:SfCartesianChart.Series>
                                                     </chart:SfCartesianChart>
                                                 </Grid>
                                             </Border.Content>
                                         </Border>
+                                        <Label
+                                            Margin="0,4,0,8"
+                                            FontFamily="{DynamicResource DefaultFontFamily}"
+                                            FontSize="{StaticResource FontSizeXS}"
+                                            HorizontalOptions="Center"
+                                            HorizontalTextAlignment="Center"
+                                            Opacity="0.5"
+                                            Text="Annual repayment breakdown · remaining balance"
+                                            TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
                                     </FlexLayout>
 
                                 </StackLayout>
@@ -2001,7 +1999,7 @@
                                                                 <chart:StackingColumn100Series
                                                                     EnableAnimation="True"
                                                                     ItemsSource="{Binding InsightChartLoanInterestAxis}"
-                                                                    Label="Interest"
+                                                                    Label="{Binding ChartInterestCategoryLabel}"
                                                                     LabelContext="YValue"
                                                                     LegendIcon="Rectangle"
                                                                     ShowDataLabels="True"
@@ -2023,6 +2021,15 @@
                                                                 </chart:StackingColumn100Series>
                                                             </chart:SfCartesianChart.Series>
                                                         </chart:SfCartesianChart>
+                                                        <Label
+                                                            Margin="0,4,0,8"
+                                                            FontFamily="{DynamicResource DefaultFontFamily}"
+                                                            FontSize="{StaticResource FontSizeXS}"
+                                                            HorizontalOptions="Center"
+                                                            HorizontalTextAlignment="Center"
+                                                            Opacity="0.5"
+                                                            Text="{Binding ChartInsightSubtitle}"
+                                                            TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
 
                                                         <customControls:InsightsItemView InsightItem="{Binding InsightsDetails.LoanTerm}" TextColor="{DynamicResource LoanAppInsightsFgColor}" />
                                                         <customControls:InsightsItemView InsightItem="{Binding InsightsDetails.InterestRate}" TextColor="{DynamicResource LoanAppInsightsFgColor}" />

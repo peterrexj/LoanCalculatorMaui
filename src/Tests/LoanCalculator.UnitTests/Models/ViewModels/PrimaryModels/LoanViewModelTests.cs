@@ -199,21 +199,20 @@ namespace LoanCalculator.UnitTests.Models.ViewModels.PrimaryModels
             Assert.That(_vm.RepaymentFrequencySelected, Does.Contain("weekly"));
         }
 
-        // ── IsAmortization mode ───────────────────────────────────────────────
+        // ── Amortization balance subtitle ─────────────────────────────────────
 
         [Test]
-        public void IsAmortizationYearBased_WhenIndexZero_IsTrue()
+        public void AmortizationBalanceSubtitle_ContainsLoanTermInYears()
         {
-            // Set backing int without triggering the full setter (which calls UpdateAmortizationData)
-            // by accessing through the property when already at 0 (default)
-            Assert.That(_vm.IsAmortizationYearBased, Is.True);
+            _vm.HomeLoanInfo.HomeLoanRepaymentRequest.LoanTermInYears = 25;
+            Assert.That(_vm.AmortizationBalanceSubtitle, Does.Contain("25"));
         }
 
         [Test]
-        public void IsAmortizationTermBased_WhenIndexNonZero_IsTrue()
+        public void AmortizationBalanceSubtitle_SingularYear_NoTrailingS()
         {
-            // Directly set backing field would require protected access; test via complementary
-            Assert.That(_vm.IsAmortizationTermBased, Is.Not.EqualTo(_vm.IsAmortizationYearBased));
+            _vm.HomeLoanInfo.HomeLoanRepaymentRequest.LoanTermInYears = 1;
+            Assert.That(_vm.AmortizationBalanceSubtitle, Does.Contain("1 yr").And.Not.Contain("yrs"));
         }
 
         // ── Wizard HasValue ───────────────────────────────────────────────────

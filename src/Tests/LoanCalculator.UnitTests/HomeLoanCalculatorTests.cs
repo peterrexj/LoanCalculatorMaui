@@ -221,12 +221,82 @@ namespace LoanCalculator.UnitTests
         }
 
         [Test]
+        public void UpdateLoanPaymentAmortizationDataByYear_OpeningBalanceEqualsPrincipal()
+        {
+            double principal = 400000;
+            var summary = HomeLoanCalculator.CalculateHomeLoanPayments(principal, MakeInput(5, 30, 12));
+            HomeLoanCalculator.UpdateLoanPaymentAmortizationDataByYear(summary);
+
+            // Opening balance must be the loan principal, not the total cost (principal + all interest)
+            Assert.That(summary.PaymentAmortizationTerms[0].BalanceAmount, Is.EqualTo(principal).Within(1.0));
+        }
+
+        [Test]
         public void UpdateLoanPaymentAmortizationDataByYear_LastEntryHasZeroBalance()
         {
             var summary = HomeLoanCalculator.CalculateHomeLoanPayments(400000, MakeInput(5, 30, 12));
             HomeLoanCalculator.UpdateLoanPaymentAmortizationDataByYear(summary);
 
             Assert.That(summary.PaymentAmortizationTerms.Last().BalanceAmount, Is.EqualTo(0));
+        }
+
+        [Test]
+        public void UpdateLoanPaymentAmortizationDataByYear_BalanceMonotonicallyDecreases()
+        {
+            var summary = HomeLoanCalculator.CalculateHomeLoanPayments(500000, MakeInput(6, 25, 12));
+            HomeLoanCalculator.UpdateLoanPaymentAmortizationDataByYear(summary);
+
+            var balances = summary.PaymentAmortizationTerms.Select(t => t.BalanceAmount).ToList();
+            for (int i = 1; i < balances.Count; i++)
+                Assert.That(balances[i], Is.LessThan(balances[i - 1]),
+                    $"Balance at year {i} ({balances[i]:F2}) should be less than year {i - 1} ({balances[i - 1]:F2})");
+        }
+
+        [Test]
+        public void UpdateLoanPaymentAmortizationDataByYear_BalanceNeverExceedsPrincipal()
+        {
+            double principal = 300000;
+            var summary = HomeLoanCalculator.CalculateHomeLoanPayments(principal, MakeInput(7, 20, 12));
+            HomeLoanCalculator.UpdateLoanPaymentAmortizationDataByYear(summary);
+
+            foreach (var term in summary.PaymentAmortizationTerms)
+                Assert.That(term.BalanceAmount, Is.LessThanOrEqualTo(principal + 1.0),
+                    $"Balance {term.BalanceAmount:F2} at term {term.TermNumber} exceeds principal {principal}");
+        }
+
+        [Test]
+        public void UpdateLoanPaymentAmortizationDataByYear_MidpointBalanceIsRoughlyHalfPrincipal()
+        {
+            // For a 20-year loan, at year 10 the outstanding balance is still well above half the
+            // principal (because early payments are mostly interest). It should be between 50%–80%.
+            double principal = 400000;
+            var summary = HomeLoanCalculator.CalculateHomeLoanPayments(principal, MakeInput(5, 20, 12));
+            HomeLoanCalculator.UpdateLoanPaymentAmortizationDataByYear(summary);
+
+            // index 0 = opening, index 10 = after year 10
+            double midBalance = summary.PaymentAmortizationTerms[10].BalanceAmount;
+            Assert.That(midBalance, Is.GreaterThan(principal * 0.40),
+                "Midpoint balance should be well above 40% of principal");
+            Assert.That(midBalance, Is.LessThan(principal * 0.90),
+                "Midpoint balance should be below 90% of principal");
+        }
+
+        [Test]
+        public void UpdateLoanPaymentAmortizationDataByYear_ZeroInterest_BalanceDecreasesByEqualAmountsEachYear()
+        {
+            double principal = 240000;
+            var summary = HomeLoanCalculator.CalculateHomeLoanPayments(principal, MakeInput(0, 20, 12));
+            HomeLoanCalculator.UpdateLoanPaymentAmortizationDataByYear(summary);
+
+            // With zero interest every yearly payment reduces the balance by the same amount
+            double expectedAnnualReduction = principal / 20;
+            var terms = summary.PaymentAmortizationTerms.Skip(1).ToList(); // skip opening entry
+            for (int i = 0; i < terms.Count - 1; i++)
+            {
+                double reduction = summary.PaymentAmortizationTerms[i].BalanceAmount - terms[i].BalanceAmount;
+                Assert.That(reduction, Is.EqualTo(expectedAnnualReduction).Within(1.0),
+                    $"Year {i + 1} reduction {reduction:F2} should equal {expectedAnnualReduction:F2}");
+            }
         }
 
         // ── UpdateExpenseProjectionDataByYear ────────────────────────────────

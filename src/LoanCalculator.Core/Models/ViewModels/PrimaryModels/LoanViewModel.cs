@@ -61,6 +61,7 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
             OnPropertyChanged(nameof(DepositAmountStrFormatted));
             OnPropertyChanged(nameof(AffordabilityCurrencySymbol));
             OnPropertyChanged(nameof(Affordability));
+            OnPropertyChanged(nameof(IsAffordabilityNegative));
             OnPropertyChanged(nameof(HomeLoanInfo));
         }
 
@@ -399,14 +400,6 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
                 ];
             }
 
-            if (AmortizationBreakdownFrequencyCollection == null || AmortizationBreakdownFrequencyCollection.Count == 0)
-            {
-                AmortizationBreakdownFrequencyCollection =
-                [
-                    new SfSegmentItem { Text = "Yearly" },
-                    new SfSegmentItem { Text = "Term" }
-                ];
-            }
 
             if (AustraliaStateCollection == null || AustraliaStateCollection.Count == 0)
             {
@@ -597,6 +590,15 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
 
         [JsonIgnore] public string TotalPaymentRoundedWithComma =>
             HomeLoanInfo?.PaymentSummary?.Payment?.TotalPaymentRoundedWithComma ?? "0";
+
+        [JsonIgnore] public string ChartInterestCategoryLabel =>
+            $"Interest over {LoanTermInYears} yr{(LoanTermInYears == 1 ? "" : "s")}";
+
+        [JsonIgnore] public string ChartTotalCostSubtitle =>
+            $"Total cost over {LoanTermInYears} yr{(LoanTermInYears == 1 ? "" : "s")}";
+
+        [JsonIgnore] public string ChartInsightSubtitle =>
+            $"Deposit · loan · lifetime interest over {LoanTermInYears} yr{(LoanTermInYears == 1 ? "" : "s")}";
 
         public double LoanAmountPercentage
         {
@@ -876,6 +878,9 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
         }
 
         [JsonIgnore]
+        public bool IsAffordabilityNegative => IsAffordabilityAvailable && AffordabilityRawValue < 0;
+
+        [JsonIgnore]
         public string AffordabilityTextDescription
         {
             get
@@ -1055,38 +1060,13 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
 
         #region Amortisation
 
-        [JsonIgnore] public ObservableCollection<SfSegmentItem> AmortizationBreakdownFrequencyCollection { get; set; }
-
-        private int _amortizationBreakdownFrequencySelectedIndex;
-
-        public int AmortizationBreakdownFrequencySelectedIndex
-        {
-            get => _amortizationBreakdownFrequencySelectedIndex;
-            set
-            {
-                _amortizationBreakdownFrequencySelectedIndex = value;
-                if (isUpdating == false && HasInitialized)
-                {
-                    isUpdating = true;
-
-                    UpdateAmortizationData();
-                    TriggerPropertyChangedOnAmortizationTab();
-
-                    isUpdating = false;
-                }
-            }
-        }
-
-        [JsonIgnore] public bool IsAmortizationTermBased => AmortizationBreakdownFrequencySelectedIndex != 0;
-        [JsonIgnore] public bool IsAmortizationYearBased => AmortizationBreakdownFrequencySelectedIndex == 0;
 
         [JsonIgnore]
         public List<PaymentAmortisationOutput>? PaymentAmortization => HomeLoanInfo?.PaymentSummary?.PaymentAmortizationTerms ?? new List<PaymentAmortisationOutput>();
 
         [JsonIgnore] private ObservableCollection<ChartDataModel> _amortizationChartPrincipal = new();
         [JsonIgnore] private ObservableCollection<ChartDataModel> _amortizationChartInterest = new();
-        [JsonIgnore] private ObservableCollection<ChartDataModel> _amortizationChartAreaPrincipal = new();
-        [JsonIgnore] private ObservableCollection<ChartDataModel> _amortizationChartAreaInterest = new();
+        [JsonIgnore] private ObservableCollection<ChartDataModel> _amortizationChartBalance = new();
 
         [JsonIgnore]
         public ObservableCollection<ChartDataModel> AmortizationChartPrincipalAmountAxis => _amortizationChartPrincipal;
@@ -1095,10 +1075,10 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
         public ObservableCollection<ChartDataModel> AmortizationChartInterestAmountAxis => _amortizationChartInterest;
 
         [JsonIgnore]
-        public ObservableCollection<ChartDataModel> AmortizationChartAreaPrincipalAmountAxis => _amortizationChartAreaPrincipal;
+        public ObservableCollection<ChartDataModel> AmortizationChartBalanceAxis => _amortizationChartBalance;
 
-        [JsonIgnore]
-        public ObservableCollection<ChartDataModel> AmortizationChartAreaInterestAmountAxis => _amortizationChartAreaInterest;
+        [JsonIgnore] public string AmortizationBalanceSubtitle =>
+            $"Remaining loan balance over {LoanTermInYears} yr{(LoanTermInYears == 1 ? "" : "s")}";
 
         private void UpdateAmortizationCharts()
         {
@@ -1107,19 +1087,12 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
             {
                 _amortizationChartPrincipal.Clear();
                 _amortizationChartInterest.Clear();
-                _amortizationChartAreaPrincipal.Clear();
-                _amortizationChartAreaInterest.Clear();
+                _amortizationChartBalance.Clear();
                 return;
             }
 
             var currentYear = DateTime.Now.Year;
             var filtered = terms.Where(f => f.YearOfPayment != currentYear).ToList();
-
-            var breakdownCount = RepaymentFrequencySelected.Trim() == "monthly" ? 2 :
-                                 RepaymentFrequencySelected.Trim() == "fortnightly" ? 4 :
-                                 RepaymentFrequencySelected.Trim() == "weekly" ? 8 : 2;
-
-            var areaFiltered = filtered.Skip(2).Where((_, index) => index % breakdownCount == 0).ToList();
 
             RefillCollection(_amortizationChartPrincipal,
                 filtered.Select(f => new ChartDataModel(f.YearOfPayment.ToString(), f.PrincipalAmount)));
@@ -1127,11 +1100,21 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
             RefillCollection(_amortizationChartInterest,
                 filtered.Select(f => new ChartDataModel(f.YearOfPayment.ToString(), f.InterestAmount)));
 
-            RefillCollection(_amortizationChartAreaPrincipal,
-                areaFiltered.Select(f => new ChartDataModel(f.YearOfPayment.ToString(), f.PrincipalAmount)));
+            // Balance chart: one point per year using the last payment of that year
+            var balanceByYear = filtered
+                .GroupBy(f => f.YearOfPayment)
+                .Select(g => new ChartDataModel(g.Key.ToString(), g.Last().BalanceAmount))
+                .ToList();
+            RefillCollection(_amortizationChartBalance, balanceByYear);
+        }
 
-            RefillCollection(_amortizationChartAreaInterest,
-                areaFiltered.Select(f => new ChartDataModel(f.YearOfPayment.ToString(), f.InterestAmount)));
+        // Called when currency changes — rebuilds chart data and notifies the grid
+        // unconditionally (bypasses the IsAmortizationTabActive guard).
+        public void ForceUpdateAmortizationCharts()
+        {
+            UpdateAmortizationCharts();
+            OnPropertyChanged(nameof(PaymentAmortization));
+            OnPropertyChanged(nameof(CurrencySymbol));
         }
 
         private static void RefillCollection(ObservableCollection<ChartDataModel> col, IEnumerable<ChartDataModel> source)
@@ -1369,9 +1352,14 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
             OnPropertyChanged(nameof(HomeLoanInfo));
             OnPropertyChanged(nameof(TermPaymentRoundedWithComma));
             OnPropertyChanged(nameof(TotalPaymentRoundedWithComma));
+            OnPropertyChanged(nameof(ChartInterestCategoryLabel));
+            OnPropertyChanged(nameof(ChartTotalCostSubtitle));
+            OnPropertyChanged(nameof(ChartInsightSubtitle));
+            OnPropertyChanged(nameof(AmortizationBalanceSubtitle));
             OnPropertyChanged(nameof(AffordabilityCurrencySymbol));
             OnPropertyChanged(nameof(IsAffordabilityAvailable));
             OnPropertyChanged(nameof(Affordability));
+            OnPropertyChanged(nameof(IsAffordabilityNegative));
             OnPropertyChanged(nameof(AffordabilityTextDescription));
 
             // Wizard live labels — update as user types asset/deposit values
@@ -1402,12 +1390,11 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
             UpdateAmortizationCharts();
 
             OnPropertyChanged(nameof(PaymentAmortization));
-            OnPropertyChanged(nameof(AmortizationBreakdownFrequencyCollection));
-            OnPropertyChanged(nameof(IsAmortizationTermBased));
-            OnPropertyChanged(nameof(IsAmortizationYearBased));
+            OnPropertyChanged(nameof(AmortizationBalanceSubtitle));
             OnPropertyChanged(nameof(AffordabilityCurrencySymbol));
             OnPropertyChanged(nameof(IsAffordabilityAvailable));
             OnPropertyChanged(nameof(Affordability));
+            OnPropertyChanged(nameof(IsAffordabilityNegative));
             OnPropertyChanged(nameof(AffordabilityTextDescription));
             ScheduleSave(() => SharedServiceCore.SaveData(this));
         }
@@ -1440,6 +1427,7 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
             OnPropertyChanged(nameof(AffordabilityCurrencySymbol));
             OnPropertyChanged(nameof(IsAffordabilityAvailable));
             OnPropertyChanged(nameof(Affordability));
+            OnPropertyChanged(nameof(IsAffordabilityNegative));
             OnPropertyChanged(nameof(AffordabilityTextDescription));
 
             ScheduleSave(() => SharedServiceCore.SaveData(this));
@@ -1459,15 +1447,9 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
         {
             if (PageHelper.IsFormLoading) return;
 
-            if (AmortizationBreakdownFrequencySelectedIndex == 0)
-            {
-                HomeLoanCalculator.UpdateLoanPaymentAmortizationDataByYear(HomeLoanInfo.PaymentSummary);
-            }
-            else
-            {
-                HomeLoanCalculator.UpdateLoanPaymentAmortizationDataByTerm(HomeLoanInfo.PaymentSummary);
-            }
+            HomeLoanCalculator.UpdateLoanPaymentAmortizationDataByYear(HomeLoanInfo.PaymentSummary);
         }
+
         public void SyncAmortization()
         {
             if (PageHelper.IsFormLoading) return;
@@ -1475,16 +1457,7 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
             if (SharedServiceCore.LoadSafe) return;
 
             UpdateAmortizationData();
-            UpdateAmortizationFrequencyText();
             TriggerPropertyChangedOnAmortizationTab();
-        }
-        public void UpdateAmortizationFrequencyText()
-        {
-            if (PageHelper.IsFormLoading) return;
-
-            var frequency = RepaymentFrequencySelected.Trim();
-            frequency = char.ToUpper(frequency[0]) + frequency.Substring(1);
-            AmortizationBreakdownFrequencyCollection[1].Text = frequency;
         }
 
         public void EventsTriggerStampDutyUpdate()
@@ -1547,7 +1520,7 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
                     },
                     new DataModel
                     {
-                        Category = "Interest", Value = HomeLoanInfo.PaymentSummary.Payment.TotalInterestPayment,
+                        Category = ChartInterestCategoryLabel, Value = HomeLoanInfo.PaymentSummary.Payment.TotalInterestPayment,
                         ValueWithComma =
                             $"{CurrencySymbol}{HomeLoanInfo.PaymentSummary.Payment.TotalInterestPaymentRoundedWithComma:N0}"
                     },
@@ -1563,8 +1536,6 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
             OnPropertyChanged(nameof(RepaymentFrequencySelectedIndex));
             OnPropertyChanged(nameof(AustraliaStateCollection));
             OnPropertyChanged(nameof(AustraliaStateSelectedIndex));
-            OnPropertyChanged(nameof(AmortizationBreakdownFrequencyCollection));
-            OnPropertyChanged(nameof(AmortizationBreakdownFrequencySelectedIndex));
         }
 
         public void TriggerPropertyChangedOnPageLevel()

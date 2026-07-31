@@ -883,29 +883,24 @@
                                                         </chart:CircularDataLabelSettings>
                                                     </chart:DoughnutSeries.DataLabelSettings>
                                                     <chart:DoughnutSeries.CenterView>
-                                                        <StackLayout HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
-                                                            <Label HorizontalTextAlignment="Center">
-                                                                <Label.FormattedText>
-                                                                    <FormattedString>
-                                                                        <Span
-                                                                            FontAttributes="Bold"
-                                                                            FontSize="{StaticResource FontSizeXS}"
-                                                                            Text="Net / mo"
-                                                                            TextColor="{DynamicResource LoanAppDonutCenterTextColor}" />
-                                                                    </FormattedString>
-                                                                </Label.FormattedText>
-                                                            </Label>
-                                                            <Label HorizontalTextAlignment="Center">
-                                                                <Label.FormattedText>
-                                                                    <FormattedString>
-                                                                        <Span
-                                                                            FontAttributes="Bold"
-                                                                            FontSize="{StaticResource FontSizeBody}"
-                                                                            Text="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.NetMonthlyFormatted}"
-                                                                            TextColor="{DynamicResource LoanAppDonutCenterTextColor}" />
-                                                                    </FormattedString>
-                                                                </Label.FormattedText>
-                                                            </Label>
+                                                        <StackLayout
+                                                            HorizontalOptions="Center"
+                                                            Spacing="1"
+                                                            VerticalOptions="Center">
+                                                            <Label
+                                                                FontFamily="{DynamicResource DefaultFontFamily}"
+                                                                FontSize="{StaticResource FontSizeXS}"
+                                                                HorizontalTextAlignment="Center"
+                                                                Opacity="0.6"
+                                                                Text="NET / MONTH"
+                                                                TextColor="{DynamicResource LoanAppDonutCenterTextColor}" />
+                                                            <Label
+                                                                FontAttributes="Bold"
+                                                                FontFamily="{DynamicResource DefaultFontFamily}"
+                                                                FontSize="{StaticResource FontSizeSmall}"
+                                                                HorizontalTextAlignment="Center"
+                                                                Text="{Binding Source={x:Reference thisPage}, Path=BindingContext.NetMonthlyFormatted}"
+                                                                TextColor="{DynamicResource LoanAppDonutCenterTextColor}" />
                                                         </StackLayout>
                                                     </chart:DoughnutSeries.CenterView>
                                                 </chart:DoughnutSeries>
@@ -913,6 +908,15 @@
                                         </chart:SfCircularChart>
                                     </Border.Content>
                                 </Border>
+                                <Label
+                                    Margin="0,4,0,12"
+                                    FontFamily="{DynamicResource DefaultFontFamily}"
+                                    FontSize="{StaticResource FontSizeXS}"
+                                    HorizontalOptions="Center"
+                                    HorizontalTextAlignment="Center"
+                                    Opacity="0.5"
+                                    Text="Monthly income vs expenses"
+                                    TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
 
                                 <!--  Top expenses list  -->
                                 <Border
@@ -1181,13 +1185,13 @@
                                     </VerticalStackLayout>
                                 </Border>
 
-                                <!--  Income Projection chart  -->
-                                <Label Margin="20,16,20,4" FontAttributes="Bold" FontSize="{StaticResource FontSizeSmall}" Opacity="0.7" Text="INCOME PROJECTION" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                                <!--  Income & Expense Projection chart  -->
+                                <Label Margin="20,16,20,4" FontAttributes="Bold" FontSize="{StaticResource FontSizeSmall}" Opacity="0.7" Text="INCOME &amp; EXPENSE PROJECTION" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
                                 <Border Style="{DynamicResource LoanAppChartBorderStyle}">
                                     <Border.Content>
                                         <chart:SfCartesianChart
                                             x:Name="ProjectionChart"
-                                            Margin="{StaticResource MarginSection}"
+                                            Margin="{OnIdiom Phone='5,12,5,0', Tablet='20,16,20,10', Desktop='20,16,20,10', Default='5,12,5,0'}"
                                             BackgroundColor="Transparent"
                                             HorizontalOptions="FillAndExpand"
                                             PaletteBrushes="{Binding CustomChartColors}"
@@ -1203,7 +1207,7 @@
                                                 </chart:CategoryAxis>
                                             </chart:SfCartesianChart.XAxes>
                                             <chart:SfCartesianChart.YAxes>
-                                                <chart:NumericalAxis>
+                                                <chart:NumericalAxis LabelCreated="OnProjectionAxisLabelCreated">
                                                     <chart:NumericalAxis.LabelStyle>
                                                         <chart:ChartAxisLabelStyle FontAttributes="Bold" FontFamily="{DynamicResource DefaultFontFamily}" FontSize="{StaticResource FontSizeBody}" TextColor="{DynamicResource LoanAppChartAxisTextColor}" />
                                                     </chart:NumericalAxis.LabelStyle>
@@ -1227,6 +1231,15 @@
                                         </chart:SfCartesianChart>
                                     </Border.Content>
                                 </Border>
+                                <Label
+                                    Margin="0,4,0,12"
+                                    FontFamily="{DynamicResource DefaultFontFamily}"
+                                    FontSize="{StaticResource FontSizeXS}"
+                                    HorizontalOptions="Center"
+                                    HorizontalTextAlignment="Center"
+                                    Opacity="0.5"
+                                    Text="{Binding ChartProjectionSubtitle}"
+                                    TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
 
                                 <!--  Income year-by-year breakdown  -->
                                 <Label Margin="20,16,20,4" FontAttributes="Bold" FontSize="{StaticResource FontSizeSmall}" Opacity="0.7" Text="INCOME YEAR-BY-YEAR" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />

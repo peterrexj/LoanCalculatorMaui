@@ -347,8 +347,7 @@ namespace LoanCalculator.UnitTests.Models.ViewModels.PrimaryModels
             var required = new[]
             {
                 nameof(vm.PaymentAmortization),
-                nameof(vm.IsAmortizationTermBased),
-                nameof(vm.IsAmortizationYearBased),
+                nameof(vm.AmortizationBalanceSubtitle),
                 nameof(vm.AffordabilityTextDescription),
             };
             Assert.That(changed, Is.SupersetOf(required),

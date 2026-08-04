@@ -1,4 +1,5 @@
-﻿using LoanCalculatorMaui.Services;
+﻿using LoanCalculator.Core.Constants;
+using LoanCalculatorMaui.Services;
 using Pj.Library;
 
 namespace LoanCalculatorMaui.Platforms.Android.Services
@@ -8,7 +9,7 @@ namespace LoanCalculatorMaui.Platforms.Android.Services
         public string Country => "Australia";
 
         public bool IsAustralia => Country.EqualsIgnoreCase("Australia");
-        public string ApplicationTitle => "Loan Affordability Calculator"; 
+        public string ApplicationTitle => "Loan Affordability Calculator";
 
         public string InAppProductId => "com.pj.loan.afford.calc.premium"; // Replace with your actual product ID
 
@@ -17,5 +18,7 @@ namespace LoanCalculatorMaui.Platforms.Android.Services
         public string RateAppLink => "market://details?id=com.pj.loan.afford.calc"; //com.companyname.yourapp with your Android package ID
 
         public bool IsFullyPaidApplication => false; // Assuming the app is not fully paid, adjust as necessary
+
+        public List<string> GetRegisteredFontFamilies() => RegisteredFonts.GetFontFamilies();
     }
 }

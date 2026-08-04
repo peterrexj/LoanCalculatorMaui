@@ -147,9 +147,66 @@
                                 TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
                             <editors:SfComboBox
                                 BackgroundColor="Transparent"
+                                IsClearButtonVisible="False"
+                                IsEditable="False"
                                 ItemsSource="{Binding Themes}"
                                 SelectedItem="{Binding SelectedTheme, Mode=TwoWay}"
-                                Style="{DynamicResource SfComboBoxStyle}" />
+                                Style="{DynamicResource SfComboBoxStyle}">
+                                <editors:SfComboBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <Grid
+                                            MinimumHeightRequest="44"
+                                            Background="{Binding ., Converter={StaticResource ThemeNameToGradientConverter}}"
+                                            VerticalOptions="Fill">
+                                            <Label
+                                                Padding="12,0"
+                                                FontSize="{StaticResource FontSizeMedium}"
+                                                Text="{Binding .}"
+                                                TextColor="{Binding ., Converter={StaticResource ThemeNameToTextColorConverter}}"
+                                                VerticalOptions="Center"
+                                                VerticalTextAlignment="Center" />
+                                        </Grid>
+                                    </DataTemplate>
+                                </editors:SfComboBox.ItemTemplate>
+                            </editors:SfComboBox>
+                        </VerticalStackLayout>
+
+                        <!--  Divider  -->
+                        <BoxView
+                            HeightRequest="1"
+                            Opacity="0.15"
+                            Color="{DynamicResource LoanAppDefaultForegroundColor}" />
+
+                        <!--  Font  -->
+                        <VerticalStackLayout Spacing="6">
+                            <Label
+                                FontSize="{StaticResource FontSizeBody}"
+                                Text="Font"
+                                TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                            <editors:SfComboBox
+                                BackgroundColor="Transparent"
+                                IsClearButtonVisible="False"
+                                IsEditable="False"
+                                ItemsSource="{Binding FontFamilies}"
+                                SelectedItem="{Binding SelectedFontFamily, Mode=TwoWay}"
+                                Style="{DynamicResource SfComboBoxStyle}">
+                                <editors:SfComboBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <Grid
+                                            MinimumHeightRequest="44"
+                                            VerticalOptions="Fill">
+                                            <Label
+                                                Padding="12,0"
+                                                FontFamily="{Binding .}"
+                                                FontSize="{StaticResource FontSizeMedium}"
+                                                Text="{Binding .}"
+                                                TextColor="{DynamicResource LoanAppComboDropDownTextColor}"
+                                                VerticalOptions="Center"
+                                                VerticalTextAlignment="Center" />
+                                        </Grid>
+                                    </DataTemplate>
+                                </editors:SfComboBox.ItemTemplate>
+                            </editors:SfComboBox>
                         </VerticalStackLayout>
 
                         <!--  Divider  -->

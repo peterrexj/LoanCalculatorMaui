@@ -672,7 +672,7 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
             foreach (var (year, bal) in baselineBalances)
                 CombinedBaselineData.Add(new ChartDataModel(year.ToString(), bal));
             foreach (var (year, bal) in strategyBalances)
-                CombinedStrategyData.Add(new ChartDataModel(year.ToString(), bal));
+                CombinedStrategyData.Add(new ChartDataModel(((int)year).ToString(), bal));
 
             OnPropertyChanged(nameof(CombinedTimeSaved));
             OnPropertyChanged(nameof(CombinedInterestSaved));
@@ -811,6 +811,8 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
                 result.Add((y, balance));
                 if (balance <= 0) break;
             }
+            if (result[^1].Item1 < termYears)
+                result.Add((termYears, 0.0));
             return result;
         }
 
@@ -825,7 +827,7 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
             int periodsPerYear = paymentsPerYear;
             int maxPeriods = (termYears + 5) * periodsPerYear;
             int periodCount = 0;
-            for (int y = 1; y <= termYears && balance > 0.01; y++)
+            for (int y = 1; y <= termYears; y++)
             {
                 for (int p = 0; p < periodsPerYear && balance > 0.01 && periodCount < maxPeriods; p++, periodCount++)
                 {
@@ -835,6 +837,8 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
                 result.Add((y, balance));
                 if (balance <= 0) break;
             }
+            if (result[^1].Item1 < termYears)
+                result.Add((termYears, 0.0));
             return result;
         }
 
@@ -874,7 +878,7 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
             var r = annualRatePct / 100.0 / 12.0;
             var payment = CalculateMonthlyRepayment(loan, annualRatePct, termYears);
             var balance = loan;
-            for (int y = 1; y <= termYears && balance > 0.01; y++)
+            for (int y = 1; y <= termYears; y++)
             {
                 for (int m = 0; m < 12 && balance > 0.01; m++)
                 {
@@ -886,10 +890,12 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
                 result.Add((y, balance));
                 if (balance <= 0) break;
             }
+            if (result[^1].Item1 < termYears)
+                result.Add((termYears, 0.0));
             return result;
         }
 
-        public static (int monthsSaved, double interestSaved, List<(int year, double balance)> yearlyBalances)
+        public static (int monthsSaved, double interestSaved, List<(double year, double balance)> yearlyBalances)
             SimulateCombined(
                 double loan,
                 double annualRatePct,
@@ -901,7 +907,7 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
                 double offsetRatePct = 0)
         {
             if (annualRatePct <= 0)
-                return (0, 0, new List<(int, double)> { (0, loan) });
+                return (0, 0, new List<(double, double)> { (0, loan) });
 
             // The offset rate only determines the interest credit on the offset portion.
             // The loan itself always accrues interest at the loan rate (annualRatePct).
@@ -927,7 +933,7 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
 
             var periods = 0;
             var totalInterestPaid = 0.0;
-            var yearlyBalances = new List<(int, double)>();
+            var yearlyBalances = new List<(double, double)>();
             yearlyBalances.Add((0, balance));
             var maxPeriods = (termYears + 10) * paymentsPerYear;
 
@@ -944,6 +950,16 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
                 if ((p + 1) % paymentsPerYear == 0)
                     yearlyBalances.Add((yearlyBalances.Count, balance));
             }
+
+            // If the loan paid off mid-year, snap to the next integer year so all X values
+            // are whole numbers and align with the baseline series on a CategoryAxis.
+            if (yearlyBalances[^1].Item2 > 0)
+            {
+                int payoffYear = (int)Math.Ceiling((double)periods / paymentsPerYear);
+                yearlyBalances.Add((payoffYear, 0.0));
+            }
+            if (yearlyBalances[^1].Item1 < termYears)
+                yearlyBalances.Add((termYears, 0.0));
 
             // Baseline: standard monthly payment, no levers, loan rate — simulate to actual payoff
             var baselineR = annualRatePct / 100.0 / 12.0;

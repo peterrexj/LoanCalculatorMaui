@@ -43,13 +43,19 @@ namespace LoanCalculatorMaui
                 .ConfigureSyncfusionCore()
                 .ConfigureFonts(fonts =>
                 {
-                    fonts.AddFont("CALIBRI.ttf", "Calibri");
+                    fonts.AddFont("Lato-Regular.ttf", "Lato");
+                    fonts.AddFont("Nunito-Regular.ttf", "Nunito");
+                    fonts.AddFont("Quicksand-Regular.ttf", "Quicksand");
+                    fonts.AddFont("Raleway-Regular.ttf", "Raleway");
+                    fonts.AddFont("Merriweather-Regular.ttf", "Merriweather");
+                    fonts.AddFont("SourceSerif4-Regular.ttf", "SourceSerif4");
+                    fonts.AddFont("PlayfairDisplay-Regular.ttf", "PlayfairDisplay");
+                    fonts.AddFont("Pacifico-Regular.ttf", "Pacifico");
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
                     fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
                     fonts.AddFont("NotoSans-Regular.ttf", "NotoSans");
                     fonts.AddFont("NotoSans-Italic.ttf", "NotoSansItatic");
                     fonts.AddFont("NotoSans-Bold.ttf", "NotoSansBold");
-
                 });
 
             builder.Services.AddSingleton<IErrorHandlingService, ErrorHandlingService>();

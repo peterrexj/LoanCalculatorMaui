@@ -1,4 +1,5 @@
-﻿using LoanCalculatorMaui.Services;
+﻿using LoanCalculator.Core.Constants;
+using LoanCalculatorMaui.Services;
 using Pj.Library;
 
 namespace LoanCalculatorMaui.Platforms.Windows.Services
@@ -9,7 +10,7 @@ namespace LoanCalculatorMaui.Platforms.Windows.Services
 
         public bool IsAustralia => Country.EqualsIgnoreCase("Australia");
 
-        public string ApplicationTitle => "Loan Affordability Calculator"; 
+        public string ApplicationTitle => "Loan Affordability Calculator";
 
         public string InAppProductId => "com.pj.loan.calculator.pro"; // Replace with your actual product ID
 
@@ -17,5 +18,7 @@ namespace LoanCalculatorMaui.Platforms.Windows.Services
 
         public string RateAppLink => "ms-windows-store://pdp/?productid=9PG3PLHBBVLQ"; // YOUR_PRODUCT_ID with your Windows Store app ID
         public bool IsFullyPaidApplication => true; // Assuming the app is fully paid, adjust as necessary
+
+        public List<string> GetRegisteredFontFamilies() => RegisteredFonts.GetFontFamilies();
     }
 }

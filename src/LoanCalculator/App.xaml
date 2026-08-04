@@ -19,6 +19,8 @@
             <localConverters:BoolToFontAttributesConverter x:Key="BoolToFontAttributesConverter" />
             <localConverters:BoolToDisclaimerFontSizeConverter x:Key="BoolToDisclaimerFontSizeConverter" />
             <localConverters:BoolToDisclaimerMarginConverter x:Key="BoolToDisclaimerMarginConverter" />
+            <localConverters:ThemeNameToGradientConverter x:Key="ThemeNameToGradientConverter" />
+            <localConverters:ThemeNameToTextColorConverter x:Key="ThemeNameToTextColorConverter" />
         </ResourceDictionary>
     </Application.Resources>
 </Application>

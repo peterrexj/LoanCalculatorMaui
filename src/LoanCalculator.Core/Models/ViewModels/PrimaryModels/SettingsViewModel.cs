@@ -1,4 +1,5 @@
-﻿using LoanCalculator.Core.Models.Enums;
+﻿using LoanCalculator.Core.Constants;
+using LoanCalculator.Core.Models.Enums;
 using LoanCalculator.Core.Services;
 using System;
 using System.Collections.Generic;
@@ -100,6 +101,69 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
             SelectedCurrency = Currencies.FirstOrDefault(c => c.IsoCode ==
                 Preferences.Get(SharedServiceCore.SelectedCurrencyKey, SharedServiceCore.GetDefaultCurrencyIso()));
             OnPropertyChanged(nameof(SelectedCurrency));
+        }
+
+        #endregion
+
+        #region Font Family
+
+        [JsonIgnore]
+        public ObservableCollection<string> FontFamilies { get; } =
+            new ObservableCollection<string>(
+                SharedServiceCore.AppInformation?.GetRegisteredFontFamilies()
+                ?? RegisteredFonts.GetFontFamilies()
+            );
+
+        [JsonIgnore] private string? _selectedFontFamily;
+        [JsonIgnore]
+        public string? SelectedFontFamily
+        {
+            get
+            {
+                if (_selectedFontFamily == null)
+                {
+                    SharedServiceCore.GetAppFontFamilyAsync().ContinueWith(task =>
+                    {
+                        if (task.IsFaulted || task.IsCanceled) return;
+                        _selectedFontFamily = task.Result;
+                        MainThread.BeginInvokeOnMainThread(() => OnPropertyChanged(nameof(SelectedFontFamily)));
+                    });
+                }
+                return _selectedFontFamily;
+            }
+            set
+            {
+                if (value == null || isUpdating || _selectedFontFamily == value) return;
+                _selectedFontFamily = value;
+                MainThread.BeginInvokeOnMainThread(async () =>
+                {
+                    IsPageBusy = true;
+                    IsUpdating = true;
+                    await Task.Delay(300);
+                    await ChangeFontFamilyAsync(_selectedFontFamily);
+                });
+            }
+        }
+
+        private async Task ChangeFontFamilyAsync(string fontFamily)
+        {
+            try
+            {
+                await SharedServiceCore.SetAppFontFamilyAsync(fontFamily);
+                await ApplyFontFamilyAsync(fontFamily);
+                OnPropertyChanged(nameof(SelectedFontFamily));
+            }
+            catch (Exception ex) { _errorHandlingService.HandleException(ex); }
+            finally { IsUpdating = false; IsPageBusy = false; }
+        }
+
+        private async Task ApplyFontFamilyAsync(string fontFamily)
+        {
+            await MainThread.InvokeOnMainThreadAsync(() =>
+            {
+                if (Application.Current?.Resources != null)
+                    Application.Current.Resources["DefaultFontFamily"] = fontFamily;
+            });
         }
 
         #endregion
@@ -248,6 +312,7 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
         public void RefreshProperties()
         {
             OnPropertyChanged(nameof(SelectedTheme));
+            OnPropertyChanged(nameof(SelectedFontFamily));
             LoadAustralianModeSetting();
             LoadStampDutySetting();
         }

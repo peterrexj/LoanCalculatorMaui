@@ -461,6 +461,32 @@ namespace LoanCalculator.Core.Services
 
         #endregion
 
+        #region Font
+
+        private const string AppFontFamilyKey = "AppFontFamily";
+
+        public static Task<string> GetAppFontFamilyAsync()
+        {
+            try
+            {
+                var font = Preferences.Get(AppFontFamilyKey, Constants.RegisteredFonts.DefaultFontFamily);
+                return Task.FromResult(font);
+            }
+            catch
+            {
+                return Task.FromResult(Constants.RegisteredFonts.DefaultFontFamily);
+            }
+        }
+
+        public static Task SetAppFontFamilyAsync(string fontFamily)
+        {
+            try { Preferences.Set(AppFontFamilyKey, fontFamily); }
+            catch { }
+            return Task.CompletedTask;
+        }
+
+        #endregion
+
         public const AppThemes DefaultAppTheme = AppThemes.Dark;
     }
 }

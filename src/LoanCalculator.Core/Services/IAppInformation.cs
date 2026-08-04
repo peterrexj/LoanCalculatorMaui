@@ -9,5 +9,6 @@
         string AppShareLink { get; }
         string RateAppLink { get; }
         bool IsFullyPaidApplication { get; }
+        List<string> GetRegisteredFontFamilies();
     }
 }

@@ -93,6 +93,8 @@ namespace LoanCalculator.Core.Themes
                 Application.Current?.Resources.MergedDictionaries.Add(themeStyles);
 
                 UpdateResources("LoanApp");
+
+                _ = LoadSavedFontFamilyAsync();
             }
             catch (Exception e)
             {
@@ -144,6 +146,20 @@ namespace LoanCalculator.Core.Themes
             catch (Exception ex)
             {
             }
+        }
+
+        private async Task LoadSavedFontFamilyAsync()
+        {
+            try
+            {
+                var fontFamily = await SharedServiceCore.GetAppFontFamilyAsync();
+                await MainThread.InvokeOnMainThreadAsync(() =>
+                {
+                    if (Application.Current?.Resources != null)
+                        Application.Current.Resources["DefaultFontFamily"] = fontFamily;
+                });
+            }
+            catch { }
         }
 
         private ResourceDictionary? LoadResourceDictionary(string resourcePath)

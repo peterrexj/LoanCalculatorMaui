@@ -1,5 +1,55 @@
 namespace LoanCalculatorMaui.Converters
 {
+    // Maps a theme name string to a left-to-right gradient brush using that theme's colours.
+    public class ThemeNameToGradientConverter : IValueConverter
+    {
+        private static readonly Dictionary<string, (string Start, string End)> _map = new(StringComparer.OrdinalIgnoreCase)
+        {
+            ["Dark"]   = ("#222831", "#31424F"),
+            ["Light"]  = ("#E2E8F0", "#F8FAFC"),
+            ["Forest"] = ("#0e2424", "#183d3d"),
+            ["Warm"]   = ("#FBEDED", "#F1D9D9"),
+        };
+
+        public object Convert(object? value, Type targetType, object? parameter, System.Globalization.CultureInfo culture)
+        {
+            try
+            {
+                if (value is string name && _map.TryGetValue(name, out var stops))
+                {
+                    var brush = new LinearGradientBrush { StartPoint = new Point(0, 0), EndPoint = new Point(1, 0) };
+                    brush.GradientStops.Add(new GradientStop(Color.FromArgb(stops.Start), 0f));
+                    brush.GradientStops.Add(new GradientStop(Color.FromArgb(stops.End),   1f));
+                    return brush;
+                }
+            }
+            catch { }
+            return new SolidColorBrush(Colors.Transparent);
+        }
+
+        public object ConvertBack(object? value, Type targetType, object? parameter, System.Globalization.CultureInfo culture)
+            => throw new NotImplementedException();
+    }
+
+    // Maps a theme name string to the appropriate foreground text colour for that theme.
+    public class ThemeNameToTextColorConverter : IValueConverter
+    {
+        private static readonly Dictionary<string, Color> _map = new(StringComparer.OrdinalIgnoreCase)
+        {
+            ["Dark"]   = Color.FromArgb("#DDE6ED"),
+            ["Light"]  = Color.FromArgb("#1e2123"),
+            ["Forest"] = Color.FromArgb("#bed0c9"),
+            ["Warm"]   = Color.FromArgb("#4A2424"),
+        };
+
+        public object Convert(object? value, Type targetType, object? parameter, System.Globalization.CultureInfo culture)
+            => value is string name && _map.TryGetValue(name, out var c) ? c : Colors.White;
+
+        public object ConvertBack(object? value, Type targetType, object? parameter, System.Globalization.CultureInfo culture)
+            => throw new NotImplementedException();
+    }
+
+
     // Converts IsEditMode (bool) → button label: true = "Update", false = "Add"
     public class BoolToAddUpdateConverter : IValueConverter
     {

@@ -12,7 +12,7 @@
 
 
     <!--  Font Families  -->
-    <x:String x:Key="DefaultFontFamily">Calibri</x:String>
+    <x:String x:Key="DefaultFontFamily">Lato</x:String>
 
     <!--  ═══════════════════════════════════════════════════════
           Responsive size tokens — use StaticResource instead of
@@ -54,27 +54,27 @@
              Phone="5" Tablet="10" Desktop="10" TV="10" Default="5" />
     <!--  Global style for Label  -->
     <Style TargetType="Label">
-        <Setter Property="FontFamily" Value="{StaticResource DefaultFontFamily}" />
+        <Setter Property="FontFamily" Value="{DynamicResource DefaultFontFamily}" />
     </Style>
 
     <!--  Global style for Span  -->
     <Style TargetType="Span">
-        <Setter Property="FontFamily" Value="{StaticResource DefaultFontFamily}" />
+        <Setter Property="FontFamily" Value="{DynamicResource DefaultFontFamily}" />
     </Style>
 
     <!--  Global style for Button  -->
     <Style TargetType="Button">
-        <Setter Property="FontFamily" Value="{StaticResource DefaultFontFamily}" />
+        <Setter Property="FontFamily" Value="{DynamicResource DefaultFontFamily}" />
     </Style>
 
     <!--  Global style for Entry  -->
     <Style TargetType="Entry">
-        <Setter Property="FontFamily" Value="{StaticResource DefaultFontFamily}" />
+        <Setter Property="FontFamily" Value="{DynamicResource DefaultFontFamily}" />
     </Style>
 
     <!--  Global style for SfNumericEntry  -->
     <Style TargetType="editors:SfNumericEntry">
-        <Setter Property="FontFamily" Value="{StaticResource DefaultFontFamily}" />
+        <Setter Property="FontFamily" Value="{DynamicResource DefaultFontFamily}" />
     </Style>
 
     <!--  Border top highlight box styles  -->

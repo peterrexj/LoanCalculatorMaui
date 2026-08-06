@@ -1,9 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<!-- On Windows: include Android and Windows -->
+		<!-- On Windows: include Android and Windows (iOS requires a Mac build host) -->
 		<TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">
-			net9.0-android;net9.0-ios;net9.0-windows10.0.19041.0
+			net9.0-android36.0;net9.0-windows10.0.19041.0
 		</TargetFrameworks>
 
 		<!-- On non-Windows (Mac/Linux): include Android for emulator testing -->
@@ -73,13 +73,6 @@
 	</ItemGroup>
 	<!--End of Windows (UAP)-->
 
-	<PropertyGroup Condition="'$(TargetFramework)' == 'net8.0-ios'">
-		<RuntimeIdentifiers>ios-arm64;iossimulator-x64;iossimulator-arm64</RuntimeIdentifiers>
-	</PropertyGroup>
-	<PropertyGroup Condition="'$(TargetFramework)' == 'net8.0-maccatalyst'">
-		<RuntimeIdentifiers>maccatalyst-x64;maccatalyst-arm64</RuntimeIdentifiers>
-	</PropertyGroup>
-	
 	<!-- Android Release signing (Play Store AAB) -->
 	<PropertyGroup Condition="'$(Configuration)' == 'Release' and ($(TargetFramework.StartsWith('net9.0-android')))">
 	  <AndroidKeyStore>true</AndroidKeyStore>

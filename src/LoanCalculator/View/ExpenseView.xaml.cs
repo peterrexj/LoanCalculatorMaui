@@ -293,14 +293,16 @@ public partial class ExpenseView : ContentPage
 
     private void OnGrowthRateIncrease(object sender, EventArgs e)
     {
+        var step = SharedServiceCore.GetGrowthRateStep();
         if (_viewModel.AnnualGrowthRate < 100)
-            _viewModel.AnnualGrowthRate = Math.Min(100, Math.Round(_viewModel.AnnualGrowthRate + 1, 0));
+            _viewModel.AnnualGrowthRate = Math.Min(100, Math.Round(_viewModel.AnnualGrowthRate + step, 2));
     }
 
     private void OnGrowthRateDecrease(object sender, EventArgs e)
     {
+        var step = SharedServiceCore.GetGrowthRateStep();
         if (_viewModel.AnnualGrowthRate > 0)
-            _viewModel.AnnualGrowthRate = Math.Max(0, Math.Round(_viewModel.AnnualGrowthRate - 1, 0));
+            _viewModel.AnnualGrowthRate = Math.Max(0, Math.Round(_viewModel.AnnualGrowthRate - step, 2));
     }
 
     private void TabView_OnSelectionChanging(object? sender, SelectionChangingEventArgs e)    {

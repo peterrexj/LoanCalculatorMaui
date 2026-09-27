@@ -8,7 +8,7 @@
 #   ./run-ios.sh --nologs       # launch silently, no log streaming
 
 PROJECT="LoanCalculatorMaui.csproj"
-APP_BUNDLE="bin/Debug/net9.0-ios18.0/iossimulator-arm64/LoanCalculatorMaui.app"
+APP_BUNDLE="bin/Debug/net10.0-ios26.5/iossimulator-arm64/LoanCalculatorMaui.app"
 BUNDLE_ID="com.pj.loan.afford.calc"
 
 SIMULATOR_NAME="iPhone 16 Pro"
@@ -53,7 +53,7 @@ else
 fi
 
 echo "==> Building..."
-dotnet build "$PROJECT" -f net9.0-ios18.0 -c Debug || exit 1
+dotnet build "$PROJECT" -f net10.0-ios26.5 -c Debug || exit 1
 
 echo "==> Installing..."
 xcrun simctl install "$SIMULATOR_ID" "$APP_BUNDLE" || exit 1

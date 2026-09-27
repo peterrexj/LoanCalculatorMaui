@@ -48,52 +48,55 @@ public partial class WhatIfView : ContentPage
     }
 
     private void OnRateDeltaIncrease(object sender, EventArgs e)
-        => _viewModel.RateChangeDelta = Math.Round(_viewModel.RateChangeDelta + 0.25, 2);
+        => _viewModel.RateChangeDelta = Math.Round(_viewModel.RateChangeDelta + SharedServiceCore.GetWhatIfRateStep(), 2);
 
     private void OnRateDeltaDecrease(object sender, EventArgs e)
-        => _viewModel.RateChangeDelta = Math.Round(_viewModel.RateChangeDelta - 0.25, 2);
+        => _viewModel.RateChangeDelta = Math.Round(_viewModel.RateChangeDelta - SharedServiceCore.GetWhatIfRateStep(), 2);
 
     private void OnExtraRepaymentIncrease(object sender, EventArgs e)
-        => _viewModel.ExtraRepaymentMonthly = _viewModel.ExtraRepaymentMonthly + 100;
+        => _viewModel.ExtraRepaymentMonthly = _viewModel.ExtraRepaymentMonthly + SharedServiceCore.GetWhatIfMonthlyStep();
 
     private void OnExtraRepaymentDecrease(object sender, EventArgs e)
     {
-        if (_viewModel.ExtraRepaymentMonthly > 100)
-            _viewModel.ExtraRepaymentMonthly = _viewModel.ExtraRepaymentMonthly - 100;
+        var step = SharedServiceCore.GetWhatIfMonthlyStep();
+        if (_viewModel.ExtraRepaymentMonthly > step)
+            _viewModel.ExtraRepaymentMonthly = _viewModel.ExtraRepaymentMonthly - step;
     }
 
     private void OnLumpSumIncrease(object sender, EventArgs e)
-        => _viewModel.LumpSumAmount = _viewModel.LumpSumAmount + 5000;
+        => _viewModel.LumpSumAmount = _viewModel.LumpSumAmount + SharedServiceCore.GetWhatIfLumpSumStep();
 
     private void OnLumpSumDecrease(object sender, EventArgs e)
     {
-        if (_viewModel.LumpSumAmount > 5000)
-            _viewModel.LumpSumAmount = _viewModel.LumpSumAmount - 5000;
+        var step = SharedServiceCore.GetWhatIfLumpSumStep();
+        if (_viewModel.LumpSumAmount > step)
+            _viewModel.LumpSumAmount = _viewModel.LumpSumAmount - step;
     }
 
     private void OnOffsetIncrease(object sender, EventArgs e)
-        => _viewModel.OffsetBalance = _viewModel.OffsetBalance + 5000;
+        => _viewModel.OffsetBalance = _viewModel.OffsetBalance + SharedServiceCore.GetWhatIfOffsetStep();
 
     private void OnOffsetDecrease(object sender, EventArgs e)
     {
-        if (_viewModel.OffsetBalance > 5000)
-            _viewModel.OffsetBalance = _viewModel.OffsetBalance - 5000;
+        var step = SharedServiceCore.GetWhatIfOffsetStep();
+        if (_viewModel.OffsetBalance > step)
+            _viewModel.OffsetBalance = _viewModel.OffsetBalance - step;
     }
 
     private void OnOffsetRateIncrease(object sender, EventArgs e)
-        => _viewModel.OffsetRate = Math.Round(_viewModel.OffsetRate + 0.25, 2);
+        => _viewModel.OffsetRate = Math.Round(_viewModel.OffsetRate + SharedServiceCore.GetWhatIfRateStep(), 2);
 
     private void OnOffsetRateDecrease(object sender, EventArgs e)
-        => _viewModel.OffsetRate = Math.Round(_viewModel.OffsetRate - 0.25, 2);
+        => _viewModel.OffsetRate = Math.Round(_viewModel.OffsetRate - SharedServiceCore.GetWhatIfRateStep(), 2);
 
-    private void OnCombinedExtraIncrease(object sender, EventArgs e)        => _viewModel.CombinedExtraMonthly += 100;
-    private void OnCombinedExtraDecrease(object sender, EventArgs e)        { if (_viewModel.CombinedExtraMonthly >= 100) _viewModel.CombinedExtraMonthly -= 100; }
-    private void OnCombinedLumpIncrease(object sender, EventArgs e)         => _viewModel.CombinedLumpSum += 5000;
-    private void OnCombinedLumpDecrease(object sender, EventArgs e)         { if (_viewModel.CombinedLumpSum >= 5000) _viewModel.CombinedLumpSum -= 5000; }
-    private void OnCombinedOffsetIncrease(object sender, EventArgs e)       => _viewModel.CombinedOffset += 5000;
-    private void OnCombinedOffsetDecrease(object sender, EventArgs e)       { if (_viewModel.CombinedOffset >= 5000) _viewModel.CombinedOffset -= 5000; }
-    private void OnCombinedOffsetRateIncrease(object sender, EventArgs e)   => _viewModel.CombinedOffsetRate = Math.Round(_viewModel.CombinedOffsetRate + 0.25, 2);
-    private void OnCombinedOffsetRateDecrease(object sender, EventArgs e)   => _viewModel.CombinedOffsetRate = Math.Round(_viewModel.CombinedOffsetRate - 0.25, 2);
+    private void OnCombinedExtraIncrease(object sender, EventArgs e)        => _viewModel.CombinedExtraMonthly += SharedServiceCore.GetWhatIfMonthlyStep();
+    private void OnCombinedExtraDecrease(object sender, EventArgs e)        { var s = SharedServiceCore.GetWhatIfMonthlyStep(); if (_viewModel.CombinedExtraMonthly >= s) _viewModel.CombinedExtraMonthly -= s; }
+    private void OnCombinedLumpIncrease(object sender, EventArgs e)         => _viewModel.CombinedLumpSum += SharedServiceCore.GetWhatIfLumpSumStep();
+    private void OnCombinedLumpDecrease(object sender, EventArgs e)         { var s = SharedServiceCore.GetWhatIfLumpSumStep(); if (_viewModel.CombinedLumpSum >= s) _viewModel.CombinedLumpSum -= s; }
+    private void OnCombinedOffsetIncrease(object sender, EventArgs e)       => _viewModel.CombinedOffset += SharedServiceCore.GetWhatIfOffsetStep();
+    private void OnCombinedOffsetDecrease(object sender, EventArgs e)       { var s = SharedServiceCore.GetWhatIfOffsetStep(); if (_viewModel.CombinedOffset >= s) _viewModel.CombinedOffset -= s; }
+    private void OnCombinedOffsetRateIncrease(object sender, EventArgs e)   => _viewModel.CombinedOffsetRate = Math.Round(_viewModel.CombinedOffsetRate + SharedServiceCore.GetWhatIfRateStep(), 2);
+    private void OnCombinedOffsetRateDecrease(object sender, EventArgs e)   => _viewModel.CombinedOffsetRate = Math.Round(_viewModel.CombinedOffsetRate - SharedServiceCore.GetWhatIfRateStep(), 2);
     private void OnCombinedFreqMonthly(object sender, EventArgs e)          => _viewModel.CombinedFrequencyIndex = 0;
     private void OnCombinedFreqFortnightly(object sender, EventArgs e)      => _viewModel.CombinedFrequencyIndex = 1;
     private void OnCombinedFreqWeekly(object sender, EventArgs e)           => _viewModel.CombinedFrequencyIndex = 2;

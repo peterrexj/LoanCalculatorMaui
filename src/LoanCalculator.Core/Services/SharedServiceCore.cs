@@ -487,6 +487,46 @@ namespace LoanCalculator.Core.Services
 
         #endregion
 
+        #region Calculator Settings
+
+        public static int GetMaxLoanTermYears() { try { return Preferences.Get("MaxLoanTermYears", 30); } catch { return 30; } }
+        public static double GetDefaultInterestRate() { try { return Preferences.Get("DefaultInterestRate", 5.0); } catch { return 5.0; } }
+        public static int GetDefaultLoanTermYears() { try { return Preferences.Get("DefaultLoanTermYears", 30); } catch { return 30; } }
+        public static int GetDefaultProjectionYears() { try { return Preferences.Get("DefaultProjectionYears", 10); } catch { return 10; } }
+        public static int GetMaxProjectionYears() { try { return Preferences.Get("MaxProjectionYears", 25); } catch { return 25; } }
+
+        public static double GetWhatIfRateDelta() { try { return Preferences.Get("WhatIfRateDelta", 0.5); } catch { return 0.5; } }
+        public static double GetWhatIfExtraRepayment() { try { return Preferences.Get("WhatIfExtraRepayment", 500.0); } catch { return 500.0; } }
+        public static double GetWhatIfLumpSum() { try { return Preferences.Get("WhatIfLumpSum", 10000.0); } catch { return 10000.0; } }
+        public static double GetWhatIfOffsetBalance() { try { return Preferences.Get("WhatIfOffsetBalance", 20000.0); } catch { return 20000.0; } }
+
+        public static double GetLoanRateStep() { try { return Preferences.Get("LoanRateStep", 0.05); } catch { return 0.05; } }
+        public static double GetWhatIfRateStep() { try { return Preferences.Get("WhatIfRateStep", 0.25); } catch { return 0.25; } }
+        public static double GetWhatIfMonthlyStep() { try { return Preferences.Get("WhatIfMonthlyStep", 100.0); } catch { return 100.0; } }
+        public static double GetWhatIfLumpSumStep() { try { return Preferences.Get("WhatIfLumpSumStep", 5000.0); } catch { return 5000.0; } }
+        public static double GetWhatIfOffsetStep() { try { return Preferences.Get("WhatIfOffsetStep", 5000.0); } catch { return 5000.0; } }
+        public static double GetGrowthRateStep() { try { return Preferences.Get("GrowthRateStep", 0.5); } catch { return 0.5; } }
+
+        public static void SetMaxLoanTermYears(int v) => Preferences.Set("MaxLoanTermYears", Math.Clamp(v, 10, 50));
+        public static void SetDefaultInterestRate(double v) => Preferences.Set("DefaultInterestRate", Math.Clamp(v, 0.01, 30.0));
+        public static void SetDefaultLoanTermYears(int v) => Preferences.Set("DefaultLoanTermYears", Math.Clamp(v, 1, GetMaxLoanTermYears()));
+        public static void SetDefaultProjectionYears(int v) => Preferences.Set("DefaultProjectionYears", Math.Clamp(v, 1, 50));
+        public static void SetMaxProjectionYears(int v) => Preferences.Set("MaxProjectionYears", Math.Clamp(v, 5, 50));
+
+        public static void SetWhatIfRateDelta(double v) => Preferences.Set("WhatIfRateDelta", Math.Clamp(v, 0.01, 5.0));
+        public static void SetWhatIfExtraRepayment(double v) => Preferences.Set("WhatIfExtraRepayment", Math.Clamp(v, 50.0, 50000.0));
+        public static void SetWhatIfLumpSum(double v) => Preferences.Set("WhatIfLumpSum", Math.Clamp(v, 1000.0, 500000.0));
+        public static void SetWhatIfOffsetBalance(double v) => Preferences.Set("WhatIfOffsetBalance", Math.Clamp(v, 0.0, 1000000.0));
+
+        public static void SetLoanRateStep(double v) => Preferences.Set("LoanRateStep", Math.Clamp(v, 0.01, 1.0));
+        public static void SetWhatIfRateStep(double v) => Preferences.Set("WhatIfRateStep", Math.Clamp(v, 0.01, 1.0));
+        public static void SetWhatIfMonthlyStep(double v) => Preferences.Set("WhatIfMonthlyStep", Math.Clamp(v, 10.0, 5000.0));
+        public static void SetWhatIfLumpSumStep(double v) => Preferences.Set("WhatIfLumpSumStep", Math.Clamp(v, 100.0, 50000.0));
+        public static void SetWhatIfOffsetStep(double v) => Preferences.Set("WhatIfOffsetStep", Math.Clamp(v, 100.0, 50000.0));
+        public static void SetGrowthRateStep(double v) => Preferences.Set("GrowthRateStep", Math.Clamp(v, 0.1, 5.0));
+
+        #endregion
+
         public const AppThemes DefaultAppTheme = AppThemes.Dark;
     }
 }

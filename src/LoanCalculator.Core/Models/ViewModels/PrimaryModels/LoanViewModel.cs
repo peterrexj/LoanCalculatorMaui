@@ -438,8 +438,8 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
         public void AddDefaultValues()
         {
             PropertyAmount = 1000000;
-            InterestRate = 5.0;
-            LoanTermInYears = 30;
+            InterestRate = SharedServiceCore.GetDefaultInterestRate();
+            LoanTermInYears = SharedServiceCore.GetDefaultLoanTermYears();
             DepositPercentage = 10;
             //AustraliaStateSelectedIndex = null;
         }
@@ -482,7 +482,7 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
 
         public int LoanTermInYears
         {
-            get => HomeLoanInfo?.HomeLoanRepaymentRequest?.LoanTermInYears ?? 30;
+            get => HomeLoanInfo?.HomeLoanRepaymentRequest?.LoanTermInYears ?? SharedServiceCore.GetDefaultLoanTermYears();
             set
             {
                 if (isUpdating || !HasInitialized) return;
@@ -500,7 +500,7 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
 
         public double InterestRate
         {
-            get => HomeLoanInfo?.HomeLoanRepaymentRequest?.InterestRate ?? 5.0;
+            get => HomeLoanInfo?.HomeLoanRepaymentRequest?.InterestRate ?? SharedServiceCore.GetDefaultInterestRate();
             set
             {
                 if (isUpdating || !HasInitialized) return;

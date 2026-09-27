@@ -190,7 +190,10 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
 
         // ── Projection tab ────────────────────────────────────────────────
 
-        [JsonIgnore] private int _projectionYears = 10;
+        [JsonIgnore]
+        public int MaxProjectionYears => SharedServiceCore.GetMaxProjectionYears();
+
+        [JsonIgnore] private int _projectionYears = SharedServiceCore.GetDefaultProjectionYears();
         [JsonIgnore]
         public int ProjectionYears
         {

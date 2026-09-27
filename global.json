@@ -1,6 +1,8 @@
 {
   "sdk": {
-    "version": "9.0.311",
-    "rollForward": "latestPatch"
+    "version": "10.0.302"
+  },
+  "msbuild-sdks": {
+    "Microsoft.Android.Sdk": "36.0.0"
   }
 }

@@ -17,9 +17,9 @@ All commands run from `src/LoanCalculator/` unless noted.
 ### Build
 
 ```bash
-dotnet build LoanCalculatorMaui.csproj -f net9.0-ios18.0 -c Debug
-dotnet build LoanCalculatorMaui.csproj -f net9.0-android36.0 -c Debug
-dotnet build LoanCalculatorMaui.csproj -f net9.0-maccatalyst -c Debug
+dotnet build LoanCalculatorMaui.csproj -f net10.0-ios26.5 -c Debug
+dotnet build LoanCalculatorMaui.csproj -f net10.0-android36.0 -c Debug
+dotnet build LoanCalculatorMaui.csproj -f net10.0-maccatalyst -c Debug
 ```
 
 ### Run on iOS Simulator

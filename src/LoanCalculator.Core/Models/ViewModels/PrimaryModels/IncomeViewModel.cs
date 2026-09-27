@@ -387,6 +387,9 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
         }
 
         [JsonIgnore]
+        public int MaxProjectionYears => SharedServiceCore.GetMaxProjectionYears();
+
+        [JsonIgnore]
         public double AnnualGrowthRate
         {
             get => TransactionRecords?.IncomeExpenseSummary?.AnnualGrowthRate ?? 0;

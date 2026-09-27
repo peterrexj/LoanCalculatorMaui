@@ -3,12 +3,12 @@
 	<PropertyGroup>
 		<!-- On Windows: include Android and Windows (iOS requires a Mac build host) -->
 		<TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">
-			net9.0-android36.0;net9.0-windows10.0.19041.0
+			net10.0-android36.0;net10.0-windows10.0.19041.0
 		</TargetFrameworks>
 
 		<!-- On non-Windows (Mac/Linux): include Android for emulator testing -->
 		<TargetFrameworks Condition="!$([MSBuild]::IsOSPlatform('windows'))">
-			net9.0-android36.0;net9.0-ios18.0;net9.0-maccatalyst
+			net10.0-android36.0;net10.0-ios26.5;net10.0-maccatalyst
 		</TargetFrameworks>
 		
 		<!-- Uncomment to also build the tizen app. You will need to install tizen by following this: https://github.com/Samsung/Tizen.NET -->
@@ -44,23 +44,25 @@
 		
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">15.0</SupportedOSPlatformVersion>
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">15.0</SupportedOSPlatformVersion>
-		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">21.0</SupportedOSPlatformVersion>
+		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">23.0</SupportedOSPlatformVersion>
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.19041.0</SupportedOSPlatformVersion>
 		<TargetPlatformMinVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.19041.0</TargetPlatformMinVersion>
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'tizen'">6.5</SupportedOSPlatformVersion>
 		<DefaultLanguage>en-au</DefaultLanguage>
+		<MauiVersion>10.0.90</MauiVersion>
+
 		<AndroidPackageFormat Condition="'$(Configuration)' == 'Debug'">apk</AndroidPackageFormat>
 		<AndroidPackageFormat Condition="'$(Configuration)' == 'Release'">aab</AndroidPackageFormat>
 	</PropertyGroup>
 
 	<!-- Windows (UAP) Configurations-->
-	<!--<PropertyGroup Condition="'$(TargetFramework)' == 'net9.0-windows10.0.22621.0'">
+	<!--<PropertyGroup Condition="'$(TargetFramework)' == 'net10.0-windows10.0.22621.0'">
 		<TargetPlatformVersion>10.0.22621.0</TargetPlatformVersion> 
 		<SupportedOSPlatformVersion>10.0.19041.0</SupportedOSPlatformVersion>
 		<TargetPlatformMinVersion>10.0.19041.0</TargetPlatformMinVersion> 
 	</PropertyGroup>-->
 
-	<ItemGroup Condition="'$(TargetFramework)' == 'net9.0-windows10.0.19041.0'">
+	<ItemGroup Condition="'$(TargetFramework)' == 'net10.0-windows10.0.19041.0'">
 		<None Include="Resources\AppIcon\appiconfg.png">
 			<Pack>true</Pack>
 			<PackagePath>Resources\AppIcon\</PackagePath>
@@ -74,7 +76,7 @@
 	<!--End of Windows (UAP)-->
 
 	<!-- Android Release signing (Play Store AAB) -->
-	<PropertyGroup Condition="'$(Configuration)' == 'Release' and ($(TargetFramework.StartsWith('net9.0-android')))">
+	<PropertyGroup Condition="'$(Configuration)' == 'Release' and ($(TargetFramework.StartsWith('net10.0-android')))">
 	  <AndroidKeyStore>true</AndroidKeyStore>
 	  <AndroidSigningKeyStore>catholicsaints.keystore</AndroidSigningKeyStore>
 	  <AndroidSigningKeyAlias>keyalias.alias</AndroidSigningKeyAlias>
@@ -82,7 +84,18 @@
 	  <AndroidSigningKeyPass>CatholicSaintsPassword@01</AndroidSigningKeyPass>
 	</PropertyGroup>
 
-	<PropertyGroup Condition="'$(TargetFramework)' == 'net9.0-ios' and '$(Configuration)' == 'Release'">
+	<!-- iOS Debug (simulator) -->
+	<PropertyGroup Condition="'$(Configuration)' == 'Debug' and '$(TargetFramework)' == 'net10.0-ios26.5'">
+		<RuntimeIdentifier>iossimulator-arm64</RuntimeIdentifier>
+		<CodesignKey>-</CodesignKey>
+		<CodesignProvision></CodesignProvision>
+		<CodesignEntitlements></CodesignEntitlements>
+		<MtouchLink>None</MtouchLink>
+		<ValidateXcodeVersion>false</ValidateXcodeVersion>
+	</PropertyGroup>
+
+	<!-- iOS Release (App Store) -->
+	<PropertyGroup Condition="'$(TargetFramework)' == 'net10.0-ios26.5' and '$(Configuration)' == 'Release'">
 		<RuntimeIdentifier>ios-arm64</RuntimeIdentifier>
 		<CodesignKey>iPhone Distribution</CodesignKey>
 		<CodesignProvision>LoanAffordabilityCalculator</CodesignProvision>
@@ -93,6 +106,7 @@
 		<Optimize>False</Optimize>
 		<MtouchLink>None</MtouchLink>
 		<MtouchExtraArgs>--optimize:-static-block-to-delegate-lookup</MtouchExtraArgs>
+		<ValidateXcodeVersion>false</ValidateXcodeVersion>
 	</PropertyGroup>
 
 	<PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
@@ -114,13 +128,10 @@
 		<!-- Custom Fonts -->
 		<MauiFont Include="Resources\Fonts\*" />
 
-		<!-- Also bundle the PDF fonts as raw assets so the PDF generator can open them by
-		     filename via FileSystem.OpenAppPackageFileAsync. MauiFont alone registers them
-		     into the font system but does not make the .ttf openable as a package file on
-		     Android, which threw FileNotFoundException: NotoSans-Regular.ttf. -->
-		<MauiAsset Include="Resources\Fonts\NotoSans-Regular.ttf" LogicalName="NotoSans-Regular.ttf" />
-		<MauiAsset Include="Resources\Fonts\NotoSans-Bold.ttf" LogicalName="NotoSans-Bold.ttf" />
-		<MauiAsset Include="Resources\Fonts\NotoSans-Italic.ttf" LogicalName="NotoSans-Italic.ttf" />
+		<!-- Note: MauiFont puts font files in the app bundle root on all platforms in .NET 10,
+		     making them accessible via FileSystem.OpenAppPackageFileAsync. Do NOT add a
+		     duplicate MauiAsset entry for the same font files — in .NET 10 this causes the
+		     font to be silently dropped from the bundle entirely. -->
 
 		<!-- Raw Assets (also remove the "Resources\Raw" prefix) -->
 		<MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
@@ -164,12 +175,12 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="CommunityToolkit.Maui" Version="11.0.0" />
-		<PackageReference Include="Microsoft.Maui.Controls" Version="9.0.82" />
-		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="9.0.1" />
-		<PackageReference Include="Plugin.InAppBilling" Version="8.0.5" />
+		<PackageReference Include="CommunityToolkit.Maui" Version="15.0.1" />
+		<PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="10.0.0" />
+		<PackageReference Include="Plugin.InAppBilling" Version="10.0.0" />
 		<PackageReference Include="Sentry.Maui" Version="5.9.0" />
-		<PackageReference Include="SkiaSharp.Extended.UI.Maui" Version="3.0.0" />
+		<PackageReference Include="SkiaSharp.Views.Maui.Controls" Version="4.152.1" />
 		<PackageReference Include="Syncfusion.Maui.Core" Version="33.2.6" />
 		<PackageReference Include="Syncfusion.Maui.Expander" Version="33.2.6" />
 		<PackageReference Include="Syncfusion.Maui.Popup" Version="33.2.6" />

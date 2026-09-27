@@ -6,8 +6,8 @@ param(
 $Project   = "LoanCalculatorMaui.csproj"
 $BundleId  = "com.pj.loan.afford.calc"
 
-$PhoneAvd  = "Medium_Phone_API_36.1"
-$TabletAvd = "Medium_Tablet_API_36.1"
+$PhoneAvd  = "pixel_9_pro_-_api_36"
+$TabletAvd = "tablet_h-dpi_13_5in_-_api_29_1"
 
 if ($Avd -ne "") {
     $EmulatorName = $Avd
@@ -17,7 +17,7 @@ if ($Avd -ne "") {
     $EmulatorName = $PhoneAvd
 }
 
-# ── Java 21 via Homebrew (required for Android manifest merger) ──────────────
+# Java 21 via Homebrew (required for Android manifest merger)
 $javaHome = "/opt/homebrew/opt/openjdk@21"
 if (Test-Path $javaHome) {
     $env:JAVA_HOME = $javaHome
@@ -80,13 +80,13 @@ $serial = (& $AdbExe devices | Select-String "emulator" | Select-String "device$
 Write-Host "    Serial: $serial"
 
 Write-Host "==> Building..."
-dotnet build $Project -f net9.0-android36.0 -c Debug -p:AndroidSdkDirectory=$SdkRoot -p:EmbedAssembliesIntoApk=true
+dotnet build $Project -f net10.0-android36.0 -c Debug -p:AndroidSdkDirectory=$SdkRoot -p:EmbedAssembliesIntoApk=true
 if ($LASTEXITCODE -ne 0) { exit 1 }
 
 Write-Host "==> Finding APK..."
-$apk = Get-ChildItem "bin/Debug/net9.0-android36.0" -Filter "*-Signed.apk" -Recurse | Select-Object -First 1
-if (-not $apk) { $apk = Get-ChildItem "bin/Debug/net9.0-android36.0" -Filter "*.apk" -Recurse | Select-Object -First 1 }
-if (-not $apk) { Write-Error "APK not found under bin/Debug/net9.0-android36.0"; exit 1 }
+$apk = Get-ChildItem "bin/Debug/net10.0-android36.0" -Filter "*-Signed.apk" -Recurse | Select-Object -First 1
+if (-not $apk) { $apk = Get-ChildItem "bin/Debug/net10.0-android36.0" -Filter "*.apk" -Recurse | Select-Object -First 1 }
+if (-not $apk) { Write-Error "APK not found under bin/Debug/net10.0-android36.0"; exit 1 }
 Write-Host "    APK: $($apk.FullName)"
 
 Write-Host "==> Stopping existing app..."
@@ -95,7 +95,7 @@ Write-Host "==> Stopping existing app..."
 Write-Host "==> Installing..."
 & $AdbExe -s $serial install -r $apk.FullName
 if ($LASTEXITCODE -ne 0) {
-    Write-Host "    Install failed — uninstalling old app and retrying..." -ForegroundColor Yellow
+    Write-Host "    Install failed - uninstalling old app and retrying..." -ForegroundColor Yellow
     & $AdbExe -s $serial uninstall $BundleId
     & $AdbExe -s $serial install $apk.FullName
     if ($LASTEXITCODE -ne 0) { exit 1 }

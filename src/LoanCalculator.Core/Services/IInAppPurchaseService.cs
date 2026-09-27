@@ -138,7 +138,7 @@ namespace LoanCalculator.Core.Services
                     return await HandleNoNetwork();
                 }
 
-                var purchase = await billing.PurchaseAsync(productId, ItemType.InAppPurchase, "apppayload");
+                var purchase = await billing.PurchaseAsync(productId, ItemType.InAppPurchase);
 
                 var message = GetPurchaseResultCustomerMessage(purchase?.State ?? PurchaseState.Unknown);
 

@@ -41,7 +41,7 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
         private bool HasAffordabilityData => _loanVm?.IsAffordabilityAvailable ?? false;
 
         // ── Scenario 1: Rate Change ────────────────────────────────────────
-        [JsonIgnore] private double _rateChangeDelta = 0.5;
+        [JsonIgnore] private double _rateChangeDelta = SharedServiceCore.GetWhatIfRateDelta();
         public double RateChangeDelta
         {
             get => _rateChangeDelta;
@@ -125,7 +125,7 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
         }
 
         // ── Scenario 2: Extra Repayment ───────────────────────────────────
-        [JsonIgnore] private double _extraRepaymentMonthly = 500;
+        [JsonIgnore] private double _extraRepaymentMonthly = SharedServiceCore.GetWhatIfExtraRepayment();
         public double ExtraRepaymentMonthly
         {
             get => _extraRepaymentMonthly;
@@ -184,7 +184,7 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
         {
             if (BaseLoanAmount <= 0 || BaseRate <= 0) return;
 
-            const int MaxTerm = 30;
+            int MaxTerm = SharedServiceCore.GetMaxLoanTermYears();
             var step = BaseTerm >= 15 ? 5 : 2;
             var clamped = Math.Min(BaseTerm, MaxTerm);
 
@@ -327,7 +327,7 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
         }
 
         // ── Scenario 5: Lump Sum Payment ─────────────────────────────────
-        [JsonIgnore] private double _lumpSumAmount = 10000;
+        [JsonIgnore] private double _lumpSumAmount = SharedServiceCore.GetWhatIfLumpSum();
         public double LumpSumAmount
         {
             get => _lumpSumAmount;
@@ -439,7 +439,7 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
         }
 
         // ── Scenario 7: Offset Account ────────────────────────────────────
-        [JsonIgnore] private double _offsetBalance = 20000;
+        [JsonIgnore] private double _offsetBalance = SharedServiceCore.GetWhatIfOffsetBalance();
         public double OffsetBalance
         {
             get => _offsetBalance;
@@ -551,21 +551,21 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
         }
 
         // ── Scenario 9: Combined Strategy ────────────────────────────────
-        [JsonIgnore] private double _combinedExtraMonthly = 500;
+        [JsonIgnore] private double _combinedExtraMonthly = SharedServiceCore.GetWhatIfExtraRepayment();
         public double CombinedExtraMonthly
         {
             get => _combinedExtraMonthly;
             set { _combinedExtraMonthly = Math.Max(0, value); OnPropertyChanged(nameof(CombinedExtraMonthly)); RecalculateCombined(); }
         }
 
-        [JsonIgnore] private double _combinedLumpSum = 10000;
+        [JsonIgnore] private double _combinedLumpSum = SharedServiceCore.GetWhatIfLumpSum();
         public double CombinedLumpSum
         {
             get => _combinedLumpSum;
             set { _combinedLumpSum = Math.Max(0, value); OnPropertyChanged(nameof(CombinedLumpSum)); RecalculateCombined(); }
         }
 
-        [JsonIgnore] private double _combinedOffset = 20000;
+        [JsonIgnore] private double _combinedOffset = SharedServiceCore.GetWhatIfOffsetBalance();
         public double CombinedOffset
         {
             get => _combinedOffset;

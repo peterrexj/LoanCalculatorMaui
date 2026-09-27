@@ -629,7 +629,7 @@
                                                 HeightRequest="60"
                                                 HorizontalOptions="FillAndExpand"
                                                 Interval="4"
-                                                Maximum="25"
+                                                Maximum="{Binding MaxProjectionYears}"
                                                 Minimum="1"
                                                 MinorTicksPerInterval="3"
                                                 ShowLabels="True"

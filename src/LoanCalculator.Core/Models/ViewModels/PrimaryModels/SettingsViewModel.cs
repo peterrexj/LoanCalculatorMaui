@@ -315,6 +315,9 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
             OnPropertyChanged(nameof(SelectedFontFamily));
             LoadAustralianModeSetting();
             LoadStampDutySetting();
+            LoadCalculatorDefaults();
+            LoadWhatIfDefaults();
+            LoadStepperIncrements();
         }
 
         #region Australian Mode
@@ -390,6 +393,281 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
             _isStampDutyEnabled = _isAustralianModeEnabled || Preferences.Get(StampDutyKey, false);
             OnPropertyChanged(nameof(IsStampDutyEnabled));
             OnPropertyChanged(nameof(IsStampDutyToggleEnabled));
+        }
+
+        #endregion
+
+        #region Calculator Defaults
+
+        [JsonIgnore] private int _maxLoanTermYears;
+        [JsonIgnore]
+        public int MaxLoanTermYears
+        {
+            get => _maxLoanTermYears;
+            set
+            {
+                if (_maxLoanTermYears == value) return;
+                _maxLoanTermYears = value;
+                SharedServiceCore.SetMaxLoanTermYears(value);
+                OnPropertyChanged(nameof(MaxLoanTermYears));
+                // Revalidate default term — it cannot exceed the new max
+                if (_defaultLoanTermYears > value)
+                {
+                    _defaultLoanTermYears = value;
+                    OnPropertyChanged(nameof(DefaultLoanTermYears));
+                }
+            }
+        }
+
+        [JsonIgnore] private int _defaultLoanTermYears;
+        [JsonIgnore]
+        public int DefaultLoanTermYears
+        {
+            get => _defaultLoanTermYears;
+            set
+            {
+                if (_defaultLoanTermYears == value) return;
+                _defaultLoanTermYears = value;
+                SharedServiceCore.SetDefaultLoanTermYears(value);
+                OnPropertyChanged(nameof(DefaultLoanTermYears));
+            }
+        }
+
+        [JsonIgnore] private string _defaultInterestRateText = string.Empty;
+        [JsonIgnore]
+        public string DefaultInterestRateText
+        {
+            get => _defaultInterestRateText;
+            set
+            {
+                _defaultInterestRateText = value;
+                if (double.TryParse(value, out var d))
+                    SharedServiceCore.SetDefaultInterestRate(d);
+                OnPropertyChanged(nameof(DefaultInterestRateText));
+            }
+        }
+
+        [JsonIgnore] private int _defaultProjectionYears;
+        [JsonIgnore]
+        public int DefaultProjectionYears
+        {
+            get => _defaultProjectionYears;
+            set
+            {
+                if (_defaultProjectionYears == value) return;
+                _defaultProjectionYears = value;
+                SharedServiceCore.SetDefaultProjectionYears(value);
+                OnPropertyChanged(nameof(DefaultProjectionYears));
+            }
+        }
+
+        [JsonIgnore] private int _maxProjectionYears;
+        [JsonIgnore]
+        public int MaxProjectionYears
+        {
+            get => _maxProjectionYears;
+            set
+            {
+                if (_maxProjectionYears == value) return;
+                _maxProjectionYears = value;
+                SharedServiceCore.SetMaxProjectionYears(value);
+                OnPropertyChanged(nameof(MaxProjectionYears));
+                if (_defaultProjectionYears > value)
+                {
+                    _defaultProjectionYears = value;
+                    OnPropertyChanged(nameof(DefaultProjectionYears));
+                }
+            }
+        }
+
+        public void LoadCalculatorDefaults()
+        {
+            _maxLoanTermYears = SharedServiceCore.GetMaxLoanTermYears();
+            _defaultLoanTermYears = SharedServiceCore.GetDefaultLoanTermYears();
+            _defaultInterestRateText = SharedServiceCore.GetDefaultInterestRate().ToString("F2");
+            _defaultProjectionYears = SharedServiceCore.GetDefaultProjectionYears();
+            _maxProjectionYears = SharedServiceCore.GetMaxProjectionYears();
+            OnPropertyChanged(nameof(MaxLoanTermYears));
+            OnPropertyChanged(nameof(DefaultLoanTermYears));
+            OnPropertyChanged(nameof(DefaultInterestRateText));
+            OnPropertyChanged(nameof(DefaultProjectionYears));
+            OnPropertyChanged(nameof(MaxProjectionYears));
+        }
+
+        #endregion
+
+        #region What-If Defaults
+
+        [JsonIgnore] private string _whatIfRateDeltaText = string.Empty;
+        [JsonIgnore]
+        public string WhatIfRateDeltaText
+        {
+            get => _whatIfRateDeltaText;
+            set
+            {
+                _whatIfRateDeltaText = value;
+                if (double.TryParse(value, out var d))
+                    SharedServiceCore.SetWhatIfRateDelta(d);
+                OnPropertyChanged(nameof(WhatIfRateDeltaText));
+            }
+        }
+
+        [JsonIgnore] private string _whatIfExtraRepaymentText = string.Empty;
+        [JsonIgnore]
+        public string WhatIfExtraRepaymentText
+        {
+            get => _whatIfExtraRepaymentText;
+            set
+            {
+                _whatIfExtraRepaymentText = value;
+                if (double.TryParse(value, out var d))
+                    SharedServiceCore.SetWhatIfExtraRepayment(d);
+                OnPropertyChanged(nameof(WhatIfExtraRepaymentText));
+            }
+        }
+
+        [JsonIgnore] private string _whatIfLumpSumText = string.Empty;
+        [JsonIgnore]
+        public string WhatIfLumpSumText
+        {
+            get => _whatIfLumpSumText;
+            set
+            {
+                _whatIfLumpSumText = value;
+                if (double.TryParse(value, out var d))
+                    SharedServiceCore.SetWhatIfLumpSum(d);
+                OnPropertyChanged(nameof(WhatIfLumpSumText));
+            }
+        }
+
+        [JsonIgnore] private string _whatIfOffsetBalanceText = string.Empty;
+        [JsonIgnore]
+        public string WhatIfOffsetBalanceText
+        {
+            get => _whatIfOffsetBalanceText;
+            set
+            {
+                _whatIfOffsetBalanceText = value;
+                if (double.TryParse(value, out var d))
+                    SharedServiceCore.SetWhatIfOffsetBalance(d);
+                OnPropertyChanged(nameof(WhatIfOffsetBalanceText));
+            }
+        }
+
+        public void LoadWhatIfDefaults()
+        {
+            _whatIfRateDeltaText = SharedServiceCore.GetWhatIfRateDelta().ToString("F2");
+            _whatIfExtraRepaymentText = SharedServiceCore.GetWhatIfExtraRepayment().ToString("F0");
+            _whatIfLumpSumText = SharedServiceCore.GetWhatIfLumpSum().ToString("F0");
+            _whatIfOffsetBalanceText = SharedServiceCore.GetWhatIfOffsetBalance().ToString("F0");
+            OnPropertyChanged(nameof(WhatIfRateDeltaText));
+            OnPropertyChanged(nameof(WhatIfExtraRepaymentText));
+            OnPropertyChanged(nameof(WhatIfLumpSumText));
+            OnPropertyChanged(nameof(WhatIfOffsetBalanceText));
+        }
+
+        #endregion
+
+        #region Stepper Increments
+
+        [JsonIgnore] private string _loanRateStepText = string.Empty;
+        [JsonIgnore]
+        public string LoanRateStepText
+        {
+            get => _loanRateStepText;
+            set
+            {
+                _loanRateStepText = value;
+                if (double.TryParse(value, out var d))
+                    SharedServiceCore.SetLoanRateStep(d);
+                OnPropertyChanged(nameof(LoanRateStepText));
+            }
+        }
+
+        [JsonIgnore] private string _whatIfRateStepText = string.Empty;
+        [JsonIgnore]
+        public string WhatIfRateStepText
+        {
+            get => _whatIfRateStepText;
+            set
+            {
+                _whatIfRateStepText = value;
+                if (double.TryParse(value, out var d))
+                    SharedServiceCore.SetWhatIfRateStep(d);
+                OnPropertyChanged(nameof(WhatIfRateStepText));
+            }
+        }
+
+        [JsonIgnore] private string _whatIfMonthlyStepText = string.Empty;
+        [JsonIgnore]
+        public string WhatIfMonthlyStepText
+        {
+            get => _whatIfMonthlyStepText;
+            set
+            {
+                _whatIfMonthlyStepText = value;
+                if (double.TryParse(value, out var d))
+                    SharedServiceCore.SetWhatIfMonthlyStep(d);
+                OnPropertyChanged(nameof(WhatIfMonthlyStepText));
+            }
+        }
+
+        [JsonIgnore] private string _whatIfLumpSumStepText = string.Empty;
+        [JsonIgnore]
+        public string WhatIfLumpSumStepText
+        {
+            get => _whatIfLumpSumStepText;
+            set
+            {
+                _whatIfLumpSumStepText = value;
+                if (double.TryParse(value, out var d))
+                    SharedServiceCore.SetWhatIfLumpSumStep(d);
+                OnPropertyChanged(nameof(WhatIfLumpSumStepText));
+            }
+        }
+
+        [JsonIgnore] private string _whatIfOffsetStepText = string.Empty;
+        [JsonIgnore]
+        public string WhatIfOffsetStepText
+        {
+            get => _whatIfOffsetStepText;
+            set
+            {
+                _whatIfOffsetStepText = value;
+                if (double.TryParse(value, out var d))
+                    SharedServiceCore.SetWhatIfOffsetStep(d);
+                OnPropertyChanged(nameof(WhatIfOffsetStepText));
+            }
+        }
+
+        [JsonIgnore] private string _growthRateStepText = string.Empty;
+        [JsonIgnore]
+        public string GrowthRateStepText
+        {
+            get => _growthRateStepText;
+            set
+            {
+                _growthRateStepText = value;
+                if (double.TryParse(value, out var d))
+                    SharedServiceCore.SetGrowthRateStep(d);
+                OnPropertyChanged(nameof(GrowthRateStepText));
+            }
+        }
+
+        public void LoadStepperIncrements()
+        {
+            _loanRateStepText = SharedServiceCore.GetLoanRateStep().ToString("F2");
+            _whatIfRateStepText = SharedServiceCore.GetWhatIfRateStep().ToString("F2");
+            _whatIfMonthlyStepText = SharedServiceCore.GetWhatIfMonthlyStep().ToString("F0");
+            _whatIfLumpSumStepText = SharedServiceCore.GetWhatIfLumpSumStep().ToString("F0");
+            _whatIfOffsetStepText = SharedServiceCore.GetWhatIfOffsetStep().ToString("F0");
+            _growthRateStepText = SharedServiceCore.GetGrowthRateStep().ToString("F2");
+            OnPropertyChanged(nameof(LoanRateStepText));
+            OnPropertyChanged(nameof(WhatIfRateStepText));
+            OnPropertyChanged(nameof(WhatIfMonthlyStepText));
+            OnPropertyChanged(nameof(WhatIfLumpSumStepText));
+            OnPropertyChanged(nameof(WhatIfOffsetStepText));
+            OnPropertyChanged(nameof(GrowthRateStepText));
         }
 
         #endregion

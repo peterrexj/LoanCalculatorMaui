@@ -520,34 +520,38 @@ public partial class BudgetView : ContentPage
 
     private void OnProjectionYearsIncrease(object sender, EventArgs e)
     {
-        if (_viewModel.ProjectionYears < 25)
+        if (_viewModel.ProjectionYears < SharedServiceCore.GetMaxProjectionYears())
             _viewModel.ProjectionYears += 1;
     }
 
     private void OnIncomeGrowthRateIncrease(object sender, EventArgs e)
     {
-        _viewModel.Income.AnnualGrowthRate = Math.Min(_viewModel.Income.AnnualGrowthRate + 0.5, 20);
+        var step = SharedServiceCore.GetGrowthRateStep();
+        _viewModel.Income.AnnualGrowthRate = Math.Min(_viewModel.Income.AnnualGrowthRate + step, 20);
         LblIncomeGrowthRate.Text = $"{_viewModel.Income.AnnualGrowthRatePercentage}%";
         RefreshProjection();
     }
 
     private void OnIncomeGrowthRateDecrease(object sender, EventArgs e)
     {
-        _viewModel.Income.AnnualGrowthRate = Math.Max(_viewModel.Income.AnnualGrowthRate - 0.5, 0);
+        var step = SharedServiceCore.GetGrowthRateStep();
+        _viewModel.Income.AnnualGrowthRate = Math.Max(_viewModel.Income.AnnualGrowthRate - step, 0);
         LblIncomeGrowthRate.Text = $"{_viewModel.Income.AnnualGrowthRatePercentage}%";
         RefreshProjection();
     }
 
     private void OnExpenseGrowthRateIncrease(object sender, EventArgs e)
     {
-        _viewModel.Expense.AnnualGrowthRate = Math.Min(_viewModel.Expense.AnnualGrowthRate + 0.5, 20);
+        var step = SharedServiceCore.GetGrowthRateStep();
+        _viewModel.Expense.AnnualGrowthRate = Math.Min(_viewModel.Expense.AnnualGrowthRate + step, 20);
         LblExpenseGrowthRate.Text = $"{_viewModel.Expense.AnnualGrowthRatePercentage}%";
         RefreshProjection();
     }
 
     private void OnExpenseGrowthRateDecrease(object sender, EventArgs e)
     {
-        _viewModel.Expense.AnnualGrowthRate = Math.Max(_viewModel.Expense.AnnualGrowthRate - 0.5, 0);
+        var step = SharedServiceCore.GetGrowthRateStep();
+        _viewModel.Expense.AnnualGrowthRate = Math.Max(_viewModel.Expense.AnnualGrowthRate - step, 0);
         LblExpenseGrowthRate.Text = $"{_viewModel.Expense.AnnualGrowthRatePercentage}%";
         RefreshProjection();
     }

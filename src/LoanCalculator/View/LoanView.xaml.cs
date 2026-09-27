@@ -834,13 +834,19 @@ public partial class LoanView : ContentPage
     private void OnInterestRateDecrease(object sender, EventArgs e)
     {
         if (_viewModel.InterestRate > 0)
-            _viewModel.InterestRate = Math.Max(0, Math.Round(_viewModel.InterestRate - 0.05, 2));
+        {
+            var step = SharedServiceCore.GetLoanRateStep();
+            _viewModel.InterestRate = Math.Max(0, Math.Round(_viewModel.InterestRate - step, 2));
+        }
     }
 
     private void OnInterestRateIncrease(object sender, EventArgs e)
     {
         if (_viewModel.InterestRate < 100)
-            _viewModel.InterestRate = Math.Min(100, Math.Round(_viewModel.InterestRate + 0.05, 2));
+        {
+            var step = SharedServiceCore.GetLoanRateStep();
+            _viewModel.InterestRate = Math.Min(100, Math.Round(_viewModel.InterestRate + step, 2));
+        }
     }
 
     private void OnInterestRateLabelTapped(object sender, TappedEventArgs e)
@@ -871,7 +877,7 @@ public partial class LoanView : ContentPage
 
     private void OnLoanTermIncrease(object sender, EventArgs e)
     {
-        if (_viewModel.LoanTermInYears < 30)
+        if (_viewModel.LoanTermInYears < SharedServiceCore.GetMaxLoanTermYears())
             _viewModel.LoanTermInYears += 1;
     }
 

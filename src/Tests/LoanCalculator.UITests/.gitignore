@@ -1,0 +1,7 @@
+# Appium server + drivers are installed locally by `npm install && npm run drivers`.
+# package-lock.json is deliberately committed so every machine gets the same Appium build.
+node_modules/
+.appium/
+
+# Screenshots, page-source dumps and the Appium server log from failed runs
+TestResults/

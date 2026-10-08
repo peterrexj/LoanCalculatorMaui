@@ -16,24 +16,36 @@
             <customControls:InAppPurchaseView x:Name="PremiumWindow" />
 
             <ScrollView>
-                <VerticalStackLayout Padding="16,16,16,32" Spacing="0">
+                <VerticalStackLayout Padding="12,16,12,32" Spacing="0">
 
                     <!--  Page title  -->
                     <Label
                         Margin="0,0,0,2"
                         FontAttributes="Bold"
                         FontSize="{StaticResource FontSizeHeading}"
+                        AutomationId="WhatIfPageTitle"
                         Text="What If?"
                         TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
                     <Label
-                        Margin="0,0,0,20"
+                        Margin="0,0,0,12"
                         FontSize="{StaticResource FontSizeSmall}"
                         Opacity="0.55"
                         Text="Explore scenarios based on your current loan"
                         TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
 
+                    <!--  Advisory microcopy — persistent estimate/not-advice reminder  -->
+                    <Label
+                        IsVisible="{Binding HasLoanData}"
+                        Margin="0,0,0,18"
+                        FontAttributes="Italic"
+                        FontSize="{StaticResource FontSizeSmall}"
+                        Opacity="0.7"
+                        Text="{DynamicResource LoanAppEstimateMicrocopy}"
+                        TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+
                     <!--  No data placeholder  -->
                     <Border
+                        AutomationId="WhatIfNoDataPanel"
                         IsVisible="{Binding HasNoLoanData}"
                         Margin="0,20,0,0"
                         Padding="20"
@@ -101,6 +113,7 @@
                                             VerticalOptions="Center" />
                                         <Button
                                             BackgroundColor="Transparent"
+                                            AutomationId="WhatIfRateDeltaMinus"
                                             Clicked="OnRateDeltaDecrease"
                                             FontAttributes="Bold"
                                             FontSize="{StaticResource FontSizeXL}"
@@ -111,11 +124,13 @@
                                             FontSize="{StaticResource FontSizeLarge}"
                                             HorizontalTextAlignment="Center"
                                             MinimumWidthRequest="72"
+                                            AutomationId="WhatIfRateDeltaValue"
                                             Text="{Binding RateChangeDelta, StringFormat='{0:+0.00;-0.00;0.00}%'}"
                                             TextColor="{DynamicResource LoanAppChartColor1}"
                                             VerticalOptions="Center" />
                                         <Button
                                             BackgroundColor="Transparent"
+                                            AutomationId="WhatIfRateDeltaPlus"
                                             Clicked="OnRateDeltaIncrease"
                                             FontAttributes="Bold"
                                             FontSize="{StaticResource FontSizeXL}"
@@ -136,7 +151,7 @@
                                     <Border Grid.Column="0" Padding="10,8" BackgroundColor="{DynamicResource LoanAppDefaultBackgroundColor}" StrokeShape="RoundRectangle 8" StrokeThickness="0">
                                         <VerticalStackLayout Spacing="2">
                                             <Label FontSize="{StaticResource FontSizeSmall}" Opacity="0.6" Text="NEW RATE" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
-                                            <Label FontAttributes="Bold" FontSize="{StaticResource FontSizeLarge}" Text="{Binding RateChangeNewRate}" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                                            <Label AutomationId="WhatIfRateNewRate" FontAttributes="Bold" FontSize="{StaticResource FontSizeLarge}" Text="{Binding RateChangeNewRate}" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
                                         </VerticalStackLayout>
                                     </Border>
                                     <!--  Monthly change — tinted amber (increase) or teal (saving)  -->
@@ -173,7 +188,7 @@
                                     <Border Grid.Column="0" Padding="10,8" BackgroundColor="{DynamicResource LoanAppDefaultBackgroundColor}" StrokeShape="RoundRectangle 8" StrokeThickness="0">
                                         <VerticalStackLayout Spacing="2">
                                             <Label FontSize="{StaticResource FontSizeSmall}" Opacity="0.6" Text="NEW MONTHLY" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
-                                            <Label FontAttributes="Bold" FontSize="{StaticResource FontSizeMedium}" Text="{Binding RateChangeMonthlyRepayment}" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                                            <Label AutomationId="WhatIfRateNewMonthly" FontAttributes="Bold" FontSize="{StaticResource FontSizeMedium}" Text="{Binding RateChangeMonthlyRepayment}" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
                                         </VerticalStackLayout>
                                     </Border>
                                     <Border Grid.Column="1" Padding="10,8" BackgroundColor="{DynamicResource LoanAppDefaultBackgroundColor}" StrokeShape="RoundRectangle 8" StrokeThickness="0">
@@ -906,6 +921,7 @@
 
                                 <!--  No income/expense data yet  -->
                                 <Border
+                                    AutomationId="WhatIfStressUnavailablePanel"
                                     IsVisible="{Binding StressTestUnavailable}"
                                     Padding="10,8"
                                     BackgroundColor="{DynamicResource LoanAppDefaultBackgroundColor}"
@@ -919,7 +935,7 @@
                                 </Border>
 
                                 <!--  Stress test results  -->
-                                <VerticalStackLayout IsVisible="{Binding StressTestAvailable}" Spacing="10">
+                                <VerticalStackLayout AutomationId="WhatIfStressResultsPanel" IsVisible="{Binding StressTestAvailable}" Spacing="10">
                                     <BoxView HeightRequest="1" Opacity="0.08" Color="{DynamicResource LoanAppDefaultForegroundColor}" />
 
                                     <Grid ColumnSpacing="12">
@@ -1003,14 +1019,14 @@
                                         <Label FontAttributes="Bold" FontSize="{StaticResource FontSizeSmall}" TextColor="{DynamicResource LoanAppChartDataMarkerTextColor1}">
                                             <Label.Triggers>
                                                 <DataTrigger Binding="{Binding StressTestRisk}" TargetType="Label" Value="-1">
-                                                    <Setter Property="Text" Value="Comfortable — your loan is well within budget" />
+                                                    <Setter Property="Text" Value="Comfortable (estimate) — the figures you entered sit well within budget" />
                                                 </DataTrigger>
                                                 <DataTrigger Binding="{Binding StressTestRisk}" TargetType="Label" Value="0">
-                                                    <Setter Property="Text" Value="Moderate risk — a small rate rise will stretch your budget" />
+                                                    <Setter Property="Text" Value="Moderate risk (estimate) — a small rate rise could stretch the budget you entered" />
                                                     <Setter Property="TextColor" Value="{DynamicResource LoanAppChartDataMarkerTextColor2}" />
                                                 </DataTrigger>
                                                 <DataTrigger Binding="{Binding StressTestRisk}" TargetType="Label" Value="1">
-                                                    <Setter Property="Text" Value="At risk — rates are close to your affordability limit" />
+                                                    <Setter Property="Text" Value="At risk (estimate) — rates are close to the limit implied by your figures; consider a financial adviser" />
                                                     <Setter Property="TextColor" Value="#FFFFFF" />
                                                 </DataTrigger>
                                             </Label.Triggers>

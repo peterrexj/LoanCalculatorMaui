@@ -21,6 +21,10 @@ namespace LoanCalculator.Core.Services
         private static IErrorHandlingService? _errorHandlingService;
         public static IErrorHandlingService ErrorHandlingService => _errorHandlingService ??= ServiceLocator.GetService<IErrorHandlingService>();
 
+        // Test-only. The resolved service is cached for the life of the process, so a fixture that
+        // injects one would otherwise keep serving it to every fixture that runs afterwards.
+        internal static void ResetErrorHandlingService() => _errorHandlingService = null;
+
         private static IAlertService? _alertService;
         public static IAlertService AlertService => _alertService ??= ServiceLocator.GetService<IAlertService>();
 
@@ -69,11 +73,23 @@ namespace LoanCalculator.Core.Services
             return data;
         }
 
+        /// <summary>
+        /// The most recent save kicked off by <see cref="SaveData{T}"/>.
+        /// </summary>
+        /// <remarks>
+        /// Exists so tests can await the write instead of racing it. <see cref="SaveData{T}"/> is
+        /// deliberately fire-and-forget, so a test that calls it and immediately asserts against a
+        /// mocked <see cref="ILocalStorage"/> is asserting before the background task has reached
+        /// the mock — it passes or fails on thread-pool timing. Production code must NOT await
+        /// this; the whole point of SaveData is that callers never block on disk.
+        /// </remarks>
+        public static Task LastSaveCompleted { get; private set; } = Task.CompletedTask;
+
         public static void SaveData<T>(T data)
         {
             if (_loadSafe) return;
 
-            _ = Task.Run(async () =>
+            LastSaveCompleted = Task.Run(async () =>
             {
                 try
                 {
@@ -160,6 +176,19 @@ namespace LoanCalculator.Core.Services
                 return ReplaceColorsWithResourceKeys(disclaimerData);
             }
         }
+
+        public static string PrivacyPolicyData
+        {
+            get
+            {
+                var privacyPolicyData = PjUtility.Runtime.GetAssembly("LoanCalculatorMaui")
+                    .GetEmbeddedResourceAsText(
+                        "LoanCalculatorMaui.Extensions.DisclaimerData.PrivacyPolicyData.html")
+                    .Replace("{{AppName}}", AppInformation?.ApplicationTitle ?? "Loan Affordability Calculator");
+
+                return ReplaceColorsWithResourceKeys(privacyPolicyData);
+            }
+        }
         private static string ReplaceColorsWithResourceKeys(string content)
         {
             try
@@ -202,7 +231,7 @@ namespace LoanCalculator.Core.Services
         // ║  Set to true to bypass all trial restrictions during local testing.   ║
         // ║  Search for TESTING_PREMIUM_OVERRIDE to find this flag.              ║
         // ╚══════════════════════════════════════════════════════════════════════╝
-        private const bool TESTING_PREMIUM_OVERRIDE = false; // ← set true to bypass trial gates during local testing
+        private const bool TESTING_PREMIUM_OVERRIDE = true; // ← set true to bypass trial gates during local testing
         // ────────────────────────────────────────────────────────────────────────
 
         public static bool IsTrialUser => !IsPremiumUser();

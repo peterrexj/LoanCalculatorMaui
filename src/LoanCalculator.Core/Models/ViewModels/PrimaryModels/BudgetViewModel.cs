@@ -75,6 +75,16 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
                 Income.IncomeExpenseEntry.Frequency = TimeFrequencyEnum.Monthly;
                 Income.IncomeExpenseFrequencySelectedIndex = TimeFrequencyEnum.Monthly.ToString();
                 Income.CurrencySymbol = Helper.CurrencySymbol;
+
+                // Sum before marking initialised. Nothing on this load path does it —
+                // LoadDataFile/CopyPropertiesFrom/InitializeViewData all leave the summary alone —
+                // and TotalMonthly/TotalYearly are [JsonIgnore], so they arrive as 0 no
+                // matter what the file contained. SplashPage pre-warms through here, and
+                // LoanViewModel.HasIncomeExpensesRecorded gates on TotalYearly > 0, so
+                // without this the affordability box was hidden on the first Loan page appearance
+                // of every launch until the user happened to visit Budget.
+                Income.TransactionRecords?.SumUpData();
+
                 Income.MarkInitializationComplete();
             }
             catch (Exception ex)
@@ -107,6 +117,16 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
                 Expense.IncomeExpenseEntry.Frequency = TimeFrequencyEnum.Monthly;
                 Expense.IncomeExpenseFrequencySelectedIndex = TimeFrequencyEnum.Monthly.ToString();
                 Expense.CurrencySymbol = Helper.CurrencySymbol;
+
+                // Sum before marking initialised. Nothing on this load path does it —
+                // LoadDataFile/CopyPropertiesFrom/InitializeViewData all leave the summary alone —
+                // and TotalMonthly/TotalYearly are [JsonIgnore], so they arrive as 0 no
+                // matter what the file contained. SplashPage pre-warms through here, and
+                // LoanViewModel.HasIncomeExpensesRecorded gates on TotalYearly > 0, so
+                // without this the affordability box was hidden on the first Loan page appearance
+                // of every launch until the user happened to visit Budget.
+                Expense.TransactionRecords?.SumUpData();
+
                 Expense.MarkInitializationComplete();
             }
             catch (Exception ex)
@@ -211,6 +231,23 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
 
         [JsonIgnore] public string ChartProjectionSubtitle =>
             $"Projected over {ProjectionYears} yr{(ProjectionYears == 1 ? "" : "s")}";
+
+        [JsonIgnore] private bool _isProjectionRefreshing;
+        /// <summary>
+        /// True while a debounced projection rebuild is pending or running, so the Projection
+        /// tab can show that the chart/grids are catching up with the latest growth-rate taps.
+        /// </summary>
+        [JsonIgnore]
+        public bool IsProjectionRefreshing
+        {
+            get => _isProjectionRefreshing;
+            set
+            {
+                if (_isProjectionRefreshing == value) return;
+                _isProjectionRefreshing = value;
+                OnPropertyChanged(nameof(IsProjectionRefreshing));
+            }
+        }
 
         [JsonIgnore] private ObservableCollection<ChartDataModel> _projectionIncomeAxis = new();
         [JsonIgnore] private ObservableCollection<ChartDataModel> _projectionExpenseAxis = new();

@@ -104,11 +104,17 @@
     <Color x:Key="LoanAppAppShellTabBarTitleColor">#bed0c9</Color>
 
     <!--  Notifications  -->
-    <Color x:Key="LoanAppNotificationWarningBgGradientStart">#C94C4C</Color>
-    <Color x:Key="LoanAppNotificationWarningBgGradientEnd">#7D2E2E</Color>
-    <Color x:Key="LoanAppNotificationInformationBgGradientStart">#D35400</Color>
-    <Color x:Key="LoanAppNotificationInformationBgGradientEnd">#8C2F00</Color>
-    <Color x:Key="LoanAppNotificationTextColor">#bed0c9</Color>
+    <!--
+        See the note in Theme.Dark.xaml. Forest was the worst of the four: Information was a
+        bright orange (#D35400/#8C2F00) and Warning a bright red (#C94C4C/#7D2E2E) inside an
+        all-green theme — and the pale-green notification text below sits at barely 3:1 on that
+        orange. Both are now on Forest's own teal/olive palette.
+    -->
+    <Color x:Key="LoanAppNotificationWarningBgGradientStart">#38342A</Color>
+    <Color x:Key="LoanAppNotificationWarningBgGradientEnd">#474134</Color>
+    <Color x:Key="LoanAppNotificationInformationBgGradientStart">#1D3A37</Color>
+    <Color x:Key="LoanAppNotificationInformationBgGradientEnd">#2F5050</Color>
+    <Color x:Key="LoanAppNotificationTextColor">#d3dfdb</Color>
     <Color x:Key="LoanAppNotificationBgColor">#bed0c9</Color>
 
     <!--  Lists  -->
@@ -212,17 +218,21 @@
     <!--  Checkbox styles  -->
     <Color x:Key="LoanAppCheckboxBackColor">#b3c8c0</Color>
 
-    <!--  Notification background brush  -->
-    <LinearGradientBrush x:Key="InformationBackgroundGradientBrush" StartPoint="0,0.5" EndPoint="1,0.5">
+    <!--
+        Notification background brushes — the body panel of DisclaimerBannerView.
+
+        Two stops, TOP to BOTTOM. These used to be three stops left-to-right (start, end at 0.7,
+        back to start at 1.0), which swept across the panel and then darkened again at the right
+        edge — a horizontal stripe running against a card whose header gradient runs 0,0 to 1,1.
+        A quiet vertical settle reads as one panel instead.
+    -->
+    <LinearGradientBrush x:Key="InformationBackgroundGradientBrush" StartPoint="0,0" EndPoint="0,1">
         <GradientStop Offset="0.0" Color="{StaticResource LoanAppNotificationInformationBgGradientStart}" />
-        <GradientStop Offset="0.7" Color="{StaticResource LoanAppNotificationInformationBgGradientEnd}" />
-        <GradientStop Offset="1.0" Color="{StaticResource LoanAppNotificationInformationBgGradientStart}" />
+        <GradientStop Offset="1.0" Color="{StaticResource LoanAppNotificationInformationBgGradientEnd}" />
     </LinearGradientBrush>
-    <!--  Notification background brush  -->
-    <LinearGradientBrush x:Key="WarningBackgroundGradientBrush" StartPoint="0,0.5" EndPoint="1,0.5">
+    <LinearGradientBrush x:Key="WarningBackgroundGradientBrush" StartPoint="0,0" EndPoint="0,1">
         <GradientStop Offset="0.0" Color="{StaticResource LoanAppNotificationWarningBgGradientStart}" />
-        <GradientStop Offset="0.7" Color="{StaticResource LoanAppNotificationWarningBgGradientEnd}" />
-        <GradientStop Offset="1.0" Color="{StaticResource LoanAppNotificationWarningBgGradientStart}" />
+        <GradientStop Offset="1.0" Color="{StaticResource LoanAppNotificationWarningBgGradientEnd}" />
     </LinearGradientBrush>
 
     <!--  Disclaimer  -->

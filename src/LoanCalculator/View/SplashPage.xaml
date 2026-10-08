@@ -16,6 +16,11 @@
             </LinearGradientBrush>
         </Grid.Background>
 
+        <!--  Everything here is composed at its RESTING state: no element starts hidden,
+              offset or scaled, because there is no entrance animation to run it in. That is
+              deliberate — see SplashPage.xaml.cs. Do not reintroduce Opacity="0"/Scale/
+              TranslationY start values without reading the note there first.  -->
+
         <!--  Soft glow behind the logo. A plain low-opacity solid ellipse — NOT a
               RadialGradientBrush, which misrenders on Android (collapses to a ring).  -->
         <Ellipse
@@ -26,7 +31,7 @@
             WidthRequest="300"
             HeightRequest="300"
             Fill="#16BAC5"
-            Opacity="0" />
+            Opacity="0.22" />
 
         <Grid
             RowDefinitions="*,Auto,Auto,Auto,*"
@@ -34,8 +39,8 @@
             VerticalOptions="Fill"
             Padding="32,0">
 
-            <!--  Logo card — scales + fades in. No colored Shadow: MAUI renders a colored
-                  shadow with a large radius as a diagonal streak on Android.  -->
+            <!--  Logo card. No colored Shadow: MAUI renders a colored shadow with a large
+                  radius as a diagonal streak on Android.  -->
             <Border
                 x:Name="LogoCard"
                 Grid.Row="1"
@@ -44,8 +49,6 @@
                 WidthRequest="148"
                 HeightRequest="148"
                 Padding="20"
-                Opacity="0"
-                Scale="0.6"
                 BackgroundColor="#FFFFFF"
                 StrokeThickness="0">
                 <Border.StrokeShape>
@@ -68,9 +71,7 @@
                 FontAttributes="Bold"
                 TextColor="#FFFFFF"
                 HorizontalTextAlignment="Center"
-                HorizontalOptions="Center"
-                Opacity="0"
-                TranslationY="18" />
+                HorizontalOptions="Center" />
 
             <!--  Tagline  -->
             <Label
@@ -81,9 +82,7 @@
                 FontSize="14"
                 TextColor="#9FD9DE"
                 HorizontalTextAlignment="Center"
-                HorizontalOptions="Center"
-                Opacity="0"
-                TranslationY="12" />
+                HorizontalOptions="Center" />
 
             <!--  Loading dots — pulse while the app pre-warms  -->
             <HorizontalStackLayout
@@ -92,8 +91,7 @@
                 Margin="0,0,0,56"
                 Spacing="10"
                 HorizontalOptions="Center"
-                VerticalOptions="End"
-                Opacity="0">
+                VerticalOptions="End">
                 <Ellipse x:Name="Dot1" WidthRequest="9" HeightRequest="9" Fill="#16BAC5" />
                 <Ellipse x:Name="Dot2" WidthRequest="9" HeightRequest="9" Fill="#16BAC5" />
                 <Ellipse x:Name="Dot3" WidthRequest="9" HeightRequest="9" Fill="#16BAC5" />

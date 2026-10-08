@@ -37,11 +37,20 @@ public partial class SettingsView : ContentPage
         {
             PageHelper.PageIsLoading();
 
-            base.OnAppearing();
+        base.OnAppearing();
 
             await Task.Delay(100); // Delay to allow UI to load
 
             await LoadDataSet();
+
+#if IOS || MACCATALYST
+            // Syncfusion 33.2.6 stacks a touch-enabled drawing layer over expander headers on
+            // iOS, so taps are accepted and dropped. Same defect family as the tab strip and the
+            // segmented control — see SyncfusionIosTouchFix. None of these expanders have an
+            // x:Name, so the fix walks the page for them.
+            LoanCalculatorMaui.Extensions.SyncfusionIosTouchFix.ApplyToExpanders(this);
+
+#endif
         }
         catch (Exception ex)
         {

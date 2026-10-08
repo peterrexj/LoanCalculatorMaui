@@ -33,9 +33,30 @@ namespace LoanCalculator.UnitTests.Models.ViewModels.PrimaryModels
         [TearDown]
         public void TearDown()
         {
+            // Drain before swapping the static back, or an in-flight save lands on whatever
+            // ILocalStorage the NEXT fixture has installed.
+            DrainSaves(failIfIncomplete: false);
+
             SharedServiceCore.ResetLocalStorage();
             PageHelper.PageLoadingComplete();
             SharedServiceCore.LoadSafeOff();
+        }
+
+        /// <summary>
+        /// Waits for the pending write before asserting against the mock.
+        /// </summary>
+        /// <remarks>
+        /// <see cref="SharedServiceCore.SaveData{T}"/> is fire-and-forget (<c>Task.Run</c>), so it
+        /// returns before <see cref="ILocalStorage.SaveData"/> is reached. Verifying straight after
+        /// the call asserts against the mock while the background task is still queued, which
+        /// passes or fails purely on thread-pool timing — this fixture was intermittently red for
+        /// exactly that reason, with Moq reporting "never performed" while listing that same call.
+        /// </remarks>
+        private static void DrainSaves(bool failIfIncomplete = true)
+        {
+            var completed = SharedServiceCore.LastSaveCompleted.Wait(TimeSpan.FromSeconds(5));
+            if (!completed && failIfIncomplete)
+                Assert.Fail("The pending save did not complete within 5s.");
         }
 
         // ── Helpers ────────────────────────────────────────────────────────────
@@ -93,6 +114,7 @@ namespace LoanCalculator.UnitTests.Models.ViewModels.PrimaryModels
             vm.RefreshIncomePropertyChanged();
             vm.FlushPendingSave(() => SharedServiceCore.SaveData(vm));
 
+            DrainSaves();
             _storageMock.Verify(s => s.SaveData(vm), Times.AtLeastOnce());
         }
 
@@ -104,6 +126,7 @@ namespace LoanCalculator.UnitTests.Models.ViewModels.PrimaryModels
             vm.TriggerPropertyChangedOnProjectionTab();
             vm.FlushPendingSave(() => SharedServiceCore.SaveData(vm));
 
+            DrainSaves();
             _storageMock.Verify(s => s.SaveData(vm), Times.AtLeastOnce());
         }
 
@@ -119,6 +142,7 @@ namespace LoanCalculator.UnitTests.Models.ViewModels.PrimaryModels
             vm.RefreshIncomePropertyChanged();
             vm.FlushPendingSave(() => SharedServiceCore.SaveData(vm));
 
+            DrainSaves();
             _storageMock.Verify(s => s.SaveData(vm), Times.AtLeastOnce());
         }
 
@@ -130,6 +154,7 @@ namespace LoanCalculator.UnitTests.Models.ViewModels.PrimaryModels
             vm.TriggerPropertyChangedOnProjectionTab();
             vm.FlushPendingSave(() => SharedServiceCore.SaveData(vm));
 
+            DrainSaves();
             _storageMock.Verify(s => s.SaveData(vm), Times.AtLeastOnce());
         }
 
@@ -145,6 +170,7 @@ namespace LoanCalculator.UnitTests.Models.ViewModels.PrimaryModels
             vm.TriggerPropertyChangedOnPropertyTab();
             vm.FlushPendingSave(() => SharedServiceCore.SaveData(vm));
 
+            DrainSaves();
             _storageMock.Verify(s => s.SaveData(vm), Times.AtLeastOnce());
         }
 
@@ -156,6 +182,7 @@ namespace LoanCalculator.UnitTests.Models.ViewModels.PrimaryModels
             vm.TriggerPropertyChangedOnAmortizationTab();
             vm.FlushPendingSave(() => SharedServiceCore.SaveData(vm));
 
+            DrainSaves();
             _storageMock.Verify(s => s.SaveData(vm), Times.AtLeastOnce());
         }
 
@@ -167,6 +194,7 @@ namespace LoanCalculator.UnitTests.Models.ViewModels.PrimaryModels
             vm.RefreshExpenseTabPropertyChanged();
             vm.FlushPendingSave(() => SharedServiceCore.SaveData(vm));
 
+            DrainSaves();
             _storageMock.Verify(s => s.SaveData(vm), Times.AtLeastOnce());
         }
 
@@ -183,6 +211,7 @@ namespace LoanCalculator.UnitTests.Models.ViewModels.PrimaryModels
             vm.RefreshIncomePropertyChanged();
             // No FlushPendingSave needed — ScheduleSave was never called
 
+            DrainSaves();
             _storageMock.Verify(s => s.SaveData(It.IsAny<IncomeViewModel>()), Times.Never());
         }
 
@@ -194,6 +223,7 @@ namespace LoanCalculator.UnitTests.Models.ViewModels.PrimaryModels
 
             vm.TriggerPropertyChangedOnPropertyTab();
 
+            DrainSaves();
             _storageMock.Verify(s => s.SaveData(It.IsAny<LoanViewModel>()), Times.Never());
         }
 
@@ -214,6 +244,7 @@ namespace LoanCalculator.UnitTests.Models.ViewModels.PrimaryModels
             // FlushPendingSave cancels the pending debounce and fires synchronously once
             vm.FlushPendingSave(() => SharedServiceCore.SaveData(vm));
 
+            DrainSaves();
             _storageMock.Verify(s => s.SaveData(vm), Times.Exactly(1));
         }
     }

@@ -213,6 +213,74 @@ namespace LoanCalculator.UnitTests.Models.ViewModels.PrimaryModels
             Assert.That(double.Parse(result.Replace(",", "")), Is.EqualTo(5300).Within(1));
         }
 
+        [Test]
+        public void TotalIncomeMonthlyWithComma_AfterIncomeTabDeductedItsOwnTotals_StillShowsGrossIncome()
+        {
+            // Regression: navigating Budget tabs made this box show a different (negative) value.
+            // The Income tab refreshing with its own "income after expenses" toggles on used to
+            // call SumUpData(deduction), overwriting TotalMonthly on the SHARED summary with a net
+            // figure. This box means "the income the user entered", so it must show the gross.
+            //
+            // Driven through the real trigger rather than a synthetic SumUpData(deduction) call,
+            // which no longer exists: asserting against the plain SumUpData() would make this
+            // test tautological. The loading guard keeps the setter's fire-and-forget async
+            // refresh from racing the synchronous one — SumUpData is not atomic.
+            var incomeVm = new IncomeViewModel();
+            incomeVm.TransactionRecords = new Incomes { IncomeExpenseEntries = [] };
+            incomeVm.TransactionRecords.Add("Salary", 14000, TimeFrequencyEnum.Monthly, isCheckForExistingRequired: false);
+            incomeVm.TransactionRecords.SumUpData();
+            incomeVm.MarkInitializationComplete();
+            incomeVm.ExpenseSummary = _vm;
+            PageHelper.PageIsLoading();
+            incomeVm.ShowIncomeAfterExpense = true;
+            PageHelper.PageLoadingComplete();
+            incomeVm.RefreshIncomePropertyChanged();
+            incomeVm.FlushPendingSave(() => { });
+
+            _vm.IncomeSummary = incomeVm;
+            // This tab's own toggles are off, so no deduction should be applied here.
+            _vm.ShowIncomeAfterExpense = false;
+            _vm.ShowPropertyExpense = false;
+
+            var result = _vm.TotalIncomeMonthlyWithComma;
+            Assert.That(double.Parse(result.Replace(",", "")), Is.EqualTo(14000).Within(1),
+                "must not inherit the Income tab's after-expenses deduction");
+        }
+
+        [Test]
+        public void TotalIncomeMonthly_NegativeNet_KeepsSignOnSymbolAndAmountAbsolute()
+        {
+            // The box renders symbol + amount separately so a negative net reads "-$4,000"
+            // rather than "$-4,000".
+            var incomeVm = new IncomeViewModel();
+            incomeVm.TransactionRecords = new Incomes { IncomeExpenseEntries = [] };
+            incomeVm.TransactionRecords.Add("Salary", 1000, TimeFrequencyEnum.Monthly, isCheckForExistingRequired: false);
+            incomeVm.TransactionRecords.SumUpData();
+
+            _vm.IncomeSummary = incomeVm;
+            _vm.TransactionRecords = new Incomes { IncomeExpenseEntries = [] };
+            _vm.TransactionRecords.Add("Rent", 5000, TimeFrequencyEnum.Monthly, isCheckForExistingRequired: false);
+            _vm.TransactionRecords.SumUpData();
+            _vm.ShowIncomeAfterExpense = true;
+            _vm.ShowPropertyExpense = false;
+
+            // Cancel the 600 ms debounce the property sets above scheduled. If that timer fires
+            // between here and the asserts, its pass leaves IncomeExpenseSummary.TotalMonthly
+            // already carrying the expense deduction, and the getter below subtracts it a second
+            // time — giving -9000 instead of -4000. The no-op action cancels without saving.
+            // (The underlying order-dependence of SumUpData(deduction) is a production issue; see
+            // the defensive comment in LoanViewModel.AffordabilityRawValue.)
+            _vm.FlushPendingSave(() => { });
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(_vm.TotalIncomeMonthlyValue, Is.EqualTo(-4000).Within(1));
+                Assert.That(_vm.TotalIncomeMonthlyCurrencySymbol, Does.StartWith("-"));
+                Assert.That(double.Parse(_vm.TotalIncomeMonthlyWithComma.Replace(",", "")),
+                    Is.EqualTo(4000).Within(1), "amount is absolute; the sign lives on the symbol");
+            });
+        }
+
         // ── TotalMonthlySumExpenseWithComma ────────────────────────────────────
 
         [Test]

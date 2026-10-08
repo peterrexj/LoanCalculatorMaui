@@ -40,36 +40,8 @@ namespace LoanCalculator.UnitTests.Models.ViewModels.PrimaryModels
 
         // ── WizardIncomeHasValue ──────────────────────────────────────────────
 
-        [Test]
-        public void WizardIncomeHasValue_NoEntries_IsFalse()
-        {
-            _vm.TransactionRecords = new Incomes { IncomeExpenseEntries = [] };
-            _vm.TransactionRecords.SumUpData();
-            Assert.That(_vm.WizardIncomeHasValue, Is.False);
-        }
-
-        [Test]
-        public void WizardIncomeHasValue_WithPositiveEntry_IsTrue()
-        {
-            _vm.TransactionRecords = new Incomes { IncomeExpenseEntries = [] };
-            _vm.TransactionRecords.Add("Salary", 5000, TimeFrequencyEnum.Monthly, isCheckForExistingRequired: false);
-            _vm.TransactionRecords.SumUpData();
-            Assert.That(_vm.WizardIncomeHasValue, Is.True);
-        }
-
-        // ── WizardIncomeSummary ───────────────────────────────────────────────
-
-        [Test]
-        public void WizardIncomeSummary_ContainsRecorded()
-        {
-            Assert.That(_vm.WizardIncomeSummary, Does.Contain("Recorded"));
-        }
-
-        [Test]
-        public void WizardIncomeSummary_ContainsYrSuffix()
-        {
-            Assert.That(_vm.WizardIncomeSummary, Does.Contain("/yr"));
-        }
+        // The WizardIncomeHasValue/Editable/Summary tests are gone with the members: they were
+        // dead production code superseded by WizardViewModel, which reads the entries directly.
 
         // ── TotalMonthlyExpense branches ──────────────────────────────────────
 
@@ -327,25 +299,6 @@ namespace LoanCalculator.UnitTests.Models.ViewModels.PrimaryModels
             _vm.TransactionRecords.SumUpData();
             var yearly = double.Parse(_vm.TotalYearlyIncomeWithComma.Replace(",", ""));
             Assert.That(yearly, Is.EqualTo(60000).Within(1));
-        }
-
-        // ── WizardIncomeEditable mirrors WizardIncomeHasValue ────────────────
-
-        [Test]
-        public void WizardIncomeEditable_NoEntries_IsTrue()
-        {
-            _vm.TransactionRecords = new Incomes { IncomeExpenseEntries = [] };
-            _vm.TransactionRecords.SumUpData();
-            Assert.That(_vm.WizardIncomeEditable, Is.True);
-        }
-
-        [Test]
-        public void WizardIncomeEditable_WithPositiveEntry_IsFalse()
-        {
-            _vm.TransactionRecords = new Incomes { IncomeExpenseEntries = [] };
-            _vm.TransactionRecords.Add("Salary", 5000, TimeFrequencyEnum.Monthly, isCheckForExistingRequired: false);
-            _vm.TransactionRecords.SumUpData();
-            Assert.That(_vm.WizardIncomeEditable, Is.False);
         }
 
         // ── StringYearlyTextOnTopBox ──────────────────────────────────────────

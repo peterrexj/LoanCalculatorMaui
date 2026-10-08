@@ -62,6 +62,7 @@
                                     Text="{Binding Income.IsEditMode, Converter={StaticResource BoolToEditAddTitleConverter}, ConverterParameter='Income'}" />
                                 <Button
                                     Grid.Column="1"
+                                    AutomationId="BudgetIncomeCancelButton"
                                     Clicked="OnBudgetIncomeCancel"
                                     Style="{DynamicResource PopupDismissButtonStyle}" />
                             </Grid>
@@ -94,6 +95,7 @@
                                                 FontSize="{StaticResource FontSizeMedium}"
                                                 Placeholder="e.g. Salary"
                                                 PlaceholderColor="{DynamicResource LoanAppInputTextWhenUnFocusedColor}"
+                                                AutomationId="BudgetIncomeNameEntry"
                                                 Text="{Binding Income.IncomeEntryName}"
                                                 TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
                                         </Border>
@@ -154,6 +156,7 @@
                                         <Label Style="{DynamicResource PopupFieldLabelStyle}" Text="FREQUENCY" />
                                         <editors:SfComboBox
                                             BackgroundColor="Transparent"
+                                            AutomationId="BudgetIncomeFrequencyCombo"
                                             ItemsSource="{Binding Income.IncomeFrequencyCollection}"
                                             SelectedItem="{Binding Income.IncomeExpenseFrequencySelectedIndex, Mode=TwoWay}"
                                             Style="{DynamicResource SfComboBoxStyle}"
@@ -166,6 +169,7 @@
                             <!--  Primary action  -->
                             <Button
                                 Grid.Row="2"
+                                AutomationId="BudgetIncomeSaveButton"
                                 Clicked="OnBudgetIncomeSave"
                                 Style="{DynamicResource PopupPrimaryButtonStyle}"
                                 Text="{Binding Income.IsEditMode, Converter={StaticResource BoolToAddUpdateConverter}}" />
@@ -210,6 +214,7 @@
                                     Text="{Binding Expense.IsEditMode, Converter={StaticResource BoolToEditAddTitleConverter}, ConverterParameter='Expense'}" />
                                 <Button
                                     Grid.Column="1"
+                                    AutomationId="BudgetExpenseCancelButton"
                                     Clicked="OnBudgetExpenseCancel"
                                     Style="{DynamicResource PopupDismissButtonStyle}" />
                             </Grid>
@@ -242,6 +247,7 @@
                                                 FontSize="{StaticResource FontSizeMedium}"
                                                 Placeholder="e.g. Electricity"
                                                 PlaceholderColor="{DynamicResource LoanAppInputTextWhenUnFocusedColor}"
+                                                AutomationId="BudgetExpenseNameEntry"
                                                 Text="{Binding Expense.IncomeEntryName}"
                                                 TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
                                         </Border>
@@ -300,6 +306,7 @@
                                         <Label Style="{DynamicResource PopupFieldLabelStyle}" Text="FREQUENCY" />
                                         <editors:SfComboBox
                                             BackgroundColor="Transparent"
+                                            AutomationId="BudgetExpenseFrequencyCombo"
                                             ItemsSource="{Binding Expense.IncomeFrequencyCollection}"
                                             SelectedItem="{Binding Expense.IncomeExpenseFrequencySelectedIndex, Mode=TwoWay}"
                                             Style="{DynamicResource SfComboBoxStyle}"
@@ -312,6 +319,7 @@
                             <!--  Primary action  -->
                             <Button
                                 Grid.Row="2"
+                                AutomationId="BudgetExpenseSaveButton"
                                 Clicked="OnBudgetExpenseSave"
                                 Style="{DynamicResource PopupPrimaryButtonStyle}"
                                 Text="{Binding Expense.IsEditMode, Converter={StaticResource BoolToAddUpdateConverter}}" />
@@ -326,7 +334,7 @@
                 SelectionChanging="TabView_OnSelectionChanging">
 
                 <!--  ══ Tab 1: Income ══════════════════════════════════════════  -->
-                <tabView:SfTabItem Header="Income">
+                <tabView:SfTabItem AutomationId="BudgetTabIncome" Header="Income">
                     <tabView:SfTabItem.Content>
                         <Grid x:Name="IncomeTabGrid" BackgroundColor="{DynamicResource LoanAppDefaultBackgroundColor}">
                             <Grid.RowDefinitions>
@@ -337,7 +345,7 @@
                             </Grid.RowDefinitions>
 
                             <!--  Summary bar  -->
-                            <customControls:ThreeColumnBorderedContentView Grid.Row="0">
+                            <customControls:ThreeColumnBorderedContentView AutomationId="BudgetIncomeTabSummaryBox" Grid.Row="0">
                                 <customControls:ThreeColumnBorderedContentView.FormattedText1>
                                     <FormattedString>
                                         <Span Style="{DynamicResource SpanThreeBoxAmountStyle}" Text="{Binding Income.CurrencySymbol}" />
@@ -386,6 +394,7 @@
                                         <buttons:SfSwitch
                                             Grid.Column="0"
                                             HorizontalOptions="Start"
+                                            AutomationId="BudgetIncomeAfterExpenseSwitch"
                                             IsOn="{Binding Income.ShowIncomeAfterExpense}">
                                             <VisualStateManager.VisualStateGroups>
                                                 <VisualStateGroup x:Name="BudgetIncomeSwitchStates1">
@@ -577,7 +586,7 @@
                                                     VerticalOptions="Center" />
                                                 <buttons:SfButton
                                                     Grid.Column="2"
-                                                    AutomationId="{Binding Id}"
+                                                    AutomationId="{Binding Name, StringFormat='IncomeEdit_{0}'}"
                                                     Clicked="OnBudgetIncomeEdit"
                                                     Style="{DynamicResource ListIconButtonStyle}">
                                                     <core:SfButton.Content>
@@ -588,7 +597,7 @@
                                                 </buttons:SfButton>
                                                 <buttons:SfButton
                                                     Grid.Column="3"
-                                                    AutomationId="{Binding Id}"
+                                                    AutomationId="{Binding Name, StringFormat='IncomeDelete_{0}'}"
                                                     Clicked="OnBudgetIncomeDelete"
                                                     Style="{DynamicResource ListIconButtonStyle}">
                                                     <core:SfButton.Content>
@@ -636,6 +645,7 @@
                                 Grid.RowSpan="2"
                                 Margin="0,0,20,20"
                                 BackgroundColor="{DynamicResource LoanAppInputTextFgColor}"
+                                AutomationId="BudgetIncomeAddFab"
                                 Clicked="OnAddIncomeFab_Clicked"
                                 CornerRadius="28"
                                 FontAttributes="Bold"
@@ -659,7 +669,7 @@
                         </Grid>
                     </tabView:SfTabItem.Content>
                 </tabView:SfTabItem>
-                <tabView:SfTabItem Header="Expenses">
+                <tabView:SfTabItem AutomationId="BudgetTabExpenses" Header="Expenses">
                     <tabView:SfTabItem.Content>
                         <Grid x:Name="ExpenseTabGrid" BackgroundColor="{DynamicResource LoanAppDefaultBackgroundColor}">
                             <Grid.RowDefinitions>
@@ -670,7 +680,7 @@
                             </Grid.RowDefinitions>
 
                             <!--  Summary bar  -->
-                            <customControls:ThreeColumnBorderedContentView Grid.Row="0">
+                            <customControls:ThreeColumnBorderedContentView AutomationId="BudgetExpenseTabSummaryBox" Grid.Row="0">
                                 <customControls:ThreeColumnBorderedContentView.FormattedText1>
                                     <FormattedString>
                                         <Span Style="{DynamicResource SpanThreeBoxAmountStyle}" Text="{Binding Expense.CurrencySymbol}" />
@@ -910,7 +920,7 @@
                                                     VerticalOptions="Center" />
                                                 <buttons:SfButton
                                                     Grid.Column="2"
-                                                    AutomationId="{Binding Id}"
+                                                    AutomationId="{Binding Name, StringFormat='ExpenseEdit_{0}'}"
                                                     Clicked="OnBudgetExpenseEdit"
                                                     Style="{DynamicResource ListIconButtonStyle}">
                                                     <core:SfButton.Content>
@@ -921,7 +931,7 @@
                                                 </buttons:SfButton>
                                                 <buttons:SfButton
                                                     Grid.Column="3"
-                                                    AutomationId="{Binding Id}"
+                                                    AutomationId="{Binding Name, StringFormat='ExpenseDelete_{0}'}"
                                                     Clicked="OnBudgetExpenseDelete"
                                                     Style="{DynamicResource ListIconButtonStyle}">
                                                     <core:SfButton.Content>
@@ -969,6 +979,7 @@
                                 Grid.RowSpan="2"
                                 Margin="0,0,20,20"
                                 BackgroundColor="{DynamicResource LoanAppInputTextFgColor}"
+                                AutomationId="BudgetExpenseAddFab"
                                 Clicked="OnAddExpenseFab_Clicked"
                                 CornerRadius="28"
                                 FontAttributes="Bold"
@@ -994,12 +1005,12 @@
                 </tabView:SfTabItem>
 
                 <!--  ══ Tab 3: Summary ══════════════════════════════════════════  -->
-                <tabView:SfTabItem Header="Summary">
+                <tabView:SfTabItem AutomationId="BudgetTabSummary" Header="Summary">
                     <tabView:SfTabItem.Content>
                         <ScrollView BackgroundColor="{DynamicResource LoanAppDefaultBackgroundColor}">
                             <VerticalStackLayout
                                 x:Name="SummaryPanel"
-                                Padding="16,8,16,32"
+                                Padding="12,8,12,32"
                                 Spacing="12">
 
                                 <!--  No data placeholder  -->
@@ -1060,6 +1071,7 @@
                                                 Text="Total Income"
                                                 TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
                                             <Label
+                                                AutomationId="BudgetIncomeMonthlyTotal"
                                                 x:Name="LblIncomeMonthly"
                                                 Grid.Row="0"
                                                 Grid.Column="1"
@@ -1076,6 +1088,7 @@
                                                 Text="Total Expenses"
                                                 TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
                                             <Label
+                                                AutomationId="BudgetExpenseMonthlyTotal"
                                                 x:Name="LblExpenseMonthly"
                                                 Grid.Row="1"
                                                 Grid.Column="1"
@@ -1098,6 +1111,7 @@
                                                 Text="Net Monthly"
                                                 TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
                                             <Label
+                                                AutomationId="BudgetNetMonthly"
                                                 x:Name="LblNetMonthly"
                                                 Grid.Row="3"
                                                 Grid.Column="1"
@@ -1106,6 +1120,7 @@
                                                 HorizontalTextAlignment="End" />
 
                                             <Label
+                                                AutomationId="BudgetNetYearly"
                                                 x:Name="LblNetYearly"
                                                 Grid.Row="4"
                                                 Grid.ColumnSpan="2"
@@ -1183,6 +1198,7 @@
                                     </Border.Content>
                                 </Border>
                                 <Label
+                                    AutomationId="BudgetSummaryCaption"
                                     Margin="0,4,0,12"
                                     FontFamily="{DynamicResource DefaultFontFamily}"
                                     FontSize="{StaticResource FontSizeXS}"
@@ -1249,6 +1265,7 @@
                                             Text="Loan Affordability"
                                             TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
                                         <Label
+                                            AutomationId="BudgetAffordabilityVerdict"
                                             x:Name="LblAffordability"
                                             FontAttributes="Bold"
                                             FontSize="{StaticResource FontSizeXL}"
@@ -1257,6 +1274,13 @@
                                             x:Name="LblAffordabilityDesc"
                                             FontSize="{StaticResource FontSizeSmall}"
                                             Opacity="0.6"
+                                            TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                                        <Label
+                                            Margin="0,4,0,0"
+                                            FontAttributes="Italic"
+                                            FontSize="{StaticResource FontSizeSmall}"
+                                            Opacity="0.7"
+                                            Text="{DynamicResource LoanAppEstimateMicrocopy}"
                                             TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
                                     </VerticalStackLayout>
                                 </Border>
@@ -1267,10 +1291,10 @@
                 </tabView:SfTabItem>
 
                 <!--  ══ Tab 4: Projection ══════════════════════════════════════  -->
-                <tabView:SfTabItem Header="Projection">
+                <tabView:SfTabItem AutomationId="BudgetTabProjection" Header="Projection">
                     <tabView:SfTabItem.Content>
                         <ScrollView BackgroundColor="{DynamicResource LoanAppDefaultBackgroundColor}">
-                            <VerticalStackLayout Padding="16,8,16,32" Spacing="12">
+                            <VerticalStackLayout Padding="12,8,12,32" Spacing="12">
 
                                 <!--  Summary bar  -->
                                 <customControls:ThreeColumnBorderedContentView x:Name="ProjectionSummaryBar">
@@ -1620,6 +1644,7 @@
                                                 TextColor="{DynamicResource LoanAppDefaultForegroundColor}"
                                                 VerticalOptions="Center" />
                                             <Label
+                                                AutomationId="BudgetProjectionYearsValue"
                                                 x:Name="LblProjectionYears"
                                                 Grid.Column="1"
                                                 FontAttributes="Bold"
@@ -1637,6 +1662,7 @@
                                             ShowLabels="True"
                                             ShowTicks="True"
                                             StepSize="1"
+                                            AutomationId="BudgetProjectionYearsSlider"
                                             ValueChangeEnd="OnProjectionYearsSliderChanged"
                                             Value="{Binding ProjectionYears, Mode=TwoWay}">
                                             <range:SfSlider.ThumbStyle>
@@ -1668,13 +1694,30 @@
                                 </Border>
 
                                 <!--  Income & Expense Projection chart  -->
-                                <Label
-                                    Margin="20,16,20,4"
-                                    FontAttributes="Bold"
-                                    FontSize="{StaticResource FontSizeSmall}"
-                                    Opacity="0.7"
-                                    Text="INCOME &amp; EXPENSE PROJECTION"
-                                    TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                                <HorizontalStackLayout Margin="20,16,20,4" Spacing="8">
+                                    <Label
+                                        FontAttributes="Bold"
+                                        FontSize="{StaticResource FontSizeSmall}"
+                                        Opacity="0.7"
+                                        Text="INCOME &amp; EXPENSE PROJECTION"
+                                        TextColor="{DynamicResource LoanAppDefaultForegroundColor}"
+                                        VerticalOptions="Center" />
+                                    <!--  Shown while a debounced projection rebuild is catching up  -->
+                                    <ActivityIndicator
+                                        HeightRequest="14"
+                                        WidthRequest="14"
+                                        Color="{DynamicResource LoanAppAppShellFgColor}"
+                                        IsRunning="{Binding IsProjectionRefreshing}"
+                                        IsVisible="{Binding IsProjectionRefreshing}"
+                                        VerticalOptions="Center" />
+                                    <Label
+                                        FontSize="{StaticResource FontSizeSmall}"
+                                        IsVisible="{Binding IsProjectionRefreshing}"
+                                        Opacity="0.7"
+                                        Text="Updating…"
+                                        TextColor="{DynamicResource LoanAppDefaultForegroundColor}"
+                                        VerticalOptions="Center" />
+                                </HorizontalStackLayout>
                                 <Border Style="{DynamicResource LoanAppChartBorderStyle}">
                                     <Border.Content>
                                         <chart:SfCartesianChart

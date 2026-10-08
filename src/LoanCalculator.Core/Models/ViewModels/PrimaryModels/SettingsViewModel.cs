@@ -25,9 +25,12 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
         [JsonIgnore] public ICommand DeleteIncomeDataCommand { get; }
         [JsonIgnore] public ICommand DeleteAllDataCommand { get; }
         [JsonIgnore] public ICommand ShowDisclaimerCommand { get; }
+        [JsonIgnore] public ICommand ShowPrivacyPolicyCommand { get; }
         [JsonIgnore] public ICommand OnShareAppRequestCommand { get; }
         [JsonIgnore] public ICommand OnRateAppRequestCommand { get; }
         [JsonIgnore] public ICommand PopupCloseCommand { get; }
+        [JsonIgnore] public ICommand PrivacyPolicyCloseCommand { get; }
+        [JsonIgnore] public ICommand OpenPrivacyPolicyUrlCommand { get; }
         [JsonIgnore]
         public bool IsAllDataDeleteVisible
         {
@@ -62,6 +65,9 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
             DeleteAllDataCommand = new Command(async () => await DeleteAllData());
             ShowDisclaimerCommand = new Command(async () => await ShowDisclaimer());
             PopupCloseCommand = new Command(() => IsPopupRequired = false);
+            ShowPrivacyPolicyCommand = new Command(async () => await ShowPrivacyPolicy());
+            PrivacyPolicyCloseCommand = new Command(() => IsPrivacyPopupRequired = false);
+            OpenPrivacyPolicyUrlCommand = new Command(async () => await OpenPrivacyPolicyUrl());
             OnShareAppRequestCommand = new Command(OnShareAppRequest);
             OnRateAppRequestCommand = new Command(OnRateAppRequest);
         }
@@ -258,6 +264,58 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
                 return;
 
             await SharedServiceCore.LocalStorage.ClearData<T>();
+            DiscardDeletedData(typeof(T));
+        }
+
+        /// <summary>
+        /// Clearing a JSON file deletes only the persisted copy. The Budget tab holds the records in
+        /// memory and is the source every other tab reads, so they have to be emptied too and the
+        /// cross-tab caches told to re-read — otherwise deleting income or expenses leaves Budget
+        /// still listing them, and the Loan and What If tabs still computing affordability from
+        /// them, until the app is restarted.
+        /// </summary>
+        private static void DiscardDeletedData(Type dataType)
+        {
+            var budget = TryGetBudgetViewModel();
+
+            if (dataType == typeof(LoanViewModel))
+            {
+                // Only the persisted loan is cleared. Blanking the live loan form mid-session would
+                // wipe inputs the user can still see, which is a different decision from this one.
+                SharedServiceCore.MarkLoanDirty();
+                return;
+            }
+
+            if (dataType == typeof(IncomeViewModel))
+            {
+                budget?.Income?.TransactionRecords?.DeleteAll();
+                budget?.Income?.RefreshIncomePropertyChanged();
+                SharedServiceCore.MarkIncomeDirty();
+            }
+            else if (dataType == typeof(ExpenseViewModel))
+            {
+                budget?.Expense?.TransactionRecords?.DeleteAll();
+                budget?.Expense?.RefreshIncomePropertyChanged();
+                SharedServiceCore.MarkExpenseDirty();
+            }
+        }
+
+        /// <summary>
+        /// ServiceLocator dereferences a settable provider, so a null is a better failure here than
+        /// taking down the delete action.
+        /// </summary>
+        private static BudgetViewModel? TryGetBudgetViewModel()
+        {
+            try
+            {
+                return ServiceLocator.ServiceProvider == null
+                    ? null
+                    : ServiceLocator.GetService<BudgetViewModel>();
+            }
+            catch
+            {
+                return null;
+            }
         }
         private async Task DeleteMultipleDataWithConfirmationAsync(IEnumerable<Func<Task>> clearActions, string title = "Important", string message = "Do you wish to delete the data?", string accept = "Yes", string cancel = "No")
         {
@@ -269,6 +327,12 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
             {
                 await action();
             }
+
+            // The caller's actions are opaque Funcs, so the types cleared are not visible here.
+            // DeleteAllData is the only caller and clears loan, income and expense — discard all three.
+            DiscardDeletedData(typeof(LoanViewModel));
+            DiscardDeletedData(typeof(IncomeViewModel));
+            DiscardDeletedData(typeof(ExpenseViewModel));
         }
 
         private async Task DeleteAllData()
@@ -285,6 +349,17 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
         private async Task DeleteExpenseData() => await DeleteDataWithConfirmationAsync<ExpenseViewModel>();
 
         public string AppLaunchDisclaimerData => SharedServiceCore.DisclaimerData;
+
+        // Rendered natively (BindableLayout) in the Settings disclaimer popup — see
+        // PopupDisclaimerViewModel.ParseHtmlSections for why we avoid a WebView here.
+        private ObservableCollection<DisclaimerSection> _disclaimerSections = new();
+        [JsonIgnore]
+        public ObservableCollection<DisclaimerSection> DisclaimerSections
+        {
+            get => _disclaimerSections;
+            set { _disclaimerSections = value; OnPropertyChanged(nameof(DisclaimerSections)); }
+        }
+
         private bool _isPopupRequired;
         public bool IsPopupRequired
         {
@@ -297,13 +372,60 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
         }
         private async Task ShowDisclaimer()
         {
+            DisclaimerSections = PopupDisclaimerViewModel.ParseHtmlSections(SharedServiceCore.DisclaimerData);
             IsPopupRequired = true;
             IsActive = false;
-            ServiceLocator.GetService<PopupDisclaimerViewModel>().TriggerChange();
 
             await Task.Delay(3000);
 
             IsActive = true;
+        }
+
+        public string PrivacyPolicyData => SharedServiceCore.PrivacyPolicyData;
+
+        private ObservableCollection<DisclaimerSection> _privacyPolicySections = new();
+        [JsonIgnore]
+        public ObservableCollection<DisclaimerSection> PrivacyPolicySections
+        {
+            get => _privacyPolicySections;
+            set { _privacyPolicySections = value; OnPropertyChanged(nameof(PrivacyPolicySections)); }
+        }
+
+        private bool _isPrivacyPopupRequired;
+        public bool IsPrivacyPopupRequired
+        {
+            get => _isPrivacyPopupRequired;
+            set
+            {
+                _isPrivacyPopupRequired = value;
+                OnPropertyChanged(nameof(IsPrivacyPopupRequired));
+            }
+        }
+        private async Task ShowPrivacyPolicy()
+        {
+            PrivacyPolicySections = PopupDisclaimerViewModel.ParseHtmlSections(SharedServiceCore.PrivacyPolicyData);
+            IsPrivacyPopupRequired = true;
+            IsActive = false;
+
+            await Task.Delay(3000);
+
+            IsActive = true;
+        }
+
+        // Hosted copy of the privacy policy (also set as the Play/App Store listing URL).
+        private const string PrivacyPolicyOnlineUrl =
+            "https://www.yoursimpleapps.com/privacy-policy-viewer.html?id=loanaffordcalc";
+
+        private async Task OpenPrivacyPolicyUrl()
+        {
+            try
+            {
+                await Launcher.Default.OpenAsync(PrivacyPolicyOnlineUrl);
+            }
+            catch (Exception e)
+            {
+                _errorHandlingService.HandleException(e);
+            }
         }
 
 
@@ -351,7 +473,18 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
 
         public void LoadAustralianModeSetting()
         {
-            _isAustralianModeEnabled = Preferences.Get(AustralianModeKey, false);
+            // Australian mode is retired from the UI. Its Settings row is hidden, so nothing can
+            // switch it on, and a device that had it enabled is reset here rather than left in a
+            // state the user can no longer see or change.
+            //
+            // The feature code and the per-state stamp duty tables are deliberately kept, along
+            // with their unit tests: the reason for retiring it is that jurisdiction-specific tax
+            // rules need maintaining on every rule change, not that the implementation is wrong.
+            // To bring it back, restore the Settings row and delete the reset below.
+            if (Preferences.Get(AustralianModeKey, false))
+                Preferences.Set(AustralianModeKey, false);
+
+            _isAustralianModeEnabled = false;
             OnPropertyChanged(nameof(IsAustralianModeEnabled));
         }
 

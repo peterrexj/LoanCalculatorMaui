@@ -513,7 +513,7 @@
                                                 HorizontalOptions="Center"
                                                 HorizontalTextAlignment="Center"
                                                 MinimumWidthRequest="48"
-                                                Text="{Binding AnnualGrowthRatePercentage, StringFormat='{0}%'}"
+                                                Text="{Binding AnnualGrowthRate, StringFormat='{0:0.##}%'}"
                                                 TextColor="{DynamicResource LoanAppInputTextFgColor}"
                                                 VerticalOptions="Center" />
                                             <Button Grid.Column="3" BackgroundColor="Transparent" Clicked="OnGrowthRateIncrease" FontAttributes="Bold" FontSize="{StaticResource FontSizeHeading}" Text="+" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />

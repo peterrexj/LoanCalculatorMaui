@@ -1,8 +1,8 @@
 #!/bin/zsh
 
 # Usage:
-#   ./run-ios.sh                # iPhone 16 Pro (default), filtered logs
-#   ./run-ios.sh --ipad         # iPad Pro 13-inch (M4)
+#   ./run-ios.sh                # iPhone 17 Pro (default, iOS 26.5), filtered logs
+#   ./run-ios.sh --ipad         # iPad Pro 13-inch (M5)
 #   ./run-ios.sh --device "iPad mini (A17 Pro)"
 #   ./run-ios.sh --logs         # stream ALL app output (no filter)
 #   ./run-ios.sh --nologs       # launch silently, no log streaming
@@ -11,12 +11,12 @@ PROJECT="LoanCalculatorMaui.csproj"
 APP_BUNDLE="bin/Debug/net10.0-ios26.5/iossimulator-arm64/LoanCalculatorMaui.app"
 BUNDLE_ID="com.pj.loan.afford.calc"
 
-SIMULATOR_NAME="iPhone 16 Pro"
+SIMULATOR_NAME="iPhone 17 Pro"
 LOG_MODE="filtered"   # filtered | full | none
 
 for arg in "$@"; do
   case "$arg" in
-    --ipad)   SIMULATOR_NAME="iPad Pro 13-inch (M4)" ;;
+    --ipad)   SIMULATOR_NAME="iPad Pro 13-inch (M5)" ;;
     --logs)   LOG_MODE="full" ;;
     --nologs) LOG_MODE="none" ;;
     --device) ;;
@@ -32,7 +32,15 @@ done
 cd "$(dirname "$0")"
 
 echo "==> Finding simulator: $SIMULATOR_NAME..."
-SIMULATOR_ID=$(xcrun simctl list devices available | grep "$SIMULATOR_NAME" | grep -v "unavailable" | head -1 | sed 's/.*(\([A-F0-9-]*\)).*/\1/')
+# Two traps here, both of which silently give you the wrong simulator:
+#   1. The trailing " (" anchors the name — without it "iPhone 17 Pro" also matches
+#      "iPhone 17 Pro Max".
+#   2. The same name exists on every installed iOS runtime, and simctl lists them oldest-first,
+#      so `head -1` picks the OLDEST. Track the runtime header and keep the newest match instead.
+SIMULATOR_ID=$(xcrun simctl list devices available | awk -v name="$SIMULATOR_NAME" '
+  /^-- iOS /           { split($3, v, "."); cur = v[1] * 1000 + v[2]; next }
+  index($0, name " (") { if (cur >= best) { best = cur; line = $0 } }
+  END { if (line != "") { match(line, /[0-9A-F-]{36}/); print substr(line, RSTART, RLENGTH) } }')
 
 if [ -z "$SIMULATOR_ID" ]; then
   echo "ERROR: No simulator found matching '$SIMULATOR_NAME'"
@@ -71,5 +79,5 @@ elif [ "$LOG_MODE" = "full" ]; then
 else
   echo "==> Launching with filtered output (Ctrl+C to stop)..."
   echo "    Tip: use --logs for full output, --nologs to launch silently"
-  xcrun simctl launch --console-pty "$SIMULATOR_ID" "$BUNDLE_ID" 2>&1 | grep --line-buffered -E "\[CRASH\]|\[Edit|\[AddOrUpdate\]|error|Error|exception|Exception|Unhandled|fatal|Fatal" | grep -v "Sentry\|NSURLError\|TaskCancel\|NU1608"
+  xcrun simctl launch --console-pty "$SIMULATOR_ID" "$BUNDLE_ID" 2>&1 | grep --line-buffered -E "\[CRASH\]|\[splash\]|\[Edit|\[AddOrUpdate\]|fail:|error|Error|exception|Exception|Unhandled|fatal|Fatal" | grep -v "Sentry\|NSURLError\|TaskCancel\|NU1608"
 fi

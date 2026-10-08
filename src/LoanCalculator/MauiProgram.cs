@@ -87,6 +87,10 @@ namespace LoanCalculatorMaui
             builder.Services.AddSingleton<IThemeHandler, ThemeHandler>();
             builder.Services.AddSingleton<IInAppPurchaseService, InAppPurchaseService>();
             builder.Services.AddTransient<SettingsView>();
+            // Transient: the wizard is a modal that is pushed, completed and discarded, so each
+            // launch gets fresh input state and a fresh completion signal.
+            builder.Services.AddTransient<WizardViewModel>();
+            builder.Services.AddTransient<LoanDetailsPage>();
             builder.Services.AddSingleton<WhatIfViewModel>();
             builder.Services.AddSingleton<WhatIfView>();
             builder.Services.AddSingleton<BudgetViewModel>();

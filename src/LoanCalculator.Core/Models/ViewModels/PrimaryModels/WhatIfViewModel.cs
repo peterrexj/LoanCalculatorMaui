@@ -81,17 +81,17 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
                 RateChangeShowHeadroom = true;
                 if (newSurplus < 0)
                 {
-                    RateChangeHeadroom = $"Unaffordable — {CurrencySymbol}{Math.Abs(newSurplus):N0}/mo over budget";
+                    RateChangeHeadroom = $"Estimate: likely unaffordable — about {CurrencySymbol}{Math.Abs(newSurplus):N0}/mo over the budget you entered";
                     RateChangeHeadroomStatus = 1;
                 }
                 else if (newSurplus < BaseMonthlySurplus * 0.25)
                 {
-                    RateChangeHeadroom = $"Tight — only {CurrencySymbol}{newSurplus:N0}/mo headroom";
+                    RateChangeHeadroom = $"Estimate: tight — only about {CurrencySymbol}{newSurplus:N0}/mo headroom";
                     RateChangeHeadroomStatus = 0;
                 }
                 else
                 {
-                    RateChangeHeadroom = $"{CurrencySymbol}{newSurplus:N0}/mo headroom remaining";
+                    RateChangeHeadroom = $"Estimate: about {CurrencySymbol}{newSurplus:N0}/mo headroom remaining";
                     RateChangeHeadroomStatus = -1;
                 }
             }
@@ -530,10 +530,10 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
             var rateBuffer = breakEvenRate - BaseRate;
             StressTestBreakEvenRate = breakEvenRate > 0
                 ? $"{breakEvenRate:0.##}%"
-                : "Already unaffordable";
+                : "Already over budget (est.)";
             StressTestRateBuffer = rateBuffer > 0
-                ? $"+{rateBuffer:0.##}% buffer"
-                : $"{rateBuffer:0.##}% over limit";
+                ? $"+{rateBuffer:0.##}% buffer (est.)"
+                : $"{rateBuffer:0.##}% over est. limit";
             StressTestCurrentSurplus = $"{CurrencySymbol}{BaseMonthlySurplus:N0}/mo";
 
             StressTestRisk = rateBuffer >= 2.0 ? -1 : rateBuffer >= 1.0 ? 0 : 1;

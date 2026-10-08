@@ -72,11 +72,10 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
             };
         }
 
-        // Wizard — existing-value indicators for the Quick Setup wizard in LoanView
-        [JsonIgnore] public bool WizardIncomeHasValue => (TransactionRecords?.IncomeExpenseSummary?.TotalYearly ?? 0) > 0;
-        [JsonIgnore] public bool WizardIncomeEditable => !WizardIncomeHasValue;
-        [JsonIgnore] public string WizardIncomeSummary =>
-            $"Recorded: {CurrencySymbol}{TransactionRecords?.IncomeExpenseSummary?.TotalYearly ?? 0:N0}/yr";
+        // The Wizard*HasValue/Editable/Summary trio that used to live here was dead: nothing
+        // bound it, and WizardViewModel supersedes it by reading the entries directly (which is
+        // correct even before SumUpData has run). It also read TotalYearly, so it would have
+        // reported "no income recorded" whenever another screen left a negative net behind.
 
         [JsonIgnore]
         public List<IncomeExpenseProjectionOutput> IncomeProjectList => TransactionRecords?.IncomeExpenseSummary?.ProjectionTerms ?? new List<IncomeExpenseProjectionOutput>();
@@ -298,11 +297,32 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
 
         #region Total Details
 
+        /// <summary>
+        /// Monthly income as displayed — less this tab's "after expenses" deduction when that
+        /// toggle is on.
+        /// </summary>
+        /// <remarks>
+        /// The deduction is applied HERE rather than written into the shared summary by
+        /// <c>SumUpData</c>. That is the whole point of TECH-DEBT D1: this tab's display
+        /// preference must not change what Budget, the Loan page or the PDF compute.
+        /// <c>TotalMonthlyExpense</c> is 0 unless a toggle is on, so this is the gross figure by
+        /// default.
+        /// </remarks>
         [JsonIgnore]
-        public string TotalMonthlyIncomeWithComma => TransactionRecords?.IncomeExpenseSummary?.TotalMonthlyWithComma ?? "";
+        public double TotalMonthlyIncomeValue =>
+            (TransactionRecords?.IncomeExpenseSummary?.TotalMonthly ?? 0) - TotalMonthlyExpense;
 
         [JsonIgnore]
-        public string TotalYearlyIncomeWithComma => TransactionRecords?.IncomeExpenseSummary?.TotalYearlyWithComma ?? "";
+        public double TotalYearlyIncomeValue =>
+            (TransactionRecords?.IncomeExpenseSummary?.TotalYearly ?? 0) - TotalYearlyExpense;
+
+        [JsonIgnore]
+        public string TotalMonthlyIncomeWithComma =>
+            TransactionRecords?.IncomeExpenseSummary == null ? "" : $"{TotalMonthlyIncomeValue:N0}";
+
+        [JsonIgnore]
+        public string TotalYearlyIncomeWithComma =>
+            TransactionRecords?.IncomeExpenseSummary == null ? "" : $"{TotalYearlyIncomeValue:N0}";
 
         [JsonIgnore]
         public string TotalProjectedYearlyIncomeWithComma => TransactionRecords?.IncomeExpenseSummary.ProjectTotalYearlyWithComma ?? "";
@@ -447,7 +467,7 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
                 await Task.Run(() =>
                 {
                     if (PageHelper.IsFormLoading || SharedServiceCore.LoadSafe) return;
-                    TransactionRecords?.SumUpData(TotalMonthlyExpense, TotalYearlyExpense);
+                    TransactionRecords?.SumUpData();
                 }).ConfigureAwait(false);
 
                 // Fire all notifications on the UI thread
@@ -465,7 +485,7 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
 
             if (SharedServiceCore.LoadSafe || TransactionRecords == null) return;
 
-            TransactionRecords?.SumUpData(TotalMonthlyExpense, TotalYearlyExpense);
+            TransactionRecords?.SumUpData();
 
             OnPropertyChanged(nameof(StringMonthlyExpenseOnTopBox));
             OnPropertyChanged(nameof(TotalMonthlyExpenseBreakdownWithComma));

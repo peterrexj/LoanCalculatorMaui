@@ -92,6 +92,11 @@ namespace LoanCalculator.Core
         {
             if (paymentSummary == null || paymentSummary.Payment == null || paymentSummary.PaymentTerms == null || paymentSummary.PaymentTerms.Count == 0) return;
 
+            // CalculateHomeLoan returns an empty PaymentOutput when the principal is <= 0 — which
+            // happens whenever the deposit covers the whole asset — leaving this at 0. Chunk(0)
+            // throws ArgumentOutOfRangeException('size'), surfacing as an "unexpected error" dialog.
+            if (paymentSummary.Payment.TotalNumberPaymentPerYear <= 0) return;
+
             var inYearData = paymentSummary.PaymentTerms.Chunk(paymentSummary.Payment.TotalNumberPaymentPerYear).ToList();
             paymentSummary.PaymentAmortizationTerms = new List<PaymentAmortisationOutput>();
             var incrementDate = new DateTime(DateTime.Now.Year, 01, 01);
@@ -131,6 +136,10 @@ namespace LoanCalculator.Core
         }
         public static void UpdateLoanPaymentAmortizationDataByTerm(PaymentSummary? paymentSummary)
         {
+            // Same zero-principal case as UpdateLoanPaymentAmortizationDataByYear. Here a
+            // TotalNumberPaymentPerYear of 0 would divide by zero in the loop below.
+            if (paymentSummary == null || paymentSummary.Payment == null || paymentSummary.Payment.TotalNumberPaymentPerYear <= 0) return;
+
             paymentSummary.PaymentAmortizationTerms = new List<PaymentAmortisationOutput>();
             var incrementDate = new DateTime(DateTime.Now.Year, 01, 01);
 

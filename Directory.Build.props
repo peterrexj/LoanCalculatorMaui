@@ -1,0 +1,21 @@
+<Project>
+
+  <!--
+    .NET Android's manifest merger (com.xamarin.manifestmerger.Main) is compiled
+    for Java 17+ (class file version 61.0). If the build resolves an older JDK
+    (e.g. Microsoft OpenJDK 11, class file 55.0) it fails with:
+        java.lang.UnsupportedClassVersionError ... only recognizes class file versions up to 55.0
+
+    Setting JAVA_HOME alone is not enough: the .NET Android SDK re-probes for a
+    JDK and can still pick the old one, so we set JavaSdkDirectory explicitly.
+
+    This only applies on macOS, only when JavaSdkDirectory has not already been
+    set (e.g. by run-android.ps1 or the command line), and only when the JDK
+    path actually exists — so Windows, CI, and other machines are unaffected.
+    Adjust the path below if you install the JDK somewhere else.
+  -->
+  <PropertyGroup Condition="'$(JavaSdkDirectory)' == '' And $([MSBuild]::IsOSPlatform('OSX')) And Exists('/opt/homebrew/opt/openjdk@21/libexec/openjdk.jdk/Contents/Home')">
+    <JavaSdkDirectory>/opt/homebrew/opt/openjdk@21/libexec/openjdk.jdk/Contents/Home</JavaSdkDirectory>
+  </PropertyGroup>
+
+</Project>

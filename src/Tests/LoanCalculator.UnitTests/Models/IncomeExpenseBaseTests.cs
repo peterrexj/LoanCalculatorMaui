@@ -248,14 +248,22 @@ namespace LoanCalculator.UnitTests.Models
             Assert.That(_base.IncomeExpenseSummary.TotalYearly, Is.EqualTo(24000));
         }
 
+        /// <summary>
+        /// SumUpData computes the plain sum of the entries and nothing else. It used to accept a
+        /// deduction and subtract it from the totals it had just written, which is TECH-DEBT D1 —
+        /// the deduction now lives where it is displayed.
+        /// </summary>
         [Test]
-        public void SumUpData_WithDeductions_SubtractsFromTotals()
+        public void SumUpData_AlwaysReportsThePlainSumOfTheEntries()
         {
             _base.Add("Salary", 3000, TimeFrequencyEnum.Monthly, isCheckForExistingRequired: false);
-            _base.SumUpData(monthlyValue: 500, yearlyValue: 6000);
+            _base.SumUpData();
 
-            Assert.That(_base.IncomeExpenseSummary.TotalMonthly, Is.EqualTo(2500));
-            Assert.That(_base.IncomeExpenseSummary.TotalYearly, Is.EqualTo(30000)); // 36000 - 6000
+            Assert.Multiple(() =>
+            {
+                Assert.That(_base.IncomeExpenseSummary.TotalMonthly, Is.EqualTo(3000));
+                Assert.That(_base.IncomeExpenseSummary.TotalYearly, Is.EqualTo(36000));
+            });
         }
 
         [Test]

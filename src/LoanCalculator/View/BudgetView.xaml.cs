@@ -1,4 +1,5 @@
 using LoanCalculator.Core.Helper;
+using LoanCalculator.Core.Models.Income;
 using LoanCalculator.Core.Models.ViewModels.PrimaryModels;
 using LoanCalculator.Core.Services;
 using LoanCalculator.Core.Themes;
@@ -58,7 +59,7 @@ public partial class BudgetView : ContentPage
     {
         try
         {
-            base.OnAppearing();
+        base.OnAppearing();
 
             // Yield one frame so the page skeleton renders before we do any work.
             await Task.Delay(100);
@@ -109,6 +110,11 @@ public partial class BudgetView : ContentPage
             // Re-apply slider track/thumb colors so a theme change is reflected (Syncfusion
             // caches these from DynamicResource and won't update them live).
             LoanCalculatorMaui.Extensions.SliderThemeRefresher.Refresh(this);
+
+#if IOS || MACCATALYST
+            // Let taps reach the tab header strip — see SyncfusionIosTouchFix.
+            LoanCalculatorMaui.Extensions.SyncfusionIosTouchFix.ApplyToTabView(tabView);
+#endif
         }
         catch (Exception ex)
         {
@@ -159,8 +165,8 @@ public partial class BudgetView : ContentPage
     {
         try
         {
-            if (sender is not Syncfusion.Maui.Buttons.SfButton btn || string.IsNullOrEmpty(btn.AutomationId)) return;
-            var entry = _viewModel.Income.TransactionRecords?.Get(Guid.Parse(btn.AutomationId))?.DeepClone();
+            if (sender is not Syncfusion.Maui.Buttons.SfButton btn || btn.BindingContext is not IncomeExpense row) return;
+            var entry = _viewModel.Income.TransactionRecords?.Get(row.Id)?.DeepClone();
             if (entry == null) return;
             _viewModel.Income.ShowValidationErrors = false;
             _viewModel.Income.IncomeExpenseEntry = entry;
@@ -176,8 +182,8 @@ public partial class BudgetView : ContentPage
     {
         try
         {
-            if (sender is not Syncfusion.Maui.Buttons.SfButton btn || string.IsNullOrEmpty(btn.AutomationId)) return;
-            _viewModel.Income.TransactionRecords?.Delete(Guid.Parse(btn.AutomationId));
+            if (sender is not Syncfusion.Maui.Buttons.SfButton btn || btn.BindingContext is not IncomeExpense row) return;
+            _viewModel.Income.TransactionRecords?.Delete(row.Id);
             _viewModel.Income.FlushPendingSave(() => SharedServiceCore.SaveData(_viewModel.Income));
             SharedServiceCore.MarkIncomeDirty();
             _viewModel.Income.RefreshIncomePropertyChanged();
@@ -211,8 +217,8 @@ public partial class BudgetView : ContentPage
     {
         try
         {
-            if (sender is not Syncfusion.Maui.Buttons.SfButton btn || string.IsNullOrEmpty(btn.AutomationId)) return;
-            var entry = _viewModel.Expense.TransactionRecords?.Get(Guid.Parse(btn.AutomationId))?.DeepClone();
+            if (sender is not Syncfusion.Maui.Buttons.SfButton btn || btn.BindingContext is not IncomeExpense row) return;
+            var entry = _viewModel.Expense.TransactionRecords?.Get(row.Id)?.DeepClone();
             if (entry == null) return;
             _viewModel.Expense.ShowValidationErrors = false;
             _viewModel.Expense.IncomeExpenseEntry = entry;
@@ -228,8 +234,8 @@ public partial class BudgetView : ContentPage
     {
         try
         {
-            if (sender is not Syncfusion.Maui.Buttons.SfButton btn || string.IsNullOrEmpty(btn.AutomationId)) return;
-            _viewModel.Expense.TransactionRecords?.Delete(Guid.Parse(btn.AutomationId));
+            if (sender is not Syncfusion.Maui.Buttons.SfButton btn || btn.BindingContext is not IncomeExpense row) return;
+            _viewModel.Expense.TransactionRecords?.Delete(row.Id);
             _viewModel.Expense.FlushPendingSave(() => SharedServiceCore.SaveData(_viewModel.Expense));
             SharedServiceCore.MarkExpenseDirty();
             _viewModel.Expense.RefreshIncomePropertyChanged();
@@ -496,8 +502,8 @@ public partial class BudgetView : ContentPage
         SwitchIncludeExpenses.IsOn = _viewModel.Income.IncludeExpenses;
         SwitchIncludePropertyExpenses.IsOn = _viewModel.Income.IncludePropertyExpenses;
         SwitchExpensePropertyExpense.IsOn = _viewModel.Expense.ShowPropertyExpense;
-        LblIncomeGrowthRate.Text = $"{_viewModel.Income.AnnualGrowthRatePercentage}%";
-        LblExpenseGrowthRate.Text = $"{_viewModel.Expense.AnnualGrowthRatePercentage}%";
+        LblIncomeGrowthRate.Text = $"{_viewModel.Income.AnnualGrowthRate:0.##}%";
+        LblExpenseGrowthRate.Text = $"{_viewModel.Expense.AnnualGrowthRate:0.##}%";
     }
 
     private void OnProjectionYearsSliderChanged(object sender, EventArgs e)
@@ -527,51 +533,87 @@ public partial class BudgetView : ContentPage
     private void OnIncomeGrowthRateIncrease(object sender, EventArgs e)
     {
         var step = SharedServiceCore.GetGrowthRateStep();
-        _viewModel.Income.AnnualGrowthRate = Math.Min(_viewModel.Income.AnnualGrowthRate + step, 20);
-        LblIncomeGrowthRate.Text = $"{_viewModel.Income.AnnualGrowthRatePercentage}%";
-        RefreshProjection();
+        _viewModel.Income.AnnualGrowthRate = Math.Round(Math.Min(_viewModel.Income.AnnualGrowthRate + step, 20), 2);
+        LblIncomeGrowthRate.Text = $"{_viewModel.Income.AnnualGrowthRate:0.##}%";
+        ScheduleProjectionRefresh();
     }
 
     private void OnIncomeGrowthRateDecrease(object sender, EventArgs e)
     {
         var step = SharedServiceCore.GetGrowthRateStep();
-        _viewModel.Income.AnnualGrowthRate = Math.Max(_viewModel.Income.AnnualGrowthRate - step, 0);
-        LblIncomeGrowthRate.Text = $"{_viewModel.Income.AnnualGrowthRatePercentage}%";
-        RefreshProjection();
+        _viewModel.Income.AnnualGrowthRate = Math.Round(Math.Max(_viewModel.Income.AnnualGrowthRate - step, 0), 2);
+        LblIncomeGrowthRate.Text = $"{_viewModel.Income.AnnualGrowthRate:0.##}%";
+        ScheduleProjectionRefresh();
     }
 
     private void OnExpenseGrowthRateIncrease(object sender, EventArgs e)
     {
         var step = SharedServiceCore.GetGrowthRateStep();
-        _viewModel.Expense.AnnualGrowthRate = Math.Min(_viewModel.Expense.AnnualGrowthRate + step, 20);
-        LblExpenseGrowthRate.Text = $"{_viewModel.Expense.AnnualGrowthRatePercentage}%";
-        RefreshProjection();
+        _viewModel.Expense.AnnualGrowthRate = Math.Round(Math.Min(_viewModel.Expense.AnnualGrowthRate + step, 20), 2);
+        LblExpenseGrowthRate.Text = $"{_viewModel.Expense.AnnualGrowthRate:0.##}%";
+        ScheduleProjectionRefresh();
     }
 
     private void OnExpenseGrowthRateDecrease(object sender, EventArgs e)
     {
         var step = SharedServiceCore.GetGrowthRateStep();
-        _viewModel.Expense.AnnualGrowthRate = Math.Max(_viewModel.Expense.AnnualGrowthRate - step, 0);
-        LblExpenseGrowthRate.Text = $"{_viewModel.Expense.AnnualGrowthRatePercentage}%";
-        RefreshProjection();
+        _viewModel.Expense.AnnualGrowthRate = Math.Round(Math.Max(_viewModel.Expense.AnnualGrowthRate - step, 0), 2);
+        LblExpenseGrowthRate.Text = $"{_viewModel.Expense.AnnualGrowthRate:0.##}%";
+        ScheduleProjectionRefresh();
     }
 
     private void OnIncludeExpensesChanged(object sender, Syncfusion.Maui.Buttons.SwitchStateChangedEventArgs e)
     {
         _viewModel.Income.IncludeExpenses = e.NewValue == true;
-        RefreshProjection();
+        ScheduleProjectionRefresh();
     }
 
     private void OnIncludePropertyExpensesChanged(object sender, Syncfusion.Maui.Buttons.SwitchStateChangedEventArgs e)
     {
         _viewModel.Income.IncludePropertyExpenses = e.NewValue == true;
-        RefreshProjection();
+        ScheduleProjectionRefresh();
     }
 
     private void OnExpensePropertyExpenseChanged(object sender, Syncfusion.Maui.Buttons.SwitchStateChangedEventArgs e)
     {
         _viewModel.Expense.ShowPropertyExpense = e.NewValue == true;
-        RefreshProjection();
+        ScheduleProjectionRefresh();
+    }
+
+    private CancellationTokenSource? _projectionRefreshCts;
+
+    /// <summary>
+    /// Coalesces rapid Projection-tab edits (growth-rate +/- taps, toggles) into a single
+    /// rebuild. Each <see cref="RefreshProjection"/> tears down and re-attaches two chart
+    /// series and two paged grids, so running it per tap made every press feel laggy and
+    /// queued up more work behind it. The on-screen number is updated by the caller straight
+    /// away; only the expensive chart/grid rebuild waits for the taps to stop.
+    /// </summary>
+    private void ScheduleProjectionRefresh(int debounceMs = 260)
+    {
+        _projectionRefreshCts?.Cancel();
+        _projectionRefreshCts = new CancellationTokenSource();
+        var token = _projectionRefreshCts.Token;
+
+        _viewModel.IsProjectionRefreshing = true;
+
+        Task.Delay(debounceMs, token).ContinueWith(t =>
+        {
+            if (t.IsCanceled || token.IsCancellationRequested) return;
+
+            MainThread.BeginInvokeOnMainThread(() =>
+            {
+                if (token.IsCancellationRequested) return;
+                try
+                {
+                    RefreshProjection();
+                }
+                finally
+                {
+                    _viewModel.IsProjectionRefreshing = false;
+                }
+            });
+        }, TaskScheduler.Default);
     }
 
     private void RefreshProjection()

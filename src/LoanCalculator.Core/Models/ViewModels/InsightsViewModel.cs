@@ -20,14 +20,14 @@ namespace LoanCalculator.Core.Models.ViewModels
         public InsightsViewModel AffordabilityMonthly { get; set; } = new InsightsViewModel
         {
             Name = "Affordability (monthly)",
-            ShortDescription = "left each month after all expenses and the loan repayment",
-            Description = "is the amount of money you have left each month after covering all your expenses, including the new loan repayment. It shows how much you can comfortably manage on a monthly basis while still meeting your financial needs."
+            ShortDescription = "estimate of what may remain each month after expenses and the loan repayment",
+            Description = "is an estimate of what may remain each month after your expenses and the new loan repayment, based on the figures you enter. Your actual position depends on your own circumstances, so treat this as a guide only — not financial advice. Consider speaking to a qualified financial adviser before deciding."
         };
         public InsightsViewModel AffordabilityYearly { get; set; } = new InsightsViewModel
         {
             Name = "Affordability (yearly)",
-            ShortDescription = "left each year after all expenses and loan repayments",
-            Description = "is the amount of money you have left each year after paying for all your annual expenses, including the total of your loan repayments. It reflects how much you can sustainably manage over the course of a year while maintaining your financial stability."
+            ShortDescription = "estimate of what may remain each year after expenses and loan repayments",
+            Description = "is an estimate of what may remain each year after your annual expenses and the total of your loan repayments, based on the figures you enter. Your actual position depends on your own circumstances, so treat this as a guide only — not financial advice. Consider speaking to a qualified financial adviser before deciding."
         };
 
 

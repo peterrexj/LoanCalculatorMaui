@@ -42,6 +42,7 @@
                     BackgroundColor="{DynamicResource LoanAppPopupBg}"
                     BindingContext="{Binding Source={x:Reference disclaimerRoot}, Path=BindingContext}">
                     <Button
+                        AutomationId="DisclaimerAcceptButton"
                         BackgroundColor="{DynamicResource LoanAppPopupButtonBg}"
                         Command="{Binding PopupAcceptCommand}"
                         CornerRadius="8"

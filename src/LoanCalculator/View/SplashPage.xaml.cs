@@ -5,7 +5,46 @@ namespace LoanCalculatorMaui.View;
 
 public partial class SplashPage : ContentPage
 {
+    /// <summary>
+    /// Upper bound on the splash. Only <see cref="PreWarmAsync"/> can get anywhere near it, so
+    /// this fires only when the pre-warm has genuinely stalled.
+    /// </summary>
+    private static readonly TimeSpan SplashDeadline = TimeSpan.FromSeconds(6);
+
+    /// <summary>
+    /// A floor on how briefly the splash may appear — not a brand hold. The pre-warm is often
+    /// quicker than this, and without a floor the splash becomes a flicker between the native
+    /// splash and the shell.
+    /// </summary>
+    private static readonly TimeSpan MinimumVisible = TimeSpan.FromMilliseconds(700);
+
+    /// <summary>
+    /// Hard stop for the dots pulse, so it can never keep running after the splash is gone even
+    /// if its cancellation is somehow missed. Comfortably longer than any sane pre-warm.
+    /// </summary>
+    private static readonly TimeSpan DotsMaxLifetime = TimeSpan.FromSeconds(30);
+
+    /// <summary>
+    /// Last-resort handoff, independent of <see cref="OnAppearing"/> ever firing.
+    /// </summary>
+    /// <remarks>
+    /// <see cref="SplashDeadline"/> only helps once the sequence has <em>started</em>, and it is
+    /// started from <c>OnAppearing</c>. A page whose <c>OnAppearing</c> never fires therefore has
+    /// no escape at all — which is what a stuck-at-full-opacity splash with unlit, unpulsing dots
+    /// looks like, and it was seen on roughly 7% of launches during a long UI-test run that cycles
+    /// terminate/activate 41 times.
+    /// </remarks>
+    private static readonly TimeSpan HandoffFailsafe = TimeSpan.FromSeconds(12);
+
     private readonly AppShell _appShell;
+
+    /// <summary>
+    /// A field, not a local, so the deadline path can stop the dots loop. That loop exits only
+    /// on cancellation, so abandoning it un-cancelled leaves it spinning for the life of the
+    /// process.
+    /// </summary>
+    private readonly CancellationTokenSource _dotsCts = new();
+
     private bool _hasNavigated;
     private bool _hasStarted;
 
@@ -13,7 +52,36 @@ public partial class SplashPage : ContentPage
     {
         _appShell = appShell;
         InitializeComponent();
+
+        // Started from the CONSTRUCTOR, not OnAppearing, which is the whole point: it has to run
+        // even if the page never appears.
+        StartHandoffFailsafe();
     }
+
+    private void StartHandoffFailsafe() =>
+        _ = Task.Delay(HandoffFailsafe).ContinueWith(_ =>
+        {
+            if (_hasNavigated) return;
+
+            Log($"failsafe firing after {HandoffFailsafe.TotalSeconds:0}s "
+                + $"(OnAppearing started: {_hasStarted})");
+
+            try
+            {
+                MainThread.BeginInvokeOnMainThread(NavigateToShell);
+            }
+            catch (NotImplementedException)
+            {
+                // No platform main thread (unit/host context) — nothing to marshal to.
+                NavigateToShell();
+            }
+        });
+
+    /// <summary>
+    /// Startup tracing. Tagged so run-ios.sh's log filter passes it; use <c>--logs</c> on Android.
+    /// </summary>
+    private static void Log(string message) =>
+        Console.WriteLine($"[splash] {message}");
 
     protected override async void OnAppearing()
     {
@@ -23,67 +91,114 @@ public partial class SplashPage : ContentPage
         if (_hasStarted) return;
         _hasStarted = true;
 
+        Log("OnAppearing — starting splash sequence");
+
         try
         {
-            await RunSplashAsync();
+            // The handoff no longer waits on any animation, so this deadline exists purely to
+            // bound PreWarmAsync's disk work. Keep it: an await that cannot be bounded is how the
+            // splash used to strand users (see the note on RunSplashAsync).
+            var splash = RunSplashAsync();
+
+            // Observe a late failure so losing the race cannot raise an unobserved task exception.
+            _ = splash.ContinueWith(
+                static t => _ = t.Exception,
+                TaskContinuationOptions.OnlyOnFaulted);
+
+            await Task.WhenAny(splash, Task.Delay(SplashDeadline));
+
+            // Covers the deadline path: RunSplashAsync cancels this itself on the happy path,
+            // but if it never got that far the loop is still running.
+            _dotsCts.Cancel();
         }
-        catch
+        catch (Exception ex)
         {
             // Never let the splash trap the user — fall through to the app.
+            Log($"splash sequence failed, continuing anyway: {ex.GetType().Name}: {ex.Message}");
         }
 
         NavigateToShell();
     }
 
+    /// <summary>
+    /// Shows the splash for as long as the pre-warm needs, and not a moment longer.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// There is deliberately no entrance animation and no exit fade. Both were removed on
+    /// 2026-10-06 because they cost ~1.8s of startup and bought nothing:
+    /// </para>
+    /// <list type="bullet">
+    /// <item>
+    /// The entrance ran every element in from <c>Opacity="0"</c>, so ~1.55s elapsed before the
+    /// pre-warm was even started. The page is now composed at its resting state in XAML and is
+    /// simply visible when it renders.
+    /// </item>
+    /// <item>
+    /// The exit <c>FadeTo(0)</c> could not cross-fade into anything: NavigateToShell swaps the
+    /// window's page instantly, and it runs AFTER the fade. So those 280ms were spent fading the
+    /// splash to blank before a hard cut — the user watched the screen empty out for no reason.
+    /// </item>
+    /// </list>
+    /// <para>
+    /// Removing them also removed a hang: MAUI animations are driven by the platform animator,
+    /// which may render an animation and never signal its task, so awaiting one can block
+    /// forever. That stranded the app on a fully-faded splash on iOS, and is the same mechanism
+    /// as the documented Android <c>animator_duration_scale=0</c> hang. The only animation left
+    /// is the dots pulse, which is fire-and-forget and never gates the handoff.
+    /// </para>
+    /// </remarks>
     private async Task RunSplashAsync()
     {
-        // ── Phase 1: entrance animation (uninterrupted on the UI thread) ──────
-        // Kick off the pulsing dots loop (fires later once dots are visible).
-        var dotsCts = new CancellationTokenSource();
+        // The only animation left: a progress hint for a slow pre-warm. Fire-and-forget by
+        // design — nothing below waits on it.
+        _ = AnimateDotsAsync(_dotsCts.Token);
 
-        // Glow fades up gently behind the logo (soft halo — capped low so the solid
-        // teal ellipse reads as a glow, not a bright disc).
-        _ = GlowEllipse.FadeTo(0.22, 600, Easing.CubicOut);
-
-        // Logo: pop-in with a subtle overshoot (scale + fade together).
-        var logoFade = LogoCard.FadeTo(1, 450, Easing.CubicOut);
-        var logoScale = LogoCard.ScaleTo(1.0, 600, Easing.SpringOut);
-        await Task.WhenAll(logoFade, logoScale);
-
-        // Title slides up and fades in.
-        var titleFade = TitleLabel.FadeTo(1, 350, Easing.CubicOut);
-        var titleMove = TitleLabel.TranslateTo(0, 0, 400, Easing.CubicOut);
-        await Task.WhenAll(titleFade, titleMove);
-
-        // Tagline follows just behind.
-        var tagFade = TaglineLabel.FadeTo(1, 300, Easing.CubicOut);
-        var tagMove = TaglineLabel.TranslateTo(0, 0, 350, Easing.CubicOut);
-        await Task.WhenAll(tagFade, tagMove);
-
-        // Reveal the loading dots and start the pulse loop.
-        await DotsLayout.FadeTo(1, 200, Easing.CubicOut);
-        _ = AnimateDotsAsync(dotsCts.Token);
-
-        // ── Phase 2: background pre-warm (UI thread now free for the dots) ────
         var prewarm = Task.Run(PreWarmAsync);
 
-        // Hold the brand for a beat, but bail out as soon as pre-warm is done
-        // (with a minimum + maximum so it always feels intentional, never stuck).
-        var minHold = Task.Delay(1100);
-        await Task.WhenAll(prewarm, minHold);
+        // WhenAll, so the splash lasts for whichever is slower: the real work, or the floor that
+        // stops a fast pre-warm turning it into a flicker.
+        await Task.WhenAll(prewarm, Task.Delay(MinimumVisible));
 
-        dotsCts.Cancel();
-
-        // ── Phase 3: graceful exit — fade the whole splash out ────────────────
-        await this.FadeTo(0, 280, Easing.CubicIn);
+        _dotsCts.Cancel();
     }
 
+    /// <summary>
+    /// Pulses the loading dots while the pre-warm runs. Cosmetic, fire-and-forget.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>These awaits must stay uncapped.</b> Capping them looks like an improvement — a lost
+    /// animation completion would otherwise freeze the dots mid-pulse — but it caused a far worse
+    /// failure, so do not "fix" it again:
+    /// </para>
+    /// <para>
+    /// Each iteration was raced against a timeout. When completions never arrive (a wedged
+    /// simulator, or any device where the animator is not ticking) the loop abandoned the
+    /// in-flight animation and started a new one every ~340ms, three dots, without end. Every
+    /// abandoned MAUI animation stays registered with the animation ticker, so the UI thread
+    /// accumulated thousands of them — about 9,000 over an 18-minute run.
+    /// </para>
+    /// <para>
+    /// That starves the UI thread, and <see cref="SplashDeadline"/> is awaited with the UI
+    /// SynchronizationContext captured: its continuation can only run on that thread, so a
+    /// flooded thread means <c>NavigateToShell</c> never runs. The cap defeated the very deadline
+    /// meant to rescue the hang. Uncapped, a lost completion simply parks this loop on one pending
+    /// animation, which costs nothing and cannot affect the handoff.
+    /// </para>
+    /// <para>
+    /// The hard lifetime below is belt and braces: the loop stops on its own even if the token is
+    /// never cancelled, so it can never outlive the splash.
+    /// </para>
+    /// </remarks>
     private async Task AnimateDotsAsync(CancellationToken token)
     {
         var dots = new[] { Dot1, Dot2, Dot3 };
+        var deadline = DateTime.UtcNow + DotsMaxLifetime;
+
         try
         {
-            while (!token.IsCancellationRequested)
+            while (!token.IsCancellationRequested && DateTime.UtcNow < deadline)
             {
                 foreach (var dot in dots)
                 {
@@ -129,30 +244,37 @@ public partial class SplashPage : ContentPage
         }
         catch { /* best-effort; BudgetView.OnAppearing will retry */ }
 
-        // 2. Pre-inflate the heavy NON-landing tab pages so the first tab tap is instant.
-        //    NOTE: we deliberately do NOT pre-build LoanView here. LoanView is the landing
-        //    page (built by Shell navigation anyway) and it hosts the full-screen disclaimer
-        //    SfPopup. Pre-building it off-screen opens that popup in a detached state, which
-        //    then resets when the page actually appears — causing a visible popup flash.
-        await PreBuildOnMainThread<BudgetView>();
-    }
-
-    private static Task PreBuildOnMainThread<T>() where T : class
-    {
-        var tcs = new TaskCompletionSource();
-        MainThread.BeginInvokeOnMainThread(() =>
-        {
-            try { ServiceLocator.GetService<T>(); }
-            catch { /* page will build lazily on first tap */ }
-            finally { tcs.TrySetResult(); }
-        });
-        return tcs.Task;
+        // 2. Pre-inflating BudgetView here was measured at 8.6s of *blocking main-thread* work
+        //    (Android Debug/emulator), which is paid on every single launch to make one later tab
+        //    tap feel instant. That is the wrong side of the trade: it is the single largest
+        //    contributor to a 23s cold start, and the user waits for it before seeing anything.
+        //
+        //    BudgetView is a DI singleton, so the first Budget tap builds it once and every tab
+        //    switch after that is free — measured at 0.0ms in OnAppearing.
+        //
+        //    The data load above (step 1) is kept: it is genuinely async, off the UI thread, and
+        //    is what BudgetView needs in order to render without a second pass.
+        //
+        //    NOTE: LoanView was deliberately never pre-built here — it is the landing page and
+        //    hosts the full-screen disclaimer SfPopup, which flashes if built off-screen.
     }
 
     private void NavigateToShell()
     {
         if (_hasNavigated) return;
         _hasNavigated = true;
-        Application.Current!.Windows[0].Page = _appShell;
+
+        // Wrapped: this used to sit outside any try, so a failure here vanished into an async void
+        // and left the user looking at the splash with nothing logged.
+        try
+        {
+            Application.Current!.Windows[0].Page = _appShell;
+            Log("handed off to AppShell");
+        }
+        catch (Exception ex)
+        {
+            _hasNavigated = false;
+            Log($"HANDOFF FAILED, splash will remain: {ex.GetType().Name}: {ex.Message}");
+        }
     }
 }

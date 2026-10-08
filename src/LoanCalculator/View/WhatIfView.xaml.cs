@@ -8,13 +8,21 @@ public partial class WhatIfView : ContentPage
 {
     private readonly WhatIfViewModel _viewModel;
     private readonly LoanViewModel _loanViewModel;
+    private readonly IncomeViewModel _incomeViewModel;
+    private readonly ExpenseViewModel _expenseViewModel;
     private bool _hasLoadedOnce;
 
-    public WhatIfView(WhatIfViewModel viewModel, LoanViewModel loanViewModel)
+    public WhatIfView(
+        WhatIfViewModel viewModel,
+        LoanViewModel loanViewModel,
+        IncomeViewModel incomeViewModel,
+        ExpenseViewModel expenseViewModel)
     {
         InitializeComponent();
         _viewModel = viewModel;
         _loanViewModel = loanViewModel;
+        _incomeViewModel = incomeViewModel;
+        _expenseViewModel = expenseViewModel;
         _viewModel.SetLoanViewModel(_loanViewModel);
         BindingContext = _viewModel;
     }
@@ -22,6 +30,13 @@ public partial class WhatIfView : ContentPage
     protected override async void OnAppearing()
     {
         base.OnAppearing();
+
+        // The stress test reads _loanViewModel.IsAffordabilityAvailable and MonthlySurplus, both
+        // derived from the cached HasIncomeExpensesRecorded flag. Only the Loan tab used to refresh
+        // that, so arriving straight from Budget computed the stress test from a stale cache.
+        // The dirty flags stay set — LoanView still owns clearing them and its notification pass.
+        if (SharedServiceCore.IsIncomeDirty || SharedServiceCore.IsExpenseDirty)
+            await _loanViewModel.RefreshIncomeExpenseSummariesAsync(_incomeViewModel, _expenseViewModel);
 
         _viewModel.SetLoanViewModel(_loanViewModel);
 
@@ -106,7 +121,7 @@ public partial class WhatIfView : ContentPage
         await DisplayAlert(
             "How does repayment frequency save time?",
             "Paying fortnightly (half the monthly amount, 26 times a year) quietly makes 13 monthly-equivalent payments per year instead of 12 — one extra payment annually.\n\n" +
-            "That extra payment goes entirely to principal, reducing the balance faster. Compounded over a 25–30 year term, this typically saves 4–6 years and tens of thousands in interest.\n\n" +
+            "That extra payment goes entirely to principal, reducing the balance faster. Compounded over a 25–30 year term, this could save several years and a significant amount of interest — actual results vary with your rate, balance and repayments.\n\n" +
             "Weekly works the same way: 52 × (monthly ÷ 4) = 13 monthly equivalents per year. The saving is almost identical to fortnightly.",
             "Got it");
     }
@@ -126,7 +141,7 @@ public partial class WhatIfView : ContentPage
     {
         await DisplayAlert(
             "How is this calculated?",
-            "Breaks Even At — the rate at which your repayment exactly equals your income minus all expenses (zero surplus left). Above this rate the loan becomes unaffordable.\n\n" +
+            "Breaks Even At — the estimated rate at which your repayment would equal the income minus expenses you entered (zero surplus left). Above this estimated rate, your repayment would exceed the income you entered. These are estimates, not advice.\n\n" +
             "Your Buffer — the gap between the break-even rate and your current rate. A larger buffer means you can absorb more rate rises.\n\n" +
             "Current Monthly Surplus — your income minus expenses minus the current repayment. This is your breathing room right now.",
             "Got it");

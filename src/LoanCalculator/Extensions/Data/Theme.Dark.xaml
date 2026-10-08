@@ -103,11 +103,21 @@
     <Color x:Key="LoanAppAppShellTabBarDisabledColor">#6B7C8C</Color>
     <Color x:Key="LoanAppAppShellTabBarTitleColor">#DDE6ED</Color>
 
-    <!--  Notifications  -->
-    <Color x:Key="LoanAppNotificationWarningBgGradientStart">#4C3A51</Color>
-    <Color x:Key="LoanAppNotificationWarningBgGradientEnd">#774360</Color>
-    <Color x:Key="LoanAppNotificationInformationBgGradientStart">#092635</Color>
-    <Color x:Key="LoanAppNotificationInformationBgGradientEnd">#1B4242</Color>
+    <!--
+        Notifications — the body panel of DisclaimerBannerView, under the expander header.
+
+        Keep these ON the theme's own palette. The previous values were a plum (#4C3A51/#774360)
+        and a deep teal (#092635/#1B4242), neither of which appears anywhere else in this slate
+        theme, so the banner read as three unrelated fills stacked in one card: card background,
+        blue-grey header gradient, then a saturated magenta or teal body.
+
+        Warning stays warmer than Information so the two banner types remain distinguishable, but
+        it is a muted bronze rather than a hue that competes with the header.
+    -->
+    <Color x:Key="LoanAppNotificationWarningBgGradientStart">#3B332A</Color>
+    <Color x:Key="LoanAppNotificationWarningBgGradientEnd">#4A3E31</Color>
+    <Color x:Key="LoanAppNotificationInformationBgGradientStart">#1E2A38</Color>
+    <Color x:Key="LoanAppNotificationInformationBgGradientEnd">#27374D</Color>
     <Color x:Key="LoanAppNotificationTextColor">#DDE6ED</Color>
     <Color x:Key="LoanAppNotificationBgColor">#393E46</Color>
 
@@ -213,17 +223,21 @@
     <!--  Checkbox styles  -->
     <Color x:Key="LoanAppCheckboxBackColor">#9DB2BF</Color>
 
-    <!--  Notification background brush  -->
-    <LinearGradientBrush x:Key="InformationBackgroundGradientBrush" StartPoint="0,0.5" EndPoint="1,0.5">
+    <!--
+        Notification background brushes — the body panel of DisclaimerBannerView.
+
+        Two stops, TOP to BOTTOM. These used to be three stops left-to-right (start, end at 0.7,
+        back to start at 1.0), which swept across the panel and then darkened again at the right
+        edge — a horizontal stripe running against a card whose header gradient runs 0,0 to 1,1.
+        A quiet vertical settle reads as one panel instead.
+    -->
+    <LinearGradientBrush x:Key="InformationBackgroundGradientBrush" StartPoint="0,0" EndPoint="0,1">
         <GradientStop Offset="0.0" Color="{StaticResource LoanAppNotificationInformationBgGradientStart}" />
-        <GradientStop Offset="0.7" Color="{StaticResource LoanAppNotificationInformationBgGradientEnd}" />
-        <GradientStop Offset="1.0" Color="{StaticResource LoanAppNotificationInformationBgGradientStart}" />
+        <GradientStop Offset="1.0" Color="{StaticResource LoanAppNotificationInformationBgGradientEnd}" />
     </LinearGradientBrush>
-    <!--  Notification background brush  -->
-    <LinearGradientBrush x:Key="WarningBackgroundGradientBrush" StartPoint="0,0.5" EndPoint="1,0.5">
+    <LinearGradientBrush x:Key="WarningBackgroundGradientBrush" StartPoint="0,0" EndPoint="0,1">
         <GradientStop Offset="0.0" Color="{StaticResource LoanAppNotificationWarningBgGradientStart}" />
-        <GradientStop Offset="0.7" Color="{StaticResource LoanAppNotificationWarningBgGradientEnd}" />
-        <GradientStop Offset="1.0" Color="{StaticResource LoanAppNotificationWarningBgGradientStart}" />
+        <GradientStop Offset="1.0" Color="{StaticResource LoanAppNotificationWarningBgGradientEnd}" />
     </LinearGradientBrush>
 
     <!--  Disclaimer  -->

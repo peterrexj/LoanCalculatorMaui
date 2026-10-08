@@ -15,6 +15,13 @@
     <x:String x:Key="DefaultFontFamily">Lato</x:String>
 
     <!--  ═══════════════════════════════════════════════════════
+          Advisory / disclaimer copy — single source of truth so the
+          same wording is reused across pages and cannot drift.
+          ═══════════════════════════════════════════════════════ -->
+    <x:String x:Key="LoanAppDisclaimerBannerText">This app is a calculator for informational purposes only. Every figure is an estimate based on the information you enter — not financial advice, and not an offer of any loan or financial product. Consult a qualified financial adviser before making any financial decision.</x:String>
+    <x:String x:Key="LoanAppEstimateMicrocopy">Estimates only — not financial advice. Figures depend on the information you enter. Consult a qualified financial adviser before deciding.</x:String>
+
+    <!--  ═══════════════════════════════════════════════════════
           Responsive size tokens — use StaticResource instead of
           repeating OnIdiom inline throughout every view file.
           ═══════════════════════════════════════════════════════ -->
@@ -127,8 +134,41 @@
     </Style>
 
     <!--  Expander styles  -->
+    <!--
+        Card wrapper for an SfExpander. Settings carried this as ten copies of the same inline
+        Border while the Loan page's expanders had none, which is why the two pages looked
+        different despite using the same control and the same CommonExpanderStyle.
+
+        The vertical margin belongs HERE, not on the expander inside. An inner margin insets the
+        header's gradient from the Border, so a strip of card background shows above and below it —
+        which reads as a mismatched header fill — and it leaves the cards themselves touching,
+        because all the spacing ends up inside them.
+        Do not reuse BorderControlHighlightBox — same brushes, but RoundRectangle 3, thickness 2
+        and centred.
+    -->
+    <Style x:Key="ExpanderCardStyle" TargetType="Border">
+        <Setter Property="Margin" Value="0,5" />
+        <Setter Property="BackgroundColor" Value="{DynamicResource BorderControlBackgroundGradientBrush}" />
+        <Setter Property="Stroke" Value="{DynamicResource BorderControlGradientBrush}" />
+        <Setter Property="StrokeShape" Value="RoundRectangle 12" />
+        <Setter Property="StrokeThickness" Value="1" />
+    </Style>
+
     <Style x:Key="CommonExpanderStyle" TargetType="expander:SfExpander">
         <Setter Property="HeaderIconColor" Value="{DynamicResource LoanAppExpanderHeaderTextColor}" />
+        <!--
+            Expand/collapse animation. Nothing used to set these, so every expander ran
+            Syncfusion's defaults: 200ms at ExpanderAnimationEasing.Linear. A linear height
+            reveal starts and stops abruptly, which is what makes it read as a jerk rather than
+            a slide.
+
+            AnimationEasing takes Syncfusion's ExpanderAnimationEasing enum (None, Linear, SinIn,
+            SinOut, SinInOut) — NOT a MAUI Easing. `{x:Static Easing.CubicOut}` will not bind
+            here, whatever it does on SfLinearProgressBar a few hundred lines away in LoanView.
+            Set AnimationEasing="None" to turn the animation off outright.
+        -->
+        <Setter Property="AnimationDuration" Value="250" />
+        <Setter Property="AnimationEasing" Value="SinInOut" />
         <Setter Property="VisualStateManager.VisualStateGroups">
             <Setter.Value>
                 <VisualStateGroupList>
@@ -159,6 +199,22 @@
         <Setter Property="VerticalTextAlignment" Value="Center" />
         <Setter Property="FontSize" Value="{StaticResource FontSizeBody}" />
         <Setter Property="FontFamily" Value="{DynamicResource DefaultFontFamily}" />
+    </Style>
+
+    <!--
+        Expander header subtitle — the muted one-line description under the header title.
+
+        It must derive from LoanAppExpanderHeaderTextColor, NOT LoanAppDefaultForegroundColor:
+        it sits on the header gradient, not on the page background. Warm is the theme that
+        exposes the difference — its default foreground is a dark maroon (#4A2424) on a maroon
+        header, which is unreadable.
+    -->
+    <Style x:Key="ExpanderHeaderSubLabelStyle" TargetType="Label">
+        <Setter Property="Margin" Value="15,0,0,4" />
+        <Setter Property="FontSize" Value="{StaticResource FontSizeSmall}" />
+        <Setter Property="FontFamily" Value="{DynamicResource DefaultFontFamily}" />
+        <Setter Property="Opacity" Value="0.75" />
+        <Setter Property="TextColor" Value="{DynamicResource LoanAppExpanderHeaderTextColor}" />
     </Style>
 
 

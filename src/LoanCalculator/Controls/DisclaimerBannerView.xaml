@@ -6,58 +6,71 @@
     xmlns:expander="clr-namespace:Syncfusion.Maui.Expander;assembly=Syncfusion.Maui.Expander"
     x:Name="DisclaimerBannerContentView">
     <!--  Background="{DynamicResource NotificationBgColor}"  -->
-    <expander:SfExpander HeaderIconPosition="End" Style="{DynamicResource CommonExpanderStyle}">
-        <expander:SfExpander.Header>
-            <Label Style="{DynamicResource ExpanderHeaderLabelStyle}" Text="{Binding HeaderText, Source={x:Reference DisclaimerBannerContentView}}" />
-        </expander:SfExpander.Header>
-        <expander:SfExpander.Content>
-            <Grid HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
-                <Grid.Style>
-                    <Style TargetType="Grid">
-                        <Style.Triggers>
-                            <DataTrigger
-                                Binding="{Binding BannerType, Source={x:Reference DisclaimerBannerContentView}}"
-                                TargetType="Grid"
-                                Value="Information">
-                                <Setter Property="Background" Value="{DynamicResource InformationBackgroundGradientBrush}" />
-                            </DataTrigger>
-                            <DataTrigger
-                                Binding="{Binding BannerType, Source={x:Reference DisclaimerBannerContentView}}"
-                                TargetType="Grid"
-                                Value="Warning">
-                                <Setter Property="Background" Value="{DynamicResource WarningBackgroundGradientBrush}" />
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </Grid.Style>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="100*" />
-                </Grid.ColumnDefinitions>
-                <Label
-                    Grid.Row="0"
-                    Grid.Column="0"
-                    Padding="{OnIdiom Phone='5,5,5,5',
-                                      Tablet='20,5,5,5',
-                                      Desktop='20,5,5,5',
-                                      TV='20,5,5,5',
-                                      Watch='20,5,5,5',
-                                      Default='5,5,5,5'}"
-                    FontAttributes="Italic, Bold"
-                    FontAutoScalingEnabled="True"
-                    FontFamily="{DynamicResource DefaultFontFamily}"
-                    FontSize="{OnIdiom Phone=12,
-                                       Tablet=22,
-                                       Desktop=20,
-                                       TV=20,
-                                       Watch=10,
-                                       Default=12}"
-                    HorizontalOptions="Center"
-                    HorizontalTextAlignment="Start"
-                    Text="{Binding Text, Source={x:Reference Name=DisclaimerBannerContentView}}"
-                    TextColor="{DynamicResource LoanAppNotificationTextColor}"
-                    VerticalOptions="Center"
-                    VerticalTextAlignment="Center" />
-            </Grid>
-        </expander:SfExpander.Content>
-    </expander:SfExpander>
+    <!--
+        Margin overrides the style's horizontal-only value to add clearance at the top: this banner
+        is the first thing under the tab strip on both the Asset and Insights tabs, and without it
+        the card sits flush against the strip. Set here rather than at the two usage sites so both
+        tabs stay consistent.
+    -->
+    <Border Margin="0,12,0,5" Style="{DynamicResource ExpanderCardStyle}">
+        <expander:SfExpander HeaderIconPosition="End" Style="{DynamicResource CommonExpanderStyle}">
+            <expander:SfExpander.Header>
+                <Label Style="{DynamicResource ExpanderHeaderLabelStyle}" Text="{Binding HeaderText, Source={x:Reference DisclaimerBannerContentView}}" />
+            </expander:SfExpander.Header>
+            <expander:SfExpander.Content>
+                <!--
+                    No VerticalOptions="FillAndExpand" here. It made the content claim all the
+                    remaining height when opened - the "hanging" gap below the text - because it
+                    stretched rather than sizing to itself. No other expander does this.
+                -->
+                <Grid HorizontalOptions="Fill">
+                    <Grid.Style>
+                        <Style TargetType="Grid">
+                            <Style.Triggers>
+                                <DataTrigger
+                                    Binding="{Binding BannerType, Source={x:Reference DisclaimerBannerContentView}}"
+                                    TargetType="Grid"
+                                    Value="Information">
+                                    <Setter Property="Background" Value="{DynamicResource InformationBackgroundGradientBrush}" />
+                                </DataTrigger>
+                                <DataTrigger
+                                    Binding="{Binding BannerType, Source={x:Reference DisclaimerBannerContentView}}"
+                                    TargetType="Grid"
+                                    Value="Warning">
+                                    <Setter Property="Background" Value="{DynamicResource WarningBackgroundGradientBrush}" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Grid.Style>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="100*" />
+                    </Grid.ColumnDefinitions>
+                    <Label
+                        Grid.Row="0"
+                        Grid.Column="0"
+                        Padding="{OnIdiom Phone='12,10,12,12',
+                                          Tablet='20,12,20,14',
+                                          Desktop='20,12,20,14',
+                                          TV='20,12,20,14',
+                                          Watch='20,5,5,5',
+                                          Default='12,10,12,12'}"
+                        FontAttributes="Italic"
+                        FontAutoScalingEnabled="True"
+                        FontFamily="{DynamicResource DefaultFontFamily}"
+                        FontSize="{OnIdiom Phone=12,
+                                           Tablet=22,
+                                           Desktop=20,
+                                           TV=20,
+                                           Watch=10,
+                                           Default=12}"
+                        HorizontalOptions="Center"
+                        HorizontalTextAlignment="Start"
+                        Text="{Binding Text, Source={x:Reference Name=DisclaimerBannerContentView}}"
+                        TextColor="{DynamicResource LoanAppNotificationTextColor}"
+                        VerticalOptions="Center"
+                        VerticalTextAlignment="Center" />
+                </Grid>
+            </expander:SfExpander.Content>
+        </expander:SfExpander>
+    </Border>
 </ContentView>

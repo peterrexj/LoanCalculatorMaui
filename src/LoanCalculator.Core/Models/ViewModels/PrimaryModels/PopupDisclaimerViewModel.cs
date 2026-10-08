@@ -67,10 +67,15 @@ public class PopupDisclaimerViewModel : BaseViewModel
 
     public void TriggerChange()
     {
-        DisclaimerSections = ParseDisclaimerHtml(SharedServiceCore.DisclaimerData);
+        DisclaimerSections = ParseHtmlSections(SharedServiceCore.DisclaimerData);
     }
 
-    private static ObservableCollection<DisclaimerSection> ParseDisclaimerHtml(string html)
+    // Shared HTML→sections parser. Used by the launch-consent popup and by the
+    // Settings disclaimer/privacy popups, which now render these sections as native
+    // text instead of hosting a WebView. (A WebView inside a full-screen SfPopup left
+    // a native surface behind after the popup closed that blocked app navigation, and
+    // it would not scroll on Android.)
+    public static ObservableCollection<DisclaimerSection> ParseHtmlSections(string html)
     {
         var sections = new ObservableCollection<DisclaimerSection>();
         if (string.IsNullOrWhiteSpace(html))

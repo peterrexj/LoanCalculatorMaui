@@ -326,10 +326,9 @@ namespace LoanCalculator.UnitTests.Models.ViewModels.PrimaryModels
                 nameof(vm.RepaymentFrequencySelected),
                 nameof(vm.HomeLoanInfo),
                 nameof(vm.AffordabilityTextDescription),
-                nameof(vm.WizardShowAssetTotal),
-                nameof(vm.WizardAssetTotalLabel),
-                nameof(vm.WizardShowLoanAmount),
-                nameof(vm.WizardLoanAmountLabel),
+                // The four Wizard* labels that used to be required here moved to WizardViewModel,
+                // which refreshes them itself via Refresh(). LoanViewModel no longer knows about
+                // them, so this pass is no longer responsible for notifying them.
             };
             Assert.That(changed, Is.SupersetOf(required),
                 $"Missing: {string.Join(", ", required.Except(changed))}");

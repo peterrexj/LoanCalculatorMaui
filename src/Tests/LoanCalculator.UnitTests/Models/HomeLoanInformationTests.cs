@@ -207,6 +207,25 @@ namespace LoanCalculator.UnitTests.Models
             Assert.That(_info.DepositPercentage, Is.EqualTo(100));
         }
 
+        // A deposit above the asset value drives the app to ~100% CPU indefinitely (live-lock, not
+        // a crash). The cause is in the UI layer, not here — but re-applying an already-clamped
+        // percentage must at least be a no-op, or any control that clamps on write would fight the
+        // model forever. This guards that half of it.
+
+        [Test]
+        public void DepositPercentage_ClampedValueIsStable_SoTheSliderCannotOscillate()
+        {
+            _info.DepositPercentage = 150;
+            var clamped = _info.DepositPercentage;
+
+            // Writing the clamped value straight back is exactly what an over-range slider does.
+            _info.DepositPercentage = clamped;
+
+            Assert.That(_info.DepositPercentage, Is.EqualTo(clamped),
+                "Re-applying the clamped percentage changed it, so the slider and the model would " +
+                "bounce values off each other indefinitely.");
+        }
+
         [Test]
         public void DepositPercentage_20Percent_LoanPercentageIs80()
         {
@@ -338,5 +357,6 @@ namespace LoanCalculator.UnitTests.Models
             var sdo = new StampDutyOutput();
             Assert.DoesNotThrow(() => sdo.SumUpData());
         }
+
     }
 }

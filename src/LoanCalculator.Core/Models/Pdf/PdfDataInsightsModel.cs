@@ -66,29 +66,6 @@ namespace LoanCalculator.Core.Models.Pdf
 
             public IncomeExpenseBase? Transactions { get; set; }
 
-            public void ResetTransactions()
-            {
-                Transactions?.SumUpData();
-            }
-
-            public IncomeExpenseBase? TransactionRecordsWithExpense
-            {
-                get
-                {
-                    Transactions?.SumUpData(TotalExpenseMonthly, TotalExpenseYearly);
-                    return Transactions;
-                }
-            }
-
-            public IncomeExpenseBase? TransactionRecordsWithExpenseIncludingProperty
-            {
-                get
-                {
-                    Transactions?.SumUpData(TotalExpenseIncludingPropertyMonthly, TotalExpenseIncludingPropertyYearly);
-                    return Transactions;
-                }
-            }
-
             public double TotalExpenseMonthly { get; set; }
             public double TotalExpenseYearly { get; set; }
 
@@ -106,6 +83,15 @@ namespace LoanCalculator.Core.Models.Pdf
 
         public void InitializeLocalDataSet()
         {
+            // Recompute all three record sets up front. The PDF path reaches here via
+            // PdfGeneratorBase -> SharedServiceCore.LoadDataFile, which never sums, so without
+            // this the loan running costs and the expense totals below are whatever was last
+            // written to disk. Income used to be the only one corrected (further down), which is
+            // why only income was reliable on a PDF generated straight after launch.
+            loanViewModel.TransactionRecords?.SumUpData();
+            incomeModel.TransactionRecords?.SumUpData();
+            expenseModel.TransactionRecords?.SumUpData();
+
             Loan.PropertyAmount = loanViewModel.HomeLoanInfo.PropertyAmount;
             Loan.TotalRepayment = loanViewModel.HomeLoanInfo.PaymentSummary?.Payment?.TotalPayment ?? 0;
             Loan.DepositAmount = loanViewModel.HomeLoanInfo.DepositAmountDirectInput;
@@ -154,26 +140,22 @@ namespace LoanCalculator.Core.Models.Pdf
             Income.TotalExpenseMonthly = Expense.TotalMonthly;
             Income.TotalExpenseYearly = Expense.TotalYearly;
 
-            Income.ResetTransactions();
-
             Income.TotalMonthly = incomeModel.TransactionRecords?.IncomeExpenseSummary?.TotalMonthly ?? 0;
             Income.TotalYearly = incomeModel.TransactionRecords?.IncomeExpenseSummary?.TotalYearly ?? 0;
             Income.Transactions = incomeModel.TransactionRecords;
 
-            incomeModel.TransactionRecords?.SumUpData(Expense.TotalMonthly, Expense.TotalYearly);
-
-            Income.TotalAfterExpenseMonthly = incomeModel.TransactionRecords?.IncomeExpenseSummary?.TotalMonthly ?? 0;
-            Income.TotalAfterExpenseYearly = incomeModel.TransactionRecords?.IncomeExpenseSummary?.TotalYearly ?? 0;
-
-            Income.ResetTransactions();
+            // Plain subtraction. This was SumUpData(deduction) followed by reading the totals
+            // back, which left the shared summary net and forced every other reader to reset it.
+            Income.TotalAfterExpenseMonthly = Income.TotalMonthly - Expense.TotalMonthly;
+            Income.TotalAfterExpenseYearly = Income.TotalYearly - Expense.TotalYearly;
 
             Income.TotalExpenseIncludingPropertyMonthly = Expense.TotalMonthly + Loan.MonthlyRepayment + Loan.TotalMonthlyRunningExpense;
             Income.TotalExpenseIncludingPropertyYearly = Expense.TotalYearly + Loan.YearlyRepayment + Loan.TotalYearlyRunningExpense;
 
-            incomeModel.TransactionRecords?.SumUpData(Income.TotalExpenseIncludingPropertyMonthly, Income.TotalExpenseIncludingPropertyYearly);
-
-            Income.TotalAfterExpenseIncludingPropertyMonthly = incomeModel.TransactionRecords?.IncomeExpenseSummary?.TotalMonthly ?? 0;
-            Income.TotalAfterExpenseIncludingPropertyYearly = incomeModel.TransactionRecords?.IncomeExpenseSummary?.TotalYearly ?? 0;
+            Income.TotalAfterExpenseIncludingPropertyMonthly =
+                Income.TotalMonthly - Income.TotalExpenseIncludingPropertyMonthly;
+            Income.TotalAfterExpenseIncludingPropertyYearly =
+                Income.TotalYearly - Income.TotalExpenseIncludingPropertyYearly;
 
             loanViewModel.UpdateAmortizationData();
             Loan.PaymentAmortization = loanViewModel.PaymentAmortization ?? new List<PaymentAmortisationOutput>();

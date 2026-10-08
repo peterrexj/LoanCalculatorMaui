@@ -1,4 +1,4 @@
-using LoanCalculator.Core.Helper;
+﻿using LoanCalculator.Core.Helper;
 using LoanCalculator.Core.Models;
 using LoanCalculator.Core.Models.Enums;
 using LoanCalculator.Core.Models.Income;
@@ -43,7 +43,6 @@ public partial class LoanView : ContentPage
         _viewModel.IsUpdating = true;
         _viewModel.IsActive = false;
         _viewModel.IsPageBusy = true;
-        _viewModel.SetWizardPeerViewModels(_incomeViewModel, _expenseViewModel);
 
         BindingContext = _viewModel;
 
@@ -56,12 +55,12 @@ public partial class LoanView : ContentPage
         SharedServiceCore.DisclaimerAccepted -= OnDisclaimerAccepted;
         if (!SharedServiceCore.ShouldShowWizard()) return;
         SharedServiceCore.SetWizardShown();
-        // Small delay so the disclaimer popup fully closes before the wizard appears
+        // Small delay so the disclaimer popup fully closes before the wizard appears — pushing a
+        // modal while it is still animating out leaves them fighting over the screen on iOS.
         MainThread.BeginInvokeOnMainThread(async () =>
         {
             await Task.Delay(600);
-            if (_hasLoadedOnce) OnWizardFab_Clicked(this, EventArgs.Empty);
-            else _viewModel.IsWizardStep1Visible = true;
+            await LaunchLoanDetailsAsync();
         });
     }
 
@@ -70,15 +69,21 @@ public partial class LoanView : ContentPage
     protected override void OnDisappearing()
     {
         base.OnDisappearing();
+        _viewModel.PropertyChanged -= OnViewModelPropertyChanged;
         _viewModel.FlushPendingSave(() => SharedServiceCore.SaveData(_viewModel));
         SharedServiceCore.MarkLoanDirty();
     }
 
     protected override async void OnAppearing()
     {
+        // Idempotent: -= on an unsubscribed handler is a no-op, so repeated appearances cannot
+        // stack duplicate subscriptions.
+        _viewModel.PropertyChanged -= OnViewModelPropertyChanged;
+        _viewModel.PropertyChanged += OnViewModelPropertyChanged;
+
         try
         {
-            base.OnAppearing();
+        base.OnAppearing();
 
             await Task.Delay(100);
 
@@ -121,22 +126,57 @@ public partial class LoanView : ContentPage
             _viewModel.IsBusy = false;
             _viewModel.IsActive = true;
             _viewModel.IsPageBusy = false;
+
+            ReapplyIosTouchFixes();
         }
+    }
+
+    /// <summary>
+    /// Re-disables the Syncfusion drawing overlays that swallow taps on iOS.
+    /// </summary>
+    /// <remarks>
+    /// <para>This has to be repeatable, not one-shot. The overlays come back with
+    /// <c>UserInteractionEnabled = true</c> whenever Syncfusion rebuilds them, which a later layout
+    /// pass can trigger long after <see cref="OnAppearing"/> has run. The symptom is sharp: show the
+    /// "enter the income and expense details" warning from Export Insights, dismiss it, and every
+    /// expander on the page is dead until you switch tabs and come back — because coming back is
+    /// what re-runs <c>OnAppearing</c>.</para>
+    /// <para>So it is also called whenever the page's busy state clears — see
+    /// <see cref="OnViewModelPropertyChanged"/> — which covers the alert and loader paths.</para>
+    /// </remarks>
+    private void ReapplyIosTouchFixes()
+    {
+#if IOS || MACCATALYST
+        SyncfusionIosTouchFix.ApplyToTabView(TabView);
+        SyncfusionIosTouchFix.ApplyToSegmentedControl(SegmentedRepaymentFrequency);
+        // None of this page's expanders have an x:Name, so the fix walks the tree for them.
+        SyncfusionIosTouchFix.ApplyToExpanders(this);
+#endif
+    }
+
+    /// <summary>
+    /// Watches for the busy/PDF flags falling back to false — the point at which a modal alert or
+    /// the loader has gone and Syncfusion may have rebuilt its overlays.
+    /// </summary>
+    private void OnViewModelPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName is not (nameof(LoanViewModel.IsBusy) or nameof(LoanViewModel.IsGeneratingPdf)))
+            return;
+
+        if (_viewModel.IsBusy || _viewModel.IsGeneratingPdf) return;
+
+        // Queued rather than immediate: the alert is still tearing down when the flag flips, and
+        // the overlay we need to disable may not exist yet at this instant.
+        MainThread.BeginInvokeOnMainThread(async () =>
+        {
+            await Task.Delay(150);
+            ReapplyIosTouchFixes();
+        });
     }
 
     private async Task RefreshCrossTabSummaries()
     {
-        _viewModel.ExpenseSummary = _expenseViewModel.HasInitialized
-            ? _expenseViewModel
-            : await SharedServiceCore.GetExpenseSummaryAsync();
-
-        _viewModel.IncomeSummary = _incomeViewModel.HasInitialized
-            ? _incomeViewModel
-            : await SharedServiceCore.GetIncomeSummaryAsync();
-
-        _viewModel.HasIncomeExpensesRecorded =
-            _viewModel.ExpenseSummary?.TransactionRecords?.IncomeExpenseSummary?.TotalYearly > 0 &&
-            _viewModel.IncomeSummary?.TransactionRecords?.IncomeExpenseSummary?.TotalYearly > 0;
+        await _viewModel.RefreshIncomeExpenseSummariesAsync(_incomeViewModel, _expenseViewModel);
 
         SharedServiceCore.ClearIncomeDirty();
         SharedServiceCore.ClearExpenseDirty();
@@ -203,12 +243,10 @@ public partial class LoanView : ContentPage
             _viewModel.ExpenseSummary = expenseSummaryTask.Result;
             _viewModel.IncomeSummary = incomeSummaryTask.Result;
 
-            // Ensure peer VM collections are populated for the wizard HasValue checks,
-            // even if those tabs haven't been visited yet this session.
-            if (!_incomeViewModel.HasInitialized && _viewModel.IncomeSummary?.TransactionRecords != null)
-                _incomeViewModel.TransactionRecords = _viewModel.IncomeSummary.TransactionRecords;
-            if (!_expenseViewModel.HasInitialized && _viewModel.ExpenseSummary?.TransactionRecords != null)
-                _expenseViewModel.TransactionRecords = _viewModel.ExpenseSummary.TransactionRecords;
+            // The peer-VM seeding that used to sit here existed only so the wizard's HasValue
+            // checks were right before those tabs had been visited. WizardViewModel now resolves
+            // the authoritative instance itself (LoanViewModel.ResolveAuthoritativeIncome), which
+            // SplashPage pre-warms from disk on every launch, so the seeding is redundant.
             _viewModel.HasIncomeExpensesRecorded =
                 _viewModel.ExpenseSummary?.TransactionRecords?.IncomeExpenseSummary?.TotalYearly > 0 &&
                 _viewModel.IncomeSummary?.TransactionRecords?.IncomeExpenseSummary?.TotalYearly > 0;
@@ -367,208 +405,49 @@ public partial class LoanView : ContentPage
     }
 
     // ── Quick Setup Wizard ────────────────────────────────────────────────────
+    //
+    // ── Loan Details page ────────────────────────────────────────────────────
+    //
+    // One modal page for all loan data entry — asset, deposit and loan amount always, plus
+    // upfront/running/income/expenses while they are still empty. It replaced the Quick Setup
+    // wizard (three SfPopup steps and ~280 lines of state machine that used to live here) and the
+    // separate Quick Input popup, which overlapped it on asset and deposit.
+    //
+    // Reached three ways: the ⚡ FAB, tapping the asset/deposit/loan figures on the Asset tab, and
+    // automatically on first run once the disclaimer is accepted.
 
-    private bool _wizardSuppressTextChanged;
+    private bool _isLoanDetailsOpen;
 
-    private void OnWizardEntryTextChanged(object sender, TextChangedEventArgs e)
+    private void OnWizardFab_Clicked(object sender, EventArgs e) => _ = LaunchLoanDetailsAsync();
+
+    private void OnAssetValueTapped(object sender, TappedEventArgs e) => _ = LaunchLoanDetailsAsync();
+
+    private async Task LaunchLoanDetailsAsync()
     {
-        if (_wizardSuppressTextChanged || sender is not Entry entry || entry.IsReadOnly) return;
+        if (_isLoanDetailsOpen) return;
+        _isLoanDetailsOpen = true;
 
-        var digits = new string(e.NewTextValue.Where(char.IsDigit).ToArray());
-        if (!double.TryParse(digits, out var val)) val = 0;
-        var formatted = val > 0 ? $"{val:N0}" : string.Empty;
-
-        _wizardSuppressTextChanged = true;
-        entry.Text = formatted;
-        entry.CursorPosition = formatted.Length;
-        _wizardSuppressTextChanged = false;
-
-        if (!_viewModel.HasInitialized) return;
-        switch (entry.AutomationId)
-        {
-            case "WizardAsset":   _viewModel.WizardAssetText      = formatted; break;
-            case "WizardDeposit": _viewModel.WizardDepositText     = formatted; break;
-            case "WizardUpfront": _viewModel.WizardUpfrontText     = formatted; break;
-            case "WizardRunning": _viewModel.WizardRunningCostText = formatted; break;
-            case "WizardIncome":  _viewModel.WizardIncomeText      = formatted; break;
-            case "WizardExpense": _viewModel.WizardExpenseText     = formatted; break;
-        }
-    }
-
-    private void OnWizardFab_Clicked(object sender, EventArgs e)
-    {
         try
         {
-            _viewModel.WizardAssetText = _viewModel.PropertyAmount > 0
-                ? $"{_viewModel.PropertyAmount:N0}" : string.Empty;
-            _viewModel.WizardDepositText = _viewModel.DepositAmountDirectInput > 0
-                ? $"{_viewModel.DepositAmountDirectInput:N0}" : string.Empty;
-            _viewModel.WizardUpfrontText = (_viewModel.HomeLoanInfo?.OtherExpenseTotalAmount ?? 0) > 0
-                ? $"{_viewModel.HomeLoanInfo.OtherExpenseTotalAmount:N0}" : string.Empty;
+            var page = ServiceLocator.GetService<LoanDetailsPage>();
+            if (page is null) return;
 
-            _viewModel.TransactionRecords?.SumUpData();
-            var runningTotal = _viewModel.TransactionRecords?.IncomeExpenseSummary?.TotalMonthly ?? 0;
-            _viewModel.WizardRunningCostText = runningTotal > 0
-                ? $"{runningTotal:N0}" : string.Empty;
+            await Navigation.PushModalAsync(page);
+            var committed = await page.Completion;
 
-            PrepopulateWizardStep2();
-            _viewModel.IsWizardStep1Visible = true;
-            MainThread.BeginInvokeOnMainThread(async () =>
-            {
-                await Task.Delay(80);
-                _viewModel.NotifyWizardPropertiesChanged();
-            });
+            // Selecting this tab is the page's only dependency on LoanView's markup, and it is
+            // satisfied here — after the modal has gone — so the page stays independent of it.
+            if (committed) TabView.SelectedIndex = 0;
         }
-        catch (Exception ex) { _errorHandlingService.HandleException(ex); }
-    }
-
-    private void PrepopulateWizardStep2()
-    {
-        _incomeViewModel.TransactionRecords?.SumUpData();
-        _expenseViewModel.TransactionRecords?.SumUpData();
-
-        var totalIncome = _incomeViewModel.TransactionRecords?.IncomeExpenseSummary?.TotalMonthly ?? 0;
-        _viewModel.WizardIncomeText = totalIncome > 0 ? $"{totalIncome:N0}" : string.Empty;
-
-        var totalExpense = _expenseViewModel.TransactionRecords?.IncomeExpenseSummary?.TotalMonthly ?? 0;
-        _viewModel.WizardExpenseText = totalExpense > 0 ? $"{totalExpense:N0}" : string.Empty;
-    }
-
-    private void OnWizardCancel(object sender, EventArgs e)
-    {
-        _viewModel.IsWizardStep1Visible = false;
-        _viewModel.IsWizardStep2Visible = false;
-        _viewModel.IsWizardStep3Visible = false;
-    }
-
-    private void OnWizardStep1Next(object sender, EventArgs e)
-    {
-        try
+        catch (Exception ex)
         {
-            ApplyWizardStep1();
-            _viewModel.IsWizardStep1Visible = false;
-            _viewModel.IsWizardStep2Visible = true;
-            MainThread.BeginInvokeOnMainThread(async () =>
-            {
-                await Task.Delay(80);
-                _viewModel.NotifyWizardPropertiesChanged();
-            });
+            _errorHandlingService.HandleException(ex);
         }
-        catch (Exception ex) { _errorHandlingService.HandleException(ex); }
-    }
-
-    private void OnWizardStep1Skip(object sender, EventArgs e)
-    {
-        _viewModel.IsWizardStep1Visible = false;
-        _viewModel.IsWizardStep2Visible = true;
-        MainThread.BeginInvokeOnMainThread(async () => { await Task.Delay(80); _viewModel.NotifyWizardPropertiesChanged(); });
-    }
-
-    private void OnWizardStep2Back(object sender, EventArgs e)
-    {
-        _viewModel.IsWizardStep2Visible = false;
-        _viewModel.IsWizardStep1Visible = true;
-        MainThread.BeginInvokeOnMainThread(async () => { await Task.Delay(80); _viewModel.NotifyWizardPropertiesChanged(); });
-    }
-
-    private void OnWizardStep2Next(object sender, EventArgs e)
-    {
-        try
+        finally
         {
-            _viewModel.IsWizardStep2Visible = false;
-            _viewModel.IsWizardStep3Visible = true;
-            PrepopulateWizardStep2();
-            MainThread.BeginInvokeOnMainThread(async () => { await Task.Delay(80); _viewModel.NotifyWizardPropertiesChanged(); });
-        }
-        catch (Exception ex) { _errorHandlingService.HandleException(ex); }
-    }
-
-    private void OnWizardStep3Back(object sender, EventArgs e)
-    {
-        _viewModel.IsWizardStep3Visible = false;
-        _viewModel.IsWizardStep2Visible = true;
-        MainThread.BeginInvokeOnMainThread(async () => { await Task.Delay(80); _viewModel.NotifyWizardPropertiesChanged(); });
-    }
-
-    private void OnWizardCalculate(object sender, EventArgs e)
-    {
-        try
-        {
-            ApplyWizardStep1();
-            ApplyWizardStep2();
-            _viewModel.IsWizardStep3Visible = false;
-
-            // The wizard added income/expense straight into the peer VMs. Re-point the loan
-            // VM's summaries at them and recompute HasIncomeExpensesRecorded so the Affordability
-            // box and IsAffordabilityAvailable flip on — they were evaluated once at load (empty).
-            _viewModel.IncomeSummary = _incomeViewModel;
-            _viewModel.ExpenseSummary = _expenseViewModel;
-            _incomeViewModel.TransactionRecords?.SumUpData();
-            _expenseViewModel.TransactionRecords?.SumUpData();
-            _viewModel.HasIncomeExpensesRecorded =
-                _expenseViewModel.TransactionRecords?.IncomeExpenseSummary?.TotalYearly > 0 &&
-                _incomeViewModel.TransactionRecords?.IncomeExpenseSummary?.TotalYearly > 0;
-
-            _viewModel.TriggerPropertyChangedOnPropertyTab();
-            _viewModel.RefreshExpenseTabPropertyChanged();
-            _viewModel.RefreshInsightsTabPropertyChanged();
-            SharedServiceCore.MarkIncomeDirty();
-            SharedServiceCore.MarkExpenseDirty();
-            _viewModel.FlushPendingSave(() => SharedServiceCore.SaveData(_viewModel));
-            TabView.SelectedIndex = 0;
-        }
-        catch (Exception ex) { _errorHandlingService.HandleException(ex); }
-    }
-
-    private void ApplyWizardStep1()
-    {
-        if (!_viewModel.HasInitialized) return;
-
-        if (double.TryParse(_viewModel.WizardAssetText?.Replace(",", ""), out var asset) && asset > 0)
-            _viewModel.PropertyAmount = asset;
-
-        if (double.TryParse(_viewModel.WizardDepositText?.Replace(",", ""), out var deposit) && deposit > 0)
-            _viewModel.DepositAmountDirectInput = deposit;
-
-        if (!_viewModel.WizardUpfrontHasValue)
-        {
-            if (double.TryParse(_viewModel.WizardUpfrontText?.Replace(",", ""), out var upfront) && upfront > 0)
-                _viewModel.OtherExpenses = upfront;
-        }
-
-        if (!_viewModel.WizardRunningCostHasValue)
-        {
-            if (double.TryParse(_viewModel.WizardRunningCostText?.Replace(",", ""), out var running) && running > 0)
-            {
-                _viewModel.TransactionRecords ??= new Incomes { IncomeExpenseEntries = [] };
-                _viewModel.TransactionRecords.Add("Running Costs", running, TimeFrequencyEnum.Monthly, isCheckForExistingRequired: true);
-                _viewModel.RefreshExpenseTabPropertyChanged();
-            }
-        }
-    }
-
-    private void ApplyWizardStep2()
-    {
-        if (!_viewModel.WizardIncomeHasValue)
-        {
-            if (double.TryParse(_viewModel.WizardIncomeText?.Replace(",", ""), out var income) && income > 0)
-            {
-                _incomeViewModel.TransactionRecords ??= new Incomes { IncomeExpenseEntries = [] };
-                _incomeViewModel.TransactionRecords.Add("Total Income", income, TimeFrequencyEnum.Monthly, isCheckForExistingRequired: true);
-                _incomeViewModel.TransactionRecords.SumUpData();
-                SharedServiceCore.SaveData(_incomeViewModel);
-            }
-        }
-
-        if (!_viewModel.WizardExpenseHasValue)
-        {
-            if (double.TryParse(_viewModel.WizardExpenseText?.Replace(",", ""), out var expense) && expense > 0)
-            {
-                _expenseViewModel.TransactionRecords ??= new Incomes { IncomeExpenseEntries = [] };
-                _expenseViewModel.TransactionRecords.Add("Total Expenses", expense, TimeFrequencyEnum.Monthly, isCheckForExistingRequired: true);
-                _expenseViewModel.TransactionRecords.SumUpData();
-                SharedServiceCore.SaveData(_expenseViewModel);
-            }
+            // Always clear the latch. If an exception escaped between push and pop, leaving this
+            // set would make the FAB and the tappable figures permanently dead with no error.
+            _isLoanDetailsOpen = false;
         }
     }
 
@@ -594,6 +473,7 @@ public partial class LoanView : ContentPage
     private void OnUpfrontCostsTapped(object sender, TappedEventArgs e)
     {
         _viewModel.IsUpfrontInputVisible = true;
+
     }
 
     private void OnUpfrontDone(object sender, EventArgs e)
@@ -669,51 +549,10 @@ public partial class LoanView : ContentPage
             lbl.Text = val > 0 ? LoanCalculator.Core.Models.ViewModels.PrimaryModels.LoanViewModel.NumberToWordsPublic((long)Math.Round(val)) : string.Empty;
     }
 
-    private void OnAssetValueTapped(object sender, TappedEventArgs e)
-    {
-        UpdateQuickInputLabels();
-        _viewModel.PropertyChanged += OnViewModelPropertyChangedForPopup;
-        _viewModel.IsQuickInputVisible = true;
-    }
 
-    // Quick Input live display — backing fields since labels are inside DataTemplate
-    private Label? _lblAssetFormatted;
-    private Label? _lblAssetWords;
-    private Label? _lblDepositFormatted;
-    private Label? _lblDepositWords;
-    private Label? _lblLoanFormatted;
-    private Label? _lblLoanWords;
-    private Entry? _entryAssetValue;
-    private Entry? _entryDepositAmount;
-    private Entry? _entryLoanAmount;
+    // Shared with the Upfront Costs popup's entries — see OnUpfrontEntryTextChanged.
     private bool _suppressTextChanged;
 
-    private void OnDepositTextChanged(object sender, TextChangedEventArgs e)
-    {
-        if (_suppressTextChanged || sender is not Entry entry) return;
-        FormatEntry(entry, e.NewTextValue,
-            formatted => { if (_lblDepositFormatted != null) _lblDepositFormatted.Text = formatted; },
-            words     => { if (_lblDepositWords     != null) _lblDepositWords.Text     = words; },
-            val       => { if (_viewModel.HasInitialized) _viewModel.DepositAmountDirectInput = val; });
-    }
-
-    private void OnAssetTextChanged(object sender, TextChangedEventArgs e)
-    {
-        if (_suppressTextChanged || sender is not Entry entry) return;
-        FormatEntry(entry, e.NewTextValue,
-            formatted => { if (_lblAssetFormatted != null) _lblAssetFormatted.Text = formatted; },
-            words     => { if (_lblAssetWords     != null) _lblAssetWords.Text     = words; },
-            val       => { if (_viewModel.HasInitialized) _viewModel.PropertyAmount = val; });
-    }
-
-    private void OnLoanTextChanged(object sender, TextChangedEventArgs e)
-    {
-        if (_suppressTextChanged || sender is not Entry entry) return;
-        FormatEntry(entry, e.NewTextValue,
-            formatted => { if (_lblLoanFormatted != null) _lblLoanFormatted.Text = formatted; },
-            words     => { if (_lblLoanWords     != null) _lblLoanWords.Text     = words; },
-            val       => { if (_viewModel.HasInitialized) _viewModel.LoanAmountDirectInput = val; });
-    }
 
     private void FormatEntry(Entry entry, string rawText,
         Action<string> setFormatted, Action<string> setWords, Action<double> setViewModel)
@@ -740,96 +579,7 @@ public partial class LoanView : ContentPage
         setViewModel(val);
     }
 
-    private void OnAssetValueChanged(object sender, Syncfusion.Maui.Inputs.NumericEntryValueChangedEventArgs e) { }
-    private void OnLoanAmountChanged(object sender, Syncfusion.Maui.Inputs.NumericEntryValueChangedEventArgs e) { }
 
-    private void OnQuickInputFab_Clicked(object sender, EventArgs e)
-    {
-        UpdateQuickInputLabels();
-        _viewModel.PropertyChanged += OnViewModelPropertyChangedForPopup;
-        _viewModel.IsQuickInputVisible = true;
-    }
-
-    private void UpdateQuickInputLabels()
-    {
-        var sym     = _viewModel.CurrencySymbol;
-        var asset   = _viewModel.PropertyAmount;
-        var deposit = _viewModel.DepositAmountDirectInput;
-        var loan    = _viewModel.LoanAmountDirectInput;
-
-        _suppressTextChanged = true;
-        if (_entryAssetValue   != null) _entryAssetValue.Text   = asset   > 0 ? $"{asset:N0}"   : string.Empty;
-        if (_entryDepositAmount != null) _entryDepositAmount.Text = deposit > 0 ? $"{deposit:N0}" : string.Empty;
-        if (_entryLoanAmount   != null) _entryLoanAmount.Text   = loan    > 0 ? $"{loan:N0}"    : string.Empty;
-        _suppressTextChanged = false;
-
-        if (_lblAssetFormatted   != null) _lblAssetFormatted.Text   = asset   > 0 ? $"{sym}{asset:N0}"   : string.Empty;
-        if (_lblAssetWords       != null) _lblAssetWords.Text       = asset   > 0 ? LoanCalculator.Core.Models.ViewModels.PrimaryModels.LoanViewModel.NumberToWordsPublic((long)Math.Round(asset))   : string.Empty;
-        if (_lblDepositFormatted != null) _lblDepositFormatted.Text = deposit > 0 ? $"{sym}{deposit:N0}" : string.Empty;
-        if (_lblDepositWords     != null) _lblDepositWords.Text     = deposit > 0 ? LoanCalculator.Core.Models.ViewModels.PrimaryModels.LoanViewModel.NumberToWordsPublic((long)Math.Round(deposit)) : string.Empty;
-        if (_lblLoanFormatted    != null) _lblLoanFormatted.Text    = loan    > 0 ? $"{sym}{loan:N0}"    : string.Empty;
-        if (_lblLoanWords        != null) _lblLoanWords.Text        = loan    > 0 ? LoanCalculator.Core.Models.ViewModels.PrimaryModels.LoanViewModel.NumberToWordsPublic((long)Math.Round(loan))    : string.Empty;
-    }
-
-    private void RefreshLoanDisplay()
-    {
-        var sym     = _viewModel.CurrencySymbol;
-        var deposit = _viewModel.DepositAmountDirectInput;
-        var loan    = _viewModel.LoanAmountDirectInput;
-
-        _suppressTextChanged = true;
-        if (_entryDepositAmount != null) _entryDepositAmount.Text = deposit > 0 ? $"{deposit:N0}" : string.Empty;
-        if (_entryLoanAmount    != null) _entryLoanAmount.Text    = loan    > 0 ? $"{loan:N0}"    : string.Empty;
-        _suppressTextChanged = false;
-
-        if (_lblDepositFormatted != null) _lblDepositFormatted.Text = deposit > 0 ? $"{sym}{deposit:N0}" : string.Empty;
-        if (_lblDepositWords     != null) _lblDepositWords.Text     = deposit > 0 ? LoanCalculator.Core.Models.ViewModels.PrimaryModels.LoanViewModel.NumberToWordsPublic((long)Math.Round(deposit)) : string.Empty;
-        if (_lblLoanFormatted    != null) _lblLoanFormatted.Text    = loan    > 0 ? $"{sym}{loan:N0}"    : string.Empty;
-        if (_lblLoanWords        != null) _lblLoanWords.Text        = loan    > 0 ? LoanCalculator.Core.Models.ViewModels.PrimaryModels.LoanViewModel.NumberToWordsPublic((long)Math.Round(loan))    : string.Empty;
-    }
-
-    private void OnViewModelPropertyChangedForPopup(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
-    {
-        if (e.PropertyName == nameof(_viewModel.LoanAmountDirectInput) ||
-            e.PropertyName == nameof(_viewModel.LoanAmountStrFormatted) ||
-            e.PropertyName == nameof(_viewModel.DepositAmountDirectInput))
-        {
-            MainThread.BeginInvokeOnMainThread(RefreshLoanDisplay);
-        }
-    }
-
-    private void OnQuickInputEntryLoaded(object sender, EventArgs e)
-    {
-        if (sender is Entry entry)
-        {
-            if (entry.AutomationId == "AssetEntry")   _entryAssetValue   = entry;
-            else if (entry.AutomationId == "DepositEntry") _entryDepositAmount = entry;
-            else if (entry.AutomationId == "LoanEntry")    _entryLoanAmount   = entry;
-            UpdateQuickInputLabels();
-        }
-    }
-
-    private void OnQuickInputLabelLoaded(object sender, EventArgs e)
-    {
-        // Wire backing field references when labels render inside the DataTemplate
-        if (sender is Label lbl)
-        {
-            if      (lbl.AutomationId == "AssetFormatted")   _lblAssetFormatted   = lbl;
-            else if (lbl.AutomationId == "AssetWords")       _lblAssetWords       = lbl;
-            else if (lbl.AutomationId == "DepositFormatted") _lblDepositFormatted = lbl;
-            else if (lbl.AutomationId == "DepositWords")     _lblDepositWords     = lbl;
-            else if (lbl.AutomationId == "LoanFormatted")    _lblLoanFormatted    = lbl;
-            else if (lbl.AutomationId == "LoanWords")        _lblLoanWords        = lbl;
-            UpdateQuickInputLabels();
-        }
-    }
-
-    private void OnQuickInputDone(object sender, EventArgs e)
-    {
-        _viewModel.PropertyChanged -= OnViewModelPropertyChangedForPopup;
-        _viewModel.IsQuickInputVisible = false;
-        _viewModel.TriggerPropertyChangedOnPropertyTab();
-    }
 
     private void OnInterestRateDecrease(object sender, EventArgs e)
     {

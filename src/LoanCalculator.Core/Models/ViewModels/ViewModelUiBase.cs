@@ -56,11 +56,35 @@ namespace LoanCalculator.Core.Models.ViewModels
 
         private void OnCurrencySymbolChanged(object? sender, EventArgs e)
         {
-            MainThread.BeginInvokeOnMainThread(() =>
+            // This handler must not be allowed to throw, and that is not a test accommodation.
+            //
+            // The subscription above is never removed — there is no Dispose on this type — so
+            // every view model ever constructed stays attached to a static event for the life of
+            // the process. A .NET event invokes its handlers in order and the first exception
+            // aborts the rest AND propagates to the caller, so one handler that throws turns
+            // `Helper.CurrencySymbol = x` into a throwing statement for everybody.
+            //
+            // Outside a MAUI app there is no platform main thread and MainThread throws MAUI's
+            // NotImplementedInReferenceAssemblyException. That type is internal to the MAUI
+            // assembly and cannot be named here, but it derives from NotImplementedException —
+            // which is narrow enough not to mask a real failure. With no UI thread there is also
+            // nothing to marshal to, so applying the update directly is the correct answer rather
+            // than a fallback. This surfaced as two unrelated currency tests failing as soon as
+            // any fixture that constructs a view model happened to run before them.
+            try
             {
-                CurrencySymbol = Helper.CurrencySymbol;
-                OnCurrencyChanged();
-            });
+                MainThread.BeginInvokeOnMainThread(ApplyCurrencySymbolChange);
+            }
+            catch (NotImplementedException)
+            {
+                ApplyCurrencySymbolChange();
+            }
+        }
+
+        private void ApplyCurrencySymbolChange()
+        {
+            CurrencySymbol = Helper.CurrencySymbol;
+            OnCurrencyChanged();
         }
 
         // Override in subclasses to fire additional currency-dependent property notifications

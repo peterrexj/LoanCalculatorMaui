@@ -1,4 +1,4 @@
-using LoanCalculator.Core.Helper;
+﻿using LoanCalculator.Core.Helper;
 using LoanCalculator.Core.Models;
 using LoanCalculator.Core.Models.Enums;
 using LoanCalculator.Core.Models.Income;
@@ -47,6 +47,70 @@ namespace LoanCalculator.UnitTests.Models.ViewModels.PrimaryModels
             PageHelper.PageLoadingComplete();
             SharedServiceCore.LoadSafeOff();
             _vm = BuildInitialized();
+        }
+
+        // ── Cost increases must grow the loan, never the deposit ──────────────
+        //
+        // The deposit is money the user has; the loan is what they must borrow. So when the asset
+        // price or any upfront cost rises, the deposit is unchanged and the loan absorbs the
+        // difference. The model stores a total plus one split point, so something has to give —
+        // these tests pin WHICH.
+        //
+        // This was backwards: PropertyAmount and all six expense setters used to self-assign
+        // HomeLoanInfo.LoanAmountDirectInput, which preserves the loan and re-derives the deposit
+        // (ProcessDepositCalc branch 3). The observed effect was that the loan NEVER changed and
+        // every cost increase was quietly credited to the user's savings:
+        //   asset 600k, deposit 100k, loan 500k  →  +20k upfront  →  deposit 120k, loan 500k
+        //                                        →  +50k asset    →  deposit 170k, loan 500k
+        // They now self-assign the deposit instead (branch 4: loan = total - deposit).
+
+        [Test]
+        public void RaisingUpfrontCosts_GrowsTheLoanAndLeavesTheDepositAlone()
+        {
+            var vm = BuildInitialized(propertyAmount: 600_000, depositDirect: 100_000);
+
+            vm.OtherExpenses = 20_000;
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(vm.DepositAmountDirectInput, Is.EqualTo(100_000).Within(1),
+                    "upfront costs must not be added to the deposit");
+                Assert.That(vm.HomeLoanInfo.LoanAmountDirectInput, Is.EqualTo(520_000).Within(1),
+                    "the loan must absorb the extra cost");
+            });
+        }
+
+        [Test]
+        public void RaisingTheAssetPrice_GrowsTheLoanAndLeavesTheDepositAlone()
+        {
+            var vm = BuildInitialized(propertyAmount: 600_000, depositDirect: 100_000);
+
+            vm.PropertyAmount = 650_000;
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(vm.DepositAmountDirectInput, Is.EqualTo(100_000).Within(1),
+                    "a higher asset price must not inflate the deposit");
+                Assert.That(vm.HomeLoanInfo.LoanAmountDirectInput, Is.EqualTo(550_000).Within(1));
+            });
+        }
+
+        [Test]
+        public void RaisingCostsRepeatedly_KeepsTheDepositFixed()
+        {
+            var vm = BuildInitialized(propertyAmount: 600_000, depositDirect: 100_000);
+
+            vm.OtherExpenses = 20_000;
+            vm.PropertyAmount = 650_000;
+            vm.BankFee = 5_000;
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(vm.DepositAmountDirectInput, Is.EqualTo(100_000).Within(1));
+                Assert.That(vm.HomeLoanInfo.LoanAmountDirectInput,
+                    Is.EqualTo(vm.HomeLoanInfo.PropertyTotalAmount - 100_000).Within(1),
+                    "the loan is always the total minus the untouched deposit");
+            });
         }
 
         [TearDown]
@@ -214,94 +278,6 @@ namespace LoanCalculator.UnitTests.Models.ViewModels.PrimaryModels
             _vm.HomeLoanInfo.HomeLoanRepaymentRequest.LoanTermInYears = 1;
             Assert.That(_vm.AmortizationBalanceSubtitle, Does.Contain("1 yr").And.Not.Contain("yrs"));
         }
-
-        // ── Wizard HasValue ───────────────────────────────────────────────────
-
-        [Test]
-        public void WizardAssetHasValue_PositivePropertyAmount_IsTrue()
-        {
-            _vm.HomeLoanInfo.PropertyAmount = 1_000_000;
-            Assert.That(_vm.WizardAssetHasValue, Is.True);
-        }
-
-        [Test]
-        public void WizardAssetHasValue_ZeroPropertyAmount_IsFalse()
-        {
-            _vm.HomeLoanInfo.PropertyAmount = 0;
-            Assert.That(_vm.WizardAssetHasValue, Is.False);
-        }
-
-        [Test]
-        public void WizardDepositHasValue_PositiveDeposit_IsTrue()
-        {
-            _vm.HomeLoanInfo.DepositAmountDirectInput = 50_000;
-            Assert.That(_vm.WizardDepositHasValue, Is.True);
-        }
-
-        [Test]
-        public void WizardRunningCostHasValue_NoEntries_IsFalse()
-        {
-            _vm.TransactionRecords = new Incomes { IncomeExpenseEntries = [] };
-            Assert.That(_vm.WizardRunningCostHasValue, Is.False);
-        }
-
-        [Test]
-        public void WizardRunningCostHasValue_WithPositiveEntry_IsTrue()
-        {
-            _vm.TransactionRecords = new Incomes { IncomeExpenseEntries = [] };
-            _vm.TransactionRecords.Add("Maintenance", 500, TimeFrequencyEnum.Monthly, isCheckForExistingRequired: false);
-            Assert.That(_vm.WizardRunningCostHasValue, Is.True);
-        }
-
-        // ── Wizard Peer VM summaries ──────────────────────────────────────────
-
-        [Test]
-        public void WizardIncomeHasValue_NoPeerVm_IsFalse()
-        {
-            Assert.That(_vm.WizardIncomeHasValue, Is.False);
-        }
-
-        [Test]
-        public void WizardIncomeHasValue_PeerWithEntry_IsTrue()
-        {
-            var income = new IncomeViewModel();
-            income.TransactionRecords = new Incomes { IncomeExpenseEntries = [] };
-            income.TransactionRecords.Add("Salary", 5_000, TimeFrequencyEnum.Monthly, isCheckForExistingRequired: false);
-            var expense = new ExpenseViewModel();
-            expense.TransactionRecords = new Incomes { IncomeExpenseEntries = [] };
-
-            _vm.SetWizardPeerViewModels(income, expense);
-            Assert.That(_vm.WizardIncomeHasValue, Is.True);
-        }
-
-        [Test]
-        public void WizardExpenseHasValue_PeerWithNoEntries_IsFalse()
-        {
-            var income = new IncomeViewModel();
-            income.TransactionRecords = new Incomes { IncomeExpenseEntries = [] };
-            var expense = new ExpenseViewModel();
-            expense.TransactionRecords = new Incomes { IncomeExpenseEntries = [] };
-
-            _vm.SetWizardPeerViewModels(income, expense);
-            Assert.That(_vm.WizardExpenseHasValue, Is.False);
-        }
-
-        // ── WizardSummary labels ──────────────────────────────────────────────
-
-        [Test]
-        public void WizardAssetSummary_ContainsCurrentValue()
-        {
-            _vm.HomeLoanInfo.PropertyAmount = 750_000;
-            Assert.That(_vm.WizardAssetSummary, Does.Contain("750"));
-        }
-
-        [Test]
-        public void WizardDepositSummary_ContainsCurrentValue()
-        {
-            _vm.HomeLoanInfo.DepositAmountDirectInput = 100_000;
-            Assert.That(_vm.WizardDepositSummary, Does.Contain("100"));
-        }
-
         // ── TotalMonthlyOverallExpense does not throw ─────────────────────────
 
         [Test]
@@ -517,10 +493,12 @@ namespace LoanCalculator.UnitTests.Models.ViewModels.PrimaryModels
         }
 
         [Test]
-        public void AffordabilityTextDescription_WithIncomeExpenses_MentionsAffordability()
+        public void AffordabilityTextDescription_WithIncomeExpenses_QualifiesAsEstimate()
         {
+            // The caption is deliberately worded as an estimate rather than an
+            // "affordability status" verdict (Play Store advisory-safe reframe).
             _vm.HasIncomeExpensesRecorded = true;
-            Assert.That(_vm.AffordabilityTextDescription, Does.Contain("affordability"));
+            Assert.That(_vm.AffordabilityTextDescription, Does.Contain("estimate"));
         }
 
         // ── PropertyChanged on key loan properties ─────────────────────────────
@@ -548,22 +526,6 @@ namespace LoanCalculator.UnitTests.Models.ViewModels.PrimaryModels
             Assert.That(changed, Contains.Item(nameof(_vm.IsStampDutyToggleEnabled)));
             Assert.That(changed, Contains.Item(nameof(_vm.ShowAustralianStateSelectorOnStampDuty)));
         }
-
-        // ── WizardLabel properties include currency symbol ─────────────────────
-
-        [Test]
-        public void WizardLabelAsset_ContainsParenthesisWithCurrencyPlaceholder()
-        {
-            // Format: "Asset purchase price ({CurrencySymbol})" — always contains opening paren
-            Assert.That(_vm.WizardLabelAsset, Does.Contain("("));
-        }
-
-        [Test]
-        public void WizardLabelDeposit_ContainsParenthesisWithCurrencyPlaceholder()
-        {
-            Assert.That(_vm.WizardLabelDeposit, Does.Contain("("));
-        }
-
         // ── AddDefaultValues ── LoanTermInYears ───────────────────────────────
 
         [Test]
@@ -593,24 +555,6 @@ namespace LoanCalculator.UnitTests.Models.ViewModels.PrimaryModels
 
             Assert.That(changed, Contains.Item(nameof(_vm.IsDepositPercentageSliderEnabled)));
         }
-
-        // ── WizardRunningCostSummary ───────────────────────────────────────────
-
-        [Test]
-        public void WizardRunningCostSummary_ContainsMoSuffix()
-        {
-            Assert.That(_vm.WizardRunningCostSummary, Does.Contain("/mo"));
-        }
-
-        [Test]
-        public void WizardRunningCostSummary_WithEntry_ContainsAmount()
-        {
-            _vm.TransactionRecords = new Incomes { IncomeExpenseEntries = [] };
-            _vm.TransactionRecords.Add("Water", 150, TimeFrequencyEnum.Monthly, isCheckForExistingRequired: false);
-            _vm.TransactionRecords.SumUpData();
-            Assert.That(_vm.WizardRunningCostSummary, Does.Contain("150"));
-        }
-
         // ── New popup / wizard visibility properties ──────────────────────────
 
         [Test]
@@ -627,101 +571,6 @@ namespace LoanCalculator.UnitTests.Models.ViewModels.PrimaryModels
             _vm.IsUpfrontInputVisible = true;
             Assert.That(changed, Does.Contain(nameof(_vm.IsUpfrontInputVisible)));
             Assert.That(_vm.IsUpfrontInputVisible, Is.True);
-        }
-
-        [Test]
-        public void IsQuickInputVisible_DefaultFalse()
-        {
-            Assert.That(_vm.IsQuickInputVisible, Is.False);
-        }
-
-        [Test]
-        public void IsQuickInputVisible_SetTrue_FiresPropertyChanged()
-        {
-            var changed = new List<string>();
-            _vm.PropertyChanged += (_, e) => changed.Add(e.PropertyName);
-            _vm.IsQuickInputVisible = true;
-            Assert.That(changed, Does.Contain(nameof(_vm.IsQuickInputVisible)));
-            Assert.That(_vm.IsQuickInputVisible, Is.True);
-        }
-
-        [Test]
-        public void IsWizardStep1Visible_DefaultFalse()
-        {
-            Assert.That(_vm.IsWizardStep1Visible, Is.False);
-        }
-
-        [Test]
-        public void IsWizardStep2Visible_DefaultFalse()
-        {
-            Assert.That(_vm.IsWizardStep2Visible, Is.False);
-        }
-
-        [Test]
-        public void IsWizardStep3Visible_DefaultFalse()
-        {
-            Assert.That(_vm.IsWizardStep3Visible, Is.False);
-        }
-
-        [Test]
-        public void WizardStepVisibility_SetTrue_FiresPropertyChanged()
-        {
-            var changed = new List<string>();
-            _vm.PropertyChanged += (_, e) => changed.Add(e.PropertyName);
-
-            _vm.IsWizardStep1Visible = true;
-            _vm.IsWizardStep2Visible = true;
-            _vm.IsWizardStep3Visible = true;
-
-            Assert.That(changed, Does.Contain(nameof(_vm.IsWizardStep1Visible)));
-            Assert.That(changed, Does.Contain(nameof(_vm.IsWizardStep2Visible)));
-            Assert.That(changed, Does.Contain(nameof(_vm.IsWizardStep3Visible)));
-        }
-
-        [Test]
-        public void WizardAssetText_SetValue_FiresPropertyChanged()
-        {
-            var changed = new List<string>();
-            _vm.PropertyChanged += (_, e) => changed.Add(e.PropertyName);
-            _vm.WizardAssetText = "500000";
-            Assert.That(changed, Does.Contain(nameof(_vm.WizardAssetText)));
-            Assert.That(_vm.WizardAssetText, Is.EqualTo("500000"));
-        }
-
-        [Test]
-        public void WizardDepositText_SetValue_FiresPropertyChanged()
-        {
-            var changed = new List<string>();
-            _vm.PropertyChanged += (_, e) => changed.Add(e.PropertyName);
-            _vm.WizardDepositText = "50000";
-            Assert.That(changed, Does.Contain(nameof(_vm.WizardDepositText)));
-            Assert.That(_vm.WizardDepositText, Is.EqualTo("50000"));
-        }
-
-        [Test]
-        public void WizardShowAssetTotal_ZeroPropertyAmount_ReturnsFalse()
-        {
-            _vm.HomeLoanInfo.PropertyAmount = 0;
-            Assert.That(_vm.WizardShowAssetTotal, Is.False);
-        }
-
-        [Test]
-        public void WizardShowLoanAmount_ZeroLoanAmount_ReturnsFalse()
-        {
-            _vm.HomeLoanInfo.LoanAmountDirectInput = 0;
-            Assert.That(_vm.WizardShowLoanAmount, Is.False);
-        }
-
-        [Test]
-        public void WizardAssetTotalLabel_ContainsAssetCostText()
-        {
-            Assert.That(_vm.WizardAssetTotalLabel, Does.Contain("asset cost").IgnoreCase);
-        }
-
-        [Test]
-        public void WizardLoanAmountLabel_ContainsLoanAmountText()
-        {
-            Assert.That(_vm.WizardLoanAmountLabel, Does.Contain("Loan amount").IgnoreCase);
         }
     }
 }

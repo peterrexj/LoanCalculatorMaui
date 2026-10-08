@@ -147,7 +147,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <None Remove="Extensions\DisclaimerData\AppLaunchDisclaimerData.txt" />
 	  <None Remove="Resources\AppIcon\appiconfg.png" />
 	</ItemGroup>
 
@@ -171,7 +170,7 @@
 	    <Generator></Generator>
 	  </EmbeddedResource>
 	  <EmbeddedResource Include="Extensions\DisclaimerData\AppLaunchDisclaimerData.html" />
-	  <EmbeddedResource Include="Extensions\DisclaimerData\AppLaunchDisclaimerData.txt" />
+	  <EmbeddedResource Include="Extensions\DisclaimerData\PrivacyPolicyData.html" />
 	</ItemGroup>
 
 	<ItemGroup>

@@ -3,28 +3,63 @@ param(
     [string]$Avd = ""
 )
 
+# Cross-platform Windows check ($IsWindows is undefined on Windows PowerShell 5.1,
+# which instead sets $env:OS). Used throughout for path/exe/separator differences.
+$isWin = [bool]($IsWindows -or $env:OS -eq "Windows_NT")
+
+# Anchor to the script's own directory so the relative csproj/APK paths resolve
+# no matter where the script is invoked from.
+if ($PSScriptRoot) { Set-Location -LiteralPath $PSScriptRoot }
+
 $Project   = "LoanCalculatorMaui.csproj"
 $BundleId  = "com.pj.loan.afford.calc"
 
-$PhoneAvd  = "pixel_9_pro_-_api_36"
-$TabletAvd = "tablet_h-dpi_13_5in_-_api_29_1"
+# Preferred AVD names if they happen to exist on this machine; otherwise we
+# discover and pick one dynamically further below (see "Discovering AVDs").
+$PreferredPhoneAvd  = "pixel_9_pro_-_api_36"
+$PreferredTabletAvd = "tablet_h-dpi_13_5in_-_api_29_1"
 
-if ($Avd -ne "") {
-    $EmulatorName = $Avd
-} elseif ($Tablet) {
-    $EmulatorName = $TabletAvd
+# Android manifest merger requires a JDK >= 17. The system default may be older
+# (e.g. Java 11), which fails with UnsupportedClassVersionError, so pick the first
+# known JDK 17+ we can find. Set JAVA_HOME_OVERRIDE to force a specific JDK path.
+# Candidates are OS-specific; entries may contain wildcards (expanded below).
+$javaExe = if ($isWin) { "bin\java.exe" } else { "bin/java" }
+$javaCandidates = @()
+if ($env:JAVA_HOME_OVERRIDE) { $javaCandidates += $env:JAVA_HOME_OVERRIDE }
+if ($isWin) {
+    $javaCandidates += @(
+        "$env:ProgramFiles\Android\Android Studio\jbr",
+        "$env:ProgramFiles\Microsoft\jdk-21*",
+        "$env:ProgramFiles\Microsoft\jdk-17*",
+        "$env:ProgramFiles\Eclipse Adoptium\jdk-21*",
+        "$env:ProgramFiles\Eclipse Adoptium\jdk-17*",
+        "$env:ProgramFiles\Java\jdk-21*",
+        "$env:ProgramFiles\Java\jdk-17*"
+    )
 } else {
-    $EmulatorName = $PhoneAvd
+    $javaCandidates += @(
+        "/opt/homebrew/opt/openjdk@21/libexec/openjdk.jdk/Contents/Home",
+        "/opt/homebrew/opt/openjdk@17/libexec/openjdk.jdk/Contents/Home",
+        "/Applications/Android Studio.app/Contents/jbr/Contents/Home",
+        "/Library/Java/JavaVirtualMachines/microsoft-17.jdk/Contents/Home",
+        "/Library/Java/JavaVirtualMachines/temurin-21.jdk/Contents/Home",
+        "/Library/Java/JavaVirtualMachines/temurin-27.jdk/Contents/Home"
+    )
 }
-
-# Java 21 via Homebrew (required for Android manifest merger)
-$javaHome = "/opt/homebrew/opt/openjdk@21"
-if (Test-Path $javaHome) {
+$javaHome = $null
+foreach ($c in $javaCandidates) {
+    # Expand any wildcard (e.g. jdk-17*) and take the first match with a java binary.
+    foreach ($p in @(Resolve-Path -Path $c -ErrorAction SilentlyContinue | ForEach-Object { $_.Path })) {
+        if (Test-Path (Join-Path $p $javaExe)) { $javaHome = $p; break }
+    }
+    if ($javaHome) { break }
+}
+if ($javaHome) {
     $env:JAVA_HOME = $javaHome
-    $env:PATH = "$javaHome/bin:$env:PATH"
+    $env:PATH = (Join-Path $javaHome "bin") + [IO.Path]::PathSeparator + $env:PATH
     Write-Host "==> Using Java: $javaHome"
 } else {
-    Write-Host "WARNING: Java 21 not found at $javaHome, using system default" -ForegroundColor Yellow
+    Write-Host "WARNING: No JDK 17+ found automatically; using system default (manifest merge may fail). Set JAVA_HOME_OVERRIDE to a JDK 17+ path." -ForegroundColor Yellow
 }
 
 $SdkRoot = $env:ANDROID_HOME
@@ -42,25 +77,51 @@ if (-not $SdkRoot) {
 }
 if (-not $SdkRoot) { Write-Error "Android SDK not found. Set ANDROID_HOME or ANDROID_SDK_ROOT."; exit 1 }
 
-$EmulatorExe = Join-Path $SdkRoot "emulator/emulator"
-$AdbExe      = Join-Path $SdkRoot "platform-tools/adb"
-if ($IsWindows -or $env:OS -eq "Windows_NT") { $EmulatorExe += ".exe"; $AdbExe += ".exe" }
+$EmulatorExe = Join-Path $SdkRoot (Join-Path "emulator" "emulator")
+$AdbExe      = Join-Path $SdkRoot (Join-Path "platform-tools" "adb")
+if ($isWin) { $EmulatorExe += ".exe"; $AdbExe += ".exe" }
 
-Write-Host "==> Finding emulator: $EmulatorName..."
-$avds = & $EmulatorExe -list-avds 2>$null
-if ($avds -notcontains $EmulatorName) {
-    Write-Host "ERROR: No emulator found matching '$EmulatorName'" -ForegroundColor Red
-    Write-Host "Available AVDs:"
-    $avds | ForEach-Object { Write-Host "    $_" }
-    exit 1
-}
+Write-Host "==> Discovering AVDs..."
+$avds = @(& $EmulatorExe -list-avds 2>$null | ForEach-Object { $_.Trim() } | Where-Object { $_ -ne "" })
 
 Write-Host "==> Checking emulator state..."
 $running = & $AdbExe devices | Select-String "emulator" | Select-String "device$"
-if (-not $running) {
+
+if ($running) {
+    # Any already-running emulator is fine — no need to match a specific AVD name.
+    Write-Host "    Emulator already running; using it."
+} else {
+    if ($avds.Count -eq 0) {
+        Write-Error "No AVDs found. Create one in Android Studio (Device Manager) or with 'avdmanager', then re-run."
+        exit 1
+    }
+
+    # Resolve which AVD to launch: an explicit -Avd wins; otherwise prefer a known
+    # name if it exists, then a name matching the requested form factor, and finally
+    # just fall back to the first available AVD so it always runs somewhere.
+    if ($Avd -ne "") {
+        if ($avds -notcontains $Avd) {
+            Write-Host "ERROR: Requested AVD '$Avd' not found." -ForegroundColor Red
+            Write-Host "Available AVDs:"
+            $avds | ForEach-Object { Write-Host "    $_" }
+            exit 1
+        }
+        $EmulatorName = $Avd
+    } else {
+        if ($Tablet) {
+            $preferred = @($PreferredTabletAvd) + @($avds | Where-Object { $_ -match 'tab' })
+        } else {
+            $preferred = @($PreferredPhoneAvd) + @($avds | Where-Object { $_ -match 'phone|pixel|nexus' })
+        }
+        $EmulatorName = $preferred | Where-Object { $avds -contains $_ } | Select-Object -First 1
+        if (-not $EmulatorName) { $EmulatorName = $avds[0] }
+        Write-Host "    Selected AVD: $EmulatorName"
+        Write-Host "    (available: $($avds -join ', '))"
+    }
+
     Write-Host "    Starting emulator '$EmulatorName'..."
     $startArgs = @{ FilePath = $EmulatorExe; ArgumentList = "-avd", $EmulatorName }
-    if ($IsWindows -or $env:OS -eq "Windows_NT") { $startArgs["WindowStyle"] = "Hidden" }
+    if ($isWin) { $startArgs["WindowStyle"] = "Hidden" }
     Start-Process @startArgs
     Write-Host "    Waiting for device to come online..."
     & $AdbExe wait-for-device
@@ -72,21 +133,21 @@ if (-not $running) {
         Write-Host "    Boot status: $booted"
     }
     Write-Host "    Emulator ready."
-} else {
-    Write-Host "    Emulator already running."
 }
 
 $serial = (& $AdbExe devices | Select-String "emulator" | Select-String "device$" | Select-Object -First 1).ToString().Split("`t")[0].Trim()
 Write-Host "    Serial: $serial"
 
 Write-Host "==> Building..."
-dotnet build $Project -f net10.0-android36.0 -c Debug -p:AndroidSdkDirectory=$SdkRoot -p:EmbedAssembliesIntoApk=true
+$javaSdkArg = if ($javaHome) { "-p:JavaSdkDirectory=$javaHome" } else { $null }
+dotnet build $Project -f net10.0-android36.0 -c Debug -p:AndroidSdkDirectory=$SdkRoot -p:EmbedAssembliesIntoApk=true $javaSdkArg
 if ($LASTEXITCODE -ne 0) { exit 1 }
 
 Write-Host "==> Finding APK..."
-$apk = Get-ChildItem "bin/Debug/net10.0-android36.0" -Filter "*-Signed.apk" -Recurse | Select-Object -First 1
-if (-not $apk) { $apk = Get-ChildItem "bin/Debug/net10.0-android36.0" -Filter "*.apk" -Recurse | Select-Object -First 1 }
-if (-not $apk) { Write-Error "APK not found under bin/Debug/net10.0-android36.0"; exit 1 }
+$outDir = Join-Path "bin" (Join-Path "Debug" "net10.0-android36.0")
+$apk = Get-ChildItem $outDir -Filter "*-Signed.apk" -Recurse | Select-Object -First 1
+if (-not $apk) { $apk = Get-ChildItem $outDir -Filter "*.apk" -Recurse | Select-Object -First 1 }
+if (-not $apk) { Write-Error "APK not found under $outDir"; exit 1 }
 Write-Host "    APK: $($apk.FullName)"
 
 Write-Host "==> Stopping existing app..."

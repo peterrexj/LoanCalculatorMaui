@@ -1,0 +1,13 @@
+{
+  "name": "loancalculator-uitests",
+  "private": true,
+  "description": "Appium server for the LoanCalculator cross-platform UI tests. Pinned so CI and local runs behave identically. Drivers are installed into ./.appium by `npm run drivers` (APPIUM_HOME is set per-script). `start` exports ANDROID_HOME because the UiAutomator2 driver needs it to find adb — a server started without it fails every Android session with 'Neither ANDROID_HOME nor ANDROID_SDK_ROOT environment variable was exported'.",
+  "scripts": {
+    "drivers": "APPIUM_HOME=./.appium appium driver install uiautomator2 && APPIUM_HOME=./.appium appium driver install xcuitest",
+    "drivers:list": "APPIUM_HOME=./.appium appium driver list --installed",
+    "start": "APPIUM_HOME=./.appium ANDROID_HOME=\"${ANDROID_HOME:-${ANDROID_SDK_ROOT:-$HOME/Library/Android/sdk}}\" appium --address 127.0.0.1 --port 4723 --log-timestamp --log-level info"
+  },
+  "devDependencies": {
+    "appium": "3.8.0"
+  }
+}

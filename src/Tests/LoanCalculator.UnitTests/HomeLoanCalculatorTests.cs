@@ -437,5 +437,44 @@ namespace LoanCalculator.UnitTests
             var second = summary.ProjectionTerms[1];
             Assert.That(second.TermEndAmount, Is.GreaterThan(totalYearly));
         }
+
+        // A deposit covering the whole asset leaves the principal at 0, and CalculateHomeLoan
+        // then returns an empty PaymentOutput whose TotalNumberPaymentPerYear is 0. Both
+        // amortisation builders used to fall over on that — Chunk(0) threw
+        // ArgumentOutOfRangeException('size') and the per-term loop divided by zero — which
+        // reached the user as an "An unexpected error occurred" dialog.
+
+        private static PaymentSummary SummaryWithZeroPaymentsPerYear() => new()
+        {
+            Payment = new PaymentOutput { TotalNumberPaymentPerYear = 0 },
+            PaymentTerms = [new PaymentPerTermOutput()],
+        };
+
+        [Test]
+        public void UpdateLoanPaymentAmortizationDataByYear_ZeroPaymentsPerYear_DoesNotThrow()
+        {
+            var summary = SummaryWithZeroPaymentsPerYear();
+
+            Assert.DoesNotThrow(() => HomeLoanCalculator.UpdateLoanPaymentAmortizationDataByYear(summary));
+        }
+
+        [Test]
+        public void UpdateLoanPaymentAmortizationDataByTerm_ZeroPaymentsPerYear_DoesNotThrow()
+        {
+            var summary = SummaryWithZeroPaymentsPerYear();
+
+            Assert.DoesNotThrow(() => HomeLoanCalculator.UpdateLoanPaymentAmortizationDataByTerm(summary));
+        }
+
+        [Test]
+        public void CalculateHomeLoan_DepositCoversWholeAsset_ReturnsEmptyOutputRatherThanThrowing()
+        {
+            var output = HomeLoanCalculator.CalculateHomeLoan(0, MakeInput(6.35, 30, 12));
+
+            Assert.That(output, Is.Not.Null);
+            Assert.That(output!.TotalNumberPaymentPerYear, Is.Zero,
+                "A zero principal should yield an unpopulated output; the amortisation builders " +
+                "must then guard against it rather than dividing or chunking by zero.");
+        }
     }
 }

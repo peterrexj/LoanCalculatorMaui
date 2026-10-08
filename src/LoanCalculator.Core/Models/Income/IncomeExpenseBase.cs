@@ -109,7 +109,20 @@ namespace LoanCalculator.Core.Models.Income
             return IncomeExpenseEntries.FirstOrDefault(f => f.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase));
         }
 
-        public void SumUpData(double monthlyValue = 0, double yearlyValue = 0)
+        /// <summary>
+        /// Recomputes the summary totals from the entries. Idempotent, and the only writer of
+        /// <c>TotalMonthly</c>/<c>TotalYearly</c>.
+        /// </summary>
+        /// <remarks>
+        /// This used to take a deduction and subtract it from the totals it had just computed
+        /// (TECH-DEBT D1). Because one <c>IncomeExpenseSummary</c> is shared by the Income tab,
+        /// Expense tab, Budget page, Loan/affordability box, Wizard and the PDF, those fields then
+        /// meant net-or-gross depending on which screen refreshed last — one screen's display
+        /// preference silently changed another screen's arithmetic. An "after expenses" figure is
+        /// now computed where it is displayed, by subtracting from these gross totals.
+        /// <para>Do not reintroduce a deduction parameter here.</para>
+        /// </remarks>
+        public void SumUpData()
         {
             IncomeExpenseSummary.TotalMonthly = 0;
             IncomeExpenseSummary.TotalYearly = 0;
@@ -121,8 +134,6 @@ namespace LoanCalculator.Core.Models.Income
                     IncomeExpenseSummary.TotalYearly += item.AmountYearly;
                 }
             }
-            IncomeExpenseSummary.TotalMonthly -= monthlyValue;
-            IncomeExpenseSummary.TotalYearly -= yearlyValue;
         }
 
         public void CalculatePercentages()

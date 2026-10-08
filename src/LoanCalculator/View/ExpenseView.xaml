@@ -535,7 +535,7 @@
                                                     HorizontalOptions="Center"
                                                     MinimumWidthRequest="48"
                                                     HorizontalTextAlignment="Center"
-                                                    Text="{Binding AnnualGrowthRatePercentage, StringFormat='{0}%'}"
+                                                    Text="{Binding AnnualGrowthRate, StringFormat='{0:0.##}%'}"
                                                     TextColor="{DynamicResource LoanAppInputTextFgColor}"
                                                     VerticalOptions="Center" />
                                                 <Button

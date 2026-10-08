@@ -79,206 +79,6 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
             }
         }
 
-        // Controls the Quick Input popup on the Asset tab
-        [JsonIgnore]
-        private bool _isQuickInputVisible;
-        [JsonIgnore]
-        public bool IsQuickInputVisible
-        {
-            get => _isQuickInputVisible;
-            set
-            {
-                _isQuickInputVisible = value;
-                OnPropertyChanged(nameof(IsQuickInputVisible));
-            }
-        }
-
-        // ── Quick Setup Wizard ────────────────────────────────────────────────
-        [JsonIgnore] private bool _isWizardStep1Visible;
-        [JsonIgnore]
-        public bool IsWizardStep1Visible
-        {
-            get => _isWizardStep1Visible;
-            set { _isWizardStep1Visible = value; OnPropertyChanged(nameof(IsWizardStep1Visible)); }
-        }
-
-        [JsonIgnore] private bool _isWizardStep2Visible;
-        [JsonIgnore]
-        public bool IsWizardStep2Visible
-        {
-            get => _isWizardStep2Visible;
-            set { _isWizardStep2Visible = value; OnPropertyChanged(nameof(IsWizardStep2Visible)); }
-        }
-
-        [JsonIgnore] private bool _isWizardStep3Visible;
-        [JsonIgnore]
-        public bool IsWizardStep3Visible
-        {
-            get => _isWizardStep3Visible;
-            set { _isWizardStep3Visible = value; OnPropertyChanged(nameof(IsWizardStep3Visible)); }
-        }
-
-        // Transient text inputs — same pattern as IncomeEntryAmountText (string Entry binding)
-        [JsonIgnore] private string _wizardAssetText;
-        [JsonIgnore] public string WizardAssetText
-        {
-            get => _wizardAssetText;
-            set { _wizardAssetText = value; OnPropertyChanged(nameof(WizardAssetText)); }
-        }
-
-        [JsonIgnore] private string _wizardDepositText;
-        [JsonIgnore] public string WizardDepositText
-        {
-            get => _wizardDepositText;
-            set { _wizardDepositText = value; OnPropertyChanged(nameof(WizardDepositText)); }
-        }
-
-        [JsonIgnore] private string _wizardUpfrontText;
-        [JsonIgnore] public string WizardUpfrontText
-        {
-            get => _wizardUpfrontText;
-            set { _wizardUpfrontText = value; OnPropertyChanged(nameof(WizardUpfrontText)); }
-        }
-
-        [JsonIgnore] private string _wizardRunningCostText;
-        [JsonIgnore] public string WizardRunningCostText
-        {
-            get => _wizardRunningCostText;
-            set { _wizardRunningCostText = value; OnPropertyChanged(nameof(WizardRunningCostText)); }
-        }
-
-        [JsonIgnore] private string _wizardIncomeText;
-        [JsonIgnore] public string WizardIncomeText
-        {
-            get => _wizardIncomeText;
-            set { _wizardIncomeText = value; OnPropertyChanged(nameof(WizardIncomeText)); }
-        }
-
-        [JsonIgnore] private string _wizardExpenseText;
-        [JsonIgnore] public string WizardExpenseText
-        {
-            get => _wizardExpenseText;
-            set { _wizardExpenseText = value; OnPropertyChanged(nameof(WizardExpenseText)); }
-        }
-
-        // Existing-value indicators shown as summary labels above the entries
-        [JsonIgnore] public bool WizardAssetHasValue => PropertyAmount > 0;
-        [JsonIgnore] public string WizardAssetSummary => $"Current: {CurrencySymbol}{PropertyAmount:N0}";
-
-        [JsonIgnore] public bool WizardDepositHasValue => DepositAmountDirectInput > 0;
-        [JsonIgnore] public string WizardDepositSummary => $"Current: {CurrencySymbol}{DepositAmountDirectInput:N0}";
-
-        [JsonIgnore] public bool WizardUpfrontHasValue => (HomeLoanInfo?.OtherExpenseTotalAmount ?? 0) > 0;
-        [JsonIgnore] public bool WizardUpfrontEditable => !WizardUpfrontHasValue;
-        [JsonIgnore] public string WizardUpfrontSummary => $"Total upfront: {OtherExpenseTotalAmount}";
-
-        [JsonIgnore] public bool WizardRunningCostHasValue =>
-            TransactionRecords?.IncomeExpenseEntries?.Any(e => e.Amount > 0) == true;
-        [JsonIgnore] public bool WizardRunningCostEditable => !WizardRunningCostHasValue;
-        [JsonIgnore] public string WizardRunningCostSummary
-        {
-            get
-            {
-                TransactionRecords?.SumUpData();
-                var total = TransactionRecords?.IncomeExpenseSummary?.TotalMonthly ?? 0;
-                return $"Total running costs: {CurrencySymbol}{total:N0}/mo";
-            }
-        }
-
-        // Live labels shown below asset and deposit entries
-        // WizardAssetTotalLabel uses existing PropertyTotalAmount (asset + upfront costs)
-        [JsonIgnore] public bool WizardShowAssetTotal => (HomeLoanInfo?.PropertyTotalAmount ?? 0) > 0;
-        [JsonIgnore] public string WizardAssetTotalLabel => $"Total asset cost: {PropertyTotalAmount}";
-
-        // Field hint labels include the currency symbol so entries stay plain numeric
-        [JsonIgnore] public string WizardLabelAsset   => $"Asset purchase price ({CurrencySymbol})";
-        [JsonIgnore] public string WizardLabelDeposit => $"Deposit amount ({CurrencySymbol})";
-        [JsonIgnore] public string WizardLabelUpfront => $"Upfront costs, optional ({CurrencySymbol})";
-        [JsonIgnore] public string WizardLabelRunning => $"Monthly running cost, optional ({CurrencySymbol})";
-        [JsonIgnore] public string WizardLabelIncome  => $"Total monthly income ({CurrencySymbol})";
-        [JsonIgnore] public string WizardLabelExpense => $"Total monthly expenses ({CurrencySymbol})";
-
-        // WizardLoanAmountLabel uses existing LoanAmountStrFormatted (asset - deposit)
-        [JsonIgnore] public bool WizardShowLoanAmount => (HomeLoanInfo?.LoanAmountDirectInput ?? 0) > 0;
-        [JsonIgnore] public string WizardLoanAmountLabel => $"Loan amount: {LoanAmountStrFormatted}";
-
-        // Proxy properties for Step 2 — IncomeViewModel and ExpenseViewModel values
-        // accessed via LoanView's BindingContext (LoanViewModel) since DataTemplate
-        // BindingContext is set to the page's BindingContext.
-        [JsonIgnore] private IncomeViewModel? _wizardIncomeVm;
-        [JsonIgnore] private ExpenseViewModel? _wizardExpenseVm;
-
-        public void SetWizardPeerViewModels(IncomeViewModel income, ExpenseViewModel expense)
-        {
-            _wizardIncomeVm = income;
-            _wizardExpenseVm = expense;
-        }
-
-        // Force summary totals to be current before evaluating HasValue — the peer VMs
-        // may not have visited their tab yet (SumUpData not yet called on their records).
-        private void EnsureWizardPeerSummaries()
-        {
-            _wizardIncomeVm?.TransactionRecords?.SumUpData();
-            _wizardExpenseVm?.TransactionRecords?.SumUpData();
-        }
-
-        // HasValue checks: count entries with Amount > 0 directly from the collection.
-        // This works even when SumUpData hasn't been called and even when the tab hasn't
-        // been visited (TransactionRecords is loaded from disk by LoanView.LoadDataSet).
-        [JsonIgnore] public bool WizardIncomeHasValue =>
-            _wizardIncomeVm?.TransactionRecords?.IncomeExpenseEntries?.Any(e => e.Amount > 0) == true;
-        [JsonIgnore] public bool WizardIncomeEditable => !WizardIncomeHasValue;
-        [JsonIgnore] public string WizardIncomeSummary
-        {
-            get
-            {
-                _wizardIncomeVm?.TransactionRecords?.SumUpData();
-                var total = _wizardIncomeVm?.TransactionRecords?.IncomeExpenseSummary?.TotalMonthly ?? 0;
-                return $"Recorded: {CurrencySymbol}{total:N0}/mo";
-            }
-        }
-
-        [JsonIgnore] public bool WizardExpenseHasValue =>
-            _wizardExpenseVm?.TransactionRecords?.IncomeExpenseEntries?.Any(e => e.Amount > 0) == true;
-        [JsonIgnore] public bool WizardExpenseEditable => !WizardExpenseHasValue;
-        [JsonIgnore] public string WizardExpenseSummary
-        {
-            get
-            {
-                _wizardExpenseVm?.TransactionRecords?.SumUpData();
-                var total = _wizardExpenseVm?.TransactionRecords?.IncomeExpenseSummary?.TotalMonthly ?? 0;
-                return $"Recorded: {CurrencySymbol}{total:N0}/mo";
-            }
-        }
-
-        // Call after IsWizardStep1/2Visible = true so DataTemplate bindings re-evaluate after inflation.
-        public void NotifyWizardPropertiesChanged()
-        {
-            EnsureWizardPeerSummaries();
-            OnPropertyChanged(nameof(WizardUpfrontHasValue));
-            OnPropertyChanged(nameof(WizardUpfrontEditable));
-            OnPropertyChanged(nameof(WizardUpfrontSummary));
-            OnPropertyChanged(nameof(WizardRunningCostHasValue));
-            OnPropertyChanged(nameof(WizardRunningCostEditable));
-            OnPropertyChanged(nameof(WizardRunningCostSummary));
-            OnPropertyChanged(nameof(WizardIncomeHasValue));
-            OnPropertyChanged(nameof(WizardIncomeEditable));
-            OnPropertyChanged(nameof(WizardIncomeSummary));
-            OnPropertyChanged(nameof(WizardExpenseHasValue));
-            OnPropertyChanged(nameof(WizardExpenseEditable));
-            OnPropertyChanged(nameof(WizardExpenseSummary));
-            OnPropertyChanged(nameof(WizardShowAssetTotal));
-            OnPropertyChanged(nameof(WizardAssetTotalLabel));
-            OnPropertyChanged(nameof(WizardShowLoanAmount));
-            OnPropertyChanged(nameof(WizardLoanAmountLabel));
-            OnPropertyChanged(nameof(WizardLabelAsset));
-            OnPropertyChanged(nameof(WizardLabelDeposit));
-            OnPropertyChanged(nameof(WizardLabelUpfront));
-            OnPropertyChanged(nameof(WizardLabelRunning));
-            OnPropertyChanged(nameof(WizardLabelIncome));
-            OnPropertyChanged(nameof(WizardLabelExpense));
-        }
-
         [JsonIgnore] protected HomeLoanInformation _homeLoanInfo;
         public HomeLoanInformation HomeLoanInfo
         {
@@ -331,7 +131,8 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
             }
         }
 
-        // this should be updated on the page load only as the income or expense will not change unless the user has navigated to the page and added new income or expense
+        // Cached, not computed: refreshed by RefreshIncomeExpenseSummariesAsync when a page that
+        // reads affordability appears and SharedServiceCore reports income/expense as dirty.
         private bool _hasIncomeExpensesRecorded;
         [JsonIgnore]
         public bool HasIncomeExpensesRecorded
@@ -341,6 +142,93 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
             {
                 _hasIncomeExpensesRecorded = value;
                 OnPropertyChanged(nameof(HasIncomeExpensesRecorded));
+            }
+        }
+
+        /// <summary>
+        /// Re-points <see cref="IncomeSummary"/>/<see cref="ExpenseSummary"/> at the live singleton
+        /// view models — or, when a tab owns its own instance and so has never initialised these,
+        /// at a fresh snapshot from disk — and recomputes <see cref="HasIncomeExpensesRecorded"/>.
+        /// </summary>
+        /// <remarks>
+        /// <para><see cref="IsAffordabilityAvailable"/> gates on that cached flag and
+        /// <see cref="MonthlySurplus"/> gates on it in turn, so <em>every</em> page that reads
+        /// affordability has to refresh first — not just the Loan page. What If reads both for its
+        /// stress test, and going Budget → What If without this left it computing from a stale
+        /// cache: the unlock prompt after income/expenses were added, stale results after they were
+        /// deleted.</para>
+        /// <para>Deliberately does not clear SharedServiceCore's dirty flags. The caller owns that,
+        /// so refreshing on one tab cannot rob another of the notification pass it still needs.</para>
+        /// <para>Source order matters and is a correctness issue, not a preference. The Budget tab
+        /// owns its <em>own</em> Income/Expense instances (they are not the DI singletons), so those
+        /// are the authoritative copy of what the user just typed. Reading them avoids a disk
+        /// round-trip — and since <see cref="SharedServiceCore.SaveData"/> is fire-and-forget and
+        /// cannot be awaited by anyone, reading back from disk is a race by construction. Disk is
+        /// the last resort, used only before any tab has loaded.</para>
+        /// </remarks>
+        public async Task RefreshIncomeExpenseSummariesAsync(
+            IncomeViewModel liveIncome, ExpenseViewModel liveExpense)
+        {
+            ExpenseSummary = ResolveAuthoritativeExpense(liveExpense)
+                ?? await SharedServiceCore.GetExpenseSummaryAsync();
+
+            IncomeSummary = ResolveAuthoritativeIncome(liveIncome)
+                ?? await SharedServiceCore.GetIncomeSummaryAsync();
+
+            HasIncomeExpensesRecorded =
+                ExpenseSummary?.TransactionRecords?.IncomeExpenseSummary?.TotalYearly > 0 &&
+                IncomeSummary?.TransactionRecords?.IncomeExpenseSummary?.TotalYearly > 0;
+        }
+
+        /// <summary>
+        /// The one instance of income that everything must agree on — readers and writers alike.
+        /// Returns <c>null</c> only when nothing has loaded yet, which is the sole case where a
+        /// caller may fall back to disk.
+        /// </summary>
+        /// <remarks>
+        /// A <em>writer</em> must never fall back to disk, and must never just write the DI
+        /// singleton. The Budget tab owns its own Income/Expense instances, which SplashPage
+        /// pre-warms from disk on every launch — so they report <c>HasInitialized</c> while the DI
+        /// singletons do not. Anything that writes the singleton is therefore invisible to
+        /// <see cref="RefreshIncomeExpenseSummariesAsync"/>, and the next page appearance silently
+        /// overwrites that write with Budget's copy. That is exactly how the Quick Setup wizard's
+        /// income/expense commit used to vanish, flipping
+        /// <see cref="HasIncomeExpensesRecorded"/> back to <c>false</c> and hiding the affordability
+        /// box the user had just unlocked.
+        /// </remarks>
+        internal IncomeViewModel? ResolveAuthoritativeIncome(IncomeViewModel? liveIncome)
+        {
+            var budget = TryGetBudgetViewModel();
+            if (budget?.Income?.HasInitialized == true) return budget.Income;
+            if (liveIncome?.HasInitialized == true) return liveIncome;
+            return null;
+        }
+
+        /// <inheritdoc cref="ResolveAuthoritativeIncome"/>
+        internal ExpenseViewModel? ResolveAuthoritativeExpense(ExpenseViewModel? liveExpense)
+        {
+            var budget = TryGetBudgetViewModel();
+            if (budget?.Expense?.HasInitialized == true) return budget.Expense;
+            if (liveExpense?.HasInitialized == true) return liveExpense;
+            return null;
+        }
+
+        /// <summary>
+        /// ServiceLocator dereferences a settable provider, so it throws if resolved before
+        /// App.xaml.cs sets it. Callers here all run from page OnAppearing, which is well after
+        /// that — but a null is a better failure than taking down a page load.
+        /// </summary>
+        private static BudgetViewModel? TryGetBudgetViewModel()
+        {
+            try
+            {
+                return ServiceLocator.ServiceProvider == null
+                    ? null
+                    : ServiceLocator.GetService<BudgetViewModel>();
+            }
+            catch
+            {
+                return null;
             }
         }
 
@@ -470,7 +358,7 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
                 isUpdating = true;
                 HomeLoanInfo.PropertyAmount = value;
                 EventsTriggerStampDutyUpdate();
-                HomeLoanInfo.LoanAmountDirectInput = HomeLoanInfo.LoanAmountDirectInput;
+                HomeLoanInfo.DepositAmountDirectInput = HomeLoanInfo.DepositAmountDirectInput;  // preserve the deposit, re-derive the loan — see note above
                 OnPropertyChanged(nameof(PropertyAmountWords));
                 OnPropertyChanged(nameof(PropertyAmountFormatted));
                 OnPropertyChanged(nameof(LoanAmountWords));
@@ -843,12 +731,8 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
             get
             {
                 if (!IsAffordabilityAvailable) return 0;
-                // Reset both records to their raw entry sums before building the model,
-                // as prior SumUpData(deduction) calls in BuildInsights may have left them
-                // in a mutated state, causing affordability to be computed from stale totals.
-                IncomeSummary.TransactionRecords?.SumUpData();
-                ExpenseSummary.TransactionRecords?.SumUpData();
-                TransactionRecords?.SumUpData();
+                // No defensive resets here any more: SumUpData no longer takes a deduction, so
+                // nothing can leave these records holding a net figure (TECH-DEBT D1).
                 var pdf = new PdfDataInsightsModel(this, IncomeSummary, ExpenseSummary);
                 pdf.InitializeLocalDataSet();
                 return pdf?.Income?.TotalAfterExpenseIncludingPropertyMonthly ?? 0;
@@ -888,7 +772,7 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
                 if (SharedServiceCore.IsTrialUser) return " try premium";
                 if (HasIncomeExpensesRecorded == false) return " record your income & expenses";
 
-                return " your monthly affordability status";
+                return " estimated monthly position (estimate only)";
             }
         }
 
@@ -987,9 +871,6 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
 
 
             UpdateInsightCharts();
-
-            IncomeSummary.TransactionRecords?.SumUpData();
-            ExpenseSummary.TransactionRecords?.SumUpData();
         }
 
         #endregion
@@ -1140,7 +1021,7 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
                 isUpdating = true;
 
                 HomeLoanInfo.StampDuty.StampDuty = value;
-                HomeLoanInfo.LoanAmountDirectInput = HomeLoanInfo.LoanAmountDirectInput;
+                HomeLoanInfo.DepositAmountDirectInput = HomeLoanInfo.DepositAmountDirectInput;  // preserve the deposit, re-derive the loan — see note above
 
                 TriggerPropertyChangedOnPropertyTab();
 
@@ -1160,7 +1041,7 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
                 isUpdating = true;
 
                 HomeLoanInfo.StampDuty.MortgageCharges = value;
-                HomeLoanInfo.LoanAmountDirectInput = HomeLoanInfo.LoanAmountDirectInput;
+                HomeLoanInfo.DepositAmountDirectInput = HomeLoanInfo.DepositAmountDirectInput;  // preserve the deposit, re-derive the loan — see note above
 
                 TriggerPropertyChangedOnPropertyTab();
 
@@ -1179,7 +1060,7 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
                     isUpdating = true;
 
                     HomeLoanInfo.ConveyanceExpense.ConveyancerFee = value;
-                    HomeLoanInfo.LoanAmountDirectInput = HomeLoanInfo.LoanAmountDirectInput;
+                    HomeLoanInfo.DepositAmountDirectInput = HomeLoanInfo.DepositAmountDirectInput;  // preserve the deposit, re-derive the loan — see note above
 
                     TriggerPropertyChangedOnPropertyTab();
 
@@ -1199,7 +1080,7 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
                     isUpdating = true;
 
                     HomeLoanInfo.BankExpense.BankSettlementFee = value;
-                    HomeLoanInfo.LoanAmountDirectInput = HomeLoanInfo.LoanAmountDirectInput;
+                    HomeLoanInfo.DepositAmountDirectInput = HomeLoanInfo.DepositAmountDirectInput;  // preserve the deposit, re-derive the loan — see note above
 
                     TriggerPropertyChangedOnPropertyTab();
 
@@ -1219,7 +1100,7 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
                     isUpdating = true;
 
                     HomeLoanInfo.OtherExpense.InspectionFee = value;
-                    HomeLoanInfo.LoanAmountDirectInput = HomeLoanInfo.LoanAmountDirectInput;
+                    HomeLoanInfo.DepositAmountDirectInput = HomeLoanInfo.DepositAmountDirectInput;  // preserve the deposit, re-derive the loan — see note above
 
                     TriggerPropertyChangedOnPropertyTab();
 
@@ -1239,7 +1120,7 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
                     isUpdating = true;
 
                     HomeLoanInfo.OtherExpense.OtherExpenses = value;
-                    HomeLoanInfo.LoanAmountDirectInput = HomeLoanInfo.LoanAmountDirectInput;
+                    HomeLoanInfo.DepositAmountDirectInput = HomeLoanInfo.DepositAmountDirectInput;  // preserve the deposit, re-derive the loan — see note above
 
                     TriggerPropertyChangedOnPropertyTab();
 
@@ -1362,11 +1243,6 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
             OnPropertyChanged(nameof(IsAffordabilityNegative));
             OnPropertyChanged(nameof(AffordabilityTextDescription));
 
-            // Wizard live labels — update as user types asset/deposit values
-            OnPropertyChanged(nameof(WizardShowAssetTotal));
-            OnPropertyChanged(nameof(WizardAssetTotalLabel));
-            OnPropertyChanged(nameof(WizardShowLoanAmount));
-            OnPropertyChanged(nameof(WizardLoanAmountLabel));
             if (IsAmortizationTabActive)
             {
                 UpdateAmortizationCharts();

@@ -293,7 +293,7 @@ namespace LoanCalculator.Core.Pdf
             var listOfKpiExplain = new List<TextElementModel>
             {
                 new("Affordability", GetTextFont(12, PdfFontStyle.Bold), DefaultTextBrush, 1),
-                new("is the money you have left after paying for all your expenses, including this new loan. It shows how much you can comfortably manage while still covering your financial needs.", GetTextFont(12, PdfFontStyle.Regular), DefaultTextBrush, 1),
+                new("is an estimate of what may remain after your expenses and this new loan repayment, based on the figures you entered. Your actual position depends on your own circumstances, so treat it as a guide only — not financial advice. Consider speaking to a qualified financial adviser before deciding.", GetTextFont(12, PdfFontStyle.Regular), DefaultTextBrush, 1),
             };
 
             DrawTextElements(listOfKpiExplain, _yPosition, updateYPosition: true);
@@ -989,7 +989,6 @@ namespace LoanCalculator.Core.Pdf
 
             DrawFormattedText($"{DataModel.Income.TotalYearly.ToCurrency()}", "Yearly Total Income", "Represents the cumulative income earned over a year, giving a comprehensive view of annual financial inflow");
 
-            DataModel.Income.ResetTransactions();
             DrawTransactionRecordsTable(DataModel.Income.Transactions, "Income", colorShadeTopValue: true, cellHighlightBgBrush: DefaultCellPositiveBgBrush);
         }
         private void RenderIncomeAfterExpense()
@@ -1044,17 +1043,15 @@ namespace LoanCalculator.Core.Pdf
             DrawTextElements(incomeAfterExpenseYearlyDistributionText, _yPosition, updateYPosition: true);
             AddNewLineSpace();
 
-            var transactionsCopy = DataModel.Income.TransactionRecordsWithExpense.DeepCloneObject();
+            // ScaleToNet clones first and never touches the live records. The previous shape read
+            // DataModel.Income.TransactionRecordsWithExpense, whose getter
+            // called SumUpData(deduction) on the SHARED records and returned them, so drawing this
+            // table mutated view-model state and the clone was taken after the fact.
+            var transactionsCopy = DataModel.Income.Transactions.ScaleToNet(
+                DataModel.Income.TotalAfterExpenseMonthly,
+                DataModel.Income.TotalAfterExpenseYearly);
             if (transactionsCopy?.IncomeExpenseEntries != null)
             {
-                transactionsCopy?.CalculatePercentages();
-                foreach (var inc in transactionsCopy?.IncomeExpenseEntries)
-                {
-                    inc.Amount = (inc.Percentage / 100) * transactionsCopy.IncomeExpenseSummary.TotalYearly;
-                    inc.Frequency = TimeFrequencyEnum.Yearly;
-                }
-
-                transactionsCopy.CalculatePercentages();
 
                 DrawTransactionRecordsTable(transactionsCopy, "Income", colorShadeTopValue: true, cellHighlightBgBrush: DefaultCellNegativeBgBrush);
             }
@@ -1121,17 +1118,15 @@ namespace LoanCalculator.Core.Pdf
             DrawTextElements(incomeAfterExpenseYearlyDistributionText, _yPosition, updateYPosition: true);
             AddNewLineSpace();
 
-            var transactionsCopy = DataModel.Income.TransactionRecordsWithExpenseIncludingProperty.DeepCloneObject();
+            // ScaleToNet clones first and never touches the live records. The previous shape read
+            // DataModel.Income.TransactionRecordsWithExpenseIncludingProperty, whose getter
+            // called SumUpData(deduction) on the SHARED records and returned them, so drawing this
+            // table mutated view-model state and the clone was taken after the fact.
+            var transactionsCopy = DataModel.Income.Transactions.ScaleToNet(
+                DataModel.Income.TotalAfterExpenseIncludingPropertyMonthly,
+                DataModel.Income.TotalAfterExpenseIncludingPropertyYearly);
             if (transactionsCopy?.IncomeExpenseEntries != null)
             {
-                transactionsCopy?.CalculatePercentages();
-                foreach (var inc in transactionsCopy?.IncomeExpenseEntries)
-                {
-                    inc.Amount = (inc.Percentage / 100) * transactionsCopy.IncomeExpenseSummary.TotalYearly;
-                    inc.Frequency = TimeFrequencyEnum.Yearly;
-                }
-
-                transactionsCopy.CalculatePercentages();
                 DrawTransactionRecordsTable(transactionsCopy, "Income", colorShadeTopValue: true, cellHighlightBgBrush: DefaultCellNegativeBgBrush);
             }
         }

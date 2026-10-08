@@ -8,6 +8,24 @@ namespace LoanCalculator.UnitTests.Models
         // ── AnnualGrowthRatePercentage ────────────────────────────────────────
 
         [Test]
+        public void AnnualGrowthRatePercentage_CollapsesHalfPointSteps_SoNotUsableForDisplay()
+        {
+            // Regression guard: the Budget growth-rate +/- buttons step by 0.5. Rounding the
+            // maths fraction to 2 decimals makes 2.0 and 2.5 render identically, which made
+            // every other tap look like it did nothing. Labels must show AnnualGrowthRate.
+            var at2 = new IncomeExpenseSummary { AnnualGrowthRate = 2.0 };
+            var at2Point5 = new IncomeExpenseSummary { AnnualGrowthRate = 2.5 };
+
+            Assert.That(at2.AnnualGrowthRatePercentage,
+                Is.EqualTo(at2Point5.AnnualGrowthRatePercentage),
+                "the fraction collapses across a 0.5 step — this is why it must not be displayed");
+
+            Assert.That($"{at2.AnnualGrowthRate:0.##}%",
+                Is.Not.EqualTo($"{at2Point5.AnnualGrowthRate:0.##}%"),
+                "the displayed value must advance on every tap");
+        }
+
+        [Test]
         public void AnnualGrowthRatePercentage_ConvertsFromHundredBasis()
         {
             var summary = new IncomeExpenseSummary { AnnualGrowthRate = 5 };

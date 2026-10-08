@@ -315,6 +315,8 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
         {
             get
             {
+                // Gross: TotalMonthly may already have been reduced by the Income tab's own
+                // "after expenses" toggles, which would double-count here.
                 double income = IncomeSummary?.TransactionRecords?.IncomeExpenseSummary?.TotalMonthly ?? 0;
 
                 if (ShowIncomeAfterExpense)

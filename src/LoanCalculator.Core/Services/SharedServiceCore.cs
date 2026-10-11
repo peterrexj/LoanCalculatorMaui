@@ -231,7 +231,7 @@ namespace LoanCalculator.Core.Services
         // ║  Set to true to bypass all trial restrictions during local testing.   ║
         // ║  Search for TESTING_PREMIUM_OVERRIDE to find this flag.              ║
         // ╚══════════════════════════════════════════════════════════════════════╝
-        private const bool TESTING_PREMIUM_OVERRIDE = true; // ← set true to bypass trial gates during local testing
+        private const bool TESTING_PREMIUM_OVERRIDE = false; // ← set true to bypass trial gates during local testing
         // ────────────────────────────────────────────────────────────────────────
 
         public static bool IsTrialUser => !IsPremiumUser();

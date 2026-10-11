@@ -108,11 +108,16 @@ public sealed class LoanPage(AppDriver app) : PageBase(app)
     /// the FAB opens, auto-launched after the disclaimer.
     /// </summary>
     /// <remarks>
-    /// Fills only asset and deposit, then Calculate. Upfront, running costs, income and expenses
+    /// Fills only asset and deposit, then taps Done. Upfront, running costs, income and expenses
     /// are optional, and on this page they are shown <em>only while empty</em>, so a test must not
     /// assume they are present. The fields use the same <c>AssetEntry</c>/<c>DepositEntry</c> ids as
     /// the rest of the suite: the old <c>WizardAsset</c>/<c>WizardDeposit</c> ids disappeared when
     /// the two pages merged, since one control cannot carry both.
+    ///
+    /// This used to scroll to and tap a separate "Calculate" button at the end of the scrollable
+    /// content, which sat under the forced-present software keyboard on some devices (see
+    /// TROUBLESHOOTING.md). That button was removed — Done, in the header, is never hidden and
+    /// calls the same handler — so this is now identical to <see cref="ApplyLoanDetails"/>.
     /// </remarks>
     public void CompleteWizard(string asset, string deposit)
     {
@@ -122,14 +127,7 @@ public sealed class LoanPage(AppDriver app) : PageBase(app)
         App.EnterText(AssetEntry, asset);
         App.EnterText(DepositEntry, deposit);
 
-        // Calculate sits at the end of the scrollable content, below the forced-present software
-        // keyboard, so it has to be scrolled into view. No DismissKeyboard() here: EnterText
-        // already attempts it, and forceSimulatorSoftwareKeyboardPresence keeps the keyboard on
-        // screen regardless — ScrollTo is keyboard-aware instead.
-        App.ScrollTo("WizardCalculateButton");
-
-        App.Tap("WizardCalculateButton");
-        App.WaitUntilGone("WizardCalculateButton", TimeSpan.FromSeconds(15));
+        ApplyLoanDetails();
     }
 
     // ── In-page tabs ─────────────────────────────────────────────────────────────

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--
+        Completes the fix colors.xml's comment already describes ("no ... flash on Android
+        launch or during the splash → AppShell hand-off") but never finished.
+
+        MainActivity's theme is Maui.SplashTheme (set once, statically, in MainActivity.cs — this
+        app never calls SetTheme itself), whose android:windowBackground is the dark branded
+        splash drawable. That covers the native splash correctly. But everything the app shows
+        AFTER the splash sits on Maui.MainTheme.Base, the SDK-generated base theme this overrides
+        — and the generated version never sets android:windowBackground/android:colorBackground,
+        so it falls through to its parent, Theme.MaterialComponents.DayNight, whose default
+        background in light mode is WHITE.
+
+        The gap this produces: once Android considers the splash phase over, the window has
+        nothing painted yet except whatever Maui.MainTheme.Base's background resolves to (white),
+        until the Shell's first tab — LoanView, a large Syncfusion-heavy page (SfTabView, charts,
+        popups) — finishes constructing its native view tree and paints its own themed background
+        (an inner Grid's DynamicResource, not the ContentPage itself). Constructing that much
+        native content cold is measurably slower on Android than the iOS/Windows equivalent, which
+        is why the white screen is Android-only and lasts long enough to notice rather than being
+        imperceptible there too.
+
+        Every item below except the two new android:windowBackground/android:colorBackground
+        lines is copied VERBATIM from the SDK-generated Maui.MainTheme.Base (as of this build —
+        obj/<config>/<tfm>/lp/*/jl/res/values/styles.xml) rather than only setting the two new
+        items, because this project style has the SAME name as that generated one: if Android's
+        resource merge treats a same-named project style as a full replacement rather than a
+        per-item merge, a partial redeclaration here would silently drop everything else that
+        theme carries (materialButtonStyle, checkboxStyle, alertDialogTheme, edge-to-edge opt-out,
+        ...) — a regression across every native widget in the app that nothing would flag until
+        much later. Copying everything makes this safe whichever way the merge actually behaves.
+
+        If a future .NET MAUI SDK upgrade changes what Maui.MainTheme.Base generates, diff this
+        against the newly generated styles.xml (same obj/ path) and bring the two new background
+        items forward into whatever the new base now contains.
+    -->
+    <style name="Maui.MainTheme.Base" parent="Theme.MaterialComponents.DayNight">
+        <item name="maui_edgetoedge_optout">true</item>
+        <item name="maui_splash">false</item>
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:actionMenuTextColor">@color/colorActionMenuTextColor</item>
+        <item name="appBarLayoutStyle">@style/MauiAppBarLayout</item>
+        <item name="bottomNavigationViewStyle">@style/Widget.Design.BottomNavigationView</item>
+        <item name="materialButtonStyle">@style/MauiMaterialButton</item>
+        <item name="checkboxStyle">@style/MauiCheckBox</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="alertDialogTheme">@style/MauiAlertDialogTheme</item>
+        <item name="materialAlertDialogTheme">@style/MauiAlertDialogTheme</item>
+
+        <!--  The two lines this override exists for.  -->
+        <item name="android:windowBackground">@color/colorPrimaryDark</item>
+        <item name="android:colorBackground">@color/colorPrimaryDark</item>
+    </style>
+</resources>

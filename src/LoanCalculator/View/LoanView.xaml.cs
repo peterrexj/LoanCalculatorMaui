@@ -4,7 +4,6 @@ using LoanCalculator.Core.Models.Enums;
 using LoanCalculator.Core.Models.Income;
 using LoanCalculator.Core.Models.ViewModels;
 using LoanCalculator.Core.Models.ViewModels.PrimaryModels;
-using LoanCalculator.Core.Pdf;
 using LoanCalculator.Core.Services;
 using LoanCalculator.Core.Themes;
 using LoanCalculatorMaui.Extensions;
@@ -237,7 +236,11 @@ public partial class LoanView : ContentPage
 
             await Task.WhenAll(viewModelInitializeTask, expenseSummaryTask, incomeSummaryTask, chartColorsTask, lstSourceTask);
 
-            _viewModel.PdfGenerator = new PdfInsightsGenerator(ServiceLocator.GetService<IFontUnicodeProvider>());
+            // PdfGenerator is now built lazily, in LoanViewModel.ExportInsights, on first actual
+            // export — not here, on every page load. See the comment there for why: constructing
+            // it eagerly meant loading three font files via a blocking FileSystem call on the main
+            // thread as soon as this method resumed, which was slow enough on iOS Simulator to trip
+            // an AppHang and, on at least one run, throw outright.
 
             _viewModel.CustomChartColors = chartColorsTask.Result;
             _viewModel.ExpenseSummary = expenseSummaryTask.Result;

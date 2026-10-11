@@ -9,6 +9,12 @@ public partial class SplashPage : ContentPage
     /// Upper bound on the splash. Only <see cref="PreWarmAsync"/> can get anywhere near it, so
     /// this fires only when the pre-warm has genuinely stalled.
     /// </summary>
+    /// <remarks>
+    /// Briefly widened to 12s for a since-reverted attempt at pre-building LoanView here (see the
+    /// note on step 3 in <see cref="PreWarmAsync"/>) — restored to 6s with that revert. A bigger
+    /// deadline was never the fix for that attempt's actual failure mode (an Android ANR), so
+    /// don't widen this again as a response to the same symptom without reading that note first.
+    /// </remarks>
     private static readonly TimeSpan SplashDeadline = TimeSpan.FromSeconds(6);
 
     /// <summary>
@@ -254,9 +260,26 @@ public partial class SplashPage : ContentPage
         //
         //    The data load above (step 1) is kept: it is genuinely async, off the UI thread, and
         //    is what BudgetView needs in order to render without a second pass.
+
+        // 3. TRIED AND REVERTED: pre-building LoanView here (conditionally, only once the
+        //    disclaimer was already accepted, via MainThread.InvokeOnMainThreadAsync) in the hope
+        //    that paying its construction cost during the splash — behind the dots, even frozen —
+        //    would beat paying it after the handoff as a blank dark Shell. On a real Android
+        //    device this did not land as "a longer but static branded splash". It produced an
+        //    actual ANR ("Loan Affordability Calculator isn't responding") after the page did
+        //    load, and the blank-page gap was *still* there beforehand regardless. Main-thread
+        //    construction heavy enough to trip Android's ANR watchdog (~5s with no response) is
+        //    categorically worse than the blank frame it was trying to replace — a static wait
+        //    the user can see is still loading is not the same as the OS deciding the whole app is
+        //    unresponsive and offering to kill it.
         //
-        //    NOTE: LoanView was deliberately never pre-built here — it is the landing page and
-        //    hosts the full-screen disclaimer SfPopup, which flashes if built off-screen.
+        //    Do not re-attempt this by only tuning timings (bigger SplashDeadline, shorter
+        //    pre-build scope, etc.) without first getting an actual on-device trace of what
+        //    LoanView's construction is doing on that thread — ANR is a signal that something in
+        //    that path is doing substantially more than "build a few hundred XAML elements" (a
+        //    Syncfusion control doing synchronous native/layout work on construction is the likely
+        //    suspect, same family as the SfPopup/SfExpander overlay issues under Platform Gotchas
+        //    in CLAUDE.md), not a signal to simply wait longer for it.
     }
 
     private void NavigateToShell()

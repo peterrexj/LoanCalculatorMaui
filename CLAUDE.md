@@ -67,6 +67,12 @@ npm install && npm run drivers          # first time only
 ./run-uitests.sh --android --no-build --filter "TestCategory=Smoke"
 ```
 
+Both `run-uitests.sh` and `run-uitests-parallel.sh` are macOS zsh scripts. From Windows, use the
+Android-only PowerShell ports instead — `run-uitests-windows-android.ps1` and
+`run-uitests-parallel-windows-android.ps1`, same directory, same flags in `-PascalCase` form (e.g.
+`-NoBuild`, `-Filter`). There is no Windows path for the iOS half; iOS simulators don't exist there.
+See [`USEFUL-COMMANDS.md`](USEFUL-COMMANDS.md) for every flag combination across all four scripts.
+
 **One C# suite drives both platforms** — tests address the UI by `AutomationId` and the
 driver layer resolves it per platform. Never add platform conditionals in `Tests/`; put any
 platform difference in `Infrastructure/`.
@@ -198,6 +204,51 @@ Platform storage paths:
 
 Named JSON files: `homeloandata.json` (Loan), `incomedata.json`, `expensedata.json`, `settingsdata.json`, `namevaluedata.json`, `themeselectdata.json`.
 
+**Un-coordinated fire-and-forget saves to the same file can corrupt it — found via `namevaluedata.json`.**
+`NameValueDataService.SaveNameValueData()` queued a bare `Task.Run(async () => await
+localStorage.SaveData(...))` per call, with no serialisation between calls. `SetAppLaunchDisclaimerShown()`
+and `SetWizardShown()` both call it, close together by design (the wizard auto-launches ~600ms after the
+disclaimer is accepted, per **Navigation & Shell**, and both get marked done in short order). Two
+`File.WriteAllTextAsync` calls to the same path, overlapping, produced this on a real device:
+```
+{"HasShowAppLaunchDisclaimer":true,"HasShownWizard":true}}
+```
+— a stray trailing brace, both flags present, from the two writes interleaving. Once that bad file is on
+disk, **every subsequent launch's read throws** `JsonException` while deserialising it — and that read
+happens inside `PopupDisclaimerViewModel.IsPopupRequired`'s getter, evaluated the moment
+`PopupDisclaimerView`'s `BindingContext` is set (i.e. as soon as `LoanView.InitializeComponent()` runs,
+right after the splash hands off to `AppShell`). The exception was never caught anywhere in that chain, so
+it propagated through MAUI's binding system to the native marshal boundary and crashed the app —
+presenting as `System.Reflection.TargetInvocationException: Exception has been thrown by the target of
+an invocation`, a reflection-wrapper message that carries **no inner-exception detail** in the crash
+report, Sentry's own capture, or the console by default. The actual `JsonException` was only found by
+temporarily hooking `AppDomain.CurrentDomain.FirstChanceException` in `App`'s constructor and logging
+`e.Exception.ToString()` — that's the technique to reach for if a crash like this recurs: a generic
+`TargetInvocationException`/`xamarin_process_managed_exception` crash with no further detail anywhere.
+
+Fixed two ways in `NameValueDataService`: the save path now serialises concurrent writes through a
+`SemaphoreSlim` so two calls queue instead of racing: and the read path now treats a parse failure
+exactly like "file doesn't exist yet" — falls back to a fresh default model and overwrites the bad file,
+so a device that already has a corrupted file **self-heals on the next write** instead of crashing on
+every single launch forever. Any other fire-and-forget save to a *shared* file (not just this one) has
+the same latent risk if two call sites can plausibly fire close together — the main `ScheduleSave`
+debounce on the four primary ViewModels happens to protect against this for their own files since it
+coalesces multiple triggers into one save, but nothing currently audits save paths for this generally.
+
+**This was chased for a long time as an app-launch *hang*, not a crash, before being found** — several
+runs on iOS Simulator showed a Sentry `AppHang` ("App hanging for at least 2000 ms") instead of an
+outright crash, same location, same timing (immediately after `AppShell.Appearing`), and that cost real
+time: a thread-pool-contention theory and an eager-`PdfGenerator`-construction theory were each
+implemented and *disproved by direct on-device testing* (same symptom, unchanged) before the
+`FirstChanceException` hook finally surfaced the real `JsonException`. **The hang and the crash turned
+out to be two faces of the same corrupted file** — exactly which runs throw outright versus merely stall
+depends on timing/thread-scheduling nuances in how the native bridge handles the exception, not on
+anything deterministic. **The AppHang was still reproducing after this fix landed, with an identical
+stack signature** — so whatever causes the *hang* specifically is not fully explained by this corruption
+alone, and remains open. If you hit it again, don't assume it's this same bug — check for a corrupted
+`namevaluedata.json` first (`cat` it in the simulator's `Documents` folder; valid JSON, not duplicate
+closing braces), but keep looking if the file is clean.
+
 ### Cross-Tab Data Coordination
 
 `SharedServiceCore` holds dirty flags (`IsIncomeDirty`, `IsExpenseDirty`, `IsLoanDirty`). `BudgetView` marks income/expense dirty at each mutation site (add/update/delete, next to the `FlushPendingSave` call), and `SettingsViewModel`'s delete helpers mark dirty after clearing a JSON file — clearing the file does not touch the caches below. First-ever load is detected with a `_hasLoadedOnce` flag per view.
@@ -277,6 +328,8 @@ What remains: `SplashDeadline` (6 s) bounds `PreWarmAsync` only. The dots pulse 
 That **defeats `SplashDeadline`**, because it is reached by `await Task.WhenAny(...)` with the UI `SynchronizationContext` captured: the continuation can only run on that thread, so a flooded thread means `NavigateToShell()` never runs. The cap destroyed the very deadline meant to rescue the hang, and turned a benign stall into a permanent one. Diagnosis: splash stuck at **full opacity** (washed-out means the old exit fade, which no longer exists) with the deadline never firing.
 
 So: **cosmetic animation must never compete with the handoff.** A bare `await` on a dead animation parks the dots loop on one pending task, which costs nothing. Earlier revisions of this file claimed a "3 s timeout" that was never in the code.
+
+**Fourth wrong shape: pre-building `LoanView` during the splash to close Android's post-handoff blank-frame gap.** `LoanView` is a large Syncfusion-heavy page (`SfTabView`, several `SfPopup`s, charts) that is deliberately never pre-built in `PreWarmAsync` — see the comment there — because it hosts the first-launch disclaimer `SfPopup`, which flashes if built off-screen while still required. The attempt gated around that: only pre-build once the disclaimer is already accepted (every launch after the first), via `MainThread.InvokeOnMainThreadAsync`, with `SplashDeadline`/`HandoffFailsafe` both widened to absorb it. On a real Android device this produced an actual ANR (**"Loan Affordability Calculator isn't responding"**) after the page did load — and the blank-frame gap it was meant to close was *still there* beforehand regardless. Reverted; both deadlines back to their original values. An ANR is a worse failure than the blank frame it was trying to replace, so **do not re-attempt this by only tuning timings** — it needs an on-device trace of what `LoanView`'s construction is actually doing on the UI thread first (a Syncfusion control doing synchronous native/layout work on construction is the likely suspect, same family as the `SfPopup`/`SfExpander` overlay issues under Platform Gotchas below).
 
 No push navigation and no registered routes. The only navigation is **modal**, pushed from `LoanView` with `Navigation.PushModalAsync`, for the two data-entry pages below. Each page exposes a `Task<bool> Completion` that the launcher awaits, so the caller can react after dismissal without the page knowing anything about LoanView.
 
@@ -359,6 +412,33 @@ Still relevant for the popups that remain (`AddAssetExpensePopup`, `UpfrontCosts
 This requires `x:Name="thisPage"` on the `ContentPage`. Without this, `SfComboBox` and interactive controls inside the popup will not bind correctly.
 
 `SfComboBox` inside `SfTextInputLayout` inside `SfPopup` does not render its selected value text — use `SfComboBox` directly (with a plain `Label` above it) instead. Also set `AutoSizeMode="Height"` on the `SfPopup` so content is not clipped.
+
+### SfPopup content washes out to near-illegible if it uses the generic theme colours
+
+The Settings page's Disclaimer and Privacy Policy popups (`SettingsView.xaml`) used the generic
+`LoanAppDefaultBackgroundColor`/`BorderControlBackgroundGradientBrush`/`LoanAppDefaultForegroundColor`
+tokens for their `ContentTemplate` card — a `Border` inside a `BindableLayout` inside a
+`ScrollView`, two `DataTemplate`s deep inside the popup. Despite those tokens being independently
+high-contrast in every theme (checked directly against the hex values), the rendered card washed
+out to a pale, barely-legible tint, worst in Dark theme. The popup's `HeaderTemplate`/
+`FooterTemplate` — same tokens, one `DataTemplate` deep instead of two — rendered correctly, so
+whatever caused it is specific to that deeper nesting, not a broken resource or a wrong colour
+value. **Root cause not isolated** — do not take "two DataTemplates deep" as a proven mechanism,
+only as the one structural difference found before moving to the fix below.
+
+The first-launch disclaimer (`Controls/PopupDisclaimerView.xaml`) has the *identical* nesting
+depth and renders correctly, using its own dedicated colour family instead:
+`LoanAppPopupBg`/`LoanAppPopupFg`/`LoanAppPopupSurface`/`LoanAppPopupMuted`/`LoanAppPopupAccent`/
+`LoanAppPopupButtonBg`/`LoanAppPopupButtonFg` (defined per-theme alongside the other `LoanApp*`
+keys). **Fix: use that family for any popup content card, not the generic tokens** — matching it
+is what fixed `SettingsView.xaml`'s two popups, independent of why the generic ones failed here
+specifically. If a *new* SfPopup content card looks washed out, reach for `LoanAppPopup*` first.
+
+Also found alongside this: `AcceptButtonText="Accept"` was set on both `SettingsView.xaml` popups
+but not on the working reference. It is `SfPopup`'s own built-in one/two-button footer API, which
+does nothing when a custom `FooterTemplate` is also supplied (as both of these do) — the two
+mechanisms were never meant to be combined. Removed as dead configuration; unconfirmed whether it
+contributed to the washout, but it did not belong regardless.
 
 ### SfNumericEntry Quirk
 
@@ -454,6 +534,39 @@ done
 **These settings are global** — they survive reinstall, uninstall and emulator reboot, so the app looks permanently broken long after whatever set it. Ways it gets set: manually as a "make tests less flaky" step; Appium's `appium:disableWindowAnimation=true`, which zeroes all three (deliberately **not** used — see the comment in `AppDriver.BuildAndroidOptions`); an emulator snapshot captured mid-test-run; and, until 2026-10-06, `run-uitests.sh` itself.
 
 **The script bug worth knowing about, because it latched.** `run-uitests.sh` zeroes the two *system* scales for a run and restores them on exit. It used to capture the current value as "the original" — so after any run that died without its trap firing (SIGKILL, closed terminal, emulator snapshot), the scales were already 0, the next run recorded `0` as the original, and dutifully restored `0`. Once corrupted it stayed corrupted and every later run re-confirmed it. It now **repairs all three to 1.0 on startup if any is zero, and always restores 1.0** rather than a captured value. A corrupted device therefore heals itself on the next run.
+
+### Android: brief white screen between the native splash and the first page
+
+**Confirmed and fixed** (verified on a real device after the change below). The native splash
+(`Maui.SplashTheme`, dark branded drawable) covers the launch window correctly, but everything
+*after* it sits on `Maui.MainTheme.Base` — the SDK-generated base theme — which the MAUI template
+never gives an `android:windowBackground`/`android:colorBackground` of its own. It falls through
+to its parent, `Theme.MaterialComponents.DayNight`, whose default background in light mode is
+**white**. Once Android considers the splash phase over, the window has nothing painted yet
+except that white default, until `LoanView` — a large Syncfusion-heavy page (`SfTabView`, charts,
+popups) — finishes constructing its native view tree and paints its own themed background.
+Constructing that much native content cold is measurably slower on Android than the iOS/Windows
+equivalent, which is why this was Android-only and lasted long enough to notice.
+
+`colors.xml`'s existing comment ("no ... flash on Android launch or during the splash → AppShell
+hand-off") shows this was already half-fixed once — `colorPrimary`/`colorPrimaryDark` were set
+dark for exactly this reason — but those affect old-style status-bar/action-bar chrome, not the
+one attribute that actually paints empty space (`windowBackground`/`colorBackground`).
+
+**Fix:** `src/LoanCalculator/Platforms/Android/Resources/values/styles.xml` (new file, no `.csproj`
+entry needed — same implicit globbing that already picks up `colors.xml`) overrides
+`Maui.MainTheme.Base` to add `android:windowBackground`/`android:colorBackground` =
+`@color/colorPrimaryDark`. It copies every other item from the SDK-generated version verbatim
+rather than only adding the two new ones — redeclaring a same-named Android style risks being a
+full replacement rather than a per-item merge, and a partial redeclaration would have silently
+dropped the theme's button/checkbox/dialog styling across the whole app. **If a future MAUI SDK
+upgrade changes what `Maui.MainTheme.Base` generates, diff this file against the newly generated
+one** (`obj/<config>/<tfm>/lp/*/jl/res/values/styles.xml`) and bring the two background items
+forward into whatever the new base now contains, for the same reason.
+
+If a *new* styling oddity turns up on Android only — a native widget looking different than
+before, a colour that doesn't match any theme — check this file first before suspecting XAML; it
+is the one place something now overrides an Android-wide default rather than a page-level style.
 
 ### Android build: stale `obj/` referencing a dropped ABI
 

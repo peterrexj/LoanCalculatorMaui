@@ -16,6 +16,7 @@
             <localConverters:BoolToEditAddTitleConverter x:Key="BoolToEditAddTitleConverter" />
             <localConverters:IntToIsEmptyConverter x:Key="IntToIsEmptyConverter" />
             <localConverters:NumberToWordsConverter x:Key="NumberToWordsConverter" />
+            <localConverters:AmountToCurrencyConverter x:Key="AmountToCurrencyConverter" />
             <localConverters:BoolToFontAttributesConverter x:Key="BoolToFontAttributesConverter" />
             <localConverters:BoolToDisclaimerFontSizeConverter x:Key="BoolToDisclaimerFontSizeConverter" />
             <localConverters:BoolToDisclaimerMarginConverter x:Key="BoolToDisclaimerMarginConverter" />

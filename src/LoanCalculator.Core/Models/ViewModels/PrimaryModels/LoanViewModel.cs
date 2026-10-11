@@ -255,6 +255,20 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
                         IsBusy = true; // Show loader
                         IsActive = false;
                         await Task.Delay(500); // Simulate a delay for the loader
+
+                        // Built here, lazily, on first export — not eagerly on every page load.
+                        // PdfGeneratorBase's constructor loads three font files synchronously via
+                        // FileSystem.OpenAppPackageFileAsync(...).GetAwaiter().GetResult() (see
+                        // MauiFontUnicodeProvider.LoadFont), and that was previously run as soon as
+                        // LoanView.OnAppearing resumed on the main thread. On a cold iOS Simulator
+                        // Debug build that was slow enough to trip Sentry's AppHang detector, and on
+                        // at least one run threw outright (an exception wrapped at the native
+                        // marshal boundary, with no inner detail recoverable from the crash capture)
+                        // — on EVERY launch, for a feature most sessions never touch. Deferring the
+                        // construction to here means that cost, whatever it is, is paid only when
+                        // the user actually asks to export.
+                        PdfGenerator ??= new PdfInsightsGenerator(ServiceLocator.GetService<IFontUnicodeProvider>());
+
                         await PdfGenerator.GeneratePdf(SharedServiceCore.AppInformation.ApplicationTitle, taskDelay: 400);
                     }
                     catch (Exception ex)

@@ -75,6 +75,14 @@
                         <Label x:Name="lblAssetWords" Grid.Column="1" Margin="6,0,0,0" AutomationId="AssetWords" FontSize="{StaticResource FontSizeSmall}" Opacity="0.4" TextColor="{DynamicResource LoanAppTabIndicatorStrokeColor}" />
                     </Grid>
                     <Label Margin="4,4,0,0" FontSize="{StaticResource FontSizeSmall}" IsVisible="{Binding WizardShowAssetTotal}" Text="{Binding WizardAssetTotalLabel}" TextColor="{DynamicResource LoanAppNavigationButtonBackgroundColor}" />
+                    <!--
+                        Answers "why is the loan bigger than the asset I typed?" — upfront costs
+                        are folded into the loan rather than paid separately, so deposit + loan
+                        below add up to the TOTAL asset cost above, not the asset value alone.
+                        Only shown once there is an upfront cost to explain; see
+                        WizardShowAssetBreakdown.
+                    -->
+                    <Label Margin="4,1,0,0" FontSize="{StaticResource FontSizeSmall}" IsVisible="{Binding WizardShowAssetBreakdown}" Opacity="0.6" Text="{Binding WizardAssetBreakdownLabel}" TextColor="{DynamicResource LoanAppNavigationButtonBackgroundColor}" />
 
                     <HorizontalStackLayout Margin="0,16,0,4" Spacing="4">
                         <Label Style="{DynamicResource PopupFieldLabelStyle}" Text="DEPOSIT AMOUNT" />
@@ -133,6 +141,22 @@
                             <Label Style="{DynamicResource PopupFieldLabelStyle}" Text="UPFRONT COSTS (OPTIONAL)" />
                             <Label FontAttributes="Bold" FontSize="{StaticResource FontSizeSmall}" Opacity="0.7" Text="{Binding CurrencySymbol}" TextColor="{DynamicResource LoanAppNavigationButtonBackgroundColor}" />
                         </HorizontalStackLayout>
+                        <!--
+                            Standout hint, shown only while this field is visible (i.e. only until
+                            the user commits a value and it disappears for good — see the comment
+                            on Section B above). Deliberately NOT styled like the ⓘ "learn more"
+                            buttons elsewhere (WhatIfView's offset/frequency/stress-test buttons):
+                            those are muted (Opacity 0.6) because they are secondary, tap-to-expand
+                            explainers. This is the one piece of information in this field that a
+                            first-time user needs before they type anything, so it stays at full
+                            opacity and bold rather than receding like those do.
+                        -->
+                        <Label
+                            Margin="4,0,0,4"
+                            FontAttributes="Bold"
+                            FontSize="{StaticResource FontSizeSmall}"
+                            Text="ⓘ  Added to your loan amount — not paid separately"
+                            TextColor="{DynamicResource LoanAppNavigationButtonBackgroundColor}" />
                         <Border Style="{DynamicResource PopupInputBorderStyle}">
                             <Entry
                                 x:Name="entryUpfront"
@@ -147,6 +171,10 @@
                                 TextColor="{DynamicResource LoanAppDefaultForegroundColor}"
                                 Unfocused="OnEntryUnfocused" />
                         </Border>
+                        <Grid Margin="4,2,0,0" ColumnDefinitions="Auto,*">
+                            <Label x:Name="lblUpfrontFormatted" Grid.Column="0" AutomationId="WizardUpfrontFormatted" FontAttributes="Bold" FontSize="{StaticResource FontSizeSmall}" Opacity="0.6" TextColor="{DynamicResource LoanAppTabIndicatorStrokeColor}" />
+                            <Label x:Name="lblUpfrontWords" Grid.Column="1" Margin="6,0,0,0" AutomationId="WizardUpfrontWords" FontSize="{StaticResource FontSizeSmall}" Opacity="0.4" TextColor="{DynamicResource LoanAppTabIndicatorStrokeColor}" />
+                        </Grid>
                     </VerticalStackLayout>
 
                     <VerticalStackLayout IsVisible="{Binding WizardRunningCostNeedsInput}" Spacing="4">
@@ -168,6 +196,10 @@
                                 TextColor="{DynamicResource LoanAppDefaultForegroundColor}"
                                 Unfocused="OnEntryUnfocused" />
                         </Border>
+                        <Grid Margin="4,2,0,0" ColumnDefinitions="Auto,*">
+                            <Label x:Name="lblRunningFormatted" Grid.Column="0" AutomationId="WizardRunningFormatted" FontAttributes="Bold" FontSize="{StaticResource FontSizeSmall}" Opacity="0.6" TextColor="{DynamicResource LoanAppTabIndicatorStrokeColor}" />
+                            <Label x:Name="lblRunningWords" Grid.Column="1" Margin="6,0,0,0" AutomationId="WizardRunningWords" FontSize="{StaticResource FontSizeSmall}" Opacity="0.4" TextColor="{DynamicResource LoanAppTabIndicatorStrokeColor}" />
+                        </Grid>
                     </VerticalStackLayout>
 
                     <VerticalStackLayout IsVisible="{Binding WizardIncomeNeedsInput}" Spacing="4">
@@ -189,6 +221,10 @@
                                 TextColor="{DynamicResource LoanAppDefaultForegroundColor}"
                                 Unfocused="OnEntryUnfocused" />
                         </Border>
+                        <Grid Margin="4,2,0,0" ColumnDefinitions="Auto,*">
+                            <Label x:Name="lblIncomeFormatted" Grid.Column="0" AutomationId="WizardIncomeFormatted" FontAttributes="Bold" FontSize="{StaticResource FontSizeSmall}" Opacity="0.6" TextColor="{DynamicResource LoanAppTabIndicatorStrokeColor}" />
+                            <Label x:Name="lblIncomeWords" Grid.Column="1" Margin="6,0,0,0" AutomationId="WizardIncomeWords" FontSize="{StaticResource FontSizeSmall}" Opacity="0.4" TextColor="{DynamicResource LoanAppTabIndicatorStrokeColor}" />
+                        </Grid>
                     </VerticalStackLayout>
 
                     <VerticalStackLayout IsVisible="{Binding WizardExpenseNeedsInput}" Spacing="4">
@@ -210,6 +246,10 @@
                                 TextColor="{DynamicResource LoanAppDefaultForegroundColor}"
                                 Unfocused="OnEntryUnfocused" />
                         </Border>
+                        <Grid Margin="4,2,0,0" ColumnDefinitions="Auto,*">
+                            <Label x:Name="lblExpenseFormatted" Grid.Column="0" AutomationId="WizardExpenseFormatted" FontAttributes="Bold" FontSize="{StaticResource FontSizeSmall}" Opacity="0.6" TextColor="{DynamicResource LoanAppTabIndicatorStrokeColor}" />
+                            <Label x:Name="lblExpenseWords" Grid.Column="1" Margin="6,0,0,0" AutomationId="WizardExpenseWords" FontSize="{StaticResource FontSizeSmall}" Opacity="0.4" TextColor="{DynamicResource LoanAppTabIndicatorStrokeColor}" />
+                        </Grid>
                     </VerticalStackLayout>
 
                     <!--
@@ -227,12 +267,25 @@
                         Text="{Binding WizardInheritedNote}"
                         TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
 
-                    <Button
-                        AutomationId="WizardCalculateButton"
+                    <!--
+                        No second "commit" button here, deliberately. There used to be a
+                        "Calculate" button at the end of this scrollable content — but Done
+                        (top-right, always visible, same OnApply handler) already does exactly
+                        the same commit-and-dismiss, every scroll position, with no risk of being
+                        docked under the keyboard. A full-screen MAUI page cannot dock a button
+                        above the keyboard (see TROUBLESHOOTING.md), which is exactly why Calculate
+                        had to live down here in the first place — and exactly why a user who
+                        never scrolls this far, or whose keyboard is covering it, could commit
+                        nothing and not know it. Two buttons doing the same thing is one too many;
+                        keep the one that is never hidden.
+                    -->
+                    <Label
                         Margin="0,20,0,0"
-                        Clicked="OnApply"
-                        Style="{DynamicResource PopupPrimaryButtonStyle}"
-                        Text="Calculate" />
+                        FontSize="{StaticResource FontSizeSmall}"
+                        HorizontalOptions="Center"
+                        Opacity="0.4"
+                        Text="↑ Tap Done above to save"
+                        TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
 
                 </VerticalStackLayout>
             </ScrollView>

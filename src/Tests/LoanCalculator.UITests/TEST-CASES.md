@@ -246,17 +246,19 @@ unit tests structurally cannot.
 
 - **Objective:** first-run setup is what every new user sees, and the suite previously only ever
   *cancelled* it. This checks that the values it collects reach the loan.
-- **Steps:** tap `FabWizard` → asset 900,000, deposit 180,000 → dismiss keyboard, scroll to
-  `WizardCalculateButton` → Calculate → reopen and read both fields.
+- **Steps:** tap `FabWizard` → asset 900,000, deposit 180,000 → tap `QuickInputApplyButton`
+  (Done, in the header) → reopen and read both fields.
 - **Expected:** asset 900,000 and deposit 180,000 recorded.
 - **Run:** `--filter "Name=CompletingTheSetupWizardRecordsTheLoan"`
 - **On failure:**
-  - `WizardCalculateButton` not found — it sits at the end of the scrollable content, *below* the
-    forced-present software keyboard, so it must be scrolled to. See TROUBLESHOOTING on scrolls
-    that type digits.
   - Values do not reach the loan — `WizardViewModel.Commit()` is not writing them. Note it writes
     expenses first, then the asset, then **one** side of the deposit/loan split last; the order is
     load-bearing.
+  - (Historical: this used to tap a separate `WizardCalculateButton` at the end of the scrollable
+    content, which sat under the forced-present software keyboard on some devices — see
+    TROUBLESHOOTING.md. That button was removed since Done, in the header, already did the exact
+    same commit and is never hidden. If you see a reference to `WizardCalculateButton` anywhere
+    else, it is stale.)
   - Only asset/deposit are filled on purpose. Upfront, running cost, income and expenses are shown
     **only while empty**, so they may legitimately be absent.
 ---

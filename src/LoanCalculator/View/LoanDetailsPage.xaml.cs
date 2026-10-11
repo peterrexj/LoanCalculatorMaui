@@ -184,14 +184,31 @@ public partial class LoanDetailsPage : ContentPage
     {
         if (_suppressTextChanged || sender is not Entry entry) return;
 
-        var grouped = Grouped(ParseAmount(e.NewTextValue));
+        var value = ParseAmount(e.NewTextValue);
+        var grouped = Grouped(value);
 
         switch (entry.AutomationId)
         {
-            case "WizardUpfront": _viewModel.WizardUpfrontText = grouped; break;
-            case "WizardRunning": _viewModel.WizardRunningCostText = grouped; break;
-            case "WizardIncome": _viewModel.WizardIncomeText = grouped; break;
-            case "WizardExpense": _viewModel.WizardExpenseText = grouped; break;
+            case "WizardUpfront":
+                _viewModel.WizardUpfrontText = grouped;
+                SetPair(lblUpfrontFormatted, lblUpfrontWords, value);
+                // Asset total/breakdown preview the typed-but-not-yet-committed upfront figure
+                // (WizardViewModel.PendingOrCommittedUpfront) — without this they would stay
+                // frozen at the pre-upfront total while the user is mid-typing it.
+                _viewModel.NotifyPreviewLabels();
+                break;
+            case "WizardRunning":
+                _viewModel.WizardRunningCostText = grouped;
+                SetPair(lblRunningFormatted, lblRunningWords, value);
+                break;
+            case "WizardIncome":
+                _viewModel.WizardIncomeText = grouped;
+                SetPair(lblIncomeFormatted, lblIncomeWords, value);
+                break;
+            case "WizardExpense":
+                _viewModel.WizardExpenseText = grouped;
+                SetPair(lblExpenseFormatted, lblExpenseWords, value);
+                break;
         }
     }
 
@@ -222,6 +239,11 @@ public partial class LoanDetailsPage : ContentPage
 
         SetPair(lblAssetFormatted, lblAssetWords, ParseAmount(entryAsset.Text));
         RefreshDepositAndLoan();
+
+        SetPair(lblUpfrontFormatted, lblUpfrontWords, ParseAmount(entryUpfront.Text));
+        SetPair(lblRunningFormatted, lblRunningWords, ParseAmount(entryRunning.Text));
+        SetPair(lblIncomeFormatted, lblIncomeWords, ParseAmount(entryIncome.Text));
+        SetPair(lblExpenseFormatted, lblExpenseWords, ParseAmount(entryExpense.Text));
     }
 
     /// <summary>

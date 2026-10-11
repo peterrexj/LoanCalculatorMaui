@@ -121,9 +121,21 @@ If the element's `y` falls inside the keyboard's band, that is the whole story. 
 This bit the Quick Setup wizard: `WizardCalculateButton` at `y=776` under a keyboard spanning
 `y 583–816` on an iPhone 16 Pro. It only appeared when the wizard moved from a 470pt centred
 `SfPopup` — whose buttons incidentally sat above the keyboard — to a full-screen page with a
-bottom-docked button. **A full-screen MAUI page cannot dock a button above the keyboard**, so put
-primary actions at the end of the scrollable content instead. Note the Quick Input page is immune
-because its Apply button is in the header row, at the top of the screen.
+bottom-docked button. **A full-screen MAUI page cannot dock a button above the keyboard**, so the
+original fix was to put primary actions at the end of the scrollable content instead and scroll
+to them (see `App.ScrollTo`/`KeyboardTop()` below). Note the Quick Input page was already immune,
+because its Apply button sits in the header row at the top of the screen — never under the
+keyboard, never dependent on scroll position.
+
+**That second fact is the one that stuck.** After Quick Setup and Quick Input merged into one
+`LoanDetailsPage`, the merged page kept *both* button placements: Done in the header (from Quick
+Input) and a separate `WizardCalculateButton` at the end of the scroll content (from Quick Setup),
+both calling the identical commit handler. Scrolling past the keyboard to find a button that
+already has an identical twin at the top of the screen was never actually necessary — it was
+redundant from the moment of the merge, not fixed. `WizardCalculateButton` has since been removed
+for exactly that reason (a real user, not just this suite, could miss it the same way); Done in
+the header is now the only commit action. If `WizardCalculateButton` turns up in a failure or in
+old notes, it no longer exists — use `QuickInputApplyButton` (Done).
 
 ### You cannot type into a field on the iOS simulator
 

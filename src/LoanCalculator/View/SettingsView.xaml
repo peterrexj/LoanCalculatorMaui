@@ -14,14 +14,35 @@
 
     <Grid BackgroundColor="{DynamicResource LoanAppDefaultBackgroundColor}" IsEnabled="{Binding IsFree}">
 
+        <!--
+            Disclaimer and Privacy Policy popups.
+
+            Colour keys below are the LoanAppPopup* family — the same one PopupDisclaimerView (the
+            first-launch disclaimer) uses, deliberately matched rather than reusing the generic
+            LoanAppDefaultBackgroundColor/BorderControlBackgroundGradientBrush/
+            LoanAppDefaultForegroundColor tokens those used before. Those generic tokens are high
+            contrast on their own (checked against every theme), but something in this exact
+            nested SfPopup ContentTemplate — a Border inside a BindableLayout inside a ScrollView,
+            two DataTemplates deep — made the card wash out to a near-illegible pale tint in
+            testing, Dark theme in particular. LoanAppPopup* already renders correctly in the
+            identical structural position (PopupDisclaimerView has the same DataTemplate nesting),
+            so matching it is the fix, independent of root-causing exactly which Syncfusion/MAUI
+            interaction broke the generic tokens here.
+
+            AcceptButtonText="Accept" was also removed from both (previously present only on
+            these two, not on the working reference). It is SfPopup's OWN built-in one/two-button
+            footer API, which does nothing here since both popups already supply a custom
+            FooterTemplate with their own Close button bound to a Command — the two mechanisms
+            were never meant to be set together.
+        -->
+
         <!--  Disclaimer Popup  -->
         <sfPopup:SfPopup
             x:Name="PopupDisclaimer"
             Padding="10,25,10,20"
-            AcceptButtonText="Accept"
             AnimationMode="Zoom"
             AppearanceMode="OneButton"
-            BackgroundColor="{DynamicResource LoanAppDefaultBackgroundColor}"
+            BackgroundColor="{DynamicResource LoanAppPopupBg}"
             IsFullScreen="True"
             IsOpen="{Binding IsPopupRequired}"
             ShowCloseButton="False"
@@ -33,7 +54,7 @@
                     <!--  Top padding clears the iOS status bar / notch (full-screen popup).  -->
                     <Grid
                         Padding="{OnPlatform iOS='0,50,0,8', MacCatalyst='0,50,0,8', Default='0,8,0,8'}"
-                        BackgroundColor="{DynamicResource LoanAppDefaultBackgroundColor}">
+                        BackgroundColor="{DynamicResource LoanAppPopupBg}">
                         <Label
                             BackgroundColor="Transparent"
                             FontAttributes="Bold"
@@ -41,14 +62,14 @@
                             FontSize="{StaticResource FontSizeXL}"
                             HorizontalTextAlignment="Center"
                             Text="Disclaimer"
-                            TextColor="{DynamicResource LoanAppDefaultForegroundColor}"
+                            TextColor="{DynamicResource LoanAppPopupFg}"
                             VerticalTextAlignment="Center" />
                     </Grid>
                 </DataTemplate>
             </sfPopup:SfPopup.HeaderTemplate>
             <sfPopup:SfPopup.FooterTemplate>
                 <DataTemplate>
-                    <Grid BackgroundColor="{DynamicResource LoanAppDefaultBackgroundColor}">
+                    <Grid BackgroundColor="{DynamicResource LoanAppPopupBg}">
                         <Button
                             BackgroundColor="Transparent"
                             AutomationId="SettingsDisclaimerCloseButton"
@@ -58,7 +79,7 @@
                             FontSize="{StaticResource FontSizeLarge}"
                             IsVisible="{Binding IsActive}"
                             Text="Close"
-                            TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                            TextColor="{DynamicResource LoanAppPopupFg}" />
                     </Grid>
                 </DataTemplate>
             </sfPopup:SfPopup.FooterTemplate>
@@ -71,10 +92,11 @@
                         <VerticalStackLayout Padding="12,8,12,8" Spacing="0">
                             <Border
                                 Padding="16"
-                                BackgroundColor="{DynamicResource BorderControlBackgroundGradientBrush}"
-                                Stroke="{DynamicResource BorderControlGradientBrush}"
-                                StrokeShape="RoundRectangle 12"
-                                StrokeThickness="1">
+                                BackgroundColor="{DynamicResource LoanAppPopupSurface}"
+                                StrokeShape="RoundRectangle 12">
+                                <Border.Stroke>
+                                    <SolidColorBrush Color="{DynamicResource LoanAppPopupMuted}" />
+                                </Border.Stroke>
                                 <VerticalStackLayout BindableLayout.ItemsSource="{Binding DisclaimerSections}" Spacing="0">
                                     <BindableLayout.ItemTemplate>
                                         <DataTemplate x:DataType="primaryModels:DisclaimerSection">
@@ -84,7 +106,16 @@
                                                 FontFamily="{DynamicResource DefaultFontFamily}"
                                                 FontSize="{Binding IsHeader, Converter={StaticResource BoolToDisclaimerFontSizeConverter}}"
                                                 Text="{Binding Text}"
-                                                TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                                                TextColor="{DynamicResource LoanAppPopupAccent}">
+                                                <Label.Triggers>
+                                                    <DataTrigger
+                                                        Binding="{Binding IsHeader}"
+                                                        TargetType="Label"
+                                                        Value="True">
+                                                        <Setter Property="TextColor" Value="{DynamicResource LoanAppPopupFg}" />
+                                                    </DataTrigger>
+                                                </Label.Triggers>
+                                            </Label>
                                         </DataTemplate>
                                     </BindableLayout.ItemTemplate>
                                 </VerticalStackLayout>
@@ -99,10 +130,9 @@
         <sfPopup:SfPopup
             x:Name="PopupPrivacyPolicy"
             Padding="10,25,10,20"
-            AcceptButtonText="Accept"
             AnimationMode="Zoom"
             AppearanceMode="OneButton"
-            BackgroundColor="{DynamicResource LoanAppDefaultBackgroundColor}"
+            BackgroundColor="{DynamicResource LoanAppPopupBg}"
             IsFullScreen="True"
             IsOpen="{Binding IsPrivacyPopupRequired}"
             ShowCloseButton="False"
@@ -114,7 +144,7 @@
                     <!--  Top padding clears the iOS status bar / notch (full-screen popup).  -->
                     <Grid
                         Padding="{OnPlatform iOS='0,50,0,8', MacCatalyst='0,50,0,8', Default='0,8,0,8'}"
-                        BackgroundColor="{DynamicResource LoanAppDefaultBackgroundColor}">
+                        BackgroundColor="{DynamicResource LoanAppPopupBg}">
                         <Label
                             BackgroundColor="Transparent"
                             FontAttributes="Bold"
@@ -122,14 +152,14 @@
                             FontSize="{StaticResource FontSizeXL}"
                             HorizontalTextAlignment="Center"
                             Text="Privacy Policy"
-                            TextColor="{DynamicResource LoanAppDefaultForegroundColor}"
+                            TextColor="{DynamicResource LoanAppPopupFg}"
                             VerticalTextAlignment="Center" />
                     </Grid>
                 </DataTemplate>
             </sfPopup:SfPopup.HeaderTemplate>
             <sfPopup:SfPopup.FooterTemplate>
                 <DataTemplate>
-                    <Grid BackgroundColor="{DynamicResource LoanAppDefaultBackgroundColor}">
+                    <Grid BackgroundColor="{DynamicResource LoanAppPopupBg}">
                         <Button
                             BackgroundColor="Transparent"
                             Command="{Binding PrivacyPolicyCloseCommand}"
@@ -138,7 +168,7 @@
                             FontSize="{StaticResource FontSizeLarge}"
                             IsVisible="{Binding IsActive}"
                             Text="Close"
-                            TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                            TextColor="{DynamicResource LoanAppPopupFg}" />
                     </Grid>
                 </DataTemplate>
             </sfPopup:SfPopup.FooterTemplate>
@@ -150,10 +180,11 @@
                         <VerticalStackLayout Padding="12,8,12,8" Spacing="0">
                             <Border
                                 Padding="16"
-                                BackgroundColor="{DynamicResource BorderControlBackgroundGradientBrush}"
-                                Stroke="{DynamicResource BorderControlGradientBrush}"
-                                StrokeShape="RoundRectangle 12"
-                                StrokeThickness="1">
+                                BackgroundColor="{DynamicResource LoanAppPopupSurface}"
+                                StrokeShape="RoundRectangle 12">
+                                <Border.Stroke>
+                                    <SolidColorBrush Color="{DynamicResource LoanAppPopupMuted}" />
+                                </Border.Stroke>
                                 <VerticalStackLayout Spacing="0">
                                     <VerticalStackLayout BindableLayout.ItemsSource="{Binding PrivacyPolicySections}" Spacing="0">
                                         <BindableLayout.ItemTemplate>
@@ -164,7 +195,16 @@
                                                     FontFamily="{DynamicResource DefaultFontFamily}"
                                                     FontSize="{Binding IsHeader, Converter={StaticResource BoolToDisclaimerFontSizeConverter}}"
                                                     Text="{Binding Text}"
-                                                    TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                                                    TextColor="{DynamicResource LoanAppPopupAccent}">
+                                                    <Label.Triggers>
+                                                        <DataTrigger
+                                                            Binding="{Binding IsHeader}"
+                                                            TargetType="Label"
+                                                            Value="True">
+                                                            <Setter Property="TextColor" Value="{DynamicResource LoanAppPopupFg}" />
+                                                        </DataTrigger>
+                                                    </Label.Triggers>
+                                                </Label>
                                             </DataTemplate>
                                         </BindableLayout.ItemTemplate>
                                     </VerticalStackLayout>
@@ -176,7 +216,7 @@
                                         FontFamily="{DynamicResource DefaultFontFamily}"
                                         FontSize="{StaticResource FontSizeBody}"
                                         Text="View the online privacy policy ›"
-                                        TextColor="{DynamicResource LoanAppAppShellFgColor}">
+                                        TextColor="{DynamicResource LoanAppPopupFg}">
                                         <Label.GestureRecognizers>
                                             <TapGestureRecognizer Command="{Binding OpenPrivacyPolicyUrlCommand}" />
                                         </Label.GestureRecognizers>

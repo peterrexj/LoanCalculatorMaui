@@ -1,3 +1,4 @@
+using LoanCalculator.Core.Exts;
 using LoanCalculator.Core.Models.Enums;
 using LoanCalculator.Core.Models.Income;
 using LoanCalculator.Core.Services;
@@ -238,8 +239,51 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
         }
 
         // ── Live labels under the asset and deposit fields ───────────────────────
-        public bool WizardShowAssetTotal => (_loanVm.HomeLoanInfo?.PropertyTotalAmount ?? 0) > 0;
-        public string WizardAssetTotalLabel => $"Total asset cost: {_loanVm.PropertyTotalAmount}";
+
+        /// <summary>
+        /// The upfront-cost figure "Total asset cost" and the breakdown line below should reflect
+        /// right now: the committed value once Upfront already has one, otherwise whatever is
+        /// currently typed in the still-visible Upfront field.
+        /// </summary>
+        /// <remarks>
+        /// Without the uncommitted half of this, both labels freeze at the pre-upfront total while
+        /// the user is typing their very first upfront cost — exactly the moment they are trying to
+        /// understand it, and the moment this feature exists for. This is a read-only preview, not
+        /// a second write path: <see cref="Commit"/> is still the only place upfront is written
+        /// into the model, and still the only place commit order matters (see "Commit order is
+        /// load-bearing" there) — this never touches <c>_loanVm</c>.
+        /// </remarks>
+        private double PendingOrCommittedUpfront() =>
+            WizardUpfrontHasValue
+                ? _loanVm.HomeLoanInfo?.OtherExpenseTotalAmount ?? 0
+                : (TryParseAmount(WizardUpfrontText, out var upfront) ? upfront : 0);
+
+        public bool WizardShowAssetTotal => (_loanVm.PropertyAmount + PendingOrCommittedUpfront()) > 0;
+        public string WizardAssetTotalLabel =>
+            $"Total asset cost: {CurrencySymbol}{(_loanVm.PropertyAmount + PendingOrCommittedUpfront()):N0}";
+
+        /// <summary>
+        /// True only once there is an upfront cost to explain. Without this gate, the breakdown
+        /// below would read "$650,000 asset + $0 upfront" the moment any asset value is typed —
+        /// true but pointless, since deposit + loan already equal the asset value exactly then.
+        /// </summary>
+        public bool WizardShowAssetBreakdown => PendingOrCommittedUpfront() > 0;
+
+        /// <summary>
+        /// Spells out why "Total asset cost" above — and therefore deposit + loan below — is
+        /// bigger than the asset value just typed in. Upfront costs (stamp duty, fees) are folded
+        /// into the loan rather than paid separately alongside it (see "Cost increases grow the
+        /// loan" in CLAUDE.md), so without this line a user who typed $650,000 and sees a
+        /// $576,203 loan has no way to see where the extra $20,003 went.
+        /// </summary>
+        /// <remarks>
+        /// Formatted with this view model's own <see cref="ViewModelUiBase.CurrencySymbol"/> —
+        /// mirrored from <c>_loanVm.CurrencySymbol</c> in <see cref="Prepopulate"/> — rather than
+        /// reading the global current symbol directly, so this stays consistent with every other
+        /// currency-prefixed label on this page if the two ever diverge.
+        /// </remarks>
+        public string WizardAssetBreakdownLabel =>
+            $"{CurrencySymbol}{_loanVm.PropertyAmount:N0} asset + {CurrencySymbol}{PendingOrCommittedUpfront():N0} upfront costs";
 
         public bool WizardShowLoanAmount => (_loanVm.HomeLoanInfo?.LoanAmountDirectInput ?? 0) > 0;
         public string WizardLoanAmountLabel => $"Loan amount: {_loanVm.LoanAmountStrFormatted}";
@@ -260,6 +304,8 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
         {
             OnPropertyChanged(nameof(WizardShowAssetTotal));
             OnPropertyChanged(nameof(WizardAssetTotalLabel));
+            OnPropertyChanged(nameof(WizardShowAssetBreakdown));
+            OnPropertyChanged(nameof(WizardAssetBreakdownLabel));
             OnPropertyChanged(nameof(WizardShowLoanAmount));
             OnPropertyChanged(nameof(WizardLoanAmountLabel));
         }
@@ -313,6 +359,8 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
             OnPropertyChanged(nameof(WizardExpenseSummary));
             OnPropertyChanged(nameof(WizardShowAssetTotal));
             OnPropertyChanged(nameof(WizardAssetTotalLabel));
+            OnPropertyChanged(nameof(WizardShowAssetBreakdown));
+            OnPropertyChanged(nameof(WizardAssetBreakdownLabel));
             OnPropertyChanged(nameof(WizardShowLoanAmount));
             OnPropertyChanged(nameof(WizardLoanAmountLabel));
         }

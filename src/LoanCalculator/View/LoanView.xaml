@@ -100,6 +100,10 @@
                                                 Text="{Binding IncomeEntryAmountText, Mode=TwoWay}"
                                                 TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
                                         </Border>
+                                        <Grid Margin="4,2,0,0" ColumnDefinitions="Auto,*">
+                                            <Label Grid.Column="0" AutomationId="AssetExpenseFormatted" FontAttributes="Bold" FontSize="{StaticResource FontSizeSmall}" Opacity="0.6" Text="{Binding IncomeEntryAmount, Converter={StaticResource AmountToCurrencyConverter}}" TextColor="{DynamicResource LoanAppTabIndicatorStrokeColor}" />
+                                            <Label Grid.Column="1" Margin="6,0,0,0" AutomationId="AssetExpenseWords" FontSize="{StaticResource FontSizeSmall}" Opacity="0.4" Text="{Binding IncomeEntryAmount, Converter={StaticResource NumberToWordsConverter}}" TextColor="{DynamicResource LoanAppTabIndicatorStrokeColor}" />
+                                        </Grid>
                                         <Label
                                             IsVisible="{Binding ShowErrorIncomeAmount}"
                                             Style="{DynamicResource PopupErrorLabelStyle}"

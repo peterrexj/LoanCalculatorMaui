@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView
+    x:Class="LoanCalculatorMaui.Controls.Scenarios.RateChangeScenarioView"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:core="http://schemas.syncfusion.com/maui"
+    xmlns:chart="clr-namespace:Syncfusion.Maui.Charts;assembly=Syncfusion.Maui.Charts"
+    xmlns:customControls="clr-namespace:LoanCalculatorMaui.Controls"
+    xmlns:primaryModels="clr-namespace:LoanCalculator.Core.Models.ViewModels.PrimaryModels;assembly=LoanCalculator.Core"
+    x:DataType="primaryModels:WhatIfViewModel">
+
+    <!--
+        Lifted verbatim from WhatIfView.xaml, where this was one of nine cards stacked in a
+        single ~9-screen scroll. It is now reached from the scenario index and hosted by
+        ScenarioPage, so it gets a whole screen and is addressable.
+
+        BindingContext is inherited from the host page, which sets the WhatIfViewModel
+        singleton — so every binding in here resolves exactly as it did before the move.
+    -->
+    <Border
+        IsVisible="{Binding HasLoanData}"
+        Margin="0,0,0,14"
+        Padding="0"
+        BackgroundColor="{DynamicResource LoanAppPopupSurface}"
+        StrokeShape="RoundRectangle 12"
+        StrokeThickness="0">
+        <Grid ColumnDefinitions="4,*">
+            <!--  Teal accent bar  -->
+            <BoxView
+                Grid.Column="0"
+                BackgroundColor="{DynamicResource LoanAppChartColor1}"
+                CornerRadius="12,0,12,0" />
+            <VerticalStackLayout Grid.Column="1" Padding="14,14,14,16" Spacing="10">
+
+                <!--  Header  -->
+                <Label
+                    FontAttributes="Bold"
+                    FontSize="{StaticResource FontSizeMedium}"
+                    Text="Rate Change Impact"
+                    TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                <Label
+                    Margin="0,-6,0,0"
+                    FontSize="{StaticResource FontSizeSmall}"
+                    Opacity="0.6"
+                    Text="What happens if rates move?"
+                    TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+
+                <!--  Stepper pill  -->
+                <Border
+                    Padding="4,2"
+                    BackgroundColor="{DynamicResource LoanAppDefaultBackgroundColor}"
+                    HorizontalOptions="Start"
+                    StrokeShape="RoundRectangle 24"
+                    StrokeThickness="0">
+                    <HorizontalStackLayout Spacing="2" VerticalOptions="Center">
+                        <Label
+                            FontSize="{StaticResource FontSizeSmall}"
+                            Margin="6,0,0,0"
+                            Opacity="0.7"
+                            Text="Change:"
+                            TextColor="{DynamicResource LoanAppDefaultForegroundColor}"
+                            VerticalOptions="Center" />
+                        <Button
+                            BackgroundColor="Transparent"
+                            AutomationId="WhatIfRateDeltaMinus"
+                            Clicked="OnRateDeltaDecrease"
+                            FontAttributes="Bold"
+                            FontSize="{StaticResource FontSizeXL}"
+                            TextColor="{DynamicResource LoanAppChartColor1}"
+                            WidthRequest="36" Text="−" />
+                        <Label
+                            FontAttributes="Bold"
+                            FontSize="{StaticResource FontSizeLarge}"
+                            HorizontalTextAlignment="Center"
+                            MinimumWidthRequest="72"
+                            AutomationId="WhatIfRateDeltaValue"
+                            Text="{Binding RateChangeDelta, StringFormat='{0:+0.00;-0.00;0.00}%'}"
+                            TextColor="{DynamicResource LoanAppChartColor1}"
+                            VerticalOptions="Center" />
+                        <Button
+                            BackgroundColor="Transparent"
+                            AutomationId="WhatIfRateDeltaPlus"
+                            Clicked="OnRateDeltaIncrease"
+                            FontAttributes="Bold"
+                            FontSize="{StaticResource FontSizeXL}"
+                            TextColor="{DynamicResource LoanAppChartColor1}"
+                            WidthRequest="36" Text="+" />
+                    </HorizontalStackLayout>
+                </Border>
+
+                <BoxView Style="{DynamicResource LoanAppSeparatorStyle}" />
+
+                <!--  Impact tiles  -->
+                <Grid ColumnSpacing="8">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <!--  New Rate  -->
+                    <Border Grid.Column="0" Padding="10,8" BackgroundColor="{DynamicResource LoanAppDefaultBackgroundColor}" StrokeShape="RoundRectangle 8" StrokeThickness="0">
+                        <VerticalStackLayout Spacing="2">
+                            <Label FontSize="{StaticResource FontSizeSmall}" Opacity="0.6" Text="NEW RATE" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                            <Label AutomationId="WhatIfRateNewRate" FontAttributes="Bold" FontSize="{StaticResource FontSizeLarge}" Text="{Binding RateChangeNewRate}" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                        </VerticalStackLayout>
+                    </Border>
+                    <!--  Monthly change — tinted amber (increase) or teal (saving)  -->
+                    <Border Grid.Column="1" Padding="10,8" BackgroundColor="{DynamicResource LoanAppChartColor2}" StrokeShape="RoundRectangle 8" StrokeThickness="0">
+                        <Border.Triggers>
+                            <DataTrigger Binding="{Binding RateChangeDiffIsPositive}" TargetType="Border" Value="False">
+                                <Setter Property="BackgroundColor" Value="{DynamicResource LoanAppChartColor1}" />
+                            </DataTrigger>
+                        </Border.Triggers>
+                        <VerticalStackLayout Spacing="2">
+                            <Label FontSize="{StaticResource FontSizeSmall}" Opacity="0.85" Text="MONTHLY CHANGE" TextColor="{DynamicResource LoanAppChartDataMarkerTextColor2}">
+                                <Label.Triggers>
+                                    <DataTrigger Binding="{Binding RateChangeDiffIsPositive}" TargetType="Label" Value="False">
+                                        <Setter Property="TextColor" Value="{DynamicResource LoanAppChartDataMarkerTextColor1}" />
+                                    </DataTrigger>
+                                </Label.Triggers>
+                            </Label>
+                            <Label FontAttributes="Bold" FontSize="{StaticResource FontSizeLarge}" Text="{Binding RateChangeMonthlyDiff}" TextColor="{DynamicResource LoanAppChartDataMarkerTextColor2}">
+                                <Label.Triggers>
+                                    <DataTrigger Binding="{Binding RateChangeDiffIsPositive}" TargetType="Label" Value="False">
+                                        <Setter Property="TextColor" Value="{DynamicResource LoanAppChartDataMarkerTextColor1}" />
+                                    </DataTrigger>
+                                </Label.Triggers>
+                            </Label>
+                        </VerticalStackLayout>
+                    </Border>
+                </Grid>
+
+                <Grid ColumnSpacing="8">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Border Grid.Column="0" Padding="10,8" BackgroundColor="{DynamicResource LoanAppDefaultBackgroundColor}" StrokeShape="RoundRectangle 8" StrokeThickness="0">
+                        <VerticalStackLayout Spacing="2">
+                            <Label FontSize="{StaticResource FontSizeSmall}" Opacity="0.6" Text="NEW MONTHLY" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                            <Label AutomationId="WhatIfRateNewMonthly" FontAttributes="Bold" FontSize="{StaticResource FontSizeMedium}" Text="{Binding RateChangeMonthlyRepayment}" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                        </VerticalStackLayout>
+                    </Border>
+                    <Border Grid.Column="1" Padding="10,8" BackgroundColor="{DynamicResource LoanAppDefaultBackgroundColor}" StrokeShape="RoundRectangle 8" StrokeThickness="0">
+                        <VerticalStackLayout Spacing="2">
+                            <Label FontSize="{StaticResource FontSizeSmall}" Opacity="0.6" Text="TOTAL INTEREST" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                            <Label FontAttributes="Bold" FontSize="{StaticResource FontSizeMedium}" Text="{Binding RateChangeTotalInterest}" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                        </VerticalStackLayout>
+                    </Border>
+                </Grid>
+
+                <!--  Chart: Annual principal/interest breakdown + balance at new rate  -->
+                <Border
+                    Margin="0,2,0,0"
+                    Padding="8,8,8,4"
+                    BackgroundColor="{DynamicResource LoanAppChartCardBackground}"
+                    StrokeShape="RoundRectangle 8"
+                    StrokeThickness="0">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="220"/>
+                        </Grid.RowDefinitions>
+                        <Grid Grid.Row="0" Margin="0,0,0,4">
+                            <Label Text="Annual Repayment" HorizontalOptions="Start" FontSize="{StaticResource FontSizeXS}" TextColor="{DynamicResource LoanAppChartAxisTextColor}" Opacity="0.7"/>
+                            <Label Text="Remaining Balance" HorizontalOptions="End" FontSize="{StaticResource FontSizeXS}" TextColor="{DynamicResource LoanAppChartAxisTextColor}" Opacity="0.7"/>
+                        </Grid>
+                        <chart:SfCartesianChart Grid.Row="1">
+                            <chart:SfCartesianChart.Legend>
+                                <chart:ChartLegend Placement="Bottom" LabelStyle="{chart:ChartLegendLabelStyle TextColor={DynamicResource LoanAppChartLegendTextColor}, FontSize=10}"/>
+                            </chart:SfCartesianChart.Legend>
+                            <chart:SfCartesianChart.XAxes>
+                                <chart:CategoryAxis Name="rateXAxis" ShowMajorGridLines="False" LabelStyle="{chart:ChartAxisLabelStyle TextColor={DynamicResource LoanAppChartAxisTextColor}, FontSize=10}"/>
+                            </chart:SfCartesianChart.XAxes>
+                            <chart:SfCartesianChart.YAxes>
+                                <chart:NumericalAxis Name="rateLeftAxis" RangePadding="None" LabelCreated="OnWhatIfAxisLabelCreated" LabelStyle="{chart:ChartAxisLabelStyle TextColor={DynamicResource LoanAppChartAxisTextColor}, FontSize=10}"/>
+                                <chart:NumericalAxis Name="rateRightAxis" CrossAxisName="rateXAxis" CrossesAt="1.7976931348623157E+308" RenderNextToCrossingValue="True" ShowMajorGridLines="False" LabelCreated="OnWhatIfAxisLabelCreated" LabelStyle="{chart:ChartAxisLabelStyle TextColor={DynamicResource LoanAppChartAxisTextColor}, FontSize=10}"/>
+                            </chart:SfCartesianChart.YAxes>
+                            <chart:StackingColumnSeries ItemsSource="{Binding RateChangePrincipalData}" XBindingPath="Name" YBindingPath="Value" YAxisName="rateLeftAxis" Label="Principal" LegendIcon="Rectangle" Fill="{DynamicResource LoanAppChartColorSeries1}"/>
+                            <chart:StackingColumnSeries ItemsSource="{Binding RateChangeInterestData}" XBindingPath="Name" YBindingPath="Value" YAxisName="rateLeftAxis" Label="Interest" LegendIcon="Rectangle" Fill="{DynamicResource LoanAppChartColorSeries2}"/>
+                            <chart:SplineSeries ItemsSource="{Binding RateChangeBalanceData}" XBindingPath="Name" YBindingPath="Value" YAxisName="rateRightAxis" StrokeWidth="2.5" Label="Balance" LegendIcon="HorizontalLine" Fill="{DynamicResource LoanAppChartColorSeries3}"/>
+                        </chart:SfCartesianChart>
+                    </Grid>
+                </Border>
+
+                <!--  Affordability headroom — only when income/expense data exists  -->
+                <Border
+                    IsVisible="{Binding RateChangeShowHeadroom}"
+                    Padding="10,8"
+                    StrokeShape="RoundRectangle 8"
+                    StrokeThickness="0"
+                    BackgroundColor="{DynamicResource LoanAppChartColor1}">
+                    <Border.Triggers>
+                        <DataTrigger Binding="{Binding RateChangeHeadroomStatus}" TargetType="Border" Value="0">
+                            <Setter Property="BackgroundColor" Value="{DynamicResource LoanAppChartColor2}" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding RateChangeHeadroomStatus}" TargetType="Border" Value="1">
+                            <Setter Property="BackgroundColor" Value="#CC3333" />
+                        </DataTrigger>
+                    </Border.Triggers>
+                    <Label
+                        FontAttributes="Bold"
+                        FontSize="{StaticResource FontSizeSmall}"
+                        Text="{Binding RateChangeHeadroom}"
+                        TextColor="{DynamicResource LoanAppChartDataMarkerTextColor1}">
+                        <Label.Triggers>
+                            <DataTrigger Binding="{Binding RateChangeHeadroomStatus}" TargetType="Label" Value="0">
+                                <Setter Property="TextColor" Value="{DynamicResource LoanAppChartDataMarkerTextColor2}" />
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding RateChangeHeadroomStatus}" TargetType="Label" Value="1">
+                                <Setter Property="TextColor" Value="#FFFFFF" />
+                            </DataTrigger>
+                        </Label.Triggers>
+                    </Label>
+                </Border>
+
+            </VerticalStackLayout>
+        </Grid>
+    </Border>
+
+</ContentView>

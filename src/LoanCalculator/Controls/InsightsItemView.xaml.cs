@@ -67,4 +67,34 @@ public partial class InsightsItemView : ContentView
         get => (Color)GetValue(TextColorProperty);
         set => SetValue(TextColorProperty, value);
     }
+
+    /// <summary>
+    /// Whether to draw the hairline above this row. Set false on the FIRST row of each panel —
+    /// the separator divides rows from each other, and one at the top of the card would be
+    /// dividing the first row from the panel header, which already has its own edge.
+    /// </summary>
+    /// <remarks>
+    /// Defaults to true so adding a row anywhere but the top needs no thought. The control cannot
+    /// work this out for itself: it has no reliable view of its position among its siblings at the
+    /// point the separator must be decided.
+    /// </remarks>
+    public static readonly BindableProperty ShowSeparatorProperty =
+        BindableProperty.Create(
+            nameof(ShowSeparator),
+            typeof(bool),
+            typeof(InsightsItemView),
+            true,
+            propertyChanged: OnShowSeparatorChanged);
+
+    public bool ShowSeparator
+    {
+        get => (bool)GetValue(ShowSeparatorProperty);
+        set => SetValue(ShowSeparatorProperty, value);
+    }
+
+    private static void OnShowSeparatorChanged(BindableObject bindable, object oldValue, object newValue)
+    {
+        if (bindable is InsightsItemView view && newValue is bool show)
+            view.RowSeparator.IsVisible = show;
+    }
 }

@@ -3,74 +3,90 @@
     x:Class="LoanCalculatorMaui.Controls.InsightsItemView"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
-    <Grid Margin="0,7,0,0" ColumnSpacing="0">
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="{OnIdiom Phone=150, Tablet=200, Desktop=200, TV=200, Default=150}" />
-            <ColumnDefinition Width="2" />
-            <!--  Vertical line column  -->
-            <ColumnDefinition Width="*" />
-        </Grid.ColumnDefinitions>
-        <Label
-            x:Name="InnerInsightsValueLabel"
-            Grid.Column="0"
-            Margin="0,0,8,0"
-            FontAttributes="Bold"
-            FontSize="{OnIdiom Phone=22,
-                               Tablet=30,
-                               Desktop=30,
-                               TV=30,
-                               Watch=15,
-                               Default=22}"
-            HorizontalOptions="End"
-            HorizontalTextAlignment="End"
-            VerticalOptions="Center" />
-        <BoxView
-            Grid.Column="1"
-            BackgroundColor="{DynamicResource Gray200}"
-            HeightRequest="32"
-            HorizontalOptions="Center"
-            VerticalOptions="Center"
-            WidthRequest="2" />
+    <!--
+        Layout kept as-is deliberately — figure left, rule, name and explanation right. What changed
+        is only the finish, brought into line with the lists built elsewhere in the app:
 
-        <VerticalStackLayout Grid.Column="2" Margin="15,0,10,0" Spacing="2" VerticalOptions="Center">
-            <!--  Name + tappable info toggle  -->
-            <Label x:Name="InnerInsightsLabel">
-                <Label.FormattedText>
-                    <FormattedString>
-                        <Span
-                            x:Name="InnerInsightsNameLabel"
-                            FontAttributes="Bold"
-                            FontSize="{OnIdiom Phone=16,
-                                               Tablet=24,
-                                               Desktop=24,
-                                               TV=24,
-                                               Watch=12,
-                                               Default=16}" />
-                        <Span Text="  " />
-                        <Span
-                            x:Name="InnerInsightsInfoToggle"
-                            FontFamily="{DynamicResource DefaultFontFamily}"
-                            FontSize="{OnIdiom Phone=14, Tablet=22, Desktop=22, TV=22, Watch=12, Default=14}"
-                            Text="ⓘ" />
-                    </FormattedString>
-                </Label.FormattedText>
-                <Label.GestureRecognizers>
-                    <TapGestureRecognizer Tapped="OnInfoToggleTapped" />
-                </Label.GestureRecognizers>
-            </Label>
-
-            <!--  Short summary — always visible  -->
+          · the rule was `Gray200` (#C8C8C8), a raw MAUI template colour, so it rendered the same
+            hard light-grey in all four themes and sat far too bright on Dark. It is now the theme
+            foreground at the opacity `LoanAppSeparatorStyle` uses, so it follows the theme.
+          · the figure takes `FontSizeFigure`, the token added for exactly this role, which also
+            fixes the tablet size (34, not 30).
+          · a hairline separator per row, matching the Budget and Schedule lists — nine panels of
+            unseparated rows read as one block.
+          · explanation at 0.55, the same muted level as every other row's sub-text.
+          · the ⓘ takes the link accent, so it reads as something you can tap.
+    -->
+    <VerticalStackLayout Spacing="0">
+        <BoxView x:Name="RowSeparator" Style="{DynamicResource LoanAppSeparatorStyle}" />
+        <Grid Padding="0,11" ColumnSpacing="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="{OnIdiom Phone=150, Tablet=200, Desktop=200, TV=200, Default=150}" />
+                <ColumnDefinition Width="2" />
+                <!--  Vertical line column  -->
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
             <Label
-                x:Name="InnerInsightsShortLabel"
-                FontSize="{OnIdiom Phone=12, Tablet=22, Desktop=22, TV=22, Watch=12, Default=12}"
-                Opacity="0.75" />
+                x:Name="InnerInsightsValueLabel"
+                Grid.Column="0"
+                Margin="0,0,10,0"
+                FontAttributes="Bold"
+                FontSize="{StaticResource FontSizeFigure}"
+                HorizontalOptions="End"
+                HorizontalTextAlignment="End"
+                VerticalOptions="Center" />
+            <BoxView
+                Grid.Column="1"
+                BackgroundColor="{DynamicResource LoanAppDefaultForegroundColor}"
+                HeightRequest="34"
+                HorizontalOptions="Center"
+                Opacity="0.15"
+                VerticalOptions="Center"
+                WidthRequest="2" />
 
-            <!--  Full description — collapsed by default, expands on ⓘ tap  -->
-            <Label
-                x:Name="InnerInsightsDescriptionLabel"
-                FontSize="{OnIdiom Phone=12, Tablet=22, Desktop=22, TV=22, Watch=12, Default=12}"
-                IsVisible="False"
-                Opacity="0.6" />
-        </VerticalStackLayout>
-    </Grid>
+            <VerticalStackLayout
+                Grid.Column="2"
+                Margin="14,0,10,0"
+                Spacing="2"
+                VerticalOptions="Center">
+                <!--  Name + tappable info toggle  -->
+                <Label x:Name="InnerInsightsLabel">
+                    <Label.FormattedText>
+                        <FormattedString>
+                            <Span
+                                x:Name="InnerInsightsNameLabel"
+                                FontAttributes="Bold"
+                                FontFamily="{DynamicResource DefaultFontFamily}"
+                                FontSize="{StaticResource FontSizeMedium}" />
+                            <Span Text="  " />
+                            <Span
+                                x:Name="InnerInsightsInfoToggle"
+                                FontFamily="{DynamicResource DefaultFontFamily}"
+                                FontSize="{StaticResource FontSizeBody}"
+                                Text="ⓘ"
+                                TextColor="{DynamicResource LoanAppTabIndicatorStrokeColor}" />
+                        </FormattedString>
+                    </Label.FormattedText>
+                    <Label.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnInfoToggleTapped" />
+                    </Label.GestureRecognizers>
+                </Label>
+
+                <!--  Short summary — always visible  -->
+                <Label
+                    x:Name="InnerInsightsShortLabel"
+                    FontFamily="{DynamicResource DefaultFontFamily}"
+                    FontSize="{StaticResource FontSizeBody}"
+                    Opacity="0.55" />
+
+                <!--  Full description — collapsed by default, expands on ⓘ tap  -->
+                <Label
+                    x:Name="InnerInsightsDescriptionLabel"
+                    FontFamily="{DynamicResource DefaultFontFamily}"
+                    FontSize="{StaticResource FontSizeBody}"
+                    IsVisible="False"
+                    Opacity="0.6" />
+            </VerticalStackLayout>
+        </Grid>
+    </VerticalStackLayout>
 </ContentView>

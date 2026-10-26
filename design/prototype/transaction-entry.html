@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<meta charset="utf-8">
+<title>Transaction Entry — prototype</title>
+<link rel="stylesheet" href="tokens.css">
+<link rel="stylesheet" href="app.css">
+
+<!--
+  TRANSACTION ENTRY — replaces src/LoanCalculator/View/TransactionEntryPage.xaml.
+
+  One layout serves THREE call sites, differing only in the title noun and which list the saved
+  row lands in: Asset Expense entry (from Loan, "Add Asset Expense"), Budget/Budget Income
+  add-edit ("Income Entry"), and Budget Expense add-edit ("Expense Entry"). This file shows the
+  Income variant in EDIT mode; swap the <h1> text and placeholder for the other two — the fields
+  and layout are identical, per ExpenseEntryViewBaseModel being the shared base of all three
+  ViewModels. In ADD mode the Delete button is absent and all three fields are empty.
+
+  Save is in the HEADER, not pinned to the bottom. This was a real bug: the keyboard overlays the
+  page rather than insetting it, so a bottom-anchored Save is covered by the keyboard for as long
+  as Amount has focus — which is most of this form. Keeping it in the header, next to the title,
+  is the fix and must not regress.
+
+  Back dismisses to Budget (the Income/Expenses tab the entry was opened from); in the Loan/asset-
+  expense call site it would dismiss to Loan instead.
+
+  THE THREE FIELDS SIT IN ONE CARD. Grouped content is carried in a gradient card everywhere else
+  in the app, and this page is the one place that had the fields loose on the bare page background
+  — which read as unfinished rather than as minimal, because nothing bounded the form or gave the
+  empty lower half a reason to be empty.
+
+  ALL THREE BOXES SHARE ONE TYPE TREATMENT: font-size-xl / 700. The app currently renders Name and
+  Amount that way but Frequency at 14/regular, because the shared SfComboBoxStyle sets its own
+  FontSize and the page does not override it. Three stacked fields that should read as one set, one
+  of which is visibly lighter and smaller. Overriding it on this page is the fix — not editing the
+  shared style, which Settings' three pickers also use.
+-->
+
+<div class="phone">
+
+  <div class="modal-head">
+    <h1>Income Entry</h1>
+    <a href="budget.html">Save</a>
+    <a href="budget.html" class="x">&times;</a>
+  </div>
+
+  <div class="scroll">
+
+    <div class="card">
+
+      <div class="field">
+        <label>Name</label>
+        <div class="box">Salary</div>
+      </div>
+
+      <!--
+        The hint carries the WORD FORM only. It used to repeat the formatted figure as well
+        ("$6,000  Six Thousand"), which duplicated what the equivalence row below now states.
+        Each device does one job: the words catch a mistyped magnitude (a stray zero), the row
+        catches a wrong period.
+      -->
+      <div class="field">
+        <label>Amount $</label>
+        <div class="box">6,000</div>
+        <p class="hint">Six Thousand</p>
+      </div>
+
+      <div class="field">
+        <label>Frequency</label>
+        <div class="box" style="display:flex;justify-content:space-between;align-items:center">
+          Monthly <span style="opacity:.45;font-size:var(--font-size-small)">&#9662;</span>
+        </div>
+      </div>
+
+      <div class="card-foot">
+        <span class="lead">$6,000 / month</span>
+        <span class="sub">$72,000 a year</span>
+      </div>
+
+    </div>
+
+    <!-- EDIT mode only. Kept at the foot of the form, away from Save in the header: a
+         destructive action beside the one people reach for every time invites mis-taps. -->
+    <a href="budget.html" class="btn-danger">Delete entry</a>
+
+  </div>
+
+</div>
+</html>

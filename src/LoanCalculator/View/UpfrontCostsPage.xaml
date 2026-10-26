@@ -1,0 +1,287 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="LoanCalculatorMaui.View.UpfrontCostsPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:buttons="clr-namespace:Syncfusion.Maui.Buttons;assembly=Syncfusion.Maui.Buttons"
+    xmlns:primaryModels="clr-namespace:LoanCalculator.Core.Models.ViewModels.PrimaryModels;assembly=LoanCalculator.Core"
+    x:DataType="primaryModels:LoanViewModel"
+    Title="Upfront Costs">
+
+    <!--
+        Data-entry page for upfront costs (stamp duty, mortgage charges, conveyance fees,
+        bank fees, inspection fees, other expenses) and Australian state selection for
+        stamp duty calculation. Replaces the UpfrontCostsPopup from LoanView.xaml.
+
+        All fields write the model live (no deferred commit). The Done button just closes
+        the page — it is not called Apply because there is nothing to apply, only to dismiss.
+
+        Code-behind handlers are relocated verbatim from LoanView.xaml.cs:
+        OnUpfrontEntryLoaded, OnUpfrontLabelLoaded, OnUpfrontControlLoaded,
+        OnUpfrontEntryTextChanged, SetUpfrontValue, PopulateUpfrontEntry, FormatEntry,
+        _suppressTextChanged, _upfrontEntries, _upfrontLabels.
+    -->
+    <ContentPage.Content>
+        <Grid BackgroundColor="{DynamicResource LoanAppDefaultBackgroundColor}" RowDefinitions="Auto,*,Auto">
+
+            <!--  Header  -->
+            <Grid Grid.Row="0" Padding="16,14,8,4">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <Label
+                    Grid.Column="0"
+                    FontAttributes="Bold"
+                    FontSize="{StaticResource FontSizeXL}"
+                    Text="Upfront Costs"
+                    TextColor="{DynamicResource LoanAppDefaultForegroundColor}"
+                    VerticalOptions="Center" />
+                <Button
+                    Grid.Column="1"
+                    BackgroundColor="Transparent"
+                    Clicked="OnDone"
+                    FontSize="{StaticResource FontSizeLarge}"
+                    HeightRequest="36"
+                    Text="Done"
+                    TextColor="{DynamicResource LoanAppTabIndicatorStrokeColor}"
+                    WidthRequest="72" />
+            </Grid>
+
+            <!--
+                Fields.
+
+                Every field here previously inlined what PopupInputBorderStyle and
+                PopupFieldLabelStyle already say — six copies of the same Padding / background /
+                corner radius, and six of the same FontSize / Opacity — so this page drifted from
+                the other entry pages without anything flagging it. It is now on the shared
+                styles. Two drifts that had already happened and are corrected here: the value
+                entries were FontSizeLarge where every other form field is FontSizeXL, and the
+                page inset was 16 against the 12 that every other page container uses (see
+                "Horizontal page inset is 12" in CLAUDE.md).
+            -->
+            <ScrollView Grid.Row="1">
+                <VerticalStackLayout Padding="12,4,12,0" Spacing="0">
+
+                    <!--
+                        Australian state selector — only visible when AUS mode on, which it is not
+                        by default (see "Australian mode is retired from the UI" in CLAUDE.md). Its
+                        own card: it is a setting that drives stamp duty, not one of the money
+                        fields, so it does not belong inside the group the total sums up.
+                    -->
+                    <Border IsVisible="{Binding ShowAustralianStateSelectorOnStampDuty}" Style="{DynamicResource FormCardStyle}">
+                        <VerticalStackLayout Spacing="0">
+                            <Label Style="{DynamicResource PopupFieldLabelStyle}" Text="AUSTRALIAN STATE (STAMP DUTY)" />
+                            <buttons:SfSegmentedControl
+                                x:Name="UpfrontAustraliaStates"
+                                AutomationId="UpfrontAusStates"
+                                Margin="0,6,0,0"
+                                ItemsSource="{Binding AustraliaStateCollection}"
+                                Loaded="OnUpfrontControlLoaded"
+                                SelectedIndex="{Binding AustraliaStateSelectedIndex, Mode=TwoWay}"
+                                Style="{DynamicResource SegmentDefaultStyle}"
+                                VisibleSegmentsCount="8" />
+                            <Label
+                                Margin="0,6,0,0"
+                                FontSize="{StaticResource FontSizeXS}"
+                                Opacity="0.35"
+                                Text="Stamp duty is auto-calculated when a state is selected"
+                                TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <!--
+                        The five cost components in one card, closed by the total as its card foot.
+                        Stamp duty makes a sixth when Australian mode is on; it is inside this card
+                        rather than beside it because it IS one of the amounts the total sums.
+                    -->
+                    <Border Style="{DynamicResource FormCardStyle}">
+                        <VerticalStackLayout Spacing="0">
+
+                            <!--  Stamp duty — only visible when ShowStampDutyInput is true  -->
+                            <VerticalStackLayout IsVisible="{Binding ShowStampDutyInput}" Spacing="0">
+                                <Label Style="{DynamicResource PopupFieldLabelStyle}" Text="STAMP DUTY (ESTIMATE)" />
+                                <Border Style="{DynamicResource PopupInputBorderStyle}">
+                                    <Entry
+                                        AutomationId="StampDutyEntry"
+                                        BackgroundColor="Transparent"
+                                        FontAttributes="Bold"
+                                        FontSize="{StaticResource FontSizeXL}"
+                                        Keyboard="Numeric"
+                                        Loaded="OnUpfrontEntryLoaded"
+                                        Placeholder="0"
+                                        PlaceholderColor="{DynamicResource LoanAppInputTextWhenUnFocusedColor}"
+                                        TextChanged="OnUpfrontEntryTextChanged"
+                                        TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                                </Border>
+                                <Label
+                                    AutomationId="StampDutyWords"
+                                    Loaded="OnUpfrontLabelLoaded"
+                                    Style="{DynamicResource PopupFieldHintStyle}"
+                                    Text="" />
+                            </VerticalStackLayout>
+
+                            <!--  Mortgage + Conveyance  -->
+                            <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
+                                <VerticalStackLayout Grid.Column="0" Spacing="0">
+                                    <Label Style="{DynamicResource PopupFieldLabelStyle}" Text="MORTGAGE CHARGES" />
+                                    <Border Style="{DynamicResource PopupInputBorderStyle}">
+                                        <Entry
+                                            AutomationId="MortgageEntry"
+                                            BackgroundColor="Transparent"
+                                            FontAttributes="Bold"
+                                            FontSize="{StaticResource FontSizeXL}"
+                                            Keyboard="Numeric"
+                                            Loaded="OnUpfrontEntryLoaded"
+                                            Placeholder="0"
+                                            PlaceholderColor="{DynamicResource LoanAppInputTextWhenUnFocusedColor}"
+                                            TextChanged="OnUpfrontEntryTextChanged"
+                                            TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                                    </Border>
+                                    <Label
+                                        AutomationId="MortgageWords"
+                                        Loaded="OnUpfrontLabelLoaded"
+                                        Style="{DynamicResource PopupFieldHintStyle}"
+                                        Text="" />
+                                </VerticalStackLayout>
+                                <VerticalStackLayout Grid.Column="1" Spacing="0">
+                                    <Label Style="{DynamicResource PopupFieldLabelStyle}" Text="CONVEYANCE / SOLICITOR" />
+                                    <Border Style="{DynamicResource PopupInputBorderStyle}">
+                                        <Entry
+                                            AutomationId="ConveyanceEntry"
+                                            BackgroundColor="Transparent"
+                                            FontAttributes="Bold"
+                                            FontSize="{StaticResource FontSizeXL}"
+                                            Keyboard="Numeric"
+                                            Loaded="OnUpfrontEntryLoaded"
+                                            Placeholder="0"
+                                            PlaceholderColor="{DynamicResource LoanAppInputTextWhenUnFocusedColor}"
+                                            TextChanged="OnUpfrontEntryTextChanged"
+                                            TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                                    </Border>
+                                    <Label
+                                        AutomationId="ConveyanceWords"
+                                        Loaded="OnUpfrontLabelLoaded"
+                                        Style="{DynamicResource PopupFieldHintStyle}"
+                                        Text="" />
+                                </VerticalStackLayout>
+                            </Grid>
+
+                            <!--  Bank fees + Inspection  -->
+                            <Grid Margin="0,14,0,0" ColumnDefinitions="*,*" ColumnSpacing="8">
+                                <VerticalStackLayout Grid.Column="0" Spacing="0">
+                                    <Label Style="{DynamicResource PopupFieldLabelStyle}" Text="BANK FEES" />
+                                    <Border Style="{DynamicResource PopupInputBorderStyle}">
+                                        <Entry
+                                            AutomationId="BankFeeEntry"
+                                            BackgroundColor="Transparent"
+                                            FontAttributes="Bold"
+                                            FontSize="{StaticResource FontSizeXL}"
+                                            Keyboard="Numeric"
+                                            Loaded="OnUpfrontEntryLoaded"
+                                            Placeholder="0"
+                                            PlaceholderColor="{DynamicResource LoanAppInputTextWhenUnFocusedColor}"
+                                            TextChanged="OnUpfrontEntryTextChanged"
+                                            TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                                    </Border>
+                                    <Label
+                                        AutomationId="BankFeeWords"
+                                        Loaded="OnUpfrontLabelLoaded"
+                                        Style="{DynamicResource PopupFieldHintStyle}"
+                                        Text="" />
+                                </VerticalStackLayout>
+                                <VerticalStackLayout Grid.Column="1" Spacing="0">
+                                    <Label Style="{DynamicResource PopupFieldLabelStyle}" Text="INSPECTION FEE" />
+                                    <Border Style="{DynamicResource PopupInputBorderStyle}">
+                                        <Entry
+                                            AutomationId="InspectionEntry"
+                                            BackgroundColor="Transparent"
+                                            FontAttributes="Bold"
+                                            FontSize="{StaticResource FontSizeXL}"
+                                            Keyboard="Numeric"
+                                            Loaded="OnUpfrontEntryLoaded"
+                                            Placeholder="0"
+                                            PlaceholderColor="{DynamicResource LoanAppInputTextWhenUnFocusedColor}"
+                                            TextChanged="OnUpfrontEntryTextChanged"
+                                            TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                                    </Border>
+                                    <Label
+                                        AutomationId="InspectionWords"
+                                        Loaded="OnUpfrontLabelLoaded"
+                                        Style="{DynamicResource PopupFieldHintStyle}"
+                                        Text="" />
+                                </VerticalStackLayout>
+                            </Grid>
+
+                            <!--  Other expenses  -->
+                            <VerticalStackLayout Margin="0,14,0,0" Spacing="0">
+                                <Label Style="{DynamicResource PopupFieldLabelStyle}" Text="OTHER EXPENSES" />
+                                <Border Style="{DynamicResource PopupInputBorderStyle}">
+                                    <Entry
+                                        AutomationId="OtherExpensesEntry"
+                                        BackgroundColor="Transparent"
+                                        FontAttributes="Bold"
+                                        FontSize="{StaticResource FontSizeXL}"
+                                        Keyboard="Numeric"
+                                        Loaded="OnUpfrontEntryLoaded"
+                                        Placeholder="0"
+                                        PlaceholderColor="{DynamicResource LoanAppInputTextWhenUnFocusedColor}"
+                                        TextChanged="OnUpfrontEntryTextChanged"
+                                        TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                                </Border>
+                                <Label
+                                    AutomationId="OtherExpensesWords"
+                                    Loaded="OnUpfrontLabelLoaded"
+                                    Style="{DynamicResource PopupFieldHintStyle}"
+                                    Text="" />
+                            </VerticalStackLayout>
+
+                            <!--
+                                Card foot: the sum of the fields above, and the figure Loan Details
+                                folds into the loan amount — so this is the number that explains why
+                                the loan over there exceeds asset minus deposit. It was already this
+                                shape (a rule, then the total) but assembled from a separator with
+                                its own margins and a Grid with four inline overrides; on the shared
+                                styles it cannot drift from the other pages' feet.
+                            -->
+                            <BoxView Style="{DynamicResource FormCardFootRuleStyle}" />
+                            <Grid ColumnDefinitions="*,Auto">
+                                <Label
+                                    Grid.Column="0"
+                                    Style="{DynamicResource PopupFieldLabelStyle}"
+                                    Text="TOTAL UPFRONT COSTS"
+                                    VerticalOptions="End" />
+                                <Label
+                                    x:Name="lblUpfrontTotal"
+                                    Grid.Column="1"
+                                    AutomationId="UpfrontTotal"
+                                    Loaded="OnUpfrontLabelLoaded"
+                                    Style="{DynamicResource FormCardFootLeadStyle}"
+                                    Text="{Binding OtherExpenseTotalAmount}"
+                                    VerticalOptions="End" />
+                            </Grid>
+
+                        </VerticalStackLayout>
+                    </Border>
+
+                </VerticalStackLayout>
+            </ScrollView>
+
+            <!--  Done button  -->
+            <Button
+                AutomationId="UpfrontDoneButton"
+                Grid.Row="2"
+                Margin="12,8,12,16"
+                BackgroundColor="{DynamicResource LoanAppNavigationButtonBackgroundColor}"
+                Clicked="OnDone"
+                CornerRadius="12"
+                FontAttributes="Bold"
+                FontSize="{StaticResource FontSizeLarge}"
+                HeightRequest="48"
+                Text="Done"
+                TextColor="{DynamicResource LoanAppNavigationButtonIconColor}" />
+
+        </Grid>
+    </ContentPage.Content>
+
+</ContentPage>

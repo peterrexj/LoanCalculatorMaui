@@ -445,6 +445,33 @@ carries `Padding="12,4,12,300"` precisely so its last control clears the keyboar
 and a human can always scroll by dragging the content above the accessory. The bug was only ever
 in where the synthetic drag started.
 
+**Third variant: the target is not in the `ScrollView` at all, so no amount of scrolling can ever
+reach it.** Check this before investigating the drag, because the two look identical in the
+message and only this one is unfixable by `ScrollTo`.
+
+Seen as `Scrolled 8 times without bringing 'FabWizard' into view on iOS.` The FAB is a page-root
+overlay sibling of the `ScrollView` (`LoanView.xaml`, after `</ScrollView>`), pinned bottom-right
+with `VerticalOptions="End"`. Scrolling moves the content underneath it and leaves the FAB exactly
+where it is — so when the keyboard covers that corner, the element is unreachable by definition.
+From the failure artifact:
+
+| element | y range | visible |
+|---|---|---|
+| `XCUIElementTypeKeyboard` | 583 … 816 | `true` |
+| `FabWizard` | 715 … 771 | **`false`** (still `enabled="true"`) |
+
+How it arose, and the general lesson: `EnterText` calls `DismissKeyboard()`, but that is
+`Raw.HideKeyboard()`, which needs a Return/Done key. The interest-rate field raises the **numeric
+keypad**, which has none, so `HideKeyboard()` throws and `DismissKeyboard()` swallows it *by
+design* — the keypad stays up and the next step inherits it. Any helper that types into a numeric
+field and then looks at the bottom of the screen will hit this.
+
+Two fixes, both in `LoanPage`: `SetInterestRate` now blurs by tapping `LoanSummaryBox` (inert, and
+at the top of the page so the tap cannot be eaten by the keypad it is dismissing), and
+`OpenAssetTab` now anchors on `LoanSummaryBox` rather than the FAB. **Prefer an anchor that is
+inside the `ScrollView` and near the top of the page** — a bottom-corner FAB is the worst possible
+readiness anchor on a page with text input, however unique and unconditional it looks.
+
 ---
 
 ## Combo box and picker problems

@@ -1,0 +1,167 @@
+/* ============================================================================
+   Tablet-width layer. Loads AFTER tokens.css + app.css and never edits either.
+
+   WHY A SEPARATE FILE, NOT A MEDIA QUERY ON app.css: the brief is explicit that
+   app.css/tokens.css are off limits, and the phone prototypes must render
+   exactly as before. So every override here is scoped under a single new root
+   class, `.tablet`, that only the six tablet-* pages use. Nothing here can
+   affect .phone.
+
+   TYPE SCALE: the app's OnIdiom tokens are materially larger on tablet (see
+   CLAUDE.md / Theme.CommonStyles.xaml). tokens.css only ships the Phone column,
+   so the Tablet column is redeclared here as the SAME custom property names,
+   re-scoped under `.tablet`. Because app.css already reads every size through
+   var(--font-size-*) etc., redeclaring the variable is enough to re-skin every
+   component (.row, .section, .fig, .seg, .boxes, ...) with no component-level
+   edits at all — that's the point of the token indirection.
+
+   LAYOUT: a 1024x768 landscape iPad canvas is wide and SHORT relative to a
+   phone. Four decisions follow from that, applied consistently across all five
+   pages:
+
+   1. SIDE RAIL, NOT BOTTOM BAR. A bottom tab bar costs ~70px of vertical space
+      that is scarce at 768px tall, to show four icons that have 1024px of
+      horizontal room to live in instead. A left rail trades width (abundant)
+      for height (scarce) and is the shape iPad apps settled on for exactly
+      this reason. Reused identically on all five pages so the tablet set has
+      one chrome, not a per-page decision.
+   2. TWO-COLUMN CONTENT. Stretching a 390px-wide phone column to 1024px would
+      give body text ~140-character lines — unreadable — while leaving the
+      page looking like a phone screenshot blown up. Every page below pairs a
+      narrower "answer" column with a wider "detail" column instead.
+   3. MASTER-DETAIL REPLACES DRILL-DOWN. What If's nine-row index and Settings'
+      row-per-section both pushed to a full-screen page on phone because a
+      phone has nowhere else to put the destination. A tablet does: list on the
+      left, detail on the right, selection shown by the `.on` state. This
+      removes a navigation hop entirely rather than just resizing it.
+   4. DENSE TABLES GET TO BE DENSE. Schedule's phone version groups 30 years
+      into 3 decades to avoid 30 screens of scrolling through a cramped grid.
+      At 1024px there is room for 6 real columns and no grouping is needed —
+      so tablet-schedule.html drops the <details> grouping and lists all 30
+      years flat, restoring the opening-balance column phone had no room for.
+   ============================================================================ */
+
+/* ── Frame ───────────────────────────────────────────────────────────────── */
+.tablet {
+  position: relative;
+  width: 1024px;
+  height: 768px;
+  margin: 24px auto;
+  display: flex;
+  flex-direction: row;
+  overflow: hidden;
+  border-radius: 20px;
+  background: var(--default-background-color);
+  color: var(--default-foreground-color);
+
+  /* ── Tablet column of the OnIdiom type scale (Theme.CommonStyles.xaml) ──── */
+  --font-size-xs: 15px;        /* FontSizeXS      10 -> 15 */
+  --font-size-small: 16px;     /* FontSizeSmall   11 -> 16 */
+  --font-size-body: 18px;      /* FontSizeBody    12 -> 18 */
+  --font-size-medium: 20px;    /* FontSizeMedium  14 -> 20 */
+  --font-size-large: 22px;     /* FontSizeLarge   15 -> 22 */
+  --font-size-xl: 26px;        /* FontSizeXL      18 -> 26 */
+  --font-size-heading: 28px;   /* FontSizeHeading 20 -> 28 */
+
+  --hero-amount-size: 32px;    /* SpanThreeBoxAmountStyle, tablet value   18 -> 32 */
+
+  /* ── Tablet spacing ──────────────────────────────────────────────────────
+     MAUI Thickness order is Left,Top,Right,Bottom; CSS shorthand is
+     top/right/bottom/left — so MarginSection "20,10,20,10" (symmetric L/R and
+     T/B) becomes `10px 20px` here. */
+  --margin-section: 10px 20px; /* MarginSection  5,0,5,0 -> 20,10,20,10 */
+  --margin-item: 10px;         /* MarginItem     5 -> 10 */
+}
+
+/* ── Side rail (replaces .tabbar for the whole tablet set) ──────────────────
+   Decision #1 above. Same four destinations, same order, same icons/labels as
+   the phone .tabbar — only the orientation and position change. */
+.tablet .railnav {
+  flex: 0 0 112px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 26px 10px 18px;
+  background: var(--app-shell-tab-bar-background-color);
+  border-right: 1px solid color-mix(in srgb, var(--default-foreground-color) 10%, transparent);
+}
+.tablet .railnav a {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 14px 2px;
+  border-radius: 14px;
+  text-decoration: none;
+  color: var(--app-shell-tab-bar-unselected-color);
+  font-size: var(--font-size-small);
+}
+.tablet .railnav a.on {
+  background: color-mix(in srgb, var(--default-foreground-color) 12%, transparent);
+  color: var(--app-shell-tab-bar-foreground-color);
+  font-weight: 700;
+}
+.tablet .railnav .ico { display: block; font-size: 28px; }
+.tablet .railnav .spacer { flex: 1; }
+
+/* ── Main column (page head + scrollable body) ──────────────────────────── */
+.tablet .main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.tablet .page-head { padding: 24px 28px 8px; }
+.tablet .scroll {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0 28px 28px;
+}
+.tablet .scroll::-webkit-scrollbar { width: 0; }
+
+/* Sub-tab strip (Budget keeps one — same component, just not edge-to-edge) */
+.tablet .subtabs { border-radius: 12px; margin: 0 28px 0; overflow: hidden; }
+.tablet .subtabs a { padding: 16px 4px 14px; }
+
+/* ── Two-column content utility, used by loan/budget/whatif/schedule ───────
+   Decision #2/#3 above: a fixed narrower column plus a flexible wider one. */
+.tablet .cols2 { display: flex; gap: 24px; align-items: flex-start; }
+.tablet .cols2 > .colA { flex: 0 0 380px; min-width: 0; }
+.tablet .cols2 > .colB { flex: 1; min-width: 0; }
+
+/* Side-by-side terms (loan page): rate / term / frequency as a 2-up grid
+   instead of three stacked full-width cards. */
+.tablet .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+/* ── Master-detail shell (What If scenarios, Settings sections) ────────────
+   Decision #3. A list column plus a detail pane; the list's `.on` row marks
+   the selection shown in the pane — static HTML can't react to a click, so
+   each page below ships with its first/representative item pre-selected to
+   demonstrate the pattern, exactly as the phone set's `.on` tab marks today's
+   page in the tab bar. */
+.tablet .shell2 { display: flex; gap: 20px; align-items: flex-start; }
+.tablet .shell2 .list { flex: 0 0 330px; min-width: 0; }
+.tablet .shell2 .detail { flex: 1; min-width: 0; }
+.tablet .shell2 .list .row.sel {
+  background: color-mix(in srgb, var(--default-foreground-color) 8%, transparent);
+}
+
+/* ── Chart scale-up ──────────────────────────────────────────────────────
+   The donut/bar charts in app.css are sized in raw px (no token backs them),
+   so they're bumped here directly, in the same ~1.3-1.4x ratio as
+   LoanAppChartBorderStyle's own phone->tablet height change (250 -> 350). */
+.tablet .chart { padding: 18px; }
+.tablet .donut { width: 230px; height: 230px; }
+.tablet .donut > div { width: 150px; height: 150px; }
+.tablet .donut .v { font-size: var(--font-size-xl); }
+.tablet .bars { height: 170px; }
+.tablet .hero .big { font-size: 42px; }
+
+/* Segment control: SegmentDefaultStyle segment height 40 -> 54. */
+.tablet .seg button { padding: 17px 0; font-size: var(--font-size-body); }
+
+/* Hero/box grid readability: with far more width available, let the three
+   summary boxes and the two-up stat rows breathe instead of flexing to a
+   cramped third of 390px each. */
+.tablet .boxes { gap: 14px; }

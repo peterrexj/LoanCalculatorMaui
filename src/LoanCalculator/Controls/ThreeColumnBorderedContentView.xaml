@@ -2,7 +2,8 @@
 <ContentView
     x:Class="LoanCalculatorMaui.Controls.ThreeColumnBorderedContentView"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    x:Name="ThisControl">
     <ContentView.Content>
         <FlexLayout
             x:Name="FlexLayoutTopThreeBox"
@@ -10,12 +11,17 @@
             AlignItems="Stretch"
             Direction="Column"
             JustifyContent="Center">
+            <!--
+                Column 3 collapses to zero when Box3Visible is false, so the two remaining boxes
+                take half the width each rather than two thirds with a gap. See the property for
+                why a two-box mode exists.
+            -->
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="10" />
                     <ColumnDefinition Width="33*" />
                     <ColumnDefinition Width="33*" />
-                    <ColumnDefinition Width="33*" />
+                    <ColumnDefinition x:Name="Box3Column" Width="33*" />
                     <ColumnDefinition Width="10" />
                 </Grid.ColumnDefinitions>
 
@@ -88,7 +94,20 @@
                     </ContentView>
                 </Border>
 
-                <Border Grid.Column="3" Style="{DynamicResource BorderTopHighlightBox}">
+                <!--
+                    Box 3 is the only one that can be a link. The gesture is attached here rather
+                    than to the whole control so boxes 1 and 2 stay inert — a tap anywhere on a
+                    three-box row would otherwise navigate. Box3Command is null unless a host sets
+                    it, and a TapGestureRecognizer with a null Command does nothing, so every
+                    other use of this control is unaffected.
+                -->
+                <Border
+                    x:Name="Box3Border"
+                    Grid.Column="3"
+                    Style="{DynamicResource BorderTopHighlightBox}">
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding Box3Command, Source={x:Reference ThisControl}}" />
+                    </Border.GestureRecognizers>
                     <ContentView>
                         <Grid HorizontalOptions="Center" VerticalOptions="Center">
                             <Grid.RowDefinitions>

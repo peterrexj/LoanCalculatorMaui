@@ -54,10 +54,9 @@
                                           TV='20,12,20,14',
                                           Watch='20,5,5,5',
                                           Default='12,10,12,12'}"
-                        FontAttributes="Italic"
                         FontAutoScalingEnabled="True"
                         FontFamily="{DynamicResource DefaultFontFamily}"
-                        FontSize="{OnIdiom Phone=12,
+                        FontSize="{OnIdiom Phone=11,
                                            Tablet=22,
                                            Desktop=20,
                                            TV=20,

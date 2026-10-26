@@ -27,13 +27,32 @@ public sealed class BudgetPage(AppDriver app) : PageBase(app)
 
     // ── In-page tabs ─────────────────────────────────────────────────────────────
 
-    public void OpenIncomeTab() => OpenTab("BudgetTabIncome", IncomeAddFab);
+    /// <summary>
+    /// Ensures the Budget destination first. Since Projection moved to What If, a caller can
+    /// easily be standing on another shell tab by the time it asks for a Budget sub-tab — and
+    /// tapping a sub-tab header that belongs to a page you are not on just times out.
+    /// </summary>
+    private void EnsureOnBudget() => new ShellTabs(App).GoTo(AppTab.Budget);
 
-    public void OpenExpensesTab() => OpenTab("BudgetTabExpenses", ExpenseAddFab);
+    public void OpenIncomeTab()
+    {
+        EnsureOnBudget();
+        OpenTab("BudgetTabIncome", IncomeAddFab);
+    }
+
+    public void OpenExpensesTab()
+    {
+        EnsureOnBudget();
+        OpenTab("BudgetTabExpenses", ExpenseAddFab);
+    }
 
     // Anchored on the caption, not a total: with no budget data the Summary tab shows an
     // empty-state panel instead of the totals, so a total is not proof the tab rendered.
-    public void OpenSummaryTab() => OpenTab("BudgetTabSummary", "BudgetSummaryCaption");
+    public void OpenSummaryTab()
+    {
+        EnsureOnBudget();
+        OpenTab("BudgetTabSummary", "BudgetSummaryCaption");
+    }
 
     /// <summary>True when the Summary tab is showing totals rather than its empty state.</summary>
     public bool HasSummaryTotals()
@@ -66,7 +85,17 @@ public sealed class BudgetPage(AppDriver app) : PageBase(app)
         App.ScrollTo(IncomeMonthlyTotal);
     }
 
-    public void OpenProjectionTab() => OpenTab("BudgetTabProjection", "BudgetProjectionYearsSlider");
+    // OpenProjectionTab moved to WhatIfPage — Projection is a What If sub-tab now.
+
+    // Moved from LoanPage.OpenRunningCostTab — Running Cost became this "Asset costs" tab. The
+    // filter box is the only unconditional element in this tab's content — the summary figures
+    // are Spans (not addressable) and the list and its empty-state Border swap out depending on
+    // whether any expenses are recorded.
+    public void OpenAssetCostsTab()
+    {
+        EnsureOnBudget();
+        OpenTab("BudgetTabAssetCosts", "LoanRunningCostFilter");
+    }
 
     // ── Add income / expense ─────────────────────────────────────────────────────
 
@@ -98,31 +127,51 @@ public sealed class BudgetPage(AppDriver app) : PageBase(app)
 
     // ── Editing and deleting rows ────────────────────────────────────────────────
     //
-    // Row action buttons are keyed off the row's Name — "IncomeDelete_<name>" — so a test that
-    // chose the name can address exactly its own row. Use names without spaces.
+    // Rows are keyed off their Name — "IncomeRow_<name>" — so a test that chose the name can
+    // address exactly its own row. Use names without spaces.
+    //
+    // The rows used to carry an edit and a delete button each ("IncomeEdit_<name>" /
+    // "IncomeDelete_<name>"). They are now a single tap target that opens the entry page, per the
+    // prototype, and **delete moved onto that page**. So deleting is two steps here rather than
+    // one, and both helpers below go through the same row tap.
 
     public bool IncomeRowExists(string name)
     {
         OpenIncomeTab();
-        return App.Exists($"IncomeDelete_{name}", TimeSpan.FromSeconds(3));
+        return App.Exists($"IncomeRow_{name}", TimeSpan.FromSeconds(3));
     }
 
     public void DeleteIncomeRow(string name)
     {
         OpenIncomeTab();
-        var deleteButton = $"IncomeDelete_{name}";
-        App.ScrollTo(deleteButton);
-        App.Tap(deleteButton);
-        App.WaitUntilGone(deleteButton, TimeSpan.FromSeconds(15));
+        var row = $"IncomeRow_{name}";
+        App.ScrollTo(row);
+        App.Tap(row);
+
+        // Delete lives at the end of the entry form, so it needs scrolling to — unlike Save,
+        // which is in the header precisely because the keyboard covers the bottom of the page.
+        App.WaitUntilVisible("BudgetIncomeAmountEntry", TimeSpan.FromSeconds(15));
+        App.ScrollTo("BudgetIncomeDeleteButton");
+        App.Tap("BudgetIncomeDeleteButton");
+
+        // Deleting raises a native "Do you wish to delete ...?" confirmation, the same one
+        // Settings' delete buttons raise. It is modal, so skipping it does not merely fail this
+        // step — it leaves an alert covering every later lookup, which surfaces as unrelated
+        // "could not find ..." failures further along the test.
+        App.TapText("Yes", TimeSpan.FromSeconds(10));
+        App.WaitUntilTextGoneIfPresent("Yes", TimeSpan.FromSeconds(10));
+
+        App.WaitUntilGone("BudgetIncomeAmountEntry", TimeSpan.FromSeconds(15));
+        App.WaitUntilGone(row, TimeSpan.FromSeconds(15));
     }
 
     /// <summary>Opens a row's edit form, replaces the amount, and saves.</summary>
     public void EditIncomeRowAmount(string name, string newAmount)
     {
         OpenIncomeTab();
-        var editButton = $"IncomeEdit_{name}";
-        App.ScrollTo(editButton);
-        App.Tap(editButton);
+        var row = $"IncomeRow_{name}";
+        App.ScrollTo(row);
+        App.Tap(row);
 
         App.WaitUntilVisible("BudgetIncomeAmountEntry", TimeSpan.FromSeconds(15));
         App.EnterText("BudgetIncomeAmountEntry", newAmount);

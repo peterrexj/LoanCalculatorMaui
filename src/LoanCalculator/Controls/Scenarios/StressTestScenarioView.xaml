@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView
+    x:Class="LoanCalculatorMaui.Controls.Scenarios.StressTestScenarioView"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:core="http://schemas.syncfusion.com/maui"
+    xmlns:chart="clr-namespace:Syncfusion.Maui.Charts;assembly=Syncfusion.Maui.Charts"
+    xmlns:customControls="clr-namespace:LoanCalculatorMaui.Controls"
+    xmlns:primaryModels="clr-namespace:LoanCalculator.Core.Models.ViewModels.PrimaryModels;assembly=LoanCalculator.Core"
+    x:DataType="primaryModels:WhatIfViewModel">
+
+    <!--
+        Lifted verbatim from WhatIfView.xaml, where this was one of nine cards stacked in a
+        single ~9-screen scroll. It is now reached from the scenario index and hosted by
+        ScenarioPage, so it gets a whole screen and is addressable.
+
+        BindingContext is inherited from the host page, which sets the WhatIfViewModel
+        singleton — so every binding in here resolves exactly as it did before the move.
+    -->
+    <!--
+        The card root carries an AutomationId because this scenario shows EXACTLY ONE of
+        WhatIfStressUnavailablePanel / WhatIfStressResultsPanel depending on whether income and
+        expenses exist — so neither of those can serve as the "page has arrived" anchor. A test
+        probing for the absent one would otherwise wait out the full timeout before concluding
+        what it already knows.
+    -->
+    <Border
+        AutomationId="WhatIfStressTestCard"
+        IsVisible="{Binding HasLoanData}"
+        Margin="0,0,0,14"
+        Padding="0"
+        BackgroundColor="{DynamicResource LoanAppPopupSurface}"
+        StrokeShape="RoundRectangle 12"
+        StrokeThickness="0">
+        <Grid ColumnDefinitions="4,*">
+            <BoxView Grid.Column="0" BackgroundColor="#CC3333" CornerRadius="12,0,12,0" />
+            <VerticalStackLayout Grid.Column="1" Padding="14,14,14,16" Spacing="10">
+
+                <Label FontAttributes="Bold" FontSize="{StaticResource FontSizeMedium}" Text="Affordability Stress Test" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                <Label Margin="0,-6,0,0" FontSize="{StaticResource FontSizeSmall}" Opacity="0.6" Text="At what rate does this loan become unaffordable?" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+
+                <!--  No income/expense data yet  -->
+                <Border
+                    AutomationId="WhatIfStressUnavailablePanel"
+                    IsVisible="{Binding StressTestUnavailable}"
+                    Padding="10,8"
+                    BackgroundColor="{DynamicResource LoanAppDefaultBackgroundColor}"
+                    StrokeShape="RoundRectangle 8"
+                    StrokeThickness="0">
+                    <Label
+                        FontSize="{StaticResource FontSizeSmall}"
+                        Opacity="0.7"
+                        Text="Record your income &amp; expenses to unlock this insight"
+                        TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                </Border>
+
+                <!--  Stress test results  -->
+                <VerticalStackLayout AutomationId="WhatIfStressResultsPanel" IsVisible="{Binding StressTestAvailable}" Spacing="10">
+                    <BoxView Style="{DynamicResource LoanAppSeparatorStyle}" />
+
+                    <Grid ColumnSpacing="12">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <VerticalStackLayout Grid.Column="0" Spacing="2">
+                            <Label FontSize="{StaticResource FontSizeSmall}" Opacity="0.6" Text="BREAKS EVEN AT" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                            <Label FontAttributes="Bold" FontSize="{StaticResource FontSizeXL}" Text="{Binding StressTestBreakEvenRate}" TextColor="#CC3333" />
+                        </VerticalStackLayout>
+                        <VerticalStackLayout Grid.Column="1" Spacing="2">
+                            <Label FontSize="{StaticResource FontSizeSmall}" Opacity="0.6" Text="YOUR BUFFER" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                            <Label FontAttributes="Bold" FontSize="{StaticResource FontSizeXL}" Text="{Binding StressTestRateBuffer}" TextColor="{DynamicResource LoanAppChartColor1}">
+                                <Label.Triggers>
+                                    <DataTrigger Binding="{Binding StressTestRisk}" TargetType="Label" Value="0">
+                                        <Setter Property="TextColor" Value="{DynamicResource LoanAppChartColor2}" />
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding StressTestRisk}" TargetType="Label" Value="1">
+                                        <Setter Property="TextColor" Value="#CC3333" />
+                                    </DataTrigger>
+                                </Label.Triggers>
+                            </Label>
+                        </VerticalStackLayout>
+                    </Grid>
+
+                    <VerticalStackLayout Spacing="2">
+                        <Label FontSize="{StaticResource FontSizeSmall}" Opacity="0.6" Text="CURRENT MONTHLY SURPLUS" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                        <Label FontAttributes="Bold" FontSize="{StaticResource FontSizeMedium}" Text="{Binding StressTestCurrentSurplus}" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                    </VerticalStackLayout>
+
+                    <!--  Chart: Rate Capacity  -->
+                    <Border
+                        Margin="0,2,0,0"
+                        Padding="8,8,8,4"
+                        BackgroundColor="{DynamicResource LoanAppChartCardBackground}"
+                        StrokeShape="RoundRectangle 8"
+                        StrokeThickness="0">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="160"/>
+                            </Grid.RowDefinitions>
+                            <Label Grid.Row="0" Text="Rate Capacity" FontSize="{StaticResource FontSizeXS}" TextColor="{DynamicResource LoanAppChartAxisTextColor}" Opacity="0.7" Margin="0,0,0,2"/>
+                            <chart:SfCartesianChart Grid.Row="1">
+                                <chart:SfCartesianChart.XAxes>
+                                    <chart:CategoryAxis ShowMajorGridLines="False" LabelStyle="{chart:ChartAxisLabelStyle TextColor={DynamicResource LoanAppChartAxisTextColor}, FontSize=10}"/>
+                                </chart:SfCartesianChart.XAxes>
+                                <chart:SfCartesianChart.YAxes>
+                                    <chart:NumericalAxis RangePadding="None" LabelCreated="OnWhatIfRateAxisLabelCreated" LabelStyle="{chart:ChartAxisLabelStyle TextColor={DynamicResource LoanAppChartAxisTextColor}, FontSize=10}"/>
+                                </chart:SfCartesianChart.YAxes>
+                                <chart:ColumnSeries ItemsSource="{Binding StressTestChartData}" XBindingPath="Name" YBindingPath="Value" Fill="#CC3333"/>
+                            </chart:SfCartesianChart>
+                        </Grid>
+                    </Border>
+
+
+                    <!--  Risk banner  -->
+                    <Border Padding="10,8" StrokeShape="RoundRectangle 8" StrokeThickness="0" BackgroundColor="{DynamicResource LoanAppChartColor1}">
+                        <Border.Triggers>
+                            <DataTrigger Binding="{Binding StressTestRisk}" TargetType="Border" Value="0">
+                                <Setter Property="BackgroundColor" Value="{DynamicResource LoanAppChartColor2}" />
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding StressTestRisk}" TargetType="Border" Value="1">
+                                <Setter Property="BackgroundColor" Value="#CC3333" />
+                            </DataTrigger>
+                        </Border.Triggers>
+                        <Label FontAttributes="Bold" FontSize="{StaticResource FontSizeSmall}" TextColor="{DynamicResource LoanAppChartDataMarkerTextColor1}">
+                            <Label.Triggers>
+                                <DataTrigger Binding="{Binding StressTestRisk}" TargetType="Label" Value="-1">
+                                    <Setter Property="Text" Value="Comfortable (estimate) — the figures you entered sit well within budget" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding StressTestRisk}" TargetType="Label" Value="0">
+                                    <Setter Property="Text" Value="Moderate risk (estimate) — a small rate rise could stretch the budget you entered" />
+                                    <Setter Property="TextColor" Value="{DynamicResource LoanAppChartDataMarkerTextColor2}" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding StressTestRisk}" TargetType="Label" Value="1">
+                                    <Setter Property="Text" Value="At risk (estimate) — rates are close to the limit implied by your figures; consider a financial adviser" />
+                                    <Setter Property="TextColor" Value="#FFFFFF" />
+                                </DataTrigger>
+                            </Label.Triggers>
+                        </Label>
+                    </Border>
+                </VerticalStackLayout>
+
+            </VerticalStackLayout>
+        </Grid>
+    </Border>
+
+</ContentView>

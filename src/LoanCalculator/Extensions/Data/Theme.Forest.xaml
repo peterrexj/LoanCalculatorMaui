@@ -17,6 +17,18 @@
     <Color x:Key="LoanAppInputTextFgColor">#bed0c9</Color>
     <Color x:Key="LoanAppInputTextWhenFocusedColor">#dee7e4</Color>
     <Color x:Key="LoanAppInputTextWhenUnFocusedColor">#b3c8c0</Color>
+    <!--
+        Negative figures. Two keys because negatives appear on two different grounds: the ordinary
+        control/page cards, and the pale BorderTop* highlight cards the What If hero and its three
+        boxes use (which are LIGHT even in the Dark theme). One colour cannot serve both — a light
+        pastel red vanishes on pale silver, and a deep red disappears into a dark card.
+
+        Purpose-named rather than reusing LoanAppInputErrorTextFgColor / LoanAppBorderTopDangerFgColor,
+        which happen to hold similar values: a negative figure is not an input error, and the next
+        person changing one should not silently change the other.
+    -->
+    <Color x:Key="LoanAppNegativeValueColor">#E79A9A</Color>
+    <Color x:Key="LoanAppNegativeValueOnHighlightColor">#7A2020</Color>
     <Color x:Key="LoanAppInputErrorTextFgColor">#E57373</Color>
 
     <Color x:Key="LoanAppSegBgColor">Transparent</Color>

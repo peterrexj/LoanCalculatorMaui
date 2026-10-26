@@ -413,16 +413,24 @@ Every What If scenario is driven off the loan recorded on the Loan tab, so **eac
 that first** — which also exercises the cross-tab refresh path, where stale summaries show up.
 All inputs on this page are `−`/`+` steppers; there are no text fields.
 
-### TC-4.1 `ScenarioCardsAppearOnceALoanExists`
+### TC-4.1 `ScenarioIndexAppearsOnceALoanExists`
 
-- **Objective:** the page's gating works — cards are hidden with no loan and appear once one
-  exists. This is the cross-tab data handover, the most likely place for a stale empty state.
-- **Steps:** Loan tab → enter asset 650,000 / deposit 130,000 → Apply → What If tab.
-- **Expected:** the "no loan data" placeholder is **gone** and `WhatIfRateDeltaValue` is visible.
-- **Run:** `--filter "Name=ScenarioCardsAppearOnceALoanExists"`
+- **Objective:** the page's gating works — the scenario index is hidden with no loan and appears
+  once one exists. This is the cross-tab data handover, the most likely place for a stale empty
+  state.
+- **Steps:** Loan tab → enter asset 650,000 / deposit 130,000 → Apply → What If tab → **Scenarios
+  sub-tab**.
+- **Expected:** the "no loan data" placeholder is **gone** and the Rate change row shows its
+  headline delta (`WhatIfScenarioRateChangeDelta` is non-empty).
+- **Run:** `--filter "Name=ScenarioIndexAppearsOnceALoanExists"`
 - **On failure:** if the placeholder is still showing, the What If page did not pick up the new
   loan — check the dirty-flag refresh and `HasLoanData`. This failing while the Loan tests pass
   means the calculation is fine and the *handover* is broken.
+- **Must assert from the Scenarios sub-tab.** Both the placeholder (`HasNoLoanData`) and the index
+  (`HasLoanData`) live there, and arriving at What If lands on **Answer**. An earlier revision
+  asserted straight after `GoTo(AppTab.WhatIf)` and so passed vacuously: neither element exists on
+  the Answer tab, so the placeholder read as "hidden" with or without a loan. If you add an
+  assertion here, navigate to the sub-tab that owns the element first.
 
 ### TC-4.2 `RaisingTheRateDeltaRaisesTheProjectedRepayment`
 

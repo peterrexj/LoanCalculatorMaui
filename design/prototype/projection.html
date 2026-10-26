@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<meta charset="utf-8">
+<title>Projection — prototype</title>
+<link rel="stylesheet" href="tokens.css">
+<link rel="stylesheet" href="app.css">
+
+<!--
+  PROJECTION — replaces Budget ▸ Projection, and is now the third of What
+  If's four sub-tab views (Answer · Scenarios · Projection · Insights).
+
+  WHY THIS CHANGED: this page used to be a standalone screen reached from a
+  "Reference" row buried below the nine-scenario scroll on whatif.html — the
+  exact navigation-depth problem the redesign set out to fix. It is now a
+  sub-tab, one tap from the What If tab bar entry, same depth as every other
+  view here.
+
+  Converted from a modal (`.modal-head` + back arrow) to a `.page-head` +
+  sub-tab strip, matching budget.html's established shape. The `.tabbar`
+  below still shows What If active, since this is still that section.
+
+  Carried over as-is, no figures changed: income/expense growth-rate
+  steppers, the two "include" switches, and the years-to-project control.
+  Switches are drawn with the existing .seg component (two-state Off/On)
+  rather than inventing a new toggle shape, since app.css has no switch
+  component and .seg already reads as a binary choice elsewhere (deal.html's
+  repayment frequency). The years slider reuses deal.html's bare
+  <input type="range"> for the same reason.
+
+  Chart stays dark-on-dark per the project-wide chart fix, using .chart/.bars
+  exactly as whatif.html does, swapped to a cumulative-looking profile (income
+  area growing, expense area flatter) rather than the loan's principal/interest
+  crossover shape.
+-->
+
+<div class="phone">
+
+  <div class="page-head">
+    <h1>What If</h1>
+    <p>Can you afford it, and what breaks it?</p>
+  </div>
+
+  <nav class="subtabs">
+    <a href="whatif.html">Answer</a>
+    <a href="whatif-scenarios.html">Scenarios</a>
+    <a class="on" href="projection.html">Projection</a>
+    <a href="insights.html">Insights</a>
+  </nav>
+
+  <div class="scroll">
+
+    <p class="micro" style="margin-top:0">Where your surplus goes over time, assuming income and
+      expenses change at the rates below.</p>
+
+    <div class="boxes">
+      <div><div class="amt">$720,000</div><div class="lbl">projected income</div></div>
+      <div><div class="amt">$180,000</div><div class="lbl">projected expense</div></div>
+      <div><div class="amt">10</div><div class="lbl">years</div></div>
+    </div>
+
+    <div class="section">Income projection</div>
+    <div class="card">
+      <div class="stepper">
+        <span class="t">Annual growth</span>
+        <button class="pm">&minus;</button>
+        <strong style="font-size:var(--font-size-xl);min-width:56px;text-align:center">0%</strong>
+        <button class="pm">+</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="stepper">
+        <span><span class="t">Include expenses</span><br><span class="s">Deduct living expenses from projection</span></span>
+        <div class="seg" style="flex:0 0 auto;width:120px"><button>Off</button><button class="on">On</button></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="stepper">
+        <span><span class="t">Include asset expenses</span><br><span class="s">Add property loan costs to projection</span></span>
+        <div class="seg" style="flex:0 0 auto;width:120px"><button class="on">Off</button><button>On</button></div>
+      </div>
+    </div>
+
+    <div class="section">Expense projection</div>
+    <div class="card">
+      <div class="stepper">
+        <span class="t">Annual growth</span>
+        <button class="pm">&minus;</button>
+        <strong style="font-size:var(--font-size-xl);min-width:56px;text-align:center">0%</strong>
+        <button class="pm">+</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="stepper">
+        <span><span class="t">Include asset expenses</span><br><span class="s">Add property loan costs to projection</span></span>
+        <div class="seg" style="flex:0 0 auto;width:120px"><button class="on">Off</button><button>On</button></div>
+      </div>
+    </div>
+
+    <div class="section">Years to project</div>
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:baseline">
+        <span class="s" style="opacity:.55">1 – 25 years</span>
+        <strong style="font-size:var(--font-size-xl)">10</strong>
+      </div>
+      <input type="range" min="1" max="25" value="10" style="width:100%;accent-color:var(--slider-knob-fill-color)">
+      <div style="display:flex;justify-content:space-between;font-size:var(--font-size-small);opacity:.5">
+        <span>1</span><span>9</span><span>17</span><span>25</span>
+      </div>
+    </div>
+
+    <div class="section">Income &amp; expense projection</div>
+    <div class="chart">
+      <div class="bars">
+        <span><i class="i" style="height:14px"></i><i class="p" style="height:30px"></i></span>
+        <span><i class="i" style="height:15px"></i><i class="p" style="height:34px"></i></span>
+        <span><i class="i" style="height:15px"></i><i class="p" style="height:39px"></i></span>
+        <span><i class="i" style="height:16px"></i><i class="p" style="height:43px"></i></span>
+        <span><i class="i" style="height:16px"></i><i class="p" style="height:48px"></i></span>
+        <span><i class="i" style="height:17px"></i><i class="p" style="height:53px"></i></span>
+        <span><i class="i" style="height:17px"></i><i class="p" style="height:58px"></i></span>
+        <span><i class="i" style="height:18px"></i><i class="p" style="height:63px"></i></span>
+        <span><i class="i" style="height:18px"></i><i class="p" style="height:68px"></i></span>
+        <span><i class="i" style="height:19px"></i><i class="p" style="height:74px"></i></span>
+      </div>
+      <div class="legend">
+        <span><i style="background:var(--chart-color-1)"></i>Income</span>
+        <span><i style="background:var(--chart-color-2)"></i>Expense</span>
+      </div>
+    </div>
+
+    <p class="micro">Estimates only — not financial advice. Figures depend on the information you
+      enter. Consult a qualified financial adviser before deciding.</p>
+
+  </div>
+
+  <nav class="tabbar">
+    <a href="loan.html"><span class="ico">&#127968;</span>Loan</a>
+    <a href="budget.html"><span class="ico">&#128176;</span>Budget</a>
+    <a class="on" href="whatif.html"><span class="ico">&#10003;</span>What If</a>
+    <a href="settings.html"><span class="ico">&#9881;</span>Settings</a>
+  </nav>
+
+</div>
+</html>

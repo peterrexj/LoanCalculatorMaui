@@ -1,0 +1,325 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="LoanCalculatorMaui.View.AmortisationPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:chart="clr-namespace:Syncfusion.Maui.Charts;assembly=Syncfusion.Maui.Charts"
+    xmlns:expander="clr-namespace:Syncfusion.Maui.Expander;assembly=Syncfusion.Maui.Expander"
+    xmlns:models="clr-namespace:LoanCalculator.Core.Models;assembly=LoanCalculator.Core"
+    xmlns:primaryModels="clr-namespace:LoanCalculator.Core.Models.ViewModels.PrimaryModels;assembly=LoanCalculator.Core"
+    x:Name="thisPage"
+    Title="Repayment schedule"
+    x:DataType="primaryModels:LoanViewModel">
+
+    <!--
+        The repayment schedule, lifted verbatim from LoanView's Amortisation tab.
+
+        It stopped being a tab because it is a reference table, not something you edit: you read
+        it once the loan is set. It stays on the Loan side rather than moving to What If, because
+        it is derived purely from the loan.
+
+        Everything that the tab strip used to do for this view on selection now happens in
+        OnAppearing/OnDisappearing — see the code-behind, where getting it wrong is silent.
+    -->
+    <ContentPage.Content>
+        <Grid BackgroundColor="{DynamicResource LoanAppDefaultBackgroundColor}" RowDefinitions="Auto,*">
+
+            <Grid Grid.Row="0" Padding="8,14,8,4" ColumnDefinitions="Auto,*">
+                <Button
+                    AutomationId="AmortisationBackButton"
+                    Grid.Column="0"
+                    BackgroundColor="Transparent"
+                    Clicked="OnBack"
+                    FontSize="{StaticResource FontSizeXL}"
+                    HeightRequest="44"
+                    Text="&#x2039;"
+                    TextColor="{DynamicResource LoanAppDefaultForegroundColor}"
+                    WidthRequest="44" />
+                <Label
+                    Grid.Column="1"
+                    AutomationId="AmortisationTitle"
+                    Style="{DynamicResource PopupTitleLabelStyle}"
+                    Text="Repayment schedule" />
+            </Grid>
+
+            <Grid Grid.Row="1">
+            <ScrollView>
+                <Grid>
+
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+
+                    <StackLayout Padding="12,0" Grid.Row="0">
+
+                        <FlexLayout
+                            Margin="0"
+                            AlignItems="Stretch"
+                            Direction="Column"
+                            JustifyContent="Center">
+                            <Border Style="{DynamicResource LoanAppChartBorderStyle}">
+                                <Border.Content>
+                                    <Grid Padding="8,8,8,4">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="*" />
+                                        </Grid.RowDefinitions>
+                                        <!--  Axis titles row  -->
+                                        <Grid Grid.Row="0" Margin="0,0,0,4">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="*" />
+                                            </Grid.ColumnDefinitions>
+                                            <Label
+                                                Grid.Column="0"
+                                                FontAttributes="Bold"
+                                                FontFamily="{DynamicResource DefaultFontFamily}"
+                                                FontSize="{StaticResource FontSizeXS}"
+                                                HorizontalOptions="Start"
+                                                HorizontalTextAlignment="Start"
+                                                Opacity="0.7"
+                                                Text="Annual Repayment"
+                                                TextColor="{DynamicResource LoanAppChartAxisTextColor}" />
+                                            <Label
+                                                Grid.Column="1"
+                                                FontAttributes="Bold"
+                                                FontFamily="{DynamicResource DefaultFontFamily}"
+                                                FontSize="{StaticResource FontSizeXS}"
+                                                HorizontalOptions="End"
+                                                HorizontalTextAlignment="End"
+                                                Opacity="0.7"
+                                                Text="Remaining Balance"
+                                                TextColor="{DynamicResource LoanAppChartAxisTextColor}" />
+                                        </Grid>
+                                        <chart:SfCartesianChart
+                                            Grid.Row="1"
+                                            BackgroundColor="Transparent"
+                                            HorizontalOptions="Fill"
+                                            PaletteBrushes="{Binding CustomChartColors}"
+                                            VerticalOptions="Fill">
+                                            <chart:SfCartesianChart.XAxes>
+                                                <chart:CategoryAxis
+                                                    Name="xAxis"
+                                                    EdgeLabelsDrawingMode="Fit"
+                                                    LabelPlacement="BetweenTicks"
+                                                    ShowMajorGridLines="False">
+                                                    <chart:CategoryAxis.LabelStyle>
+                                                        <chart:ChartAxisLabelStyle
+                                                            FontAttributes="Bold"
+                                                            FontFamily="{DynamicResource DefaultFontFamily}"
+                                                            FontSize="{StaticResource FontSizeBody}"
+                                                            TextColor="{DynamicResource LoanAppChartAxisTextColor}" />
+                                                    </chart:CategoryAxis.LabelStyle>
+                                                    <chart:CategoryAxis.MajorTickStyle>
+                                                        <chart:ChartAxisTickStyle TickSize="8" />
+                                                    </chart:CategoryAxis.MajorTickStyle>
+                                                </chart:CategoryAxis>
+                                            </chart:SfCartesianChart.XAxes>
+                                            <chart:SfCartesianChart.YAxes>
+                                                <!--  Left axis: per-year principal + interest amounts  -->
+                                                <chart:NumericalAxis Name="leftAxis" LabelCreated="OnAmortizationAxisLabelCreated" RangePadding="None">
+                                                    <chart:NumericalAxis.LabelStyle>
+                                                        <chart:ChartAxisLabelStyle
+                                                            FontAttributes="Bold"
+                                                            FontFamily="{DynamicResource DefaultFontFamily}"
+                                                            FontSize="{StaticResource FontSizeBody}"
+                                                            TextColor="{DynamicResource LoanAppChartAxisTextColor}" />
+                                                    </chart:NumericalAxis.LabelStyle>
+                                                    <chart:NumericalAxis.AxisLineStyle>
+                                                        <chart:ChartLineStyle StrokeWidth="0" />
+                                                    </chart:NumericalAxis.AxisLineStyle>
+                                                    <chart:NumericalAxis.MajorTickStyle>
+                                                        <chart:ChartAxisTickStyle TickSize="0" />
+                                                    </chart:NumericalAxis.MajorTickStyle>
+                                                </chart:NumericalAxis>
+                                                <!--  Right axis: remaining balance line — CrossesAt max of xAxis pushes it to the right edge  -->
+                                                <chart:NumericalAxis
+                                                    Name="rightAxis"
+                                                    CrossAxisName="xAxis"
+                                                    CrossesAt="1.7976931348623157E+308"
+                                                    LabelCreated="OnAmortizationAxisLabelCreated"
+                                                    RenderNextToCrossingValue="True"
+                                                    ShowMajorGridLines="False">
+                                                    <chart:NumericalAxis.LabelStyle>
+                                                        <chart:ChartAxisLabelStyle
+                                                            FontAttributes="Bold"
+                                                            FontFamily="{DynamicResource DefaultFontFamily}"
+                                                            FontSize="{StaticResource FontSizeBody}"
+                                                            TextColor="{DynamicResource LoanAppChartAxisTextColor}" />
+                                                    </chart:NumericalAxis.LabelStyle>
+                                                    <chart:NumericalAxis.AxisLineStyle>
+                                                        <chart:ChartLineStyle StrokeWidth="0" />
+                                                    </chart:NumericalAxis.AxisLineStyle>
+                                                    <chart:NumericalAxis.MajorTickStyle>
+                                                        <chart:ChartAxisTickStyle TickSize="0" />
+                                                    </chart:NumericalAxis.MajorTickStyle>
+                                                </chart:NumericalAxis>
+                                            </chart:SfCartesianChart.YAxes>
+                                            <chart:SfCartesianChart.Legend>
+                                                <chart:ChartLegend Placement="Bottom" ToggleSeriesVisibility="True">
+                                                    <chart:ChartLegend.LabelStyle>
+                                                        <chart:ChartLegendLabelStyle
+                                                            FontFamily="{DynamicResource DefaultFontFamily}"
+                                                            FontSize="{StaticResource FontSizeXS}"
+                                                            TextColor="{DynamicResource LoanAppChartLegendTextColor}" />
+                                                    </chart:ChartLegend.LabelStyle>
+                                                </chart:ChartLegend>
+                                            </chart:SfCartesianChart.Legend>
+                                            <chart:SfCartesianChart.Series>
+                                                <chart:StackingColumnSeries
+                                                    EnableAnimation="True"
+                                                    ItemsSource="{Binding AmortizationChartPrincipalAmountAxis}"
+                                                    Label="Principal"
+                                                    LegendIcon="Rectangle"
+                                                    XBindingPath="Name"
+                                                    YAxisName="leftAxis"
+                                                    YBindingPath="Value" />
+                                                <chart:StackingColumnSeries
+                                                    EnableAnimation="True"
+                                                    ItemsSource="{Binding AmortizationChartInterestAmountAxis}"
+                                                    Label="Interest"
+                                                    LegendIcon="Rectangle"
+                                                    XBindingPath="Name"
+                                                    YAxisName="leftAxis"
+                                                    YBindingPath="Value" />
+                                                <chart:SplineSeries
+                                                    EnableAnimation="True"
+                                                    ItemsSource="{Binding AmortizationChartBalanceAxis}"
+                                                    Label="{Binding AmortizationBalanceSubtitle}"
+                                                    LegendIcon="HorizontalLine"
+                                                    StrokeWidth="3"
+                                                    XBindingPath="Name"
+                                                    YAxisName="rightAxis"
+                                                    YBindingPath="Value" />
+                                            </chart:SfCartesianChart.Series>
+                                        </chart:SfCartesianChart>
+                                    </Grid>
+                                </Border.Content>
+                            </Border>
+                            <Label
+                                Margin="0,4,0,8"
+                                FontFamily="{DynamicResource DefaultFontFamily}"
+                                FontSize="{StaticResource FontSizeXS}"
+                                HorizontalOptions="Center"
+                                HorizontalTextAlignment="Center"
+                                Opacity="0.5"
+                                Text="Annual repayment breakdown · remaining balance"
+                                TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                        </FlexLayout>
+
+                    </StackLayout>
+
+                    <!--
+                        Decades, replacing a five-row SfDataPager. A 30-year loan was six pages of
+                        five rows: you could not see the shape of the loan, and comparing its first
+                        years against its last meant paging between them. Each decade is one row
+                        until opened, so the whole loan fits one screen and any two decades can be
+                        opened side by side.
+
+                        The header carries the decade's own totals, so a collapsed schedule is still
+                        readable — EndBalance is the balance after the decade's last year, which is
+                        why an opened decade's final row agrees with its header.
+                    -->
+                    <VerticalStackLayout
+                        AutomationId="LoanAmortisationGrid"
+                        Grid.Row="1"
+                        Margin="0,10,0,0"
+                        BindableLayout.ItemsSource="{Binding AmortisationDecades}"
+                        Spacing="8">
+                        <BindableLayout.ItemTemplate>
+                            <DataTemplate x:DataType="models:AmortisationDecade">
+                                <Border
+                                    Padding="0"
+                                    Background="{DynamicResource BorderControlBackgroundGradientBrush}"
+                                    Stroke="{DynamicResource BorderControlGradientBrush}"
+                                    StrokeShape="RoundRectangle 12"
+                                    StrokeThickness="1">
+                                    <expander:SfExpander
+                                        AutomationId="{Binding AutomationId}"
+                                        HeaderIconPosition="End"
+                                        IsExpanded="{Binding IsExpanded}"
+                                        Style="{DynamicResource CommonExpanderStyle}">
+                                        <expander:SfExpander.Header>
+                                            <Grid Padding="14,12" ColumnSpacing="6">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*" />
+                                                    <ColumnDefinition Width="Auto" />
+                                                </Grid.ColumnDefinitions>
+                                                <VerticalStackLayout Grid.Column="0" Spacing="3">
+                                                    <Label
+                                                        FontAttributes="Bold"
+                                                        FontSize="{StaticResource FontSizeBody}"
+                                                        Text="{Binding PeriodLabel}"
+                                                        TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                                                    <Label
+                                                        FontSize="{StaticResource FontSizeXS}"
+                                                        Opacity="0.55"
+                                                        TextColor="{DynamicResource LoanAppDefaultForegroundColor}">
+                                                        <Label.FormattedText>
+                                                            <FormattedString>
+                                                                <Span Text="Interest " />
+                                                                <Span Text="{Binding InterestTotal}" />
+                                                                <Span Text="  ·  Principal " />
+                                                                <Span Text="{Binding PrincipalTotal}" />
+                                                            </FormattedString>
+                                                        </Label.FormattedText>
+                                                    </Label>
+                                                </VerticalStackLayout>
+                                                <VerticalStackLayout
+                                                    Grid.Column="1"
+                                                    HorizontalOptions="End"
+                                                    Spacing="3">
+                                                    <Label
+                                                        FontAttributes="Bold"
+                                                        FontSize="{StaticResource FontSizeBody}"
+                                                        HorizontalTextAlignment="End"
+                                                        Text="{Binding RepaymentTotal}"
+                                                        TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                                                    <Label
+                                                        FontSize="{StaticResource FontSizeXS}"
+                                                        HorizontalTextAlignment="End"
+                                                        Opacity="0.55"
+                                                        Text="{Binding EndBalance, StringFormat='{0} left'}"
+                                                        TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                                                </VerticalStackLayout>
+                                            </Grid>
+                                        </expander:SfExpander.Header>
+                                        <expander:SfExpander.Content>
+                                            <VerticalStackLayout Spacing="0">
+                                                <!--  Column headers, repeated per decade so an opened decade reads on its own.  -->
+                                                <Grid Padding="14,6" ColumnDefinitions="*,*,*,*">
+                                                    <Label Grid.Column="0" Style="{DynamicResource LabelScheduleColumnHeader}" Text="Year" />
+                                                    <Label Grid.Column="1" HorizontalTextAlignment="End" Style="{DynamicResource LabelScheduleColumnHeader}" Text="Interest" />
+                                                    <Label Grid.Column="2" HorizontalTextAlignment="End" Style="{DynamicResource LabelScheduleColumnHeader}" Text="Principal" />
+                                                    <Label Grid.Column="3" HorizontalTextAlignment="End" Style="{DynamicResource LabelScheduleColumnHeader}" Text="Balance" />
+                                                </Grid>
+                                                <BoxView Style="{DynamicResource LoanAppSeparatorStyle}" />
+                                                <VerticalStackLayout BindableLayout.ItemsSource="{Binding Years}" Spacing="0">
+                                                    <BindableLayout.ItemTemplate>
+                                                        <DataTemplate x:DataType="models:PaymentAmortisationOutput">
+                                                            <Grid Padding="14,9" ColumnDefinitions="*,*,*,*">
+                                                                <Label Grid.Column="0" Style="{DynamicResource LabelScheduleCell}" Text="{Binding PaymentPeriod}" />
+                                                                <Label Grid.Column="1" HorizontalTextAlignment="End" Style="{DynamicResource LabelScheduleCell}" Text="{Binding InterestAmountRounded}" />
+                                                                <Label Grid.Column="2" HorizontalTextAlignment="End" Style="{DynamicResource LabelScheduleCell}" Text="{Binding PrincipalAmountRounded}" />
+                                                                <Label Grid.Column="3" HorizontalTextAlignment="End" Style="{DynamicResource LabelScheduleCell}" Text="{Binding BalanceAmountRounded}" />
+                                                            </Grid>
+                                                        </DataTemplate>
+                                                    </BindableLayout.ItemTemplate>
+                                                </VerticalStackLayout>
+                                            </VerticalStackLayout>
+                                        </expander:SfExpander.Content>
+                                    </expander:SfExpander>
+                                </Border>
+                            </DataTemplate>
+                        </BindableLayout.ItemTemplate>
+                    </VerticalStackLayout>
+
+                </Grid>
+            </ScrollView>
+            </Grid>
+
+        </Grid>
+    </ContentPage.Content>
+
+</ContentPage>

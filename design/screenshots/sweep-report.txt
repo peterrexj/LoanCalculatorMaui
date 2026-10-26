@@ -1,0 +1,21 @@
+CaptureEmptyStates — captured 2, missed 0
+  ok      31-budget-income-empty
+  ok      32-loan-asset-no-budget
+
+CapturePopulatedSurfaces — captured 15, missed 0
+  ok      01-loan-asset
+  ok      02-loan-amortisation
+  ok      03-loan-running-cost
+  ok      04-loan-insights
+  ok      05-budget-income
+  ok      06-budget-expenses
+  ok      07-budget-summary
+  ok      08-budget-projection
+  ok      09-whatif
+  ok      10-settings
+  ok      11-settings-disclaimer
+  ok      12-settings-privacy
+  ok      20-loan-details
+  ok      21-upfront-costs
+  ok      22-transaction-entry
+

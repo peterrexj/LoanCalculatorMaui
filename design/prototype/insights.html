@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<meta charset="utf-8">
+<title>Insights — prototype</title>
+<link rel="stylesheet" href="tokens.css">
+<link rel="stylesheet" href="app.css">
+
+<!--
+  INSIGHTS — the former Loan ▸ Insights tab (nine SfExpander panels in one long scroll,
+  src/LoanCalculator/View/LoanView.xaml, LoanTabInsights section). Now the fourth of What If's
+  sub-tab views, so it is one tap from the tab strip rather than a row buried under a
+  "Reference" heading below a nine-scenario scroll.
+
+  ALL NINE PANELS ARE KEPT. An earlier draft of this page dropped six of them as "restatements"
+  of what Loan and Budget already show. Auditing the real XAML showed that call was wrong on two
+  counts, and the owner's instinct to keep them was right:
+
+    • The PDF report does NOT read these panels. PdfInsightsGenerator builds its own
+      PdfDataInsightsModel, so the report was never a reason to keep or drop any of them —
+      the earlier note claiming otherwise was simply incorrect.
+
+    • Panels 6 and 7 are NOT duplicates. Budget's income and expense figures are mutated by the
+      ShowIncomeAfterExpense / ShowPropertyExpense toggles, so these are the only place those
+      totals appear unconditionally.
+
+  Beyond the numbers, each panel carries hand-written Name/ShortDescription/Description copy
+  that exists nowhere else in the app, so dropping a panel orphans explanatory text too.
+
+  Panel 9 is numerically identical to panel 1's affordability pair — a duplication within the
+  page rather than across pages. Left as-is deliberately: it mirrors the app today.
+-->
+
+<div class="phone">
+
+  <div class="page-head">
+    <h1>What If</h1>
+    <p>Can you afford it, and what breaks it?</p>
+  </div>
+
+  <nav class="subtabs">
+    <a href="whatif.html">Answer</a>
+    <a href="whatif-scenarios.html">Scenarios</a>
+    <a href="projection.html">Projection</a>
+    <a class="on" href="insights.html">Insights</a>
+  </nav>
+
+  <div class="scroll">
+
+    <details class="panel" open>
+      <summary>
+        <span class="t">Key insights</span>
+        <span class="s">Affordability, loan, deposit and repayments at a glance</span>
+      </summary>
+      <div class="panel-body">
+        <div class="fig">
+          <span class="k">Affordability (monthly)</span>
+          <span class="n">$1,708</span>
+        </div>
+        <div class="fig">
+          <span class="k">Affordability (yearly)</span>
+          <span class="n">$20,496</span>
+        </div>
+        <div class="fig">
+          <span class="k">Total loan amount</span>
+          <span class="n">$520,112</span>
+        </div>
+        <div class="fig">
+          <span class="k">Total deposit amount</span>
+          <span class="n">$130,000</span>
+        </div>
+        <div class="fig">
+          <span class="k">Monthly repayment</span>
+          <span class="n">$2,792</span>
+        </div>
+        <div class="fig">
+          <span class="k">Annual repayment</span>
+          <span class="n">$33,505</span>
+        </div>
+        <div class="fig">
+          <span class="k">Income earned (monthly)</span>
+          <span class="n">$6,000</span>
+        </div>
+        <div class="fig">
+          <span class="k">Income earned (yearly)</span>
+          <span class="n">$72,000</span>
+        </div>
+        <div class="fig">
+          <span class="k">Total expenses (monthly)</span>
+          <span class="n">$4,292</span>
+        </div>
+        <div class="fig">
+          <span class="k">Total expenses (yearly)</span>
+          <span class="n">$51,505</span>
+        </div>
+        <p class="micro">Total expenses here include the loan repayment and any asset running costs, which is why they exceed the $1,500 of recorded living expenses shown on Budget.</p>
+      </div>
+    </details>
+    <details class="panel">
+      <summary>
+        <span class="t">Asset insights</span>
+        <span class="s">Purchase price, estimated upfront costs and the total</span>
+      </summary>
+      <div class="panel-body">
+        <div class="fig">
+          <span class="k">Cost of the property</span>
+          <span class="n">$650,000</span>
+        </div>
+        <div class="fig">
+          <span class="k">Additional upfront costs (estimated)</span>
+          <span class="n">$112</span>
+        </div>
+        <div class="fig">
+          <span class="k">Total property cost (estimated)</span>
+          <span class="n">$650,112</span>
+        </div>
+      </div>
+    </details>
+    <details class="panel">
+      <summary>
+        <span class="t">Loan insights</span>
+        <span class="s">Loan, deposit, and what the bank is repaid in total</span>
+      </summary>
+      <div class="panel-body">
+        <div class="fig">
+          <span class="k">Total loan amount</span>
+          <span class="n">$520,112</span>
+        </div>
+        <div class="fig">
+          <span class="k">Total deposit amount</span>
+          <span class="n">$130,000</span>
+        </div>
+        <div class="fig">
+          <span class="k">Total loan repayment amount</span>
+          <span class="n">$1,005,147</span>
+        </div>
+        <div class="fig">
+          <span class="k">Total interest cost</span>
+          <span class="n">$485,035</span>
+        </div>
+        <div class="fig">
+          <span class="k">Of which, principal</span>
+          <span class="n">$520,112</span>
+        </div>
+        <div class="fig">
+          <span class="k">Loan term</span>
+          <span class="n">30 years</span>
+        </div>
+        <div class="fig">
+          <span class="k">Interest rate</span>
+          <span class="n">5%</span>
+        </div>
+        <div class="fig">
+          <span class="k">Repayment frequency</span>
+          <span class="n">Monthly</span>
+        </div>
+        <div class="fig">
+          <span class="k">Repayment (selected frequency)</span>
+          <span class="n">$2,792</span>
+        </div>
+        <p class="micro">Total repaid and total interest appear nowhere else in the app. Figures agree with the Schedule: three decades of $335,049, interest $238,007 + $175,219 + $71,808.</p>
+      </div>
+    </details>
+    <details class="panel">
+      <summary>
+        <span class="t">Expenses on cost of new asset ownership</span>
+        <span class="s">Monthly and yearly cost of owning the asset</span>
+      </summary>
+      <div class="panel-body">
+        <div class="fig">
+          <span class="k">Monthly</span>
+          <span class="n">$0</span>
+        </div>
+        <div class="fig">
+          <span class="k">Yearly</span>
+          <span class="n">$0</span>
+        </div>
+        <p class="micro">Maintenance, insurance and rates for this asset. $0 until recorded under Budget ▸ Asset costs.</p>
+      </div>
+    </details>
+    <details class="panel">
+      <summary>
+        <span class="t">Expenses on loan financial commitments</span>
+        <span class="s">Monthly and yearly cost of servicing the loan</span>
+      </summary>
+      <div class="panel-body">
+        <div class="fig">
+          <span class="k">Monthly</span>
+          <span class="n">$2,792</span>
+        </div>
+        <div class="fig">
+          <span class="k">Yearly</span>
+          <span class="n">$33,505</span>
+        </div>
+        <p class="micro">The repayment plus any asset running costs. The yearly figure appears only here.</p>
+      </div>
+    </details>
+    <details class="panel">
+      <summary>
+        <span class="t">Expenses on current financial outflows</span>
+        <span class="s">Monthly and yearly total of your recorded expenses</span>
+      </summary>
+      <div class="panel-body">
+        <div class="fig">
+          <span class="k">Monthly</span>
+          <span class="n">$1,500</span>
+        </div>
+        <div class="fig">
+          <span class="k">Yearly</span>
+          <span class="n">$18,000</span>
+        </div>
+        <p class="micro">Your recorded living expenses, unconditionally — the Budget figures shift with the "income after expenses" toggles, so this is the one place the raw total always shows.</p>
+      </div>
+    </details>
+    <details class="panel">
+      <summary>
+        <span class="t">Income</span>
+        <span class="s">Your recorded income, monthly and yearly</span>
+      </summary>
+      <div class="panel-body">
+        <div class="fig">
+          <span class="k">Monthly</span>
+          <span class="n">$6,000</span>
+        </div>
+        <div class="fig">
+          <span class="k">Yearly</span>
+          <span class="n">$72,000</span>
+        </div>
+        <p class="micro">Gross recorded income, unaffected by the Budget display toggles.</p>
+      </div>
+    </details>
+    <details class="panel">
+      <summary>
+        <span class="t">Income after expense</span>
+        <span class="s">What is left once your expenses are taken out</span>
+      </summary>
+      <div class="panel-body">
+        <div class="fig">
+          <span class="k">Monthly</span>
+          <span class="n">$4,500</span>
+        </div>
+        <div class="fig">
+          <span class="k">Yearly</span>
+          <span class="n">$54,000</span>
+        </div>
+        <p class="micro">Income minus recorded expenses, before the loan.</p>
+      </div>
+    </details>
+    <details class="panel">
+      <summary>
+        <span class="t">Income after all expenses</span>
+        <span class="s">What is left after expenses and loan repayments</span>
+      </summary>
+      <div class="panel-body">
+        <div class="fig">
+          <span class="k">Monthly</span>
+          <span class="n">$1,708</span>
+        </div>
+        <div class="fig">
+          <span class="k">Yearly</span>
+          <span class="n">$20,496</span>
+        </div>
+        <p class="micro">Income minus expenses minus the repayment and asset running costs. This is the affordability figure the What If answer leads with.</p>
+      </div>
+    </details>
+
+    <p class="micro"><a href="export.html" style="color:var(--tab-indicator-stroke-color)">Export this as a PDF report &rsaquo;</a></p>
+
+  </div>
+
+  <nav class="tabbar">
+    <a href="loan.html"><span class="ico">&#127968;</span>Loan</a>
+    <a href="budget.html"><span class="ico">&#128176;</span>Budget</a>
+    <a class="on" href="whatif.html"><span class="ico">&#10003;</span>What If</a>
+    <a href="settings.html"><span class="ico">&#9881;</span>Settings</a>
+  </nav>
+
+</div>
+<style>
+  .panel {
+    margin: 10px 0;
+    border-radius: 12px;
+    background: var(--border-insights-background-gradient-brush);
+    border: 1px solid var(--border-insights-gradient-outer-line-end);
+    color: var(--insights-fg-color);
+    overflow: hidden;
+  }
+  .panel summary {
+    list-style: none;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    padding: 14px;
+  }
+  .panel summary::-webkit-details-marker { display: none; }
+  .panel summary .t { font-size: var(--font-size-body); font-weight: 700; }
+  .panel summary .s { font-size: var(--font-size-small); opacity: .6; margin-top: 2px; }
+  .panel summary::after {
+    content: '\203A';
+    position: absolute;
+    right: 14px;
+    opacity: .5;
+    font-size: var(--font-size-medium);
+  }
+  .panel summary { position: relative; }
+  .panel[open] summary::after { content: '\2304'; }
+  .panel-body { padding: 0 14px 14px; }
+  .panel-body .fig { border-top: 1px solid color-mix(in srgb, var(--insights-fg-color) 12%, transparent); }
+  .panel-body .fig:first-child { border-top: 0; }
+  .panel-body .fig .k { color: var(--insights-fg-color); }
+  .panel-body .fig .n { color: var(--insights-fg-color); }
+  .panel-body .micro { color: var(--insights-fg-color); opacity: .6; }
+</style>
+</html>

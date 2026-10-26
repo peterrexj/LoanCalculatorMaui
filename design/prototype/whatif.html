@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<meta charset="utf-8">
+<title>What If — prototype</title>
+<link rel="stylesheet" href="tokens.css">
+<link rel="stylesheet" href="app.css">
+
+<!--
+  ANSWER — the first of What If's four sub-tab views (Answer · Scenarios ·
+  Projection · Insights), replacing the single long verdict.html scroll.
+
+  WHY THIS CHANGED: the proposal this prototype set out to fix criticised the
+  old app for inconsistent navigation depth, then made exactly that mistake —
+  Insights, Schedule, Projection and Export were demoted to third-level rows
+  under a vaguely-labelled "Reference" heading below. Reaching the schedule
+  meant tab -> scroll past the hero and nine scenario rows -> Reference ->
+  tap. Nobody found that. Fix: What If gets its own sub-tab strip, so every
+  one of those views is one tap from the tab bar, not buried under a heading
+  that undersells what's underneath it.
+
+  What stays on THIS page: the hero verdict, the three summary boxes and the
+  "where the money goes" chart — the headline answer, kept together. What
+  moved:
+    - The nine-row scenario index -> whatif-scenarios.html (its own sub-tab).
+      One prominent entry row replaces it here so Answer still points at it.
+    - Insights and Projection -> their own sub-tabs (still both reachable
+      from here via the same contextual-link pattern used for Schedule).
+    - Schedule -> moved under Loan entirely (another work item); linked from
+      here contextually since the answer is the natural place to point at it.
+    - Export -> an action near the end of this page, not a row to tap through.
+
+  Charts stay dark-on-dark, unchanged from before.
+-->
+
+<div class="phone">
+
+  <div class="page-head">
+    <h1>What If</h1>
+    <p>Can you afford it, and what breaks it?</p>
+  </div>
+
+  <nav class="subtabs">
+    <a class="on" href="whatif.html">Answer</a>
+    <a href="whatif-scenarios.html">Scenarios</a>
+    <a href="projection.html">Projection</a>
+    <a href="insights.html">Insights</a>
+  </nav>
+
+  <div class="scroll">
+
+    <!-- The answer, before any detail. -->
+    <div class="hero">
+      <div class="cap">AFFORDABLE — with room to spare</div>
+      <div class="big">$1,708<span style="font-size:15px;font-weight:400">/mo spare</span></div>
+      <div class="cap">after the loan, running costs and your expenses</div>
+    </div>
+
+    <div class="boxes">
+      <div><div class="amt">$2,792</div><div class="lbl">repayment</div></div>
+      <div><div class="amt">$4,500</div><div class="lbl">net income</div></div>
+      <div><div class="amt">35%</div><div class="lbl">of income</div></div>
+    </div>
+
+    <!-- Single entry point into the full nine-row index, now its own sub-tab. -->
+    <div class="section">Scenarios</div>
+    <div class="rows">
+      <a class="row" href="whatif-scenarios.html">
+        <span class="grow"><span class="t">See all 9 scenarios</span><br><span class="s">Rate changes, extra repayments, stress tests and more</span></span>
+        <span class="chev">&rsaquo;</span>
+      </a>
+    </div>
+
+    <!-- The chart fix, shown in context: dark card, light ink. -->
+    <div class="section">Where the money goes</div>
+    <div class="chart">
+      <div class="bars">
+        <span><i class="i" style="height:62px"></i><i class="p" style="height:12px"></i></span>
+        <span><i class="i" style="height:60px"></i><i class="p" style="height:15px"></i></span>
+        <span><i class="i" style="height:57px"></i><i class="p" style="height:18px"></i></span>
+        <span><i class="i" style="height:54px"></i><i class="p" style="height:22px"></i></span>
+        <span><i class="i" style="height:50px"></i><i class="p" style="height:26px"></i></span>
+        <span><i class="i" style="height:46px"></i><i class="p" style="height:31px"></i></span>
+        <span><i class="i" style="height:41px"></i><i class="p" style="height:36px"></i></span>
+        <span><i class="i" style="height:35px"></i><i class="p" style="height:42px"></i></span>
+        <span><i class="i" style="height:29px"></i><i class="p" style="height:48px"></i></span>
+        <span><i class="i" style="height:22px"></i><i class="p" style="height:55px"></i></span>
+        <span><i class="i" style="height:14px"></i><i class="p" style="height:63px"></i></span>
+        <span><i class="i" style="height:6px"></i><i class="p" style="height:71px"></i></span>
+      </div>
+      <div class="legend">
+        <span><i style="background:var(--chart-color-1)"></i>Principal</span>
+        <span><i style="background:var(--chart-color-2)"></i>Interest</span>
+      </div>
+    </div>
+
+    <!-- Schedule moved under Loan; this is the contextual pointer to it. -->
+    <div class="rows">
+      <a class="row" href="schedule.html">
+        <span class="grow"><span class="t">See the full schedule</span><br><span class="s">Year-by-year principal and interest, now under Loan</span></span>
+        <span class="chev">&rsaquo;</span>
+      </a>
+      <a class="row" href="export.html">
+        <span class="grow"><span class="t">Export a PDF report</span><br><span class="s">Everything above, as a document</span></span>
+        <span class="chev">&rsaquo;</span>
+      </a>
+    </div>
+
+    <p class="micro">Estimates only — not financial advice. Figures depend on the information you
+      enter. Consult a qualified financial adviser before deciding.</p>
+
+  </div>
+
+  <nav class="tabbar">
+    <a href="loan.html"><span class="ico">&#127968;</span>Loan</a>
+    <a href="budget.html"><span class="ico">&#128176;</span>Budget</a>
+    <a class="on" href="whatif.html"><span class="ico">&#10003;</span>What If</a>
+    <a href="settings.html"><span class="ico">&#9881;</span>Settings</a>
+  </nav>
+
+</div>
+</html>

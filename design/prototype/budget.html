@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<meta charset="utf-8">
+<title>Budget — prototype</title>
+<link rel="stylesheet" href="tokens.css">
+<link rel="stylesheet" href="app.css">
+
+<!--
+  MONEY — replaces Budget ▸ Summary/Income/Expenses, and absorbs
+  Loan ▸ Running Cost.
+
+  The change being tested: every recurring figure now lives in one destination,
+  so the surplus can be computed from one screen's worth of data instead of two
+  tabs. "Asset costs" is the third sub-tab — that is the Running Cost tab moved
+  here, because it is a monthly outflow like any other.
+
+  This is also the one destination that KEEPS a sub-tab strip, because its three
+  views are genuinely peer lists of the same kind of thing. Loan and What If lost
+  theirs.
+-->
+
+<div class="phone">
+
+  <div class="page-head">
+    <h1>Budget</h1>
+    <p>What comes in, and what goes out</p>
+  </div>
+
+  <nav class="subtabs">
+    <a href="budget-income.html">Income</a>
+    <a href="budget-expenses.html">Expenses</a>
+    <a class="on" href="budget.html">Summary</a>
+    <a href="budget-asset-costs.html">Asset costs</a>
+  </nav>
+
+  <div class="scroll">
+
+    <div class="hero">
+      <div class="cap">NET EVERY MONTH</div>
+      <div class="big">+$4,500</div>
+      <div class="cap">$54,000 a year</div>
+    </div>
+
+    <!--
+      Affordability verdict, mirroring the one on loan.html. It belongs here too because
+      the +$4,500 above does NOT account for the loan repayment — so without this the
+      page quietly overstates what is actually spare. Tappable through to the full answer.
+    -->
+    <div class="boxes">
+      <div><div class="amt">$6,000</div><div class="lbl">in / mo</div></div>
+      <div><div class="amt">$1,500</div><div class="lbl">out / mo</div></div>
+      <a href="whatif.html"><div class="amt good">$1,708</div><div class="lbl">spare after loan</div></a>
+    </div>
+
+    <!-- The chart fix in context: dark card, light ink, legible on the page. -->
+    <div class="chart">
+      <div class="donut">
+        <div>
+          <div class="k">NET / MONTH</div>
+          <div class="v">+$4,500</div>
+        </div>
+      </div>
+      <div class="legend">
+        <span><i style="background:var(--chart-color-1)"></i>Income $6,000</span>
+        <span><i style="background:var(--chart-color-2)"></i>Out $1,500</span>
+      </div>
+    </div>
+
+    <div class="section">Insights</div>
+    <div class="rows">
+      <a class="row" href="#">
+        <span class="grow"><span class="t">Income</span><br><span class="s">1 source</span></span>
+        <span class="v good">+$6,000</span><span class="chev">&rsaquo;</span>
+      </a>
+      <a class="row" href="#">
+        <span class="grow"><span class="t">Living expenses</span><br><span class="s">1 recorded</span></span>
+        <span class="v">&minus;$1,500</span><span class="chev">&rsaquo;</span>
+      </a>
+      <a class="row" href="#">
+        <span class="grow"><span class="t">Asset running costs</span><br><span class="s">Maintenance, insurance, rates</span></span>
+        <span class="v">&minus;$0</span><span class="chev">&rsaquo;</span>
+      </a>
+      <div class="row">
+        <span class="grow"><span class="t"><strong>Net</strong></span></span>
+        <span class="v good">+$4,500</span><span class="chev" style="opacity:0">&rsaquo;</span>
+      </div>
+    </div>
+
+    <div class="section">Top expenses</div>
+    <div class="rows">
+      <a class="row" href="#">
+        <span class="grow"><span class="t">Groceries</span><br><span class="s">Monthly</span></span>
+        <span class="v">$1,500</span><span class="chev">&rsaquo;</span>
+      </a>
+    </div>
+
+    <p class="micro"><a href="projection.html" style="color:var(--tab-indicator-stroke-color)">See the projection &rsaquo;</a>
+      &mdash; where this surplus gets you over time.</p>
+
+    <div class="banner">
+      Your loan repayment of <strong>$2,792/mo</strong> is not counted above. See
+      <a href="whatif.html" style="color:inherit;font-weight:700">What If</a> for what's left
+      once it is.
+    </div>
+
+  </div>
+
+  <nav class="tabbar">
+    <a href="loan.html"><span class="ico">&#127968;</span>Loan</a>
+    <a class="on" href="budget.html"><span class="ico">&#128176;</span>Budget</a>
+    <a href="whatif.html"><span class="ico">&#10003;</span>What If</a>
+    <a href="settings.html"><span class="ico">&#9881;</span>Settings</a>
+  </nav>
+
+</div>
+</html>

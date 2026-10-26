@@ -14,7 +14,6 @@
     xmlns:primaryModels="clr-namespace:LoanCalculator.Core.Models.ViewModels.PrimaryModels;assembly=LoanCalculator.Core"
     xmlns:range="clr-namespace:Syncfusion.Maui.Sliders;assembly=Syncfusion.Maui.Sliders"
     xmlns:sfList="clr-namespace:Syncfusion.Maui.ListView;assembly=Syncfusion.Maui.ListView"
-    xmlns:sfPopup="clr-namespace:Syncfusion.Maui.Popup;assembly=Syncfusion.Maui.Popup"
     xmlns:summary="clr-namespace:LoanCalculator.Core.Models.Income.Summary;assembly=LoanCalculator.Core"
     xmlns:tabView="clr-namespace:Syncfusion.Maui.TabView;assembly=Syncfusion.Maui.TabView"
     xmlns:viewModels="clr-namespace:LoanCalculator.Core.Models.ViewModels;assembly=LoanCalculator.Core"
@@ -27,307 +26,6 @@
 
 
 
-            <!--  Add/Edit income popup  -->
-            <sfPopup:SfPopup
-                x:Name="BudgetIncomePopup"
-                Grid.RowSpan="2"
-                Padding="0"
-                AnimationMode="Fade"
-                AutoSizeMode="Height"
-                BackgroundColor="{DynamicResource LoanAppDefaultBackgroundColor}"
-                HeightRequest="{OnIdiom Phone=510,
-                                        Tablet=600,
-                                        Desktop=600,
-                                        Default=510}"
-                ShowCloseButton="False"
-                ShowFooter="False"
-                ShowHeader="False"
-                StaysOpen="False"
-                WidthRequest="{OnIdiom Phone=340,
-                                       Tablet=560,
-                                       Desktop=560,
-                                       Default=340}">
-                <sfPopup:SfPopup.ContentTemplate>
-                    <DataTemplate>
-                        <Grid BackgroundColor="{DynamicResource LoanAppDefaultBackgroundColor}" RowDefinitions="Auto,*,Auto">
-
-                            <!--  Title row  -->
-                            <Grid
-                                Grid.Row="0"
-                                Padding="16,14,8,4"
-                                ColumnDefinitions="*,Auto">
-                                <Label
-                                    Grid.Column="0"
-                                    Style="{DynamicResource PopupTitleLabelStyle}"
-                                    Text="{Binding Income.IsEditMode, Converter={StaticResource BoolToEditAddTitleConverter}, ConverterParameter='Income'}" />
-                                <Button
-                                    Grid.Column="1"
-                                    AutomationId="BudgetIncomeCancelButton"
-                                    Clicked="OnBudgetIncomeCancel"
-                                    Style="{DynamicResource PopupDismissButtonStyle}" />
-                            </Grid>
-
-                            <!--  Fields  -->
-                            <ScrollView Grid.Row="1">
-                                <VerticalStackLayout Padding="16,4,16,0" Spacing="10">
-
-                                    <!--  Editing badge  -->
-                                    <Border
-                                        Padding="10,6"
-                                        BackgroundColor="{DynamicResource LoanAppAppShellBgColor}"
-                                        IsVisible="{Binding Income.IsEditMode}"
-                                        StrokeShape="RoundRectangle 6"
-                                        StrokeThickness="0">
-                                        <Label
-                                            FontAttributes="Bold"
-                                            FontSize="{StaticResource FontSizeSmall}"
-                                            HorizontalTextAlignment="Center"
-                                            Text="✏  Editing existing entry"
-                                            TextColor="{DynamicResource LoanAppAppShellFgColor}" />
-                                    </Border>
-
-                                    <!--  Name  -->
-                                    <VerticalStackLayout Spacing="4">
-                                        <Label Style="{DynamicResource PopupFieldLabelStyle}" Text="INCOME NAME" />
-                                        <Border Style="{DynamicResource PopupInputBorderStyle}">
-                                            <Entry
-                                                BackgroundColor="Transparent"
-                                                FontSize="{StaticResource FontSizeMedium}"
-                                                Placeholder="e.g. Salary"
-                                                PlaceholderColor="{DynamicResource LoanAppInputTextWhenUnFocusedColor}"
-                                                AutomationId="BudgetIncomeNameEntry"
-                                                Text="{Binding Income.IncomeEntryName}"
-                                                TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
-                                        </Border>
-                                        <Label
-                                            IsVisible="{Binding Income.ShowErrorIncomeDescription}"
-                                            Style="{DynamicResource PopupErrorLabelStyle}"
-                                            Text="Required" />
-                                    </VerticalStackLayout>
-
-                                    <!--  Amount  -->
-                                    <VerticalStackLayout Spacing="4">
-                                        <Label Style="{DynamicResource PopupFieldLabelStyle}" Text="AMOUNT" />
-                                        <Border Style="{DynamicResource PopupInputBorderStyle}">
-                                            <Entry
-                                                AutomationId="BudgetIncomeAmountEntry"
-                                                BackgroundColor="Transparent"
-                                                FontAttributes="Bold"
-                                                FontSize="{StaticResource FontSizeXL}"
-                                                Keyboard="Numeric"
-                                                Loaded="OnBudgetIncomeAmountLoaded"
-                                                Placeholder="0"
-                                                PlaceholderColor="{DynamicResource LoanAppInputTextWhenUnFocusedColor}"
-                                                TextChanged="OnBudgetIncomeAmountTextChanged"
-                                                TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
-                                        </Border>
-                                        <Grid Margin="4,2,0,0" ColumnSpacing="6">
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="Auto" />
-                                                <ColumnDefinition Width="*" />
-                                            </Grid.ColumnDefinitions>
-                                            <Label
-                                                x:Name="LblBudgetIncomeFormatted"
-                                                Grid.Column="0"
-                                                AutomationId="BudgetIncomeFormatted"
-                                                FontAttributes="Bold"
-                                                FontSize="{StaticResource FontSizeSmall}"
-                                                Loaded="OnBudgetIncomeFormattedLoaded"
-                                                Opacity="0.6"
-                                                TextColor="{DynamicResource LoanAppTabIndicatorStrokeColor}" />
-                                            <Label
-                                                x:Name="LblBudgetIncomeWords"
-                                                Grid.Column="1"
-                                                Margin="4,0,0,0"
-                                                AutomationId="BudgetIncomeWords"
-                                                FontSize="{StaticResource FontSizeSmall}"
-                                                Loaded="OnBudgetIncomeFormattedLoaded"
-                                                Opacity="0.4"
-                                                TextColor="{DynamicResource LoanAppTabIndicatorStrokeColor}" />
-                                        </Grid>
-                                        <Label
-                                            IsVisible="{Binding Income.ShowErrorIncomeAmount}"
-                                            Style="{DynamicResource PopupErrorLabelStyle}"
-                                            Text="Must be &gt; 0" />
-                                    </VerticalStackLayout>
-
-                                    <!--  Frequency  -->
-                                    <VerticalStackLayout Spacing="4">
-                                        <Label Style="{DynamicResource PopupFieldLabelStyle}" Text="FREQUENCY" />
-                                        <editors:SfComboBox
-                                            BackgroundColor="Transparent"
-                                            AutomationId="BudgetIncomeFrequencyCombo"
-                                            ItemsSource="{Binding Income.IncomeFrequencyCollection}"
-                                            SelectedItem="{Binding Income.IncomeExpenseFrequencySelectedIndex, Mode=TwoWay}"
-                                            Style="{DynamicResource SfComboBoxStyle}"
-                                            TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
-                                    </VerticalStackLayout>
-
-                                </VerticalStackLayout>
-                            </ScrollView>
-
-                            <!--  Primary action  -->
-                            <Button
-                                Grid.Row="2"
-                                AutomationId="BudgetIncomeSaveButton"
-                                Clicked="OnBudgetIncomeSave"
-                                Style="{DynamicResource PopupPrimaryButtonStyle}"
-                                Text="{Binding Income.IsEditMode, Converter={StaticResource BoolToAddUpdateConverter}}" />
-
-                        </Grid>
-                    </DataTemplate>
-                </sfPopup:SfPopup.ContentTemplate>
-            </sfPopup:SfPopup>
-
-            <!--  Add/Edit expense popup  -->
-            <sfPopup:SfPopup
-                x:Name="BudgetExpensePopup"
-                Grid.RowSpan="2"
-                Padding="0"
-                AnimationMode="Fade"
-                AutoSizeMode="Height"
-                BackgroundColor="{DynamicResource LoanAppDefaultBackgroundColor}"
-                HeightRequest="{OnIdiom Phone=510,
-                                        Tablet=600,
-                                        Desktop=600,
-                                        Default=510}"
-                ShowCloseButton="False"
-                ShowFooter="False"
-                ShowHeader="False"
-                StaysOpen="False"
-                WidthRequest="{OnIdiom Phone=340,
-                                       Tablet=560,
-                                       Desktop=560,
-                                       Default=340}">
-                <sfPopup:SfPopup.ContentTemplate>
-                    <DataTemplate>
-                        <Grid BackgroundColor="{DynamicResource LoanAppDefaultBackgroundColor}" RowDefinitions="Auto,*,Auto">
-
-                            <!--  Title row  -->
-                            <Grid
-                                Grid.Row="0"
-                                Padding="16,14,8,4"
-                                ColumnDefinitions="*,Auto">
-                                <Label
-                                    Grid.Column="0"
-                                    Style="{DynamicResource PopupTitleLabelStyle}"
-                                    Text="{Binding Expense.IsEditMode, Converter={StaticResource BoolToEditAddTitleConverter}, ConverterParameter='Expense'}" />
-                                <Button
-                                    Grid.Column="1"
-                                    AutomationId="BudgetExpenseCancelButton"
-                                    Clicked="OnBudgetExpenseCancel"
-                                    Style="{DynamicResource PopupDismissButtonStyle}" />
-                            </Grid>
-
-                            <!--  Fields  -->
-                            <ScrollView Grid.Row="1">
-                                <VerticalStackLayout Padding="16,4,16,0" Spacing="10">
-
-                                    <!--  Editing badge  -->
-                                    <Border
-                                        Padding="10,6"
-                                        BackgroundColor="{DynamicResource LoanAppAppShellBgColor}"
-                                        IsVisible="{Binding Expense.IsEditMode}"
-                                        StrokeShape="RoundRectangle 6"
-                                        StrokeThickness="0">
-                                        <Label
-                                            FontAttributes="Bold"
-                                            FontSize="{StaticResource FontSizeSmall}"
-                                            HorizontalTextAlignment="Center"
-                                            Text="✏  Editing existing entry"
-                                            TextColor="{DynamicResource LoanAppAppShellFgColor}" />
-                                    </Border>
-
-                                    <!--  Name  -->
-                                    <VerticalStackLayout Spacing="4">
-                                        <Label Style="{DynamicResource PopupFieldLabelStyle}" Text="EXPENSE NAME" />
-                                        <Border Style="{DynamicResource PopupInputBorderStyle}">
-                                            <Entry
-                                                BackgroundColor="Transparent"
-                                                FontSize="{StaticResource FontSizeMedium}"
-                                                Placeholder="e.g. Electricity"
-                                                PlaceholderColor="{DynamicResource LoanAppInputTextWhenUnFocusedColor}"
-                                                AutomationId="BudgetExpenseNameEntry"
-                                                Text="{Binding Expense.IncomeEntryName}"
-                                                TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
-                                        </Border>
-                                        <Label
-                                            IsVisible="{Binding Expense.ShowErrorIncomeDescription}"
-                                            Style="{DynamicResource PopupErrorLabelStyle}"
-                                            Text="Required" />
-                                    </VerticalStackLayout>
-
-                                    <!--  Amount  -->
-                                    <VerticalStackLayout Spacing="4">
-                                        <Label Style="{DynamicResource PopupFieldLabelStyle}" Text="AMOUNT" />
-                                        <Border Style="{DynamicResource PopupInputBorderStyle}">
-                                            <Entry
-                                                AutomationId="BudgetExpenseAmountEntry"
-                                                BackgroundColor="Transparent"
-                                                FontAttributes="Bold"
-                                                FontSize="{StaticResource FontSizeXL}"
-                                                Keyboard="Numeric"
-                                                Loaded="OnBudgetExpenseAmountLoaded"
-                                                Placeholder="0"
-                                                PlaceholderColor="{DynamicResource LoanAppInputTextWhenUnFocusedColor}"
-                                                TextChanged="OnBudgetExpenseAmountTextChanged"
-                                                TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
-                                        </Border>
-                                        <Grid Margin="4,2,0,0" ColumnSpacing="6">
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="Auto" />
-                                                <ColumnDefinition Width="*" />
-                                            </Grid.ColumnDefinitions>
-                                            <Label
-                                                Grid.Column="0"
-                                                AutomationId="BudgetExpenseFormatted"
-                                                FontAttributes="Bold"
-                                                FontSize="{StaticResource FontSizeSmall}"
-                                                Loaded="OnBudgetExpenseFormattedLoaded"
-                                                Opacity="0.6"
-                                                TextColor="{DynamicResource LoanAppTabIndicatorStrokeColor}" />
-                                            <Label
-                                                Grid.Column="1"
-                                                Margin="4,0,0,0"
-                                                AutomationId="BudgetExpenseWords"
-                                                FontSize="{StaticResource FontSizeSmall}"
-                                                Loaded="OnBudgetExpenseFormattedLoaded"
-                                                Opacity="0.4"
-                                                TextColor="{DynamicResource LoanAppTabIndicatorStrokeColor}" />
-                                        </Grid>
-                                        <Label
-                                            IsVisible="{Binding Expense.ShowErrorIncomeAmount}"
-                                            Style="{DynamicResource PopupErrorLabelStyle}"
-                                            Text="Must be &gt; 0" />
-                                    </VerticalStackLayout>
-
-                                    <!--  Frequency  -->
-                                    <VerticalStackLayout Spacing="4">
-                                        <Label Style="{DynamicResource PopupFieldLabelStyle}" Text="FREQUENCY" />
-                                        <editors:SfComboBox
-                                            BackgroundColor="Transparent"
-                                            AutomationId="BudgetExpenseFrequencyCombo"
-                                            ItemsSource="{Binding Expense.IncomeFrequencyCollection}"
-                                            SelectedItem="{Binding Expense.IncomeExpenseFrequencySelectedIndex, Mode=TwoWay}"
-                                            Style="{DynamicResource SfComboBoxStyle}"
-                                            TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
-                                    </VerticalStackLayout>
-
-                                </VerticalStackLayout>
-                            </ScrollView>
-
-                            <!--  Primary action  -->
-                            <Button
-                                Grid.Row="2"
-                                AutomationId="BudgetExpenseSaveButton"
-                                Clicked="OnBudgetExpenseSave"
-                                Style="{DynamicResource PopupPrimaryButtonStyle}"
-                                Text="{Binding Expense.IsEditMode, Converter={StaticResource BoolToAddUpdateConverter}}" />
-
-                        </Grid>
-                    </DataTemplate>
-                </sfPopup:SfPopup.ContentTemplate>
-            </sfPopup:SfPopup>
             <tabView:SfTabView
                 x:Name="tabView"
                 HeaderHorizontalTextAlignment="Center"
@@ -336,9 +34,15 @@
                 <!--  ══ Tab 1: Income ══════════════════════════════════════════  -->
                 <tabView:SfTabItem AutomationId="BudgetTabIncome" Header="Income">
                     <tabView:SfTabItem.Content>
+                        <!--
+                            Same three-part shape as the Asset costs tab, and it has to stay that
+                            way: fixed header rows, then ONE flex row holding the list. The flex row
+                            is what lets the FAB sit at the bottom-right of the list area — anchored
+                            to an Auto row it lands against whatever that row happens to measure,
+                            which is how it ended up over the section header.
+                        -->
                         <Grid x:Name="IncomeTabGrid" BackgroundColor="{DynamicResource LoanAppDefaultBackgroundColor}">
                             <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto" />
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="*" />
@@ -381,7 +85,7 @@
                                 Grid.Row="1"
                                 Margin="12,8,12,0"
                                 Padding="14,10"
-                                BackgroundColor="{DynamicResource BorderControlBackgroundGradientBrush}"
+                                Background="{DynamicResource BorderControlBackgroundGradientBrush}"
                                 Stroke="{DynamicResource BorderControlGradientBrush}"
                                 StrokeShape="RoundRectangle 10"
                                 StrokeThickness="1">
@@ -442,10 +146,7 @@
                                                 TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
                                         </VerticalStackLayout>
                                     </Grid>
-                                    <BoxView
-                                        HeightRequest="1"
-                                        Opacity="0.12"
-                                        Color="{DynamicResource LoanAppDefaultForegroundColor}" />
+                                    <BoxView Style="{DynamicResource LoanAppSeparatorStyle}" />
                                     <Grid ColumnSpacing="10">
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="Auto" />
@@ -504,12 +205,20 @@
                                 </VerticalStackLayout>
                             </Border>
 
+                            <!--  ── Bottom section: search + header + list + FAB ──  -->
+                            <Grid Grid.Row="2">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="*" />
+                                </Grid.RowDefinitions>
+
                             <!--  Search/filter bar  -->
                             <Border
-                                Grid.Row="2"
+                                Grid.Row="0"
                                 Margin="12,8,12,0"
-                                Padding="14,4"
-                                BackgroundColor="{DynamicResource BorderControlBackgroundGradientBrush}"
+                                Padding="14,10"
+                                Background="{DynamicResource BorderControlBackgroundGradientBrush}"
                                 Stroke="{DynamicResource BorderControlGradientBrush}"
                                 StrokeShape="RoundRectangle 10"
                                 StrokeThickness="1">
@@ -534,94 +243,113 @@
                                         Placeholder="Filter income..."
                                         PlaceholderColor="{DynamicResource LoanAppAutoCompleteWaterColor}"
                                         SelectionChanged="OnIncomeAutoCompleteSelectionChanged"
-                                        Style="{DynamicResource SfAutocompleteStyle}" />
+                                        Style="{DynamicResource SfAutocompleteFilterStyle}" />
                                 </Grid>
                             </Border>
 
-                            <sfList:SfListView
-                                x:Name="IncomeList"
-                                Grid.Row="3"
-                                Margin="12,8,12,12"
-                                AutoFitMode="Height"
-                                ItemsSource="{Binding Income.FilteredTransactions}"
-                                SelectionMode="None"
-                                VerticalOptions="Fill">
-                                <sfList:SfListView.ItemTemplate>
-                                    <DataTemplate x:DataType="income:IncomeExpense">
-                                        <Border
-                                            Margin="0,0,0,6"
-                                            Padding="14,12"
-                                            BackgroundColor="{DynamicResource BorderControlBackgroundGradientBrush}"
-                                            Stroke="{DynamicResource BorderControlGradientBrush}"
-                                            StrokeShape="RoundRectangle 10"
-                                            StrokeThickness="1">
-                                            <Grid ColumnSpacing="8">
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="*" />
-                                                    <ColumnDefinition Width="Auto" />
-                                                    <ColumnDefinition Width="36" />
-                                                    <ColumnDefinition Width="36" />
-                                                </Grid.ColumnDefinitions>
-                                                <VerticalStackLayout
-                                                    Grid.Column="0"
-                                                    Spacing="2"
-                                                    VerticalOptions="Center">
+                            <!--  Section header, per the prototype: names the list below it.  -->
+                            <Label
+                                Grid.Row="1"
+                                AutomationId="BudgetIncomeSectionHeader"
+                                Margin="4,10,4,2"
+                                FontSize="{StaticResource FontSizeSmall}"
+                                Opacity="0.45"
+                                Text="SOURCES"
+                                TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+
+                            <!--
+                                `.rows` from app.css: ONE rounded container for the whole list, a single
+                                gradient sweeping across it, one 1px border. Rows inside are transparent so
+                                the gradient runs unbroken — per-row fills repeated it on every row, which
+                                is what made the list look dated.
+
+                                The ScrollView + AutoFitMode="Height" + VerticalOptions="Start" trio is
+                                what makes the card hug its rows rather than stretching to a tall empty
+                                box: the list measures to its content, the Border wraps that, and the
+                                ScrollView supplies the scrolling the list no longer does for itself.
+                                Changing any one of the three brings back one of the two bugs — a
+                                stretched card, or a long list clipped with no way to scroll it.
+                            -->
+                            <ScrollView Grid.Row="2">
+                            <Border
+                                Margin="12,2,12,12"
+                                Padding="0"
+                                Background="{DynamicResource BorderControlBackgroundGradientBrush}"
+                                Stroke="{DynamicResource BorderControlGradientBrush}"
+                                StrokeShape="RoundRectangle 12"
+                                StrokeThickness="1"
+                                VerticalOptions="Start">
+                                <sfList:SfListView
+                                    x:Name="IncomeList"
+                                    AutoFitMode="Height"
+                                    ItemsSource="{Binding Income.FilteredTransactions}"
+                                    SelectionMode="None">
+                                    <sfList:SfListView.ItemTemplate>
+                                        <DataTemplate x:DataType="income:IncomeExpense">
+                                            <Border
+                                                AutomationId="{Binding Name, StringFormat='IncomeRow_{0}'}"
+                                                Margin="0"
+                                                Padding="16,13"
+                                                BackgroundColor="Transparent"
+                                                Stroke="{DynamicResource BorderControlGradientBrush}"
+                                                StrokeThickness="1">
+                                                <Border.GestureRecognizers>
+                                                    <TapGestureRecognizer Tapped="OnBudgetIncomeEdit" />
+                                                </Border.GestureRecognizers>
+                                                <Grid ColumnSpacing="8">
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="*" />
+                                                        <ColumnDefinition Width="Auto" />
+                                                        <ColumnDefinition Width="Auto" />
+                                                    </Grid.ColumnDefinitions>
+                                                    <VerticalStackLayout
+                                                        Grid.Column="0"
+                                                        Spacing="2"
+                                                        VerticalOptions="Center">
+                                                        <Label
+                                                            FontSize="{StaticResource FontSizeBody}"
+                                                            LineBreakMode="TailTruncation"
+                                                            Text="{Binding Name}"
+                                                            TextColor="{DynamicResource LstForegroundColor}" />
+                                                        <Label
+                                                            FontSize="{StaticResource FontSizeSmall}"
+                                                            Opacity="0.55"
+                                                            Text="{Binding Frequency}"
+                                                            TextColor="{DynamicResource LstForegroundColor}" />
+                                                    </VerticalStackLayout>
                                                     <Label
+                                                        Grid.Column="1"
+                                                        FontAttributes="Bold"
                                                         FontSize="{StaticResource FontSizeBody}"
-                                                        LineBreakMode="TailTruncation"
-                                                        Text="{Binding Name}"
-                                                        TextColor="{DynamicResource LstForegroundColor}" />
+                                                        Text="{Binding AmountString}"
+                                                        TextColor="{DynamicResource LstForegroundColor}"
+                                                        VerticalOptions="Center" />
                                                     <Label
-                                                        FontSize="{StaticResource FontSizeSmall}"
-                                                        Opacity="0.7"
-                                                        Text="{Binding Frequency}"
-                                                        TextColor="{DynamicResource LstForegroundColor}" />
-                                                </VerticalStackLayout>
-                                                <Label
-                                                    Grid.Column="1"
-                                                    FontAttributes="Bold"
-                                                    FontSize="{StaticResource FontSizeBody}"
-                                                    Text="{Binding AmountString}"
-                                                    TextColor="{DynamicResource LstForegroundColor}"
-                                                    VerticalOptions="Center" />
-                                                <buttons:SfButton
-                                                    Grid.Column="2"
-                                                    AutomationId="{Binding Name, StringFormat='IncomeEdit_{0}'}"
-                                                    Clicked="OnBudgetIncomeEdit"
-                                                    Style="{DynamicResource ListIconButtonStyle}">
-                                                    <core:SfButton.Content>
-                                                        <DataTemplate>
-                                                            <Image Margin="6" Source="icon_edit.png" />
-                                                        </DataTemplate>
-                                                    </core:SfButton.Content>
-                                                </buttons:SfButton>
-                                                <buttons:SfButton
-                                                    Grid.Column="3"
-                                                    AutomationId="{Binding Name, StringFormat='IncomeDelete_{0}'}"
-                                                    Clicked="OnBudgetIncomeDelete"
-                                                    Style="{DynamicResource ListIconButtonStyle}">
-                                                    <core:SfButton.Content>
-                                                        <DataTemplate>
-                                                            <Image Margin="6" Source="icon_delete.png" />
-                                                        </DataTemplate>
-                                                    </core:SfButton.Content>
-                                                </buttons:SfButton>
-                                            </Grid>
-                                        </Border>
-                                    </DataTemplate>
-                                </sfList:SfListView.ItemTemplate>
-                            </sfList:SfListView>
+                                                        Grid.Column="2"
+                                                        FontSize="{StaticResource FontSizeMedium}"
+                                                        Opacity="0.4"
+                                                        Text="&#x203A;"
+                                                        TextColor="{DynamicResource LstForegroundColor}"
+                                                        VerticalOptions="Center" />
+                                                </Grid>
+                                            </Border>
+                                        </DataTemplate>
+                                    </sfList:SfListView.ItemTemplate>
+                                </sfList:SfListView>
+                            </Border>
+                            </ScrollView>
 
                             <!--  Empty state  -->
                             <Border
-                                Grid.Row="3"
-                                Margin="12,10,12,0"
+                                Grid.Row="2"
+                                Margin="12,2,12,12"
                                 Padding="24,32"
-                                BackgroundColor="{DynamicResource BorderControlBackgroundGradientBrush}"
+                                Background="{DynamicResource BorderControlBackgroundGradientBrush}"
                                 IsVisible="{Binding Income.FilteredTransactions.Count, Converter={StaticResource IntToIsEmptyConverter}}"
                                 Stroke="{DynamicResource BorderControlGradientBrush}"
-                                StrokeShape="RoundRectangle 10"
-                                StrokeThickness="1">
+                                StrokeShape="RoundRectangle 12"
+                                StrokeThickness="1"
+                                VerticalOptions="Start">
                                 <VerticalStackLayout HorizontalOptions="Center" Spacing="8">
                                     <Label
                                         FontAttributes="Bold"
@@ -641,8 +369,7 @@
                             </Border>
 
                             <Button
-                                Grid.Row="3"
-                                Grid.RowSpan="2"
+                                Grid.Row="2"
                                 Margin="0,0,20,20"
                                 BackgroundColor="{DynamicResource LoanAppInputTextFgColor}"
                                 AutomationId="BudgetIncomeAddFab"
@@ -652,7 +379,7 @@
                                 FontSize="{StaticResource FontSizeHeading}"
                                 HeightRequest="56"
                                 HorizontalOptions="End"
-                                Opacity="0.5"
+                                Opacity="0.85"
                                 Text="+"
                                 TextColor="{DynamicResource LoanAppAppShellBgColor}"
                                 VerticalOptions="End"
@@ -666,14 +393,15 @@
                                 </Button.Shadow>
                             </Button>
 
+                            </Grid>
                         </Grid>
                     </tabView:SfTabItem.Content>
                 </tabView:SfTabItem>
                 <tabView:SfTabItem AutomationId="BudgetTabExpenses" Header="Expenses">
                     <tabView:SfTabItem.Content>
+                        <!--  Same three-part shape as Income and Asset costs — see the note there.  -->
                         <Grid x:Name="ExpenseTabGrid" BackgroundColor="{DynamicResource LoanAppDefaultBackgroundColor}">
                             <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto" />
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="*" />
@@ -703,10 +431,10 @@
                                 </customControls:ThreeColumnBorderedContentView.FormattedText2>
                                 <customControls:ThreeColumnBorderedContentView.FormattedText3>
                                     <FormattedString>
-                                        <Span Style="{DynamicResource SpanThreeBoxAmountStyle}" Text="{Binding Expense.TotalIncomeMonthlyCurrencySymbol}" />
-                                        <Span Style="{DynamicResource SpanThreeBoxAmountStyle}" Text="{Binding Expense.TotalIncomeMonthlyWithComma}" />
+                                        <Span Style="{DynamicResource SpanThreeBoxAmountStyle}" Text="" />
+                                        <Span Style="{DynamicResource SpanThreeBoxAmountStyle}" Text="{Binding NetMonthlyFormatted}" />
                                         <Span Text="{Binding Expense.NewLine}" />
-                                        <Span Style="{DynamicResource SpanThreeBoxTextStyle}" Text="Monthly Income" />
+                                        <Span Style="{DynamicResource SpanThreeBoxTextStyle}" Text="Net / month" />
                                     </FormattedString>
                                 </customControls:ThreeColumnBorderedContentView.FormattedText3>
                             </customControls:ThreeColumnBorderedContentView>
@@ -716,7 +444,7 @@
                                 Grid.Row="1"
                                 Margin="12,8,12,0"
                                 Padding="14,10"
-                                BackgroundColor="{DynamicResource BorderControlBackgroundGradientBrush}"
+                                Background="{DynamicResource BorderControlBackgroundGradientBrush}"
                                 Stroke="{DynamicResource BorderControlGradientBrush}"
                                 StrokeShape="RoundRectangle 10"
                                 StrokeThickness="1">
@@ -776,10 +504,7 @@
                                                 TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
                                         </VerticalStackLayout>
                                     </Grid>
-                                    <BoxView
-                                        HeightRequest="1"
-                                        Opacity="0.12"
-                                        Color="{DynamicResource LoanAppDefaultForegroundColor}" />
+                                    <BoxView Style="{DynamicResource LoanAppSeparatorStyle}" />
                                     <Grid ColumnSpacing="10">
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="Auto" />
@@ -838,12 +563,20 @@
                                 </VerticalStackLayout>
                             </Border>
 
+                            <!--  ── Bottom section: search + header + list + FAB ──  -->
+                            <Grid Grid.Row="2">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="*" />
+                                </Grid.RowDefinitions>
+
                             <!--  Search/filter bar  -->
                             <Border
-                                Grid.Row="2"
+                                Grid.Row="0"
                                 Margin="12,8,12,0"
-                                Padding="14,4"
-                                BackgroundColor="{DynamicResource BorderControlBackgroundGradientBrush}"
+                                Padding="14,10"
+                                Background="{DynamicResource BorderControlBackgroundGradientBrush}"
                                 Stroke="{DynamicResource BorderControlGradientBrush}"
                                 StrokeShape="RoundRectangle 10"
                                 StrokeThickness="1">
@@ -868,94 +601,109 @@
                                         Placeholder="Filter expenses..."
                                         PlaceholderColor="{DynamicResource LoanAppAutoCompleteWaterColor}"
                                         SelectionChanged="OnExpenseAutoCompleteSelectionChanged"
-                                        Style="{DynamicResource SfAutocompleteStyle}" />
+                                        Style="{DynamicResource SfAutocompleteFilterStyle}" />
                                 </Grid>
                             </Border>
 
-                            <sfList:SfListView
-                                x:Name="ExpenseList"
-                                Grid.Row="3"
-                                Margin="12,8,12,12"
-                                AutoFitMode="Height"
-                                ItemsSource="{Binding Expense.FilteredTransactions}"
-                                SelectionMode="None"
-                                VerticalOptions="Fill">
-                                <sfList:SfListView.ItemTemplate>
-                                    <DataTemplate x:DataType="income:IncomeExpense">
-                                        <Border
-                                            Margin="0,0,0,6"
-                                            Padding="14,12"
-                                            BackgroundColor="{DynamicResource BorderControlBackgroundGradientBrush}"
-                                            Stroke="{DynamicResource BorderControlGradientBrush}"
-                                            StrokeShape="RoundRectangle 10"
-                                            StrokeThickness="1">
-                                            <Grid ColumnSpacing="8">
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="*" />
-                                                    <ColumnDefinition Width="Auto" />
-                                                    <ColumnDefinition Width="36" />
-                                                    <ColumnDefinition Width="36" />
-                                                </Grid.ColumnDefinitions>
-                                                <VerticalStackLayout
-                                                    Grid.Column="0"
-                                                    Spacing="2"
-                                                    VerticalOptions="Center">
+                            <!--  Section header, per the prototype: names the list below it.  -->
+                            <Label
+                                Grid.Row="1"
+                                AutomationId="BudgetExpenseSectionHeader"
+                                Margin="4,10,4,2"
+                                FontSize="{StaticResource FontSizeSmall}"
+                                Opacity="0.45"
+                                Text="LIVING EXPENSES"
+                                TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+
+                            <!--
+                                `.rows` from app.css: ONE rounded container for the whole list, a single
+                                gradient sweeping across it, one 1px border. Rows inside are transparent so
+                                the gradient runs unbroken — per-row fills repeated it on every row, which
+                                is what made the list look dated.
+
+                                ScrollView + AutoFitMode="Height" + VerticalOptions="Start" — see the
+                                note on the Income tab for why all three are load-bearing.
+                            -->
+                            <ScrollView Grid.Row="2">
+                            <Border
+                                Margin="12,2,12,12"
+                                Padding="0"
+                                Background="{DynamicResource BorderControlBackgroundGradientBrush}"
+                                Stroke="{DynamicResource BorderControlGradientBrush}"
+                                StrokeShape="RoundRectangle 12"
+                                StrokeThickness="1"
+                                VerticalOptions="Start">
+                                <sfList:SfListView
+                                    x:Name="ExpenseList"
+                                    AutoFitMode="Height"
+                                    ItemsSource="{Binding Expense.FilteredTransactions}"
+                                    SelectionMode="None">
+                                    <sfList:SfListView.ItemTemplate>
+                                        <DataTemplate x:DataType="income:IncomeExpense">
+                                            <Border
+                                                AutomationId="{Binding Name, StringFormat='ExpenseRow_{0}'}"
+                                                Margin="0"
+                                                Padding="16,13"
+                                                BackgroundColor="Transparent"
+                                                Stroke="{DynamicResource BorderControlGradientBrush}"
+                                                StrokeThickness="1">
+                                                <Border.GestureRecognizers>
+                                                    <TapGestureRecognizer Tapped="OnBudgetExpenseEdit" />
+                                                </Border.GestureRecognizers>
+                                                <Grid ColumnSpacing="8">
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="*" />
+                                                        <ColumnDefinition Width="Auto" />
+                                                        <ColumnDefinition Width="Auto" />
+                                                    </Grid.ColumnDefinitions>
+                                                    <VerticalStackLayout
+                                                        Grid.Column="0"
+                                                        Spacing="2"
+                                                        VerticalOptions="Center">
+                                                        <Label
+                                                            FontSize="{StaticResource FontSizeBody}"
+                                                            LineBreakMode="TailTruncation"
+                                                            Text="{Binding Name}"
+                                                            TextColor="{DynamicResource LstForegroundColor}" />
+                                                        <Label
+                                                            FontSize="{StaticResource FontSizeSmall}"
+                                                            Opacity="0.55"
+                                                            Text="{Binding Frequency}"
+                                                            TextColor="{DynamicResource LstForegroundColor}" />
+                                                    </VerticalStackLayout>
                                                     <Label
+                                                        Grid.Column="1"
+                                                        FontAttributes="Bold"
                                                         FontSize="{StaticResource FontSizeBody}"
-                                                        LineBreakMode="TailTruncation"
-                                                        Text="{Binding Name}"
-                                                        TextColor="{DynamicResource LstForegroundColor}" />
+                                                        Text="{Binding AmountString}"
+                                                        TextColor="{DynamicResource LstForegroundColor}"
+                                                        VerticalOptions="Center" />
                                                     <Label
-                                                        FontSize="{StaticResource FontSizeSmall}"
-                                                        Opacity="0.7"
-                                                        Text="{Binding Frequency}"
-                                                        TextColor="{DynamicResource LstForegroundColor}" />
-                                                </VerticalStackLayout>
-                                                <Label
-                                                    Grid.Column="1"
-                                                    FontAttributes="Bold"
-                                                    FontSize="{StaticResource FontSizeBody}"
-                                                    Text="{Binding AmountString}"
-                                                    TextColor="{DynamicResource LstForegroundColor}"
-                                                    VerticalOptions="Center" />
-                                                <buttons:SfButton
-                                                    Grid.Column="2"
-                                                    AutomationId="{Binding Name, StringFormat='ExpenseEdit_{0}'}"
-                                                    Clicked="OnBudgetExpenseEdit"
-                                                    Style="{DynamicResource ListIconButtonStyle}">
-                                                    <core:SfButton.Content>
-                                                        <DataTemplate>
-                                                            <Image Margin="6" Source="icon_edit.png" />
-                                                        </DataTemplate>
-                                                    </core:SfButton.Content>
-                                                </buttons:SfButton>
-                                                <buttons:SfButton
-                                                    Grid.Column="3"
-                                                    AutomationId="{Binding Name, StringFormat='ExpenseDelete_{0}'}"
-                                                    Clicked="OnBudgetExpenseDelete"
-                                                    Style="{DynamicResource ListIconButtonStyle}">
-                                                    <core:SfButton.Content>
-                                                        <DataTemplate>
-                                                            <Image Margin="6" Source="icon_delete.png" />
-                                                        </DataTemplate>
-                                                    </core:SfButton.Content>
-                                                </buttons:SfButton>
-                                            </Grid>
-                                        </Border>
-                                    </DataTemplate>
-                                </sfList:SfListView.ItemTemplate>
-                            </sfList:SfListView>
+                                                        Grid.Column="2"
+                                                        FontSize="{StaticResource FontSizeMedium}"
+                                                        Opacity="0.4"
+                                                        Text="&#x203A;"
+                                                        TextColor="{DynamicResource LstForegroundColor}"
+                                                        VerticalOptions="Center" />
+                                                </Grid>
+                                            </Border>
+                                        </DataTemplate>
+                                    </sfList:SfListView.ItemTemplate>
+                                </sfList:SfListView>
+                            </Border>
+                            </ScrollView>
 
                             <!--  Empty state  -->
                             <Border
-                                Grid.Row="3"
-                                Margin="12,10,12,0"
+                                Grid.Row="2"
+                                Margin="12,2,12,12"
                                 Padding="24,32"
-                                BackgroundColor="{DynamicResource BorderControlBackgroundGradientBrush}"
+                                Background="{DynamicResource BorderControlBackgroundGradientBrush}"
                                 IsVisible="{Binding Expense.FilteredTransactions.Count, Converter={StaticResource IntToIsEmptyConverter}}"
                                 Stroke="{DynamicResource BorderControlGradientBrush}"
-                                StrokeShape="RoundRectangle 10"
-                                StrokeThickness="1">
+                                StrokeShape="RoundRectangle 12"
+                                StrokeThickness="1"
+                                VerticalOptions="Start">
                                 <VerticalStackLayout HorizontalOptions="Center" Spacing="8">
                                     <Label
                                         FontAttributes="Bold"
@@ -975,8 +723,7 @@
                             </Border>
 
                             <Button
-                                Grid.Row="3"
-                                Grid.RowSpan="2"
+                                Grid.Row="2"
                                 Margin="0,0,20,20"
                                 BackgroundColor="{DynamicResource LoanAppInputTextFgColor}"
                                 AutomationId="BudgetExpenseAddFab"
@@ -986,7 +733,7 @@
                                 FontSize="{StaticResource FontSizeHeading}"
                                 HeightRequest="56"
                                 HorizontalOptions="End"
-                                Opacity="0.5"
+                                Opacity="0.85"
                                 Text="+"
                                 TextColor="{DynamicResource LoanAppAppShellBgColor}"
                                 VerticalOptions="End"
@@ -1000,6 +747,7 @@
                                 </Button.Shadow>
                             </Button>
 
+                            </Grid>
                         </Grid>
                     </tabView:SfTabItem.Content>
                 </tabView:SfTabItem>
@@ -1036,101 +784,74 @@
                                     </VerticalStackLayout>
                                 </Border>
 
-                                <!--  Net income card  -->
+                                <!--  Hero card: NET EVERY MONTH  -->
                                 <Border
-                                    x:Name="SummaryNetCard"
+                                    x:Name="SummaryHeroCard"
                                     Padding="16"
-                                    BackgroundColor="{DynamicResource LoanAppAppShellBgColor}"
+                                    Background="{DynamicResource BorderControlBackgroundGradientBrush}"
+                                    Stroke="{DynamicResource BorderControlGradientBrush}"
                                     StrokeShape="RoundRectangle 12"
-                                    StrokeThickness="0">
-                                    <VerticalStackLayout Spacing="10">
+                                    StrokeThickness="1">
+                                    <VerticalStackLayout Spacing="4">
                                         <Label
-                                            FontAttributes="Bold"
-                                            FontSize="{StaticResource FontSizeMedium}"
-                                            Text="Monthly Summary"
+                                            FontSize="{StaticResource FontSizeSmall}"
+                                            Opacity="0.6"
+                                            Text="NET EVERY MONTH"
                                             TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
-
-                                        <Grid ColumnSpacing="8" RowSpacing="6">
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="*" />
-                                                <ColumnDefinition Width="Auto" />
-                                            </Grid.ColumnDefinitions>
-                                            <Grid.RowDefinitions>
-                                                <RowDefinition Height="Auto" />
-                                                <RowDefinition Height="Auto" />
-                                                <RowDefinition Height="1" />
-                                                <RowDefinition Height="Auto" />
-                                                <RowDefinition Height="Auto" />
-                                            </Grid.RowDefinitions>
-
-                                            <Label
-                                                Grid.Row="0"
-                                                Grid.Column="0"
-                                                FontSize="{StaticResource FontSizeBody}"
-                                                Opacity="0.7"
-                                                Text="Total Income"
-                                                TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
-                                            <Label
-                                                AutomationId="BudgetIncomeMonthlyTotal"
-                                                x:Name="LblIncomeMonthly"
-                                                Grid.Row="0"
-                                                Grid.Column="1"
-                                                FontAttributes="Bold"
-                                                FontSize="{StaticResource FontSizeBody}"
-                                                HorizontalTextAlignment="End"
-                                                TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
-
-                                            <Label
-                                                Grid.Row="1"
-                                                Grid.Column="0"
-                                                FontSize="{StaticResource FontSizeBody}"
-                                                Opacity="0.7"
-                                                Text="Total Expenses"
-                                                TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
-                                            <Label
-                                                AutomationId="BudgetExpenseMonthlyTotal"
-                                                x:Name="LblExpenseMonthly"
-                                                Grid.Row="1"
-                                                Grid.Column="1"
-                                                FontAttributes="Bold"
-                                                FontSize="{StaticResource FontSizeBody}"
-                                                HorizontalTextAlignment="End"
-                                                TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
-
-                                            <BoxView
-                                                Grid.Row="2"
-                                                Grid.ColumnSpan="2"
-                                                Opacity="0.15"
-                                                Color="{DynamicResource LoanAppDefaultForegroundColor}" />
-
-                                            <Label
-                                                Grid.Row="3"
-                                                Grid.Column="0"
-                                                FontAttributes="Bold"
-                                                FontSize="{StaticResource FontSizeMedium}"
-                                                Text="Net Monthly"
-                                                TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
-                                            <Label
-                                                AutomationId="BudgetNetMonthly"
-                                                x:Name="LblNetMonthly"
-                                                Grid.Row="3"
-                                                Grid.Column="1"
-                                                FontAttributes="Bold"
-                                                FontSize="{StaticResource FontSizeMedium}"
-                                                HorizontalTextAlignment="End" />
-
-                                            <Label
-                                                AutomationId="BudgetNetYearly"
-                                                x:Name="LblNetYearly"
-                                                Grid.Row="4"
-                                                Grid.ColumnSpan="2"
-                                                FontSize="{StaticResource FontSizeSmall}"
-                                                HorizontalTextAlignment="End"
-                                                Opacity="0.7"
-                                                TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
-                                        </Grid>
+                                        <!--  Red only when the net is actually negative.  -->
+                                        <Label
+                                            AutomationId="BudgetNetMonthly"
+                                            x:Name="LblNetMonthlyHero"
+                                            FontAttributes="Bold"
+                                            FontSize="32"
+                                            Text="{Binding NetMonthlyFormatted}"
+                                            TextColor="{DynamicResource LoanAppDefaultForegroundColor}">
+                                            <Label.Triggers>
+                                                <DataTrigger
+                                                    Binding="{Binding NetIsPositive}"
+                                                    TargetType="Label"
+                                                    Value="False">
+                                                    <Setter Property="TextColor" Value="{DynamicResource LoanAppNegativeValueColor}" />
+                                                </DataTrigger>
+                                            </Label.Triggers>
+                                        </Label>
+                                        <Label
+                                            AutomationId="BudgetNetYearly"
+                                            x:Name="LblNetYearlyHero"
+                                            FontSize="{StaticResource FontSizeSmall}"
+                                            Opacity="0.7"
+                                            Text="{Binding NetYearlyFormatted, StringFormat='{0} a year'}"
+                                            TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
                                     </VerticalStackLayout>
                                 </Border>
+
+                                <!--  Three-box row: In / Out / Spare  -->
+                                <customControls:ThreeColumnBorderedContentView x:Name="SummaryThreeBoxes">
+                                    <customControls:ThreeColumnBorderedContentView.FormattedText1>
+                                        <FormattedString>
+                                            <Span Style="{DynamicResource SpanThreeBoxAmountStyle}" Text="{Binding TotalIncomeMonthlyFormatted}" />
+                                            <Span Text="{Binding Income.NewLine}" />
+                                            <Span Style="{DynamicResource SpanThreeBoxTextStyle}" Text="in / mo" />
+                                        </FormattedString>
+                                    </customControls:ThreeColumnBorderedContentView.FormattedText1>
+                                    <customControls:ThreeColumnBorderedContentView.FormattedText2>
+                                        <FormattedString>
+                                            <Span Style="{DynamicResource SpanThreeBoxAmountStyle}" Text="{Binding TotalExpenseMonthlyFormatted}" />
+                                            <Span Text="{Binding Income.NewLine}" />
+                                            <Span Style="{DynamicResource SpanThreeBoxTextStyle}" Text="out / mo" />
+                                        </FormattedString>
+                                    </customControls:ThreeColumnBorderedContentView.FormattedText2>
+                                    <customControls:ThreeColumnBorderedContentView.FormattedText3>
+                                        <FormattedString>
+                                            <Span
+                                                Style="{DynamicResource SpanThreeBoxAmountStyle}"
+                                                Text="{Binding SpareAfterLoanFormatted}"
+                                                TextColor="{Binding IsSpareAfterLoanNegative, Converter={StaticResource NegativeToThemeColorConverter}, ConverterParameter=LoanAppChartColor1}" />
+                                            <Span Text="{Binding Income.NewLine}" />
+                                            <Span Style="{DynamicResource SpanThreeBoxTextStyle}" Text="spare after loan" />
+                                        </FormattedString>
+                                    </customControls:ThreeColumnBorderedContentView.FormattedText3>
+                                </customControls:ThreeColumnBorderedContentView>
 
                                 <!--  Income vs Expense donut chart  -->
                                 <Border
@@ -1208,19 +929,180 @@
                                     Text="Monthly income vs expenses"
                                     TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
 
-                                <!--  Top expenses list  -->
+                                <!--  Insights section  -->
+                                <Label
+                                    Margin="4,8,4,2"
+                                    FontSize="{StaticResource FontSizeSmall}"
+                                    Opacity="0.45"
+                                    Text="INSIGHTS"
+                                    TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+
+                                <Border
+                                    Padding="0"
+                                    Margin="0"
+                                    Background="{DynamicResource BorderControlBackgroundGradientBrush}"
+                                    Stroke="{DynamicResource BorderControlGradientBrush}"
+                                    StrokeShape="RoundRectangle 12"
+                                    StrokeThickness="1">
+                                    <VerticalStackLayout Spacing="0">
+                                        <!--  Income  -->
+                                        <Border
+                                            Padding="16,12"
+                                            BackgroundColor="Transparent"
+                                            Stroke="{DynamicResource BorderControlGradientBrush}"
+                                            StrokeThickness="1">
+                                            <Grid ColumnSpacing="8">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*" />
+                                                    <ColumnDefinition Width="Auto" />
+                                                </Grid.ColumnDefinitions>
+                                                <VerticalStackLayout Grid.Column="0" Spacing="2">
+                                                    <Label
+                                                        FontSize="{StaticResource FontSizeBody}"
+                                                        Text="Income"
+                                                        TextColor="{DynamicResource LstForegroundColor}" />
+                                                    <Label
+                                                        FontSize="{StaticResource FontSizeSmall}"
+                                                        Opacity="0.55"
+                                                        Text="{Binding IncomeSourceCountText}"
+                                                        TextColor="{DynamicResource LstForegroundColor}" />
+                                                </VerticalStackLayout>
+                                                <Label
+                                                    AutomationId="BudgetInsightsIncome"
+                                                    Grid.Column="1"
+                                                    FontAttributes="Bold"
+                                                    FontSize="{StaticResource FontSizeBody}"
+                                                    Text="{Binding TotalIncomeMonthlySigned}"
+                                                    TextColor="{DynamicResource LoanAppChartColor1}"
+                                                    VerticalOptions="Center" />
+                                            </Grid>
+                                        </Border>
+                                        <!--  Living expenses  -->
+                                        <Border
+                                            Padding="16,12"
+                                            BackgroundColor="Transparent"
+                                            Stroke="{DynamicResource BorderControlGradientBrush}"
+                                            StrokeThickness="1">
+                                            <Grid ColumnSpacing="8">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*" />
+                                                    <ColumnDefinition Width="Auto" />
+                                                </Grid.ColumnDefinitions>
+                                                <VerticalStackLayout Grid.Column="0" Spacing="2">
+                                                    <Label
+                                                        FontSize="{StaticResource FontSizeBody}"
+                                                        Text="Living expenses"
+                                                        TextColor="{DynamicResource LstForegroundColor}" />
+                                                    <Label
+                                                        FontSize="{StaticResource FontSizeSmall}"
+                                                        Opacity="0.55"
+                                                        Text="{Binding ExpenseRecordCountText}"
+                                                        TextColor="{DynamicResource LstForegroundColor}" />
+                                                </VerticalStackLayout>
+                                                <Label
+                                                    AutomationId="BudgetInsightsLivingExpenses"
+                                                    Grid.Column="1"
+                                                    FontAttributes="Bold"
+                                                    FontSize="{StaticResource FontSizeBody}"
+                                                    Text="{Binding TotalExpenseMonthlySigned}"
+                                                    TextColor="{DynamicResource LoanAppChartColor2}"
+                                                    VerticalOptions="Center" />
+                                            </Grid>
+                                        </Border>
+                                        <!--  Asset running costs  -->
+                                        <Border
+                                            Padding="16,12"
+                                            BackgroundColor="Transparent"
+                                            Stroke="{DynamicResource BorderControlGradientBrush}"
+                                            StrokeThickness="1">
+                                            <Grid ColumnSpacing="8">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*" />
+                                                    <ColumnDefinition Width="Auto" />
+                                                </Grid.ColumnDefinitions>
+                                                <VerticalStackLayout Grid.Column="0" Spacing="2">
+                                                    <Label
+                                                        FontSize="{StaticResource FontSizeBody}"
+                                                        Text="Asset running costs"
+                                                        TextColor="{DynamicResource LstForegroundColor}" />
+                                                    <Label
+                                                        FontSize="{StaticResource FontSizeSmall}"
+                                                        Opacity="0.55"
+                                                        Text="Maintenance, insurance, rates"
+                                                        TextColor="{DynamicResource LstForegroundColor}" />
+                                                </VerticalStackLayout>
+                                                <Label
+                                                    AutomationId="BudgetInsightsAssetCosts"
+                                                    Grid.Column="1"
+                                                    FontAttributes="Bold"
+                                                    FontSize="{StaticResource FontSizeBody}"
+                                                    Text="{Binding AssetRunningCostMonthlyFormatted}"
+                                                    TextColor="{DynamicResource LoanAppChartColor2}"
+                                                    VerticalOptions="Center" />
+                                            </Grid>
+                                        </Border>
+                                        <!--  Net  -->
+                                        <Border
+                                            Padding="16,12"
+                                            BackgroundColor="Transparent"
+                                            Stroke="{DynamicResource BorderControlGradientBrush}"
+                                            StrokeThickness="1">
+                                            <Grid ColumnSpacing="8">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*" />
+                                                    <ColumnDefinition Width="Auto" />
+                                                </Grid.ColumnDefinitions>
+                                                <Label
+                                                    Grid.Column="0"
+                                                    FontAttributes="Bold"
+                                                    FontSize="{StaticResource FontSizeBody}"
+                                                    Text="Net"
+                                                    TextColor="{DynamicResource LstForegroundColor}" />
+                                                <!--
+                                                    The Net row is a verdict, so it changes colour.
+                                                    The Income / Living expenses / Asset costs rows
+                                                    above deliberately do NOT: those are categories,
+                                                    always signed the same way, and colouring them
+                                                    red would say something is wrong when nothing is.
+                                                -->
+                                                <Label
+                                                    AutomationId="BudgetInsightsNet"
+                                                    Grid.Column="1"
+                                                    FontAttributes="Bold"
+                                                    FontSize="{StaticResource FontSizeBody}"
+                                                    Text="{Binding NetMonthlyFormatted}"
+                                                    TextColor="{DynamicResource LoanAppChartColor1}"
+                                                    VerticalOptions="Center">
+                                                    <Label.Triggers>
+                                                        <DataTrigger
+                                                            Binding="{Binding NetIsPositive}"
+                                                            TargetType="Label"
+                                                            Value="False">
+                                                            <Setter Property="TextColor" Value="{DynamicResource LoanAppNegativeValueColor}" />
+                                                        </DataTrigger>
+                                                    </Label.Triggers>
+                                                </Label>
+                                            </Grid>
+                                        </Border>
+                                    </VerticalStackLayout>
+                                </Border>
+
+                                <!--  Top expenses section  -->
+                                <Label
+                                    Margin="4,8,4,2"
+                                    FontSize="{StaticResource FontSizeSmall}"
+                                    Opacity="0.45"
+                                    Text="TOP EXPENSES"
+                                    TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+
                                 <Border
                                     x:Name="TopExpensesCard"
                                     Padding="16"
-                                    BackgroundColor="{DynamicResource LoanAppAppShellBgColor}"
+                                    Background="{DynamicResource BorderControlBackgroundGradientBrush}"
+                                    Stroke="{DynamicResource BorderControlGradientBrush}"
                                     StrokeShape="RoundRectangle 12"
-                                    StrokeThickness="0">
+                                    StrokeThickness="1">
                                     <VerticalStackLayout Spacing="8">
-                                        <Label
-                                            FontAttributes="Bold"
-                                            FontSize="{StaticResource FontSizeMedium}"
-                                            Text="Top Expenses (monthly)"
-                                            TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
                                         <sfList:SfListView
                                             x:Name="TopExpensesList"
                                             AutoFitMode="Height"
@@ -1250,36 +1132,77 @@
                                     </VerticalStackLayout>
                                 </Border>
 
+                                <!--
+                                    "See the projection ›" — the contextual link promised in
+                                    NAVIGATION-PROPOSAL.md, sited at the figure it explains.
+                                    It matters more here than Loan's schedule link does, because
+                                    Projection *left* Budget for What If: without this nothing on
+                                    this page points at where it went.
+                                -->
+                                <Label
+                                    AutomationId="BudgetProjectionLink"
+                                    Margin="0,4,0,0"
+                                    FontSize="{StaticResource FontSizeSmall}"
+                                    Text="See the projection ›"
+                                    TextColor="{DynamicResource LoanAppTabIndicatorStrokeColor}"
+                                    TextDecorations="Underline">
+                                    <Label.GestureRecognizers>
+                                        <TapGestureRecognizer Tapped="OnSeeProjectionTapped" />
+                                    </Label.GestureRecognizers>
+                                </Label>
+
+                                <!--
+                                    The net figure above does NOT include the loan repayment, so
+                                    on its own this page overstates what is actually spare. The
+                                    prototype calls this out as an accuracy matter rather than a
+                                    nicety, which is why it is a banner and not microcopy.
+                                    Hidden until there is a loan to talk about.
+                                -->
+                                <Border
+                                    x:Name="LoanNotCountedBanner"
+                                    Margin="0,8,0,0"
+                                    Padding="12"
+                                    BackgroundColor="{DynamicResource LoanAppPopupSurface}"
+                                    IsVisible="False"
+                                    StrokeShape="RoundRectangle 10"
+                                    StrokeThickness="0">
+                                    <Label
+                                        AutomationId="BudgetLoanNotCountedBanner"
+                                        x:Name="LblLoanNotCounted"
+                                        FontSize="{StaticResource FontSizeSmall}"
+                                        TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                                </Border>
+
                                 <!--  Affordability (if loan data available)  -->
                                 <Border
                                     x:Name="AffordabilityCard"
                                     Padding="16"
-                                    BackgroundColor="{DynamicResource LoanAppAppShellBgColor}"
+                                    Background="{DynamicResource BorderControlBackgroundGradientBrush}"
+                                    Stroke="{DynamicResource BorderControlGradientBrush}"
                                     IsVisible="False"
                                     StrokeShape="RoundRectangle 12"
-                                    StrokeThickness="0">
-                                    <VerticalStackLayout Spacing="6">
+                                    StrokeThickness="1">
+                                    <VerticalStackLayout Spacing="8">
                                         <Label
-                                            FontAttributes="Bold"
-                                            FontSize="{StaticResource FontSizeMedium}"
-                                            Text="Loan Affordability"
+                                            FontSize="{StaticResource FontSizeSmall}"
+                                            Opacity="0.6"
+                                            Text="LOAN AFFORDABILITY"
                                             TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
                                         <Label
                                             AutomationId="BudgetAffordabilityVerdict"
                                             x:Name="LblAffordability"
                                             FontAttributes="Bold"
-                                            FontSize="{StaticResource FontSizeXL}"
+                                            FontSize="28"
                                             TextColor="{DynamicResource LoanAppNavigationButtonBackgroundColor}" />
                                         <Label
                                             x:Name="LblAffordabilityDesc"
                                             FontSize="{StaticResource FontSizeSmall}"
-                                            Opacity="0.6"
+                                            Opacity="0.7"
                                             TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
                                         <Label
                                             Margin="0,4,0,0"
-                                            FontAttributes="Italic"
-                                            FontSize="{StaticResource FontSizeSmall}"
-                                            Opacity="0.7"
+                                            FontSize="{StaticResource FontSizeXS}"
+                                            Opacity="0.5"
                                             Text="{DynamicResource LoanAppEstimateMicrocopy}"
                                             TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
                                     </VerticalStackLayout>
@@ -1290,795 +1213,248 @@
                     </tabView:SfTabItem.Content>
                 </tabView:SfTabItem>
 
-                <!--  ══ Tab 4: Projection ══════════════════════════════════════  -->
-                <tabView:SfTabItem AutomationId="BudgetTabProjection" Header="Projection">
-                    <tabView:SfTabItem.Content>
-                        <ScrollView BackgroundColor="{DynamicResource LoanAppDefaultBackgroundColor}">
-                            <VerticalStackLayout Padding="12,8,12,32" Spacing="12">
+                <!--
+                    Projection used to be tab 4 here; it moved to What If. Asset costs is
+                    therefore index 3, not 4 — which the switch in TabView_OnSelectionChanging
+                    depends on, so renumbering these tabs means renumbering that switch too.
+                -->
 
-                                <!--  Summary bar  -->
-                                <customControls:ThreeColumnBorderedContentView x:Name="ProjectionSummaryBar">
+                <!--  ══ Tab 4: Asset costs ═════════════════════════════════════  -->
+                <tabView:SfTabItem AutomationId="BudgetTabAssetCosts" Header="Asset costs">
+                    <tabView:SfTabItem.Content>
+                        <Grid x:Name="AssetCostsRoot" x:DataType="primaryModels:LoanViewModel">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+
+                            <!--  ── Top section (banner + 3-box summary — untouched) ──  -->
+                            <VerticalStackLayout Padding="12,0" Grid.Row="0" Spacing="0">
+                                <customControls:DisclaimerBannerView
+                                    BannerType="Information"
+                                    HeaderText="Instructions"
+                                    Text="Enter the anticipated ongoing costs for this asset (such as maintenance, insurance, and taxes) after purchase, excluding mortgage payments." />
+
+                                <customControls:ThreeColumnBorderedContentView LineHeightBox3="2.0">
                                     <customControls:ThreeColumnBorderedContentView.FormattedText1>
                                         <FormattedString>
-                                            <Span x:Name="ProjectionIncomeSpan" Style="{DynamicResource SpanThreeBoxAmountStyle}" />
+                                            <Span Style="{DynamicResource SpanThreeBoxCurrencyStyle}" Text="{Binding CurrencySymbol}" />
+                                            <Span Style="{DynamicResource SpanThreeBoxAmountStyle}" Text="{Binding TotalMonthlyExpenseWithComma}" />
                                             <Span Text="{Binding NewLine}" />
-                                            <Span Style="{DynamicResource SpanThreeBoxTextStyle}" Text="Projected Income" />
+                                            <Span Style="{DynamicResource SpanThreeBoxTextStyle}" Text="Monthly new asset (expense)" />
                                         </FormattedString>
                                     </customControls:ThreeColumnBorderedContentView.FormattedText1>
                                     <customControls:ThreeColumnBorderedContentView.FormattedText2>
                                         <FormattedString>
-                                            <Span x:Name="ProjectionExpenseSpan" Style="{DynamicResource SpanThreeBoxAmountStyle}" />
+                                            <Span Style="{DynamicResource SpanThreeBoxCurrencyStyle}" Text="{Binding CurrencySymbol}" />
+                                            <Span Style="{DynamicResource SpanThreeBoxAmountStyle}" Text="{Binding TotalYearlyExpenseWithComma}" />
                                             <Span Text="{Binding NewLine}" />
-                                            <Span Style="{DynamicResource SpanThreeBoxTextStyle}" Text="Projected Expense" />
+                                            <Span Style="{DynamicResource SpanThreeBoxTextStyle}" Text="Yearly new asset (expense)" />
                                         </FormattedString>
                                     </customControls:ThreeColumnBorderedContentView.FormattedText2>
                                     <customControls:ThreeColumnBorderedContentView.FormattedText3>
                                         <FormattedString>
-                                            <Span x:Name="ProjectionYearsSpan" Style="{DynamicResource SpanThreeBoxAmountStyle}" />
-                                            <Span Text="{Binding NewLine}" />
-                                            <Span Style="{DynamicResource SpanThreeBoxTextStyle}" Text="Years" />
+                                            <Span Style="{DynamicResource SpanThreeBoxCurrencyStyle}" Text="{Binding CurrencySymbol}" />
+                                            <Span Style="{DynamicResource SpanThreeBoxAmountStyle}" Text="{Binding TotalMonthlyOverallExpense}" />
+                                            <Span FontSize="{StaticResource FontSizeXS}" Style="{DynamicResource SpanThreeBoxAmountStyle}" Text="{Binding TotalMonthlyOverallExpenseBreakdownWithComma}" />
+                                            <Span Style="{DynamicResource SpanThreeBoxTextStyle}" Text=" monthly new asset overall expense" />
                                         </FormattedString>
                                     </customControls:ThreeColumnBorderedContentView.FormattedText3>
                                 </customControls:ThreeColumnBorderedContentView>
+                            </VerticalStackLayout>
 
-                                <!--  Controls  -->
+                            <!--  ── Bottom section: search + header + list + FAB ──  -->
+                            <Grid Grid.Row="1">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="*" />
+                                </Grid.RowDefinitions>
+
+                                <!--  Search / filter bar  -->
                                 <Border
-                                    Margin="0,4,0,0"
-                                    Padding="16"
-                                    BackgroundColor="{DynamicResource LoanAppAppShellBgColor}"
+                                    Grid.Row="0"
+                                    Margin="12,10,12,0"
+                                    Padding="14,10"
+                                    Background="{DynamicResource BorderControlBackgroundGradientBrush}"
+                                    Stroke="{DynamicResource BorderControlGradientBrush}"
+                                    StrokeShape="RoundRectangle 10"
+                                    StrokeThickness="1">
+                                    <Grid ColumnSpacing="8">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+                                        <Label
+                                            Grid.Column="0"
+                                            FontSize="{StaticResource FontSizeBody}"
+                                            Opacity="0.45"
+                                            Text="🔍"
+                                            VerticalOptions="Center" />
+                                        <editors:SfAutocomplete
+                                            x:Name="autoComplete"
+                                            AutomationId="LoanRunningCostFilter"
+                                            Grid.Column="1"
+                                            BackgroundColor="Transparent"
+                                            Completed="autoComplete_Completed"
+                                            ItemsSource="{Binding AutocompleteNameList}"
+                                            MinimumPrefixCharacters="1"
+                                            Placeholder="Filter expenses..."
+                                            PlaceholderColor="{DynamicResource LoanAppAutoCompleteWaterColor}"
+                                            SelectionChanged="autoComplete_SelectionChanged"
+                                            Style="{DynamicResource SfAutocompleteFilterStyle}" />
+                                    </Grid>
+                                </Border>
+
+                                <!--  Empty state  -->
+                                <Border
+                                    Grid.Row="2"
+                                    Margin="12,2,12,12"
+                                    Padding="24,32"
+                                    Background="{DynamicResource BorderControlBackgroundGradientBrush}"
+                                    IsVisible="{Binding FilteredTransactions.Count, Converter={StaticResource IntToIsEmptyConverter}}"
+                                    Stroke="{DynamicResource BorderControlGradientBrush}"
                                     StrokeShape="RoundRectangle 12"
-                                    StrokeThickness="0">
-                                    <VerticalStackLayout Spacing="12">
-
-                                        <!--  INCOME PROJECTION  -->
+                                    StrokeThickness="1"
+                                    VerticalOptions="Start">
+                                    <VerticalStackLayout HorizontalOptions="Center" Spacing="8">
                                         <Label
                                             FontAttributes="Bold"
-                                            FontSize="{StaticResource FontSizeSmall}"
-                                            Opacity="0.7"
-                                            Text="INCOME PROJECTION"
+                                            FontSize="{StaticResource FontSizeMedium}"
+                                            HorizontalOptions="Center"
+                                            HorizontalTextAlignment="Center"
+                                            Text="No asset expenses yet"
                                             TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
-
-                                        <!--  Income growth rate stepper  -->
-                                        <Grid ColumnSpacing="0">
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="*" />
-                                                <ColumnDefinition Width="44" />
-                                                <ColumnDefinition Width="Auto" />
-                                                <ColumnDefinition Width="44" />
-                                            </Grid.ColumnDefinitions>
-                                            <Label
-                                                Grid.Column="0"
-                                                FontSize="{StaticResource FontSizeSmall}"
-                                                Opacity="0.7"
-                                                Text="Annual growth %"
-                                                TextColor="{DynamicResource LoanAppDefaultForegroundColor}"
-                                                VerticalOptions="Center" />
-                                            <Button
-                                                Grid.Column="1"
-                                                BackgroundColor="Transparent"
-                                                Clicked="OnIncomeGrowthRateDecrease"
-                                                FontAttributes="Bold"
-                                                FontSize="{StaticResource FontSizeHeading}"
-                                                Text="−"
-                                                TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
-                                            <Label
-                                                x:Name="LblIncomeGrowthRate"
-                                                Grid.Column="2"
-                                                FontAttributes="Bold"
-                                                FontSize="{StaticResource FontSizeHeading}"
-                                                HorizontalOptions="Center"
-                                                HorizontalTextAlignment="Center"
-                                                MinimumWidthRequest="48"
-                                                TextColor="{DynamicResource LoanAppInputTextFgColor}"
-                                                VerticalOptions="Center" />
-                                            <Button
-                                                Grid.Column="3"
-                                                BackgroundColor="Transparent"
-                                                Clicked="OnIncomeGrowthRateIncrease"
-                                                FontAttributes="Bold"
-                                                FontSize="{StaticResource FontSizeHeading}"
-                                                Text="+"
-                                                TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
-                                        </Grid>
-
-                                        <BoxView
-                                            HeightRequest="1"
-                                            Opacity="0.12"
-                                            Color="{DynamicResource LoanAppDefaultForegroundColor}" />
-
-                                        <!--  Include expenses switch  -->
-                                        <Grid ColumnSpacing="10">
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="Auto" />
-                                                <ColumnDefinition Width="*" />
-                                            </Grid.ColumnDefinitions>
-                                            <buttons:SfSwitch
-                                                x:Name="SwitchIncludeExpenses"
-                                                Grid.Column="0"
-                                                HorizontalOptions="Start"
-                                                StateChanged="OnIncludeExpensesChanged">
-                                                <VisualStateManager.VisualStateGroups>
-                                                    <VisualStateGroup x:Name="ProjIncomeSwitchStates1">
-                                                        <VisualState x:Name="On">
-                                                            <VisualState.Setters>
-                                                                <Setter Property="SwitchSettings">
-                                                                    <Setter.Value>
-                                                                        <buttons:SwitchSettings
-                                                                            ThumbBackground="{DynamicResource LoanAppSwitchThumbColorOn}"
-                                                                            ThumbStroke="{DynamicResource LoanAppSwitchThumbBorderColorOn}"
-                                                                            TrackBackground="{DynamicResource LoanAppSwitchTrackColorOn}"
-                                                                            TrackStroke="{DynamicResource LoanAppSwitchTrackBorderColorOn}" />
-                                                                    </Setter.Value>
-                                                                </Setter>
-                                                            </VisualState.Setters>
-                                                        </VisualState>
-                                                        <VisualState x:Name="Off">
-                                                            <VisualState.Setters>
-                                                                <Setter Property="SwitchSettings">
-                                                                    <Setter.Value>
-                                                                        <buttons:SwitchSettings
-                                                                            ThumbBackground="{DynamicResource LoanAppSwitchThumbColorOff}"
-                                                                            ThumbStroke="{DynamicResource LoanAppSwitchThumbBorderColorOff}"
-                                                                            TrackBackground="{DynamicResource LoanAppSwitchTrackColorOff}"
-                                                                            TrackStroke="{DynamicResource LoanAppSwitchTrackBorderColorOff}" />
-                                                                    </Setter.Value>
-                                                                </Setter>
-                                                            </VisualState.Setters>
-                                                        </VisualState>
-                                                    </VisualStateGroup>
-                                                </VisualStateManager.VisualStateGroups>
-                                            </buttons:SfSwitch>
-                                            <VerticalStackLayout
-                                                Grid.Column="1"
-                                                Spacing="1"
-                                                VerticalOptions="Center">
-                                                <Label
-                                                    FontSize="{StaticResource FontSizeBody}"
-                                                    Text="Include expenses"
-                                                    TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
-                                                <Label
-                                                    FontSize="{StaticResource FontSizeSmall}"
-                                                    Opacity="0.7"
-                                                    Text="Deduct living expenses from projection"
-                                                    TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
-                                            </VerticalStackLayout>
-                                        </Grid>
-
-                                        <BoxView
-                                            HeightRequest="1"
-                                            Opacity="0.12"
-                                            Color="{DynamicResource LoanAppDefaultForegroundColor}" />
-
-                                        <!--  Include asset expenses switch (income)  -->
-                                        <Grid ColumnSpacing="10">
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="Auto" />
-                                                <ColumnDefinition Width="*" />
-                                            </Grid.ColumnDefinitions>
-                                            <buttons:SfSwitch
-                                                x:Name="SwitchIncludePropertyExpenses"
-                                                Grid.Column="0"
-                                                HorizontalOptions="Start"
-                                                StateChanged="OnIncludePropertyExpensesChanged">
-                                                <VisualStateManager.VisualStateGroups>
-                                                    <VisualStateGroup x:Name="ProjIncomeSwitchStates2">
-                                                        <VisualState x:Name="On">
-                                                            <VisualState.Setters>
-                                                                <Setter Property="SwitchSettings">
-                                                                    <Setter.Value>
-                                                                        <buttons:SwitchSettings
-                                                                            ThumbBackground="{DynamicResource LoanAppSwitchThumbColorOn}"
-                                                                            ThumbStroke="{DynamicResource LoanAppSwitchThumbBorderColorOn}"
-                                                                            TrackBackground="{DynamicResource LoanAppSwitchTrackColorOn}"
-                                                                            TrackStroke="{DynamicResource LoanAppSwitchTrackBorderColorOn}" />
-                                                                    </Setter.Value>
-                                                                </Setter>
-                                                            </VisualState.Setters>
-                                                        </VisualState>
-                                                        <VisualState x:Name="Off">
-                                                            <VisualState.Setters>
-                                                                <Setter Property="SwitchSettings">
-                                                                    <Setter.Value>
-                                                                        <buttons:SwitchSettings
-                                                                            ThumbBackground="{DynamicResource LoanAppSwitchThumbColorOff}"
-                                                                            ThumbStroke="{DynamicResource LoanAppSwitchThumbBorderColorOff}"
-                                                                            TrackBackground="{DynamicResource LoanAppSwitchTrackColorOff}"
-                                                                            TrackStroke="{DynamicResource LoanAppSwitchTrackBorderColorOff}" />
-                                                                    </Setter.Value>
-                                                                </Setter>
-                                                            </VisualState.Setters>
-                                                        </VisualState>
-                                                    </VisualStateGroup>
-                                                </VisualStateManager.VisualStateGroups>
-                                            </buttons:SfSwitch>
-                                            <VerticalStackLayout
-                                                Grid.Column="1"
-                                                Spacing="1"
-                                                VerticalOptions="Center">
-                                                <Label
-                                                    FontSize="{StaticResource FontSizeBody}"
-                                                    Text="Include asset expenses"
-                                                    TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
-                                                <Label
-                                                    FontSize="{StaticResource FontSizeSmall}"
-                                                    Opacity="0.7"
-                                                    Text="Add property loan costs to projection"
-                                                    TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
-                                            </VerticalStackLayout>
-                                        </Grid>
-
-                                        <BoxView
-                                            HeightRequest="1"
-                                            Opacity="0.20"
-                                            Color="{DynamicResource LoanAppDefaultForegroundColor}" />
-
-                                        <!--  EXPENSE PROJECTION  -->
                                         <Label
-                                            FontAttributes="Bold"
-                                            FontSize="{StaticResource FontSizeSmall}"
-                                            Opacity="0.7"
-                                            Text="EXPENSE PROJECTION"
+                                            FontSize="{StaticResource FontSizeBody}"
+                                            HorizontalOptions="Center"
+                                            HorizontalTextAlignment="Center"
+                                            Opacity="0.55"
+                                            Text="Tap + to add ongoing costs for this asset"
                                             TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
-
-                                        <!--  Expense growth rate stepper  -->
-                                        <Grid ColumnSpacing="0">
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="*" />
-                                                <ColumnDefinition Width="44" />
-                                                <ColumnDefinition Width="Auto" />
-                                                <ColumnDefinition Width="44" />
-                                            </Grid.ColumnDefinitions>
-                                            <Label
-                                                Grid.Column="0"
-                                                FontSize="{StaticResource FontSizeSmall}"
-                                                Opacity="0.7"
-                                                Text="Annual growth %"
-                                                TextColor="{DynamicResource LoanAppDefaultForegroundColor}"
-                                                VerticalOptions="Center" />
-                                            <Button
-                                                Grid.Column="1"
-                                                BackgroundColor="Transparent"
-                                                Clicked="OnExpenseGrowthRateDecrease"
-                                                FontAttributes="Bold"
-                                                FontSize="{StaticResource FontSizeHeading}"
-                                                Text="−"
-                                                TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
-                                            <Label
-                                                x:Name="LblExpenseGrowthRate"
-                                                Grid.Column="2"
-                                                FontAttributes="Bold"
-                                                FontSize="{StaticResource FontSizeHeading}"
-                                                HorizontalOptions="Center"
-                                                HorizontalTextAlignment="Center"
-                                                MinimumWidthRequest="48"
-                                                TextColor="{DynamicResource LoanAppInputTextFgColor}"
-                                                VerticalOptions="Center" />
-                                            <Button
-                                                Grid.Column="3"
-                                                BackgroundColor="Transparent"
-                                                Clicked="OnExpenseGrowthRateIncrease"
-                                                FontAttributes="Bold"
-                                                FontSize="{StaticResource FontSizeHeading}"
-                                                Text="+"
-                                                TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
-                                        </Grid>
-
-                                        <BoxView
-                                            HeightRequest="1"
-                                            Opacity="0.12"
-                                            Color="{DynamicResource LoanAppDefaultForegroundColor}" />
-
-                                        <!--  Include asset expenses switch (expense)  -->
-                                        <Grid ColumnSpacing="10">
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="Auto" />
-                                                <ColumnDefinition Width="*" />
-                                            </Grid.ColumnDefinitions>
-                                            <buttons:SfSwitch
-                                                x:Name="SwitchExpensePropertyExpense"
-                                                Grid.Column="0"
-                                                HorizontalOptions="Start"
-                                                StateChanged="OnExpensePropertyExpenseChanged">
-                                                <VisualStateManager.VisualStateGroups>
-                                                    <VisualStateGroup x:Name="ProjExpenseSwitchStates1">
-                                                        <VisualState x:Name="On">
-                                                            <VisualState.Setters>
-                                                                <Setter Property="SwitchSettings">
-                                                                    <Setter.Value>
-                                                                        <buttons:SwitchSettings
-                                                                            ThumbBackground="{DynamicResource LoanAppSwitchThumbColorOn}"
-                                                                            ThumbStroke="{DynamicResource LoanAppSwitchThumbBorderColorOn}"
-                                                                            TrackBackground="{DynamicResource LoanAppSwitchTrackColorOn}"
-                                                                            TrackStroke="{DynamicResource LoanAppSwitchTrackBorderColorOn}" />
-                                                                    </Setter.Value>
-                                                                </Setter>
-                                                            </VisualState.Setters>
-                                                        </VisualState>
-                                                        <VisualState x:Name="Off">
-                                                            <VisualState.Setters>
-                                                                <Setter Property="SwitchSettings">
-                                                                    <Setter.Value>
-                                                                        <buttons:SwitchSettings
-                                                                            ThumbBackground="{DynamicResource LoanAppSwitchThumbColorOff}"
-                                                                            ThumbStroke="{DynamicResource LoanAppSwitchThumbBorderColorOff}"
-                                                                            TrackBackground="{DynamicResource LoanAppSwitchTrackColorOff}"
-                                                                            TrackStroke="{DynamicResource LoanAppSwitchTrackBorderColorOff}" />
-                                                                    </Setter.Value>
-                                                                </Setter>
-                                                            </VisualState.Setters>
-                                                        </VisualState>
-                                                    </VisualStateGroup>
-                                                </VisualStateManager.VisualStateGroups>
-                                            </buttons:SfSwitch>
-                                            <VerticalStackLayout
-                                                Grid.Column="1"
-                                                Spacing="1"
-                                                VerticalOptions="Center">
-                                                <Label
-                                                    FontSize="{StaticResource FontSizeBody}"
-                                                    Text="Include asset expenses"
-                                                    TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
-                                                <Label
-                                                    FontSize="{StaticResource FontSizeSmall}"
-                                                    Opacity="0.7"
-                                                    Text="Add property loan costs to projection"
-                                                    TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
-                                            </VerticalStackLayout>
-                                        </Grid>
-
-                                        <BoxView
-                                            HeightRequest="1"
-                                            Opacity="0.20"
-                                            Color="{DynamicResource LoanAppDefaultForegroundColor}" />
-
-                                        <!--  Years to project slider  -->
-                                        <Grid>
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="*" />
-                                                <ColumnDefinition Width="Auto" />
-                                            </Grid.ColumnDefinitions>
-                                            <Label
-                                                Grid.Column="0"
-                                                FontSize="{StaticResource FontSizeBody}"
-                                                Text="Years to project"
-                                                TextColor="{DynamicResource LoanAppDefaultForegroundColor}"
-                                                VerticalOptions="Center" />
-                                            <Label
-                                                AutomationId="BudgetProjectionYearsValue"
-                                                x:Name="LblProjectionYears"
-                                                Grid.Column="1"
-                                                FontAttributes="Bold"
-                                                FontSize="{StaticResource FontSizeMedium}"
-                                                TextColor="{DynamicResource LoanAppHighlightFgColor}"
-                                                VerticalOptions="Center" />
-                                        </Grid>
-                                        <range:SfSlider
-                                            HeightRequest="60"
-                                            HorizontalOptions="FillAndExpand"
-                                            Interval="4"
-                                            Maximum="{Binding MaxProjectionYears}"
-                                            Minimum="1"
-                                            MinorTicksPerInterval="3"
-                                            ShowLabels="True"
-                                            ShowTicks="True"
-                                            StepSize="1"
-                                            AutomationId="BudgetProjectionYearsSlider"
-                                            ValueChangeEnd="OnProjectionYearsSliderChanged"
-                                            Value="{Binding ProjectionYears, Mode=TwoWay}">
-                                            <range:SfSlider.ThumbStyle>
-                                                <range:SliderThumbStyle
-                                                    Fill="{DynamicResource LoanAppSliderKnobFillColor}"
-                                                    OverlapStroke="{DynamicResource LoanAppSliderKnobOverlapColor}"
-                                                    Stroke="{DynamicResource LoanAppSliderKnobBorderColor}"
-                                                    StrokeThickness="2" />
-                                            </range:SfSlider.ThumbStyle>
-                                            <range:SfSlider.LabelStyle>
-                                                <range:SliderLabelStyle
-                                                    ActiveFontFamily="{DynamicResource DefaultFontFamily}"
-                                                    ActiveFontSize="{StaticResource FontSizeBody}"
-                                                    ActiveTextColor="{DynamicResource LoanAppRangeSliderLabelTextColor}"
-                                                    InactiveFontFamily="{DynamicResource DefaultFontFamily}"
-                                                    InactiveFontSize="{StaticResource FontSizeBody}"
-                                                    InactiveTextColor="{DynamicResource LoanAppRangeSliderLabelTextColor}" />
-                                            </range:SfSlider.LabelStyle>
-                                            <range:SfSlider.TrackStyle>
-                                                <range:SliderTrackStyle
-                                                    ActiveFill="{DynamicResource LoanAppRangeSliderTrackActiveFillColor}"
-                                                    ActiveSize="5"
-                                                    InactiveFill="{DynamicResource LoanAppRangeSliderTrackInActiveFillColor}"
-                                                    InactiveSize="1" />
-                                            </range:SfSlider.TrackStyle>
-                                        </range:SfSlider>
-
                                     </VerticalStackLayout>
                                 </Border>
 
-                                <!--  Income & Expense Projection chart  -->
-                                <HorizontalStackLayout Margin="20,16,20,4" Spacing="8">
-                                    <Label
-                                        FontAttributes="Bold"
-                                        FontSize="{StaticResource FontSizeSmall}"
-                                        Opacity="0.7"
-                                        Text="INCOME &amp; EXPENSE PROJECTION"
-                                        TextColor="{DynamicResource LoanAppDefaultForegroundColor}"
-                                        VerticalOptions="Center" />
-                                    <!--  Shown while a debounced projection rebuild is catching up  -->
-                                    <ActivityIndicator
-                                        HeightRequest="14"
-                                        WidthRequest="14"
-                                        Color="{DynamicResource LoanAppAppShellFgColor}"
-                                        IsRunning="{Binding IsProjectionRefreshing}"
-                                        IsVisible="{Binding IsProjectionRefreshing}"
-                                        VerticalOptions="Center" />
-                                    <Label
-                                        FontSize="{StaticResource FontSizeSmall}"
-                                        IsVisible="{Binding IsProjectionRefreshing}"
-                                        Opacity="0.7"
-                                        Text="Updating…"
-                                        TextColor="{DynamicResource LoanAppDefaultForegroundColor}"
-                                        VerticalOptions="Center" />
-                                </HorizontalStackLayout>
-                                <Border Style="{DynamicResource LoanAppChartBorderStyle}">
-                                    <Border.Content>
-                                        <chart:SfCartesianChart
-                                            x:Name="ProjectionChart"
-                                            Margin="{OnIdiom Phone='5,12,5,0',
-                                                             Tablet='20,16,20,10',
-                                                             Desktop='20,16,20,10',
-                                                             Default='5,12,5,0'}"
-                                            BackgroundColor="Transparent"
-                                            HorizontalOptions="FillAndExpand"
-                                            PaletteBrushes="{Binding CustomChartColors}"
-                                            VerticalOptions="FillAndExpand">
-                                            <chart:SfCartesianChart.XAxes>
-                                                <chart:CategoryAxis
-                                                    EdgeLabelsDrawingMode="Fit"
-                                                    LabelPlacement="BetweenTicks"
-                                                    ShowMajorGridLines="False">
-                                                    <chart:CategoryAxis.LabelStyle>
-                                                        <chart:ChartAxisLabelStyle
+                                <!--  List  -->
+                                <!--  Section header, per the prototype: names the list below it.  -->
+                                <Label
+                                    Grid.Row="1"
+                                    AutomationId="BudgetAssetSectionHeader"
+                                    Margin="4,10,4,2"
+                                    FontSize="{StaticResource FontSizeSmall}"
+                                    Opacity="0.45"
+                                    Text="ASSET EXPENSES"
+                                    TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+
+                                <!--
+                                    `.rows` from app.css: ONE rounded container for the whole list, a single
+                                    gradient sweeping across it, one 1px border. Rows inside are transparent so
+                                    the gradient runs unbroken — per-row fills repeated it on every row, which
+                                    is what made the list look dated.
+
+                                    ScrollView + AutoFitMode="Height" + VerticalOptions="Start" — see
+                                    the note on the Income tab for why all three are load-bearing.
+                                -->
+                                <ScrollView Grid.Row="2">
+                                <Border
+                                    Margin="12,2,12,12"
+                                    Padding="0"
+                                    Background="{DynamicResource BorderControlBackgroundGradientBrush}"
+                                    Stroke="{DynamicResource BorderControlGradientBrush}"
+                                    StrokeShape="RoundRectangle 12"
+                                    StrokeThickness="1"
+                                    VerticalOptions="Start">
+                                    <sfList:SfListView
+                                        x:Name="lstEntry"
+                                        AutoFitMode="Height"
+                                        ItemsSource="{Binding FilteredTransactions}"
+                                        SelectionMode="None">
+                                        <sfList:SfListView.ItemTemplate>
+                                            <DataTemplate x:DataType="income:IncomeExpense">
+                                                <Border
+                                                    Margin="0"
+                                                    Padding="16,13"
+                                                    BackgroundColor="Transparent"
+                                                    Stroke="{DynamicResource BorderControlGradientBrush}"
+                                                    StrokeThickness="1"
+                                                    AutomationId="{Binding Name, StringFormat='AssetRow_{0}'}">
+                                                    <Border.GestureRecognizers>
+                                                        <TapGestureRecognizer Tapped="btnEditEntry_Clicked" />
+                                                    </Border.GestureRecognizers>
+                                                    <Grid ColumnSpacing="8">
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="*" />
+                                                            <ColumnDefinition Width="Auto" />
+                                                            <ColumnDefinition Width="Auto" />
+                                                        </Grid.ColumnDefinitions>
+                                                        <VerticalStackLayout Grid.Column="0" Spacing="2" VerticalOptions="Center">
+                                                            <Label
+                                                                FontSize="{StaticResource FontSizeBody}"
+                                                                LineBreakMode="TailTruncation"
+                                                                Text="{Binding Name}"
+                                                                TextColor="{DynamicResource LstForegroundColor}" />
+                                                            <Label
+                                                                FontSize="{StaticResource FontSizeSmall}"
+                                                                Opacity="0.55"
+                                                                Text="{Binding Frequency}"
+                                                                TextColor="{DynamicResource LstForegroundColor}" />
+                                                        </VerticalStackLayout>
+                                                        <Label
+                                                            Grid.Column="1"
                                                             FontAttributes="Bold"
-                                                            FontFamily="{DynamicResource DefaultFontFamily}"
                                                             FontSize="{StaticResource FontSizeBody}"
-                                                            TextColor="{DynamicResource LoanAppChartAxisTextColor}" />
-                                                    </chart:CategoryAxis.LabelStyle>
-                                                    <chart:CategoryAxis.MajorTickStyle>
-                                                        <chart:ChartAxisTickStyle TickSize="8" />
-                                                    </chart:CategoryAxis.MajorTickStyle>
-                                                </chart:CategoryAxis>
-                                            </chart:SfCartesianChart.XAxes>
-                                            <chart:SfCartesianChart.YAxes>
-                                                <chart:NumericalAxis LabelCreated="OnProjectionAxisLabelCreated">
-                                                    <chart:NumericalAxis.LabelStyle>
-                                                        <chart:ChartAxisLabelStyle
-                                                            FontAttributes="Bold"
-                                                            FontFamily="{DynamicResource DefaultFontFamily}"
-                                                            FontSize="{StaticResource FontSizeBody}"
-                                                            TextColor="{DynamicResource LoanAppChartAxisTextColor}" />
-                                                    </chart:NumericalAxis.LabelStyle>
-                                                    <chart:NumericalAxis.AxisLineStyle>
-                                                        <chart:ChartLineStyle StrokeWidth="0" />
-                                                    </chart:NumericalAxis.AxisLineStyle>
-                                                    <chart:NumericalAxis.MajorTickStyle>
-                                                        <chart:ChartAxisTickStyle TickSize="0" />
-                                                    </chart:NumericalAxis.MajorTickStyle>
-                                                </chart:NumericalAxis>
-                                            </chart:SfCartesianChart.YAxes>
-                                            <chart:SfCartesianChart.Legend>
-                                                <chart:ChartLegend Placement="Bottom" ToggleSeriesVisibility="True">
-                                                    <chart:ChartLegend.LabelStyle>
-                                                        <chart:ChartLegendLabelStyle
-                                                            FontFamily="{DynamicResource DefaultFontFamily}"
-                                                            FontSize="{StaticResource FontSizeXS}"
-                                                            TextColor="{DynamicResource LoanAppChartLegendTextColor}" />
-                                                    </chart:ChartLegend.LabelStyle>
-                                                </chart:ChartLegend>
-                                            </chart:SfCartesianChart.Legend>
-                                            <chart:ColumnSeries
-                                                x:Name="ProjIncomeSeries"
-                                                EnableAnimation="True"
-                                                Label="Income"
-                                                LegendIcon="Rectangle"
-                                                Stroke="{DynamicResource LoanAppChartColor1}"
-                                                XBindingPath="Name"
-                                                YBindingPath="Value" />
-                                            <chart:ColumnSeries
-                                                x:Name="ProjExpenseSeries"
-                                                EnableAnimation="True"
-                                                Label="Expenses"
-                                                LegendIcon="Rectangle"
-                                                Stroke="{DynamicResource LoanAppChartColor2}"
-                                                XBindingPath="Name"
-                                                YBindingPath="Value" />
-                                        </chart:SfCartesianChart>
-                                    </Border.Content>
+                                                            Text="{Binding AmountString}"
+                                                            TextColor="{DynamicResource LstForegroundColor}"
+                                                            VerticalOptions="Center" />
+                                                        <Label
+                                                            Grid.Column="2"
+                                                            FontSize="{StaticResource FontSizeMedium}"
+                                                            Opacity="0.4"
+                                                            Text="&#x203A;"
+                                                            TextColor="{DynamicResource LstForegroundColor}"
+                                                            VerticalOptions="Center" />
+                                                    </Grid>
+                                                </Border>
+                                            </DataTemplate>
+                                        </sfList:SfListView.ItemTemplate>
+                                    </sfList:SfListView>
                                 </Border>
-                                <Label
-                                    Margin="0,4,0,12"
-                                    FontFamily="{DynamicResource DefaultFontFamily}"
-                                    FontSize="{StaticResource FontSizeXS}"
-                                    HorizontalOptions="Center"
-                                    HorizontalTextAlignment="Center"
-                                    Opacity="0.5"
-                                    Text="{Binding ChartProjectionSubtitle}"
-                                    TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                                </ScrollView>
 
-                                <!--  Income year-by-year breakdown  -->
-                                <Label
-                                    Margin="20,16,20,4"
+                                <!--  FAB  -->
+                                <Button
+                                    x:Name="FabAddAssetExpense"
+                                    Grid.Row="2"
+                                    Margin="0,0,20,20"
+                                    Opacity="0.85"
+                                    BackgroundColor="{DynamicResource LoanAppInputTextFgColor}"
+                                    Clicked="OnAddAssetExpenseFab_Clicked"
+                                    CornerRadius="28"
                                     FontAttributes="Bold"
-                                    FontSize="{StaticResource FontSizeSmall}"
-                                    Opacity="0.7"
-                                    Text="INCOME YEAR-BY-YEAR"
-                                    TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
-                                <Grid Margin="0,4,0,0">
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="Auto" />
-                                        <RowDefinition Height="Auto" />
-                                    </Grid.RowDefinitions>
-                                    <pager:SfDataPager
-                                        x:Name="IncomeDataPager"
-                                        Grid.Row="0"
-                                        Margin="{OnIdiom Phone='0,3,0,3',
-                                                         Tablet='0,3,0,14',
-                                                         Default='0,3,0,3'}"
-                                        ButtonFontSize="{StaticResource FontSizeSmall}"
-                                        ButtonShape="Circle"
-                                        HorizontalOptions="Center"
-                                        NumericButtonsGenerateMode="Auto"
-                                        PageSize="5"
-                                        Style="{DynamicResource LoanAppDataGridPagerStyle}">
-                                        <pager:SfDataPager.DefaultStyle>
-                                            <pager:DataPagerStyle
-                                                NavigationButtonBackgroundColor="{DynamicResource LoanAppNavigationButtonBackgroundColor}"
-                                                NavigationButtonDisableBackgroundColor="{DynamicResource LoanAppNavigationButtonDisableBackgroundColor}"
-                                                NavigationButtonDisableIconColor="{DynamicResource LoanAppNavigationButtonDisableIconColor}"
-                                                NavigationButtonIconColor="{DynamicResource LoanAppNavigationButtonIconColor}"
-                                                NumericButtonBackgroundColor="{DynamicResource LoanAppNumericButtonBackgroundColor}"
-                                                NumericButtonSelectionBackgroundColor="{DynamicResource LoanAppNumericButtonSelectionBackgroundColor}"
-                                                NumericButtonSelectionTextColor="{DynamicResource LoanAppNumericButtonSelectionTextColor}"
-                                                NumericButtonTextColor="{DynamicResource LoanAppNumericButtonTextColor}" />
-                                        </pager:SfDataPager.DefaultStyle>
-                                    </pager:SfDataPager>
-                                    <datagrid:SfDataGrid
-                                        x:Name="ProjectionGrid"
-                                        Grid.Row="1"
-                                        AutoGenerateColumnsMode="None"
-                                        ColumnWidthMode="Fill"
-                                        HorizontalOptions="Fill"
-                                        ItemsSource="{Binding PagedSource, Source={x:Reference IncomeDataPager}}"
-                                        VerticalOptions="Fill">
-                                        <datagrid:SfDataGrid.Columns>
-                                            <datagrid:DataGridTemplateColumn HeaderText="Period" MappingName="PaymentPeriod">
-                                                <datagrid:DataGridTemplateColumn.HeaderTemplate>
-                                                    <DataTemplate>
-                                                        <Label Style="{DynamicResource LabelHeaderDataGridCell}" Text="Period" />
-                                                    </DataTemplate>
-                                                </datagrid:DataGridTemplateColumn.HeaderTemplate>
-                                                <datagrid:DataGridTemplateColumn.CellTemplate>
-                                                    <DataTemplate>
-                                                        <Border Style="{DynamicResource BorderDataGridCell01}">
-                                                            <Label
-                                                                x:DataType="summary:IncomeExpenseProjectionOutput"
-                                                                Style="{DynamicResource LabelCellDataGrid01}"
-                                                                Text="{Binding PaymentPeriod}" />
-                                                        </Border>
-                                                    </DataTemplate>
-                                                </datagrid:DataGridTemplateColumn.CellTemplate>
-                                            </datagrid:DataGridTemplateColumn>
-                                            <datagrid:DataGridTemplateColumn HeaderText="Start" MappingName="TermStartAmountRounded">
-                                                <datagrid:DataGridTemplateColumn.HeaderTemplate>
-                                                    <DataTemplate>
-                                                        <Label Style="{DynamicResource LabelHeaderDataGridCell}" Text="Start" />
-                                                    </DataTemplate>
-                                                </datagrid:DataGridTemplateColumn.HeaderTemplate>
-                                                <datagrid:DataGridTemplateColumn.CellTemplate>
-                                                    <DataTemplate>
-                                                        <Border Style="{DynamicResource BorderDataGridCell02}">
-                                                            <Label
-                                                                x:DataType="summary:IncomeExpenseProjectionOutput"
-                                                                Style="{DynamicResource LabelCellDataGrid02}"
-                                                                Text="{Binding TermStartAmountRounded}" />
-                                                        </Border>
-                                                    </DataTemplate>
-                                                </datagrid:DataGridTemplateColumn.CellTemplate>
-                                            </datagrid:DataGridTemplateColumn>
-                                            <datagrid:DataGridTemplateColumn HeaderText="Growth" MappingName="TermGrowthAmountRounded">
-                                                <datagrid:DataGridTemplateColumn.HeaderTemplate>
-                                                    <DataTemplate>
-                                                        <Label Style="{DynamicResource LabelHeaderDataGridCell}" Text="Growth" />
-                                                    </DataTemplate>
-                                                </datagrid:DataGridTemplateColumn.HeaderTemplate>
-                                                <datagrid:DataGridTemplateColumn.CellTemplate>
-                                                    <DataTemplate>
-                                                        <Border Style="{DynamicResource BorderDataGridCell03}">
-                                                            <Label
-                                                                x:DataType="summary:IncomeExpenseProjectionOutput"
-                                                                Style="{DynamicResource LabelCellDataGrid03}"
-                                                                Text="{Binding TermGrowthAmountRounded}" />
-                                                        </Border>
-                                                    </DataTemplate>
-                                                </datagrid:DataGridTemplateColumn.CellTemplate>
-                                            </datagrid:DataGridTemplateColumn>
-                                            <datagrid:DataGridTemplateColumn HeaderText="Deduction" MappingName="TermExpenseDeductionAmountRounded">
-                                                <datagrid:DataGridTemplateColumn.HeaderTemplate>
-                                                    <DataTemplate>
-                                                        <Label Style="{DynamicResource LabelHeaderDataGridCell}" Text="Deduction" />
-                                                    </DataTemplate>
-                                                </datagrid:DataGridTemplateColumn.HeaderTemplate>
-                                                <datagrid:DataGridTemplateColumn.CellTemplate>
-                                                    <DataTemplate>
-                                                        <Border Style="{DynamicResource BorderDataGridCell04}">
-                                                            <Label
-                                                                x:DataType="summary:IncomeExpenseProjectionOutput"
-                                                                Style="{DynamicResource LabelCellDataGrid04}"
-                                                                Text="{Binding TermAdjustmentAmountRounded}" />
-                                                        </Border>
-                                                    </DataTemplate>
-                                                </datagrid:DataGridTemplateColumn.CellTemplate>
-                                            </datagrid:DataGridTemplateColumn>
-                                            <datagrid:DataGridTemplateColumn HeaderText="Sum" MappingName="IncomeExpenseAmountRounded">
-                                                <datagrid:DataGridTemplateColumn.HeaderTemplate>
-                                                    <DataTemplate>
-                                                        <Label Style="{DynamicResource LabelHeaderDataGridCell}" Text="Sum" />
-                                                    </DataTemplate>
-                                                </datagrid:DataGridTemplateColumn.HeaderTemplate>
-                                                <datagrid:DataGridTemplateColumn.CellTemplate>
-                                                    <DataTemplate>
-                                                        <Border Style="{DynamicResource BorderDataGridCell05}">
-                                                            <Label
-                                                                x:DataType="summary:IncomeExpenseProjectionOutput"
-                                                                Style="{DynamicResource LabelCellDataGrid05}"
-                                                                Text="{Binding IncomeExpenseAmountRounded}" />
-                                                        </Border>
-                                                    </DataTemplate>
-                                                </datagrid:DataGridTemplateColumn.CellTemplate>
-                                            </datagrid:DataGridTemplateColumn>
-                                        </datagrid:SfDataGrid.Columns>
-                                    </datagrid:SfDataGrid>
-                                </Grid>
+                                    FontSize="{StaticResource FontSizeHeading}"
+                                    HeightRequest="56"
+                                    HorizontalOptions="End"
+                                    Text="+"
+                                    TextColor="{DynamicResource LoanAppAppShellBgColor}"
+                                    VerticalOptions="End"
+                                    WidthRequest="56">
+                                    <Button.Shadow>
+                                        <Shadow Brush="#000000" Offset="0,4" Opacity="0.35" Radius="10" />
+                                    </Button.Shadow>
+                                    <Button.GestureRecognizers>
+                                        <PanGestureRecognizer PanUpdated="OnAssetFabPanUpdated" />
+                                    </Button.GestureRecognizers>
+                                </Button>
 
-                                <!--  Expense year-by-year breakdown  -->
-                                <Label
-                                    Margin="20,16,20,4"
-                                    FontAttributes="Bold"
-                                    FontSize="{StaticResource FontSizeSmall}"
-                                    Opacity="0.7"
-                                    Text="EXPENSE YEAR-BY-YEAR"
-                                    TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
-                                <Grid Margin="0,4,0,16">
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="Auto" />
-                                        <RowDefinition Height="Auto" />
-                                    </Grid.RowDefinitions>
-                                    <pager:SfDataPager
-                                        x:Name="ExpenseDataPager"
-                                        Grid.Row="0"
-                                        Margin="{OnIdiom Phone='0,3,0,3',
-                                                         Tablet='0,3,0,14',
-                                                         Default='0,3,0,3'}"
-                                        ButtonFontSize="{StaticResource FontSizeSmall}"
-                                        ButtonShape="Circle"
-                                        HorizontalOptions="Center"
-                                        NumericButtonsGenerateMode="Auto"
-                                        PageSize="5"
-                                        Style="{DynamicResource LoanAppDataGridPagerStyle}">
-                                        <pager:SfDataPager.DefaultStyle>
-                                            <pager:DataPagerStyle
-                                                NavigationButtonBackgroundColor="{DynamicResource LoanAppNavigationButtonBackgroundColor}"
-                                                NavigationButtonDisableBackgroundColor="{DynamicResource LoanAppNavigationButtonDisableBackgroundColor}"
-                                                NavigationButtonDisableIconColor="{DynamicResource LoanAppNavigationButtonDisableIconColor}"
-                                                NavigationButtonIconColor="{DynamicResource LoanAppNavigationButtonIconColor}"
-                                                NumericButtonBackgroundColor="{DynamicResource LoanAppNumericButtonBackgroundColor}"
-                                                NumericButtonSelectionBackgroundColor="{DynamicResource LoanAppNumericButtonSelectionBackgroundColor}"
-                                                NumericButtonSelectionTextColor="{DynamicResource LoanAppNumericButtonSelectionTextColor}"
-                                                NumericButtonTextColor="{DynamicResource LoanAppNumericButtonTextColor}" />
-                                        </pager:SfDataPager.DefaultStyle>
-                                    </pager:SfDataPager>
-                                    <datagrid:SfDataGrid
-                                        x:Name="ExpenseProjectionGrid"
-                                        Grid.Row="1"
-                                        AutoGenerateColumnsMode="None"
-                                        ColumnWidthMode="Fill"
-                                        HorizontalOptions="Fill"
-                                        ItemsSource="{Binding PagedSource, Source={x:Reference ExpenseDataPager}}"
-                                        VerticalOptions="Fill">
-                                        <datagrid:SfDataGrid.Columns>
-                                            <datagrid:DataGridTemplateColumn HeaderText="Period" MappingName="PaymentPeriod">
-                                                <datagrid:DataGridTemplateColumn.HeaderTemplate>
-                                                    <DataTemplate>
-                                                        <Label Style="{DynamicResource LabelHeaderDataGridCell}" Text="Period" />
-                                                    </DataTemplate>
-                                                </datagrid:DataGridTemplateColumn.HeaderTemplate>
-                                                <datagrid:DataGridTemplateColumn.CellTemplate>
-                                                    <DataTemplate>
-                                                        <Border Style="{DynamicResource BorderDataGridCell01}">
-                                                            <Label
-                                                                x:DataType="summary:IncomeExpenseProjectionOutput"
-                                                                Style="{DynamicResource LabelCellDataGrid01}"
-                                                                Text="{Binding PaymentPeriod}" />
-                                                        </Border>
-                                                    </DataTemplate>
-                                                </datagrid:DataGridTemplateColumn.CellTemplate>
-                                            </datagrid:DataGridTemplateColumn>
-                                            <datagrid:DataGridTemplateColumn HeaderText="Start" MappingName="TermStartAmountRounded">
-                                                <datagrid:DataGridTemplateColumn.HeaderTemplate>
-                                                    <DataTemplate>
-                                                        <Label Style="{DynamicResource LabelHeaderDataGridCell}" Text="Start" />
-                                                    </DataTemplate>
-                                                </datagrid:DataGridTemplateColumn.HeaderTemplate>
-                                                <datagrid:DataGridTemplateColumn.CellTemplate>
-                                                    <DataTemplate>
-                                                        <Border Style="{DynamicResource BorderDataGridCell02}">
-                                                            <Label
-                                                                x:DataType="summary:IncomeExpenseProjectionOutput"
-                                                                Style="{DynamicResource LabelCellDataGrid02}"
-                                                                Text="{Binding TermStartAmountRounded}" />
-                                                        </Border>
-                                                    </DataTemplate>
-                                                </datagrid:DataGridTemplateColumn.CellTemplate>
-                                            </datagrid:DataGridTemplateColumn>
-                                            <datagrid:DataGridTemplateColumn HeaderText="Growth" MappingName="TermGrowthAmountRounded">
-                                                <datagrid:DataGridTemplateColumn.HeaderTemplate>
-                                                    <DataTemplate>
-                                                        <Label Style="{DynamicResource LabelHeaderDataGridCell}" Text="Growth" />
-                                                    </DataTemplate>
-                                                </datagrid:DataGridTemplateColumn.HeaderTemplate>
-                                                <datagrid:DataGridTemplateColumn.CellTemplate>
-                                                    <DataTemplate>
-                                                        <Border Style="{DynamicResource BorderDataGridCell03}">
-                                                            <Label
-                                                                x:DataType="summary:IncomeExpenseProjectionOutput"
-                                                                Style="{DynamicResource LabelCellDataGrid03}"
-                                                                Text="{Binding TermGrowthAmountRounded}" />
-                                                        </Border>
-                                                    </DataTemplate>
-                                                </datagrid:DataGridTemplateColumn.CellTemplate>
-                                            </datagrid:DataGridTemplateColumn>
-                                            <datagrid:DataGridTemplateColumn HeaderText="Deduction" MappingName="TermExpenseDeductionAmountRounded">
-                                                <datagrid:DataGridTemplateColumn.HeaderTemplate>
-                                                    <DataTemplate>
-                                                        <Label Style="{DynamicResource LabelHeaderDataGridCell}" Text="Deduction" />
-                                                    </DataTemplate>
-                                                </datagrid:DataGridTemplateColumn.HeaderTemplate>
-                                                <datagrid:DataGridTemplateColumn.CellTemplate>
-                                                    <DataTemplate>
-                                                        <Border Style="{DynamicResource BorderDataGridCell04}">
-                                                            <Label
-                                                                x:DataType="summary:IncomeExpenseProjectionOutput"
-                                                                Style="{DynamicResource LabelCellDataGrid04}"
-                                                                Text="{Binding TermAdjustmentAmountRounded}" />
-                                                        </Border>
-                                                    </DataTemplate>
-                                                </datagrid:DataGridTemplateColumn.CellTemplate>
-                                            </datagrid:DataGridTemplateColumn>
-                                            <datagrid:DataGridTemplateColumn HeaderText="Sum" MappingName="IncomeExpenseAmountRounded">
-                                                <datagrid:DataGridTemplateColumn.HeaderTemplate>
-                                                    <DataTemplate>
-                                                        <Label Style="{DynamicResource LabelHeaderDataGridCell}" Text="Sum" />
-                                                    </DataTemplate>
-                                                </datagrid:DataGridTemplateColumn.HeaderTemplate>
-                                                <datagrid:DataGridTemplateColumn.CellTemplate>
-                                                    <DataTemplate>
-                                                        <Border Style="{DynamicResource BorderDataGridCell05}">
-                                                            <Label
-                                                                x:DataType="summary:IncomeExpenseProjectionOutput"
-                                                                Style="{DynamicResource LabelCellDataGrid05}"
-                                                                Text="{Binding IncomeExpenseAmountRounded}" />
-                                                        </Border>
-                                                    </DataTemplate>
-                                                </datagrid:DataGridTemplateColumn.CellTemplate>
-                                            </datagrid:DataGridTemplateColumn>
-                                        </datagrid:SfDataGrid.Columns>
-                                    </datagrid:SfDataGrid>
-                                </Grid>
-
-                            </VerticalStackLayout>
-                        </ScrollView>
+                            </Grid>
+                        </Grid>
                     </tabView:SfTabItem.Content>
                 </tabView:SfTabItem>
 
             </tabView:SfTabView>
+
+            <!--  Last child of the root Grid so it is topmost. See BusyOverlayView.  -->
+            <customControls:BusyOverlayView x:Name="BusyOverlay" Grid.RowSpan="2" />
         </Grid>
     </ContentPage.Content>
 </ContentPage>

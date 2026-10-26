@@ -1,0 +1,279 @@
+/* ============================================================================
+   LoanCalculator design tokens — Dark theme
+   ----------------------------------------------------------------------------
+   GENERATED from the app's own theme files, not hand-authored. Do not tweak a
+   value here to fix a prototype: change it in the XAML and regenerate, or the
+   prototype stops being evidence of anything.
+
+     colours + gradients  <-  src/LoanCalculator/Extensions/Data/Theme.Dark.xaml
+     type + spacing       <-  src/LoanCalculator/Extensions/Data/Theme.CommonStyles.xaml
+
+   NAMING: the XAML key with the `LoanApp` prefix dropped, kebab-cased.
+     LoanAppDefaultForegroundColor  ->  --default-foreground-color
+   Each colour carries its original key in a trailing comment so a value can be
+   traced back, and ported back, without guesswork.
+
+   SCOPE: this file is the *inherited palette* — the raw material the redesign
+   draws on. It deliberately does NOT encode the current component look (card
+   radii, stroke widths, paddings), because those are exactly what the redesign
+   is reconsidering. The reference block at the end records them as data points,
+   not as rules.
+
+   All four themes expose an identical key set (161 colours), so swapping
+   Theme.Light/Forest/Warm in and regenerating yields a drop-in replacement.
+   ============================================================================ */
+
+:root {
+  /* ── Colours ────────────────────────────────────────────────────────────── */
+  --default-foreground-color: #DDE6ED;              /* LoanAppDefaultForegroundColor */
+  --default-background-color: #222831;              /* LoanAppDefaultBackgroundColor */
+  --tab-bar-background-gradient-start: #222831;     /* LoanAppTabBarBackgroundGradientStart */
+  --tab-bar-background-gradient-end: #393E46;       /* LoanAppTabBarBackgroundGradientEnd */
+  --tab-indicator-stroke-color: #9DB2BF;            /* LoanAppTabIndicatorStrokeColor */
+  --tab-text-color-selected: #DDE6ED;               /* LoanAppTabTextColorSelected */
+  --tab-text-color-normal: #9DB2BF;                 /* LoanAppTabTextColorNormal */
+  --highlight-fg-color: #27374D;                    /* LoanAppHighlightFgColor */
+  --input-text-fg-color: #DDE6ED;                   /* LoanAppInputTextFgColor */
+  --input-text-when-focused-color: #DDE6ED;         /* LoanAppInputTextWhenFocusedColor */
+  --input-text-when-un-focused-color: #9DB2BF;      /* LoanAppInputTextWhenUnFocusedColor */
+  --input-error-text-fg-color: #E57373;             /* LoanAppInputErrorTextFgColor */
+  --seg-bg-color: transparent;                      /* LoanAppSegBgColor */
+  --seg-border-color: #526D82;                      /* LoanAppSegBorderColor */
+  --seg-text-fg-color: #9DB2BF;                     /* LoanAppSegTextFgColor */
+  --seg-selected-bg-color: #393E46;                 /* LoanAppSegSelectedBgColor */
+  --slider-knob-fill-color: #9DB2BF;                /* LoanAppSliderKnobFillColor */
+  --slider-knob-border-color: #526D82;              /* LoanAppSliderKnobBorderColor */
+  --slider-knob-overlap-color: #DDE6ED;             /* LoanAppSliderKnobOverlapColor */
+  --range-slider-track-in-active-fill-color: #526D82;/* LoanAppRangeSliderTrackInActiveFillColor */
+  --range-slider-track-active-fill-color: #9DB2BF;  /* LoanAppRangeSliderTrackActiveFillColor */
+  --range-slider-label-text-color: #DDE6ED;         /* LoanAppRangeSliderLabelTextColor */
+  --data-grid-header-background-color: #27374D;     /* LoanAppDataGridHeaderBackgroundColor */
+  --data-grid-header-text-color: #DDE6ED;           /* LoanAppDataGridHeaderTextColor */
+  --data-grid-cell-text-color: #393E46;             /* LoanAppDataGridCellTextColor */
+  --data-grid-cell-background-color: #393E46;       /* LoanAppDataGridCellBackgroundColor */
+  --data-grid-cell-bg-1: #27374D;                   /* LoanAppDataGridCellBg1 */
+  --data-grid-cell-bg-2: #1F2E44;                   /* LoanAppDataGridCellBg2 */
+  --data-grid-cell-bg-3: #19253A;                   /* LoanAppDataGridCellBg3 */
+  --data-grid-cell-bg-4: #141D31;                   /* LoanAppDataGridCellBg4 */
+  --data-grid-cell-bg-5: #0F1627;                   /* LoanAppDataGridCellBg5 */
+  --data-grid-cell-fg-1: #DDE6ED;                   /* LoanAppDataGridCellFg1 */
+  --data-grid-cell-fg-2: #C9D8E2;                   /* LoanAppDataGridCellFg2 */
+  --data-grid-cell-fg-3: #B5C9D7;                   /* LoanAppDataGridCellFg3 */
+  --data-grid-cell-fg-4: #A1BBCB;                   /* LoanAppDataGridCellFg4 */
+  --data-grid-cell-fg-5: #8DAEBF;                   /* LoanAppDataGridCellFg5 */
+  --navigation-button-background-color: #526D82;    /* LoanAppNavigationButtonBackgroundColor */
+  --navigation-button-disable-background-color: transparent;/* LoanAppNavigationButtonDisableBackgroundColor */
+  --navigation-button-disable-icon-color: #9DB2BF;  /* LoanAppNavigationButtonDisableIconColor */
+  --navigation-button-icon-color: #DDE6ED;          /* LoanAppNavigationButtonIconColor */
+  --numeric-button-background-color: #393E46;       /* LoanAppNumericButtonBackgroundColor */
+  --numeric-button-selection-background-color: #9DB2BF;/* LoanAppNumericButtonSelectionBackgroundColor */
+  --numeric-button-selection-text-color: #222831;   /* LoanAppNumericButtonSelectionTextColor */
+  --numeric-button-text-color: #DDE6ED;             /* LoanAppNumericButtonTextColor */
+  --combo-drop-down-background-color: #27374D;      /* LoanAppComboDropDownBackgroundColor */
+  --combo-drop-down-text-color: #DDE6ED;            /* LoanAppComboDropDownTextColor */
+  --combo-highlighted-text-color: #393E46;          /* LoanAppComboHighlightedTextColor */
+  --combo-selected-drop-down-item-color: #9DB2BF;   /* LoanAppComboSelectedDropDownItemColor */
+  --combo-text-color: #DDE6ED;                      /* LoanAppComboTextColor */
+  --switch-thumb-border-color-on: #393E46;          /* LoanAppSwitchThumbBorderColorOn */
+  --switch-thumb-color-on: #526D82;                 /* LoanAppSwitchThumbColorOn */
+  --switch-track-border-color-on: #526D82;          /* LoanAppSwitchTrackBorderColorOn */
+  --switch-track-color-on: #393E46;                 /* LoanAppSwitchTrackColorOn */
+  --switch-thumb-border-color-off: #526D82;         /* LoanAppSwitchThumbBorderColorOff */
+  --switch-thumb-color-off: #393E46;                /* LoanAppSwitchThumbColorOff */
+  --switch-track-border-color-off: #393E46;         /* LoanAppSwitchTrackBorderColorOff */
+  --switch-track-color-off: #526D82;                /* LoanAppSwitchTrackColorOff */
+  --auto-complete-selection-text-highlight-color: #9DB2BF;/* LoanAppAutoCompleteSelectionTextHighlightColor */
+  --auto-complete-selected-drop-down-item-background: #27374D;/* LoanAppAutoCompleteSelectedDropDownItemBackground */
+  --auto-complete-clear-button-color: #393E46;      /* LoanAppAutoCompleteClearButtonColor */
+  --auto-complete-dropdown-background-color: #27374D;/* LoanAppAutoCompleteDropdownBackgroundColor */
+  --auto-complete-dropdown-text-color: #DDE6ED;     /* LoanAppAutoCompleteDropdownTextColor */
+  --auto-complete-dropdown-border-color: #393E46;   /* LoanAppAutoCompleteDropdownBorderColor */
+  --auto-complete-highlighted-text-color: #E57373;  /* LoanAppAutoCompleteHighlightedTextColor */
+  --auto-complete-water-color: #222831;             /* LoanAppAutoCompleteWaterColor */
+  --auto-complete-text-color: #DDE6ED;              /* LoanAppAutoCompleteTextColor */
+  --auto-complete-no-results-found-text-color: #393E46;/* LoanAppAutoCompleteNoResultsFoundTextColor */
+  --app-shell-bg-color: #222831;                    /* LoanAppAppShellBgColor */
+  --app-shell-fg-color: #DDE6ED;                    /* LoanAppAppShellFgColor */
+  --app-shell-title-color: #DDE6ED;                 /* LoanAppAppShellTitleColor */
+  --app-shell-disabled-color: #6B7C8C;              /* LoanAppAppShellDisabledColor */
+  --app-shell-unselected-color: #8FA3B3;            /* LoanAppAppShellUnselectedColor */
+  --popup-bg: #2E3440;                              /* LoanAppPopupBg */
+  --popup-fg: #DDE6ED;                              /* LoanAppPopupFg */
+  --popup-surface: #3B4252;                         /* LoanAppPopupSurface */
+  --popup-muted: #526D82;                           /* LoanAppPopupMuted */
+  --popup-accent: #9DB2BF;                          /* LoanAppPopupAccent */
+  --popup-button-bg: #526D82;                       /* LoanAppPopupButtonBg */
+  --popup-button-fg: #DDE6ED;                       /* LoanAppPopupButtonFg */
+  --app-shell-tab-bar-background-color: #222831;    /* LoanAppAppShellTabBarBackgroundColor */
+  --app-shell-tab-bar-foreground-color: #DDE6ED;    /* LoanAppAppShellTabBarForegroundColor */
+  --app-shell-tab-bar-unselected-color: #8FA3B3;    /* LoanAppAppShellTabBarUnselectedColor */
+  --app-shell-tab-bar-disabled-color: #6B7C8C;      /* LoanAppAppShellTabBarDisabledColor */
+  --app-shell-tab-bar-title-color: #DDE6ED;         /* LoanAppAppShellTabBarTitleColor */
+  --notification-warning-bg-gradient-start: #3B332A;/* LoanAppNotificationWarningBgGradientStart */
+  --notification-warning-bg-gradient-end: #4A3E31;  /* LoanAppNotificationWarningBgGradientEnd */
+  --notification-information-bg-gradient-start: #1E2A38;/* LoanAppNotificationInformationBgGradientStart */
+  --notification-information-bg-gradient-end: #27374D;/* LoanAppNotificationInformationBgGradientEnd */
+  --notification-text-color: #DDE6ED;               /* LoanAppNotificationTextColor */
+  --notification-bg-color: #393E46;                 /* LoanAppNotificationBgColor */
+  --lst-foreground-color: #DDE6ED;                  /* LstForegroundColor */
+  --lst-bg-gradient-start: #27374D;                 /* LoanAppLstBgGradientStart */
+  --lst-bg-gradient-end: #393E46;                   /* LoanAppLstBgGradientEnd */
+  --lst-border-gradient-start: #526D82;             /* LoanAppLstBorderGradientStart */
+  --lst-border-gradient-end: #9DB2BF;               /* LoanAppLstBorderGradientEnd */
+  --button-fg-color: #DDE6ED;                       /* LoanAppButtonFgColor */
+  --button-bg-color: #27374D;                       /* LoanAppButtonBgColor */
+  --export-button-bg-color: #526D82;                /* LoanAppExportButtonBgColor */
+  --export-button-fg-color: #222831;                /* LoanAppExportButtonFgColor */
+  --chart-axis-text-color: #27374D;                 /* LoanAppChartAxisTextColor */
+  --chart-legend-text-color: #27374D;               /* LoanAppChartLegendTextColor */
+  --chart-title-text-color: #27374D;                /* LoanAppChartTitleTextColor */
+  --chart-data-marker-text-color: #27374D;          /* LoanAppChartDataMarkerTextColor */
+  --donut-center-text-color: #27374D;               /* LoanAppDonutCenterTextColor */
+  --chart-outer-border-gradient-start: #526D82;     /* LoanAppChartOuterBorderGradientStart */
+  --chart-outer-border-gradient-end: #9DB2BF;       /* LoanAppChartOuterBorderGradientEnd */
+  --chart-inner-border-gradient-start: #DDE6ED;     /* LoanAppChartInnerBorderGradientStart */
+  --chart-inner-border-gradient-end: #9DB2BF;       /* LoanAppChartInnerBorderGradientEnd */
+  --negative-value-color: #E57373;                  /* LoanAppNegativeValueColor */
+  --negative-value-on-highlight-color: #8F2525;     /* LoanAppNegativeValueOnHighlightColor */
+
+  --chart-color-1: #5FBDB0;                         /* LoanAppChartColor1 */
+  --chart-data-marker-text-color-1: #0E2B27;        /* LoanAppChartDataMarkerTextColor1 */
+  --chart-color-2: #E0A85A;                         /* LoanAppChartColor2 */
+  --chart-data-marker-text-color-2: #3A2A10;        /* LoanAppChartDataMarkerTextColor2 */
+  --chart-color-3: #A98FD0;                         /* LoanAppChartColor3 */
+  --chart-data-marker-text-color-3: #241733;        /* LoanAppChartDataMarkerTextColor3 */
+  --chart-card-background: #DDE6ED;                 /* LoanAppChartCardBackground */
+  --chart-color-series-1: #5FBDB0;                  /* LoanAppChartColorSeries1 */
+  --chart-color-series-2: #E0A85A;                  /* LoanAppChartColorSeries2 */
+  --chart-color-series-3: #A98FD0;                  /* LoanAppChartColorSeries3 */
+  --border-top-gradient-outer-line-start: #393E46;  /* LoanAppBorderTopGradientOuterLineStart */
+  --border-top-gradient-outer-line-end: #222831;    /* LoanAppBorderTopGradientOuterLineEnd */
+  --border-top-gradient-background-start: #9DB2BF;  /* LoanAppBorderTopGradientBackgroundStart */
+  --border-top-gradient-background-end: #DDE6ED;    /* LoanAppBorderTopGradientBackgroundEnd */
+  --border-top-danger-outer-line-start: #5C2B2B;    /* LoanAppBorderTopDangerOuterLineStart */
+  --border-top-danger-outer-line-end: #3D1A1A;      /* LoanAppBorderTopDangerOuterLineEnd */
+  --border-top-danger-background-start: #C97A7A;    /* LoanAppBorderTopDangerBackgroundStart */
+  --border-top-danger-background-end: #E8AEAE;      /* LoanAppBorderTopDangerBackgroundEnd */
+  --border-top-danger-fg-color: #3D1A1A;            /* LoanAppBorderTopDangerFgColor */
+  --border-control-gradient-border-line-start: #2D3B4A;/* LoanAppBorderControlGradientBorderLineStart */
+  --border-control-gradient-border-line-end: #3A4E60;/* LoanAppBorderControlGradientBorderLineEnd */
+  --border-control-gradient-background-start: #27374D;/* LoanAppBorderControlGradientBackgroundStart */
+  --border-control-gradient-background-end: #393E46;/* LoanAppBorderControlGradientBackgroundEnd */
+  --border-insights-gradient-outer-line-start: #393E46;/* LoanAppBorderInsightsGradientOuterLineStart */
+  --border-insights-gradient-outer-line-end: #222831;/* LoanAppBorderInsightsGradientOuterLineEnd */
+  --border-insights-gradient-background-start: #27374D;/* LoanAppBorderInsightsGradientBackgroundStart */
+  --border-insights-gradient-background-end: #2F4258;/* LoanAppBorderInsightsGradientBackgroundEnd */
+  --insights-fg-color: #DDE6ED;                     /* LoanAppInsightsFgColor */
+  --expander-expanded-gradient-start: #393E46;      /* LoanAppExpanderExpandedGradientStart */
+  --expander-expanded-gradient-end: #526D82;        /* LoanAppExpanderExpandedGradientEnd */
+  --expander-collapsed-gradient-start: #27374D;     /* LoanAppExpanderCollapsedGradientStart */
+  --expander-collapsed-gradient-end: #393E46;       /* LoanAppExpanderCollapsedGradientEnd */
+  --expander-header-text-color: #DDE6ED;            /* LoanAppExpanderHeaderTextColor */
+  --checkbox-back-color: #9DB2BF;                   /* LoanAppCheckboxBackColor */
+  --disclaimer-body-background-color: #526D82;      /* LoanAppDisclaimerBodyBackgroundColor */
+  --disclaimer-header-background-color: #222831;    /* LoanAppDisclaimerHeaderBackgroundColor */
+  --disclaimer-header-text-color: #DDE6ED;          /* LoanAppDisclaimerHeaderTextColor */
+  --disclaimer-header-border-color: #9DB2BF;        /* LoanAppDisclaimerHeaderBorderColor */
+  --disclaimer-content-background-color: #393E46;   /* LoanAppDisclaimerContentBackgroundColor */
+  --disclaimer-content-foreground-color: #e0e4e7;   /* LoanAppDisclaimerContentForegroundColor */
+  --disclaimer-content-box-shadow-color: #27374D;   /* LoanAppDisclaimerContentBoxShadowColor */
+  --disclaimer-header-2-text-color: #c2c9d0;        /* LoanAppDisclaimerHeader2TextColor */
+  --progress-track-color: #393E46;                  /* LoanAppProgressTrackColor */
+  --progress-color: #9DB2BF;                        /* LoanAppProgressColor */
+  --purchase-text-font-color: #DDE6ED;              /* LoanAppPurchaseTextFontColor */
+  --purchase-button-primary-fg-color: #222831;      /* LoanAppPurchaseButtonPrimaryFgColor */
+  --purchase-button-primary-bg-color: #9DB2BF;      /* LoanAppPurchaseButtonPrimaryBgColor */
+  --purchase-button-secondary-fg-color: #9DB2BF;    /* LoanAppPurchaseButtonSecondaryFgColor */
+  --purchase-button-secondary-bg-color: transparent;/* LoanAppPurchaseButtonSecondaryBgColor */
+  --purchase-button-secondary-border-color: #9DB2BF;/* LoanAppPurchaseButtonSecondaryBorderColor */
+  --purchase-window-bg-start: #526D82;              /* LoanAppPurchaseWindowBgStart */
+  --purchase-window-bg-end: #393E46;                /* LoanAppPurchaseWindowBgEnd */
+  --purchase-popup-overlay-bg-color: #27374D;       /* LoanAppPurchasePopupOverlayBgColor */
+
+  /* ── Gradient brushes ───────────────────────────────────────────────────────
+     Geometry preserved, not flattened: most are diagonal (MAUI 0,0 -> 1,1 =
+     135deg), the two notification fills are vertical, the tab bar is horizontal
+     with a stop at 70%, and two are genuinely radial. */
+  --lst-bg-brush: linear-gradient(135deg, var(--lst-bg-gradient-start) 0%, var(--lst-bg-gradient-end) 100%);
+  --lst-border-brush: radial-gradient(circle at 50% 50%, var(--lst-border-gradient-start) 0%, var(--lst-border-gradient-start) 70%, var(--lst-border-gradient-end) 100%);
+  --border-insights-gradient-brush: linear-gradient(135deg, var(--border-insights-gradient-outer-line-start) 0%, var(--border-insights-gradient-outer-line-end) 100%);
+  --border-insights-background-gradient-brush: linear-gradient(135deg, var(--border-insights-gradient-background-start) 0%, var(--border-insights-gradient-background-end) 100%);
+  --expander-expanded-gradient-brush: linear-gradient(135deg, var(--expander-expanded-gradient-start) 0%, var(--expander-expanded-gradient-end) 100%);
+  --expander-collapsed-gradient-brush: linear-gradient(135deg, var(--expander-collapsed-gradient-start) 0%, var(--expander-collapsed-gradient-end) 100%);
+  --information-background-gradient-brush: linear-gradient(180deg, var(--notification-information-bg-gradient-start) 0%, var(--notification-information-bg-gradient-end) 100%);
+  --warning-background-gradient-brush: linear-gradient(180deg, var(--notification-warning-bg-gradient-start) 0%, var(--notification-warning-bg-gradient-end) 100%);
+  --purchase-gradient-brush: linear-gradient(135deg, var(--purchase-window-bg-start) 0%, var(--purchase-window-bg-end) 100%);
+  --tab-bar-background-gradient-brush: linear-gradient(90deg, var(--tab-bar-background-gradient-start) 0%, var(--tab-bar-background-gradient-end) 70%, var(--tab-bar-background-gradient-start) 100%);
+  --chart-outer-border-gradient-brush: linear-gradient(135deg, var(--chart-outer-border-gradient-start) 0%, var(--chart-outer-border-gradient-end) 100%);
+  --chart-inner-border-gradient-brush: radial-gradient(circle at 50% 50%, var(--chart-inner-border-gradient-start) 0%, var(--chart-inner-border-gradient-start) 70%, var(--chart-inner-border-gradient-end) 100%);
+  --border-top-gradient-brush: linear-gradient(135deg, var(--border-top-gradient-outer-line-start) 0%, var(--border-top-gradient-outer-line-end) 100%);
+  --border-top-background-gradient-brush: linear-gradient(135deg, var(--border-top-gradient-background-start) 0%, var(--border-top-gradient-background-end) 100%);
+  --border-top-danger-gradient-brush: linear-gradient(135deg, var(--border-top-danger-outer-line-start) 0%, var(--border-top-danger-outer-line-end) 100%);
+  --border-top-danger-background-gradient-brush: linear-gradient(135deg, var(--border-top-danger-background-start) 0%, var(--border-top-danger-background-end) 100%);
+  --border-control-gradient-brush: linear-gradient(135deg, var(--border-control-gradient-border-line-start) 0%, var(--border-control-gradient-border-line-end) 100%);
+  --border-control-background-gradient-brush: linear-gradient(135deg, var(--border-control-gradient-background-start) 0%, var(--border-control-gradient-background-end) 100%);
+
+  /* ── Type scale (phone column of each OnIdiom token) ────────────────────────
+     Tablet/Desktop run noticeably larger (e.g. Body 12 -> 18). Prototypes are
+     phone-first, so these are the phone values; the tablet column is a separate
+     exercise if we ever prototype that idiom. */
+  --font-size-xs: 10px;                             /* FontSizeXS */
+  --font-size-small: 11px;                          /* FontSizeSmall */
+  --font-size-body: 12px;                           /* FontSizeBody */
+  --font-size-medium: 14px;                         /* FontSizeMedium */
+  --font-size-large: 15px;                          /* FontSizeLarge */
+  --font-size-xl: 18px;                             /* FontSizeXL */
+  --font-size-heading: 20px;                        /* FontSizeHeading */
+
+  /* Hero figures sit outside the scale, set inline via the SpanThreeBox styles. */
+  --hero-currency-size: 15px;                       /* SpanThreeBoxCurrencyStyle */
+  --hero-amount-size: 18px;                         /* SpanThreeBoxAmountStyle (tablet 32) */
+  --hero-caption-size: 12px;                        /* SpanThreeBoxTextStyle */
+  --hero-currency-tracking: 1px;
+  --hero-amount-tracking: -1px;
+  --hero-caption-tracking: -0.2px;
+
+  /* ── Spacing ────────────────────────────────────────────────────────────── */
+  --margin-section: 0 5px;                          /* MarginSection  5,0,5,0 */
+  --margin-section-flat: 0 8px;                     /* MarginSectionFlat 8,0,8,0 */
+  --margin-item: 5px;                               /* MarginItem */
+
+  /* The page inset rule from CLAUDE.md: containers own the horizontal inset at
+     12, and cards carry no horizontal margin. Section headers sit 4 further in
+     (12 + 4 = 16) and that offset is deliberate. */
+  --page-inset: 12px;
+  --section-header-inset: 4px;
+
+  /* ── Type stack ─────────────────────────────────────────────────────────────
+     Runtime-swappable in the app (8 UI faces via one DynamicResource), so the
+     prototype keeps it as one variable rather than hard-coding a family.
+     Lato is the default. The other seven: Nunito, Quicksand, Raleway,
+     Merriweather, SourceSerif4, PlayfairDisplay, Pacifico. */
+  --font-family: Lato, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+/* ============================================================================
+   REFERENCE — the current component look, recorded as data, not prescribed.
+   Useful when judging how far a redesign moves from today.
+
+     ExpanderCardStyle              radius 12, stroke 1, margin 0,5 (vertical only)
+     BorderTopHighlightBox          radius 12, stroke 2   (hero card)
+     BorderTopDangerHighlightBox    radius 12, stroke 2   (negative affordability)
+     BorderControlHighlightBox      radius  3, stroke 2
+     BorderInsightsHighlightBox     radius  3, stroke 1, margin 12,10
+     TransactionListItemBorderStyle radius  8, stroke 2, margin 12,5,12,2
+     LoanAppChartBorderStyle        radius 12, stroke 2, height 250 (phone)
+     SegmentDefaultStyle            radius 15, stroke 2, segment height 40
+     PopupInputBorderStyle          radius 10, stroke 0, padding 14,10
+     PopupPrimaryButtonStyle        radius 12, height 48, margin 16,10,16,16
+     MauiButtonStyle                radius  5, max height 50
+
+   Separators are 1px of --default-foreground-color at an opacity that is
+   currently inconsistent across the app (0.08 / 0.1 / 0.12 / 0.15 / 0.20, over
+   55 inline instances with no shared style). Picking one value is a redesign
+   decision; 0.1 is the most common.
+
+   One quirk that will look wrong if missed: in Dark the chart card background
+   is LIGHT (--chart-card-background #DDE6ED), which is why every chart axis,
+   legend and title colour in Dark is dark (#27374D).
+   ============================================================================ */

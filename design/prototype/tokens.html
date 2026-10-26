@@ -1,0 +1,209 @@
+<!DOCTYPE html><meta charset="utf-8"><title>Design tokens — Dark</title>
+<link rel="stylesheet" href="tokens.css">
+<style>
+ body{background:var(--default-background-color);color:var(--default-foreground-color);
+   font-family:var(--font-family);padding:24px;margin:0}
+ h1{font-size:var(--font-size-heading)} h2{font-size:var(--font-size-xl);margin-top:32px}
+ .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:8px}
+ .sw{display:flex;align-items:center;gap:8px;font-size:var(--font-size-xs)}
+ .chip{width:34px;height:34px;border-radius:6px;flex:0 0 auto;
+   outline:1px solid rgba(255,255,255,.15);
+   background-image:linear-gradient(45deg,#8883 25%,transparent 25%,transparent 75%,#8883 75%),
+     linear-gradient(45deg,#8883 25%,transparent 25%,transparent 75%,#8883 75%);
+   background-size:10px 10px;background-position:0 0,5px 5px}
+ .chip i{display:block;width:100%;height:100%;border-radius:6px}
+ code{opacity:.65} .gr{height:52px;border-radius:8px;outline:1px solid rgba(255,255,255,.15)}
+ .note{opacity:.5}
+</style>
+<h1>Design tokens — Dark</h1>
+<p class=note style="font-size:var(--font-size-small)">Generated from Theme.Dark.xaml.
+ 161 colours, 18 gradients. A missing swatch means a token failed to resolve.</p>
+<h2>Colours (161)</h2><div class=grid>
+<div class=sw><span class=chip><i style="background:var(--default-foreground-color)"></i></span><span><code>--default-foreground-color</code><br>#DDE6ED <span class=note>LoanAppDefaultForegroundColor</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--default-background-color)"></i></span><span><code>--default-background-color</code><br>#222831 <span class=note>LoanAppDefaultBackgroundColor</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--tab-bar-background-gradient-start)"></i></span><span><code>--tab-bar-background-gradient-start</code><br>#222831 <span class=note>LoanAppTabBarBackgroundGradientStart</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--tab-bar-background-gradient-end)"></i></span><span><code>--tab-bar-background-gradient-end</code><br>#393E46 <span class=note>LoanAppTabBarBackgroundGradientEnd</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--tab-indicator-stroke-color)"></i></span><span><code>--tab-indicator-stroke-color</code><br>#9DB2BF <span class=note>LoanAppTabIndicatorStrokeColor</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--tab-text-color-selected)"></i></span><span><code>--tab-text-color-selected</code><br>#DDE6ED <span class=note>LoanAppTabTextColorSelected</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--tab-text-color-normal)"></i></span><span><code>--tab-text-color-normal</code><br>#9DB2BF <span class=note>LoanAppTabTextColorNormal</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--highlight-fg-color)"></i></span><span><code>--highlight-fg-color</code><br>#27374D <span class=note>LoanAppHighlightFgColor</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--input-text-fg-color)"></i></span><span><code>--input-text-fg-color</code><br>#DDE6ED <span class=note>LoanAppInputTextFgColor</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--input-text-when-focused-color)"></i></span><span><code>--input-text-when-focused-color</code><br>#DDE6ED <span class=note>LoanAppInputTextWhenFocusedColor</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--input-text-when-un-focused-color)"></i></span><span><code>--input-text-when-un-focused-color</code><br>#9DB2BF <span class=note>LoanAppInputTextWhenUnFocusedColor</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--input-error-text-fg-color)"></i></span><span><code>--input-error-text-fg-color</code><br>#E57373 <span class=note>LoanAppInputErrorTextFgColor</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--seg-bg-color)"></i></span><span><code>--seg-bg-color</code><br>transparent <span class=note>LoanAppSegBgColor</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--seg-border-color)"></i></span><span><code>--seg-border-color</code><br>#526D82 <span class=note>LoanAppSegBorderColor</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--seg-text-fg-color)"></i></span><span><code>--seg-text-fg-color</code><br>#9DB2BF <span class=note>LoanAppSegTextFgColor</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--seg-selected-bg-color)"></i></span><span><code>--seg-selected-bg-color</code><br>#393E46 <span class=note>LoanAppSegSelectedBgColor</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--slider-knob-fill-color)"></i></span><span><code>--slider-knob-fill-color</code><br>#9DB2BF <span class=note>LoanAppSliderKnobFillColor</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--slider-knob-border-color)"></i></span><span><code>--slider-knob-border-color</code><br>#526D82 <span class=note>LoanAppSliderKnobBorderColor</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--slider-knob-overlap-color)"></i></span><span><code>--slider-knob-overlap-color</code><br>#DDE6ED <span class=note>LoanAppSliderKnobOverlapColor</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--range-slider-track-in-active-fill-color)"></i></span><span><code>--range-slider-track-in-active-fill-color</code><br>#526D82 <span class=note>LoanAppRangeSliderTrackInActiveFillColor</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--range-slider-track-active-fill-color)"></i></span><span><code>--range-slider-track-active-fill-color</code><br>#9DB2BF <span class=note>LoanAppRangeSliderTrackActiveFillColor</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--range-slider-label-text-color)"></i></span><span><code>--range-slider-label-text-color</code><br>#DDE6ED <span class=note>LoanAppRangeSliderLabelTextColor</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--data-grid-header-background-color)"></i></span><span><code>--data-grid-header-background-color</code><br>#27374D <span class=note>LoanAppDataGridHeaderBackgroundColor</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--data-grid-header-text-color)"></i></span><span><code>--data-grid-header-text-color</code><br>#DDE6ED <span class=note>LoanAppDataGridHeaderTextColor</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--data-grid-cell-text-color)"></i></span><span><code>--data-grid-cell-text-color</code><br>#393E46 <span class=note>LoanAppDataGridCellTextColor</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--data-grid-cell-background-color)"></i></span><span><code>--data-grid-cell-background-color</code><br>#393E46 <span class=note>LoanAppDataGridCellBackgroundColor</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--data-grid-cell-bg-1)"></i></span><span><code>--data-grid-cell-bg-1</code><br>#27374D <span class=note>LoanAppDataGridCellBg1</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--data-grid-cell-bg-2)"></i></span><span><code>--data-grid-cell-bg-2</code><br>#1F2E44 <span class=note>LoanAppDataGridCellBg2</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--data-grid-cell-bg-3)"></i></span><span><code>--data-grid-cell-bg-3</code><br>#19253A <span class=note>LoanAppDataGridCellBg3</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--data-grid-cell-bg-4)"></i></span><span><code>--data-grid-cell-bg-4</code><br>#141D31 <span class=note>LoanAppDataGridCellBg4</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--data-grid-cell-bg-5)"></i></span><span><code>--data-grid-cell-bg-5</code><br>#0F1627 <span class=note>LoanAppDataGridCellBg5</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--data-grid-cell-fg-1)"></i></span><span><code>--data-grid-cell-fg-1</code><br>#DDE6ED <span class=note>LoanAppDataGridCellFg1</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--data-grid-cell-fg-2)"></i></span><span><code>--data-grid-cell-fg-2</code><br>#C9D8E2 <span class=note>LoanAppDataGridCellFg2</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--data-grid-cell-fg-3)"></i></span><span><code>--data-grid-cell-fg-3</code><br>#B5C9D7 <span class=note>LoanAppDataGridCellFg3</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--data-grid-cell-fg-4)"></i></span><span><code>--data-grid-cell-fg-4</code><br>#A1BBCB <span class=note>LoanAppDataGridCellFg4</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--data-grid-cell-fg-5)"></i></span><span><code>--data-grid-cell-fg-5</code><br>#8DAEBF <span class=note>LoanAppDataGridCellFg5</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--navigation-button-background-color)"></i></span><span><code>--navigation-button-background-color</code><br>#526D82 <span class=note>LoanAppNavigationButtonBackgroundColor</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--navigation-button-disable-background-color)"></i></span><span><code>--navigation-button-disable-background-color</code><br>transparent <span class=note>LoanAppNavigationButtonDisableBackgroundColor</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--navigation-button-disable-icon-color)"></i></span><span><code>--navigation-button-disable-icon-color</code><br>#9DB2BF <span class=note>LoanAppNavigationButtonDisableIconColor</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--navigation-button-icon-color)"></i></span><span><code>--navigation-button-icon-color</code><br>#DDE6ED <span class=note>LoanAppNavigationButtonIconColor</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--numeric-button-background-color)"></i></span><span><code>--numeric-button-background-color</code><br>#393E46 <span class=note>LoanAppNumericButtonBackgroundColor</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--numeric-button-selection-background-color)"></i></span><span><code>--numeric-button-selection-background-color</code><br>#9DB2BF <span class=note>LoanAppNumericButtonSelectionBackgroundColor</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--numeric-button-selection-text-color)"></i></span><span><code>--numeric-button-selection-text-color</code><br>#222831 <span class=note>LoanAppNumericButtonSelectionTextColor</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--numeric-button-text-color)"></i></span><span><code>--numeric-button-text-color</code><br>#DDE6ED <span class=note>LoanAppNumericButtonTextColor</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--combo-drop-down-background-color)"></i></span><span><code>--combo-drop-down-background-color</code><br>#27374D <span class=note>LoanAppComboDropDownBackgroundColor</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--combo-drop-down-text-color)"></i></span><span><code>--combo-drop-down-text-color</code><br>#DDE6ED <span class=note>LoanAppComboDropDownTextColor</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--combo-highlighted-text-color)"></i></span><span><code>--combo-highlighted-text-color</code><br>#393E46 <span class=note>LoanAppComboHighlightedTextColor</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--combo-selected-drop-down-item-color)"></i></span><span><code>--combo-selected-drop-down-item-color</code><br>#9DB2BF <span class=note>LoanAppComboSelectedDropDownItemColor</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--combo-text-color)"></i></span><span><code>--combo-text-color</code><br>#DDE6ED <span class=note>LoanAppComboTextColor</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--switch-thumb-border-color-on)"></i></span><span><code>--switch-thumb-border-color-on</code><br>#393E46 <span class=note>LoanAppSwitchThumbBorderColorOn</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--switch-thumb-color-on)"></i></span><span><code>--switch-thumb-color-on</code><br>#526D82 <span class=note>LoanAppSwitchThumbColorOn</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--switch-track-border-color-on)"></i></span><span><code>--switch-track-border-color-on</code><br>#526D82 <span class=note>LoanAppSwitchTrackBorderColorOn</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--switch-track-color-on)"></i></span><span><code>--switch-track-color-on</code><br>#393E46 <span class=note>LoanAppSwitchTrackColorOn</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--switch-thumb-border-color-off)"></i></span><span><code>--switch-thumb-border-color-off</code><br>#526D82 <span class=note>LoanAppSwitchThumbBorderColorOff</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--switch-thumb-color-off)"></i></span><span><code>--switch-thumb-color-off</code><br>#393E46 <span class=note>LoanAppSwitchThumbColorOff</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--switch-track-border-color-off)"></i></span><span><code>--switch-track-border-color-off</code><br>#393E46 <span class=note>LoanAppSwitchTrackBorderColorOff</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--switch-track-color-off)"></i></span><span><code>--switch-track-color-off</code><br>#526D82 <span class=note>LoanAppSwitchTrackColorOff</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--auto-complete-selection-text-highlight-color)"></i></span><span><code>--auto-complete-selection-text-highlight-color</code><br>#9DB2BF <span class=note>LoanAppAutoCompleteSelectionTextHighlightColor</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--auto-complete-selected-drop-down-item-background)"></i></span><span><code>--auto-complete-selected-drop-down-item-background</code><br>#27374D <span class=note>LoanAppAutoCompleteSelectedDropDownItemBackground</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--auto-complete-clear-button-color)"></i></span><span><code>--auto-complete-clear-button-color</code><br>#393E46 <span class=note>LoanAppAutoCompleteClearButtonColor</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--auto-complete-dropdown-background-color)"></i></span><span><code>--auto-complete-dropdown-background-color</code><br>#27374D <span class=note>LoanAppAutoCompleteDropdownBackgroundColor</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--auto-complete-dropdown-text-color)"></i></span><span><code>--auto-complete-dropdown-text-color</code><br>#DDE6ED <span class=note>LoanAppAutoCompleteDropdownTextColor</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--auto-complete-dropdown-border-color)"></i></span><span><code>--auto-complete-dropdown-border-color</code><br>#393E46 <span class=note>LoanAppAutoCompleteDropdownBorderColor</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--auto-complete-highlighted-text-color)"></i></span><span><code>--auto-complete-highlighted-text-color</code><br>#E57373 <span class=note>LoanAppAutoCompleteHighlightedTextColor</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--auto-complete-water-color)"></i></span><span><code>--auto-complete-water-color</code><br>#222831 <span class=note>LoanAppAutoCompleteWaterColor</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--auto-complete-text-color)"></i></span><span><code>--auto-complete-text-color</code><br>#DDE6ED <span class=note>LoanAppAutoCompleteTextColor</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--auto-complete-no-results-found-text-color)"></i></span><span><code>--auto-complete-no-results-found-text-color</code><br>#393E46 <span class=note>LoanAppAutoCompleteNoResultsFoundTextColor</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--app-shell-bg-color)"></i></span><span><code>--app-shell-bg-color</code><br>#222831 <span class=note>LoanAppAppShellBgColor</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--app-shell-fg-color)"></i></span><span><code>--app-shell-fg-color</code><br>#DDE6ED <span class=note>LoanAppAppShellFgColor</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--app-shell-title-color)"></i></span><span><code>--app-shell-title-color</code><br>#DDE6ED <span class=note>LoanAppAppShellTitleColor</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--app-shell-disabled-color)"></i></span><span><code>--app-shell-disabled-color</code><br>#6B7C8C <span class=note>LoanAppAppShellDisabledColor</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--app-shell-unselected-color)"></i></span><span><code>--app-shell-unselected-color</code><br>#8FA3B3 <span class=note>LoanAppAppShellUnselectedColor</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--popup-bg)"></i></span><span><code>--popup-bg</code><br>#2E3440 <span class=note>LoanAppPopupBg</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--popup-fg)"></i></span><span><code>--popup-fg</code><br>#DDE6ED <span class=note>LoanAppPopupFg</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--popup-surface)"></i></span><span><code>--popup-surface</code><br>#3B4252 <span class=note>LoanAppPopupSurface</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--popup-muted)"></i></span><span><code>--popup-muted</code><br>#526D82 <span class=note>LoanAppPopupMuted</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--popup-accent)"></i></span><span><code>--popup-accent</code><br>#9DB2BF <span class=note>LoanAppPopupAccent</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--popup-button-bg)"></i></span><span><code>--popup-button-bg</code><br>#526D82 <span class=note>LoanAppPopupButtonBg</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--popup-button-fg)"></i></span><span><code>--popup-button-fg</code><br>#DDE6ED <span class=note>LoanAppPopupButtonFg</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--app-shell-tab-bar-background-color)"></i></span><span><code>--app-shell-tab-bar-background-color</code><br>#222831 <span class=note>LoanAppAppShellTabBarBackgroundColor</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--app-shell-tab-bar-foreground-color)"></i></span><span><code>--app-shell-tab-bar-foreground-color</code><br>#DDE6ED <span class=note>LoanAppAppShellTabBarForegroundColor</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--app-shell-tab-bar-unselected-color)"></i></span><span><code>--app-shell-tab-bar-unselected-color</code><br>#8FA3B3 <span class=note>LoanAppAppShellTabBarUnselectedColor</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--app-shell-tab-bar-disabled-color)"></i></span><span><code>--app-shell-tab-bar-disabled-color</code><br>#6B7C8C <span class=note>LoanAppAppShellTabBarDisabledColor</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--app-shell-tab-bar-title-color)"></i></span><span><code>--app-shell-tab-bar-title-color</code><br>#DDE6ED <span class=note>LoanAppAppShellTabBarTitleColor</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--notification-warning-bg-gradient-start)"></i></span><span><code>--notification-warning-bg-gradient-start</code><br>#3B332A <span class=note>LoanAppNotificationWarningBgGradientStart</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--notification-warning-bg-gradient-end)"></i></span><span><code>--notification-warning-bg-gradient-end</code><br>#4A3E31 <span class=note>LoanAppNotificationWarningBgGradientEnd</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--notification-information-bg-gradient-start)"></i></span><span><code>--notification-information-bg-gradient-start</code><br>#1E2A38 <span class=note>LoanAppNotificationInformationBgGradientStart</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--notification-information-bg-gradient-end)"></i></span><span><code>--notification-information-bg-gradient-end</code><br>#27374D <span class=note>LoanAppNotificationInformationBgGradientEnd</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--notification-text-color)"></i></span><span><code>--notification-text-color</code><br>#DDE6ED <span class=note>LoanAppNotificationTextColor</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--notification-bg-color)"></i></span><span><code>--notification-bg-color</code><br>#393E46 <span class=note>LoanAppNotificationBgColor</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--lst-foreground-color)"></i></span><span><code>--lst-foreground-color</code><br>#DDE6ED <span class=note>LstForegroundColor</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--lst-bg-gradient-start)"></i></span><span><code>--lst-bg-gradient-start</code><br>#27374D <span class=note>LoanAppLstBgGradientStart</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--lst-bg-gradient-end)"></i></span><span><code>--lst-bg-gradient-end</code><br>#393E46 <span class=note>LoanAppLstBgGradientEnd</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--lst-border-gradient-start)"></i></span><span><code>--lst-border-gradient-start</code><br>#526D82 <span class=note>LoanAppLstBorderGradientStart</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--lst-border-gradient-end)"></i></span><span><code>--lst-border-gradient-end</code><br>#9DB2BF <span class=note>LoanAppLstBorderGradientEnd</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--button-fg-color)"></i></span><span><code>--button-fg-color</code><br>#DDE6ED <span class=note>LoanAppButtonFgColor</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--button-bg-color)"></i></span><span><code>--button-bg-color</code><br>#27374D <span class=note>LoanAppButtonBgColor</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--export-button-bg-color)"></i></span><span><code>--export-button-bg-color</code><br>#526D82 <span class=note>LoanAppExportButtonBgColor</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--export-button-fg-color)"></i></span><span><code>--export-button-fg-color</code><br>#222831 <span class=note>LoanAppExportButtonFgColor</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--chart-axis-text-color)"></i></span><span><code>--chart-axis-text-color</code><br>#27374D <span class=note>LoanAppChartAxisTextColor</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--chart-legend-text-color)"></i></span><span><code>--chart-legend-text-color</code><br>#27374D <span class=note>LoanAppChartLegendTextColor</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--chart-title-text-color)"></i></span><span><code>--chart-title-text-color</code><br>#27374D <span class=note>LoanAppChartTitleTextColor</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--chart-data-marker-text-color)"></i></span><span><code>--chart-data-marker-text-color</code><br>#27374D <span class=note>LoanAppChartDataMarkerTextColor</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--donut-center-text-color)"></i></span><span><code>--donut-center-text-color</code><br>#27374D <span class=note>LoanAppDonutCenterTextColor</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--chart-outer-border-gradient-start)"></i></span><span><code>--chart-outer-border-gradient-start</code><br>#526D82 <span class=note>LoanAppChartOuterBorderGradientStart</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--chart-outer-border-gradient-end)"></i></span><span><code>--chart-outer-border-gradient-end</code><br>#9DB2BF <span class=note>LoanAppChartOuterBorderGradientEnd</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--chart-inner-border-gradient-start)"></i></span><span><code>--chart-inner-border-gradient-start</code><br>#DDE6ED <span class=note>LoanAppChartInnerBorderGradientStart</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--chart-inner-border-gradient-end)"></i></span><span><code>--chart-inner-border-gradient-end</code><br>#9DB2BF <span class=note>LoanAppChartInnerBorderGradientEnd</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--chart-color-1)"></i></span><span><code>--chart-color-1</code><br>#5FBDB0 <span class=note>LoanAppChartColor1</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--chart-data-marker-text-color-1)"></i></span><span><code>--chart-data-marker-text-color-1</code><br>#0E2B27 <span class=note>LoanAppChartDataMarkerTextColor1</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--chart-color-2)"></i></span><span><code>--chart-color-2</code><br>#E0A85A <span class=note>LoanAppChartColor2</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--chart-data-marker-text-color-2)"></i></span><span><code>--chart-data-marker-text-color-2</code><br>#3A2A10 <span class=note>LoanAppChartDataMarkerTextColor2</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--chart-color-3)"></i></span><span><code>--chart-color-3</code><br>#A98FD0 <span class=note>LoanAppChartColor3</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--chart-data-marker-text-color-3)"></i></span><span><code>--chart-data-marker-text-color-3</code><br>#241733 <span class=note>LoanAppChartDataMarkerTextColor3</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--chart-card-background)"></i></span><span><code>--chart-card-background</code><br>#DDE6ED <span class=note>LoanAppChartCardBackground</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--chart-color-series-1)"></i></span><span><code>--chart-color-series-1</code><br>#5FBDB0 <span class=note>LoanAppChartColorSeries1</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--chart-color-series-2)"></i></span><span><code>--chart-color-series-2</code><br>#E0A85A <span class=note>LoanAppChartColorSeries2</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--chart-color-series-3)"></i></span><span><code>--chart-color-series-3</code><br>#A98FD0 <span class=note>LoanAppChartColorSeries3</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--border-top-gradient-outer-line-start)"></i></span><span><code>--border-top-gradient-outer-line-start</code><br>#393E46 <span class=note>LoanAppBorderTopGradientOuterLineStart</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--border-top-gradient-outer-line-end)"></i></span><span><code>--border-top-gradient-outer-line-end</code><br>#222831 <span class=note>LoanAppBorderTopGradientOuterLineEnd</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--border-top-gradient-background-start)"></i></span><span><code>--border-top-gradient-background-start</code><br>#9DB2BF <span class=note>LoanAppBorderTopGradientBackgroundStart</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--border-top-gradient-background-end)"></i></span><span><code>--border-top-gradient-background-end</code><br>#DDE6ED <span class=note>LoanAppBorderTopGradientBackgroundEnd</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--border-top-danger-outer-line-start)"></i></span><span><code>--border-top-danger-outer-line-start</code><br>#5C2B2B <span class=note>LoanAppBorderTopDangerOuterLineStart</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--border-top-danger-outer-line-end)"></i></span><span><code>--border-top-danger-outer-line-end</code><br>#3D1A1A <span class=note>LoanAppBorderTopDangerOuterLineEnd</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--border-top-danger-background-start)"></i></span><span><code>--border-top-danger-background-start</code><br>#C97A7A <span class=note>LoanAppBorderTopDangerBackgroundStart</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--border-top-danger-background-end)"></i></span><span><code>--border-top-danger-background-end</code><br>#E8AEAE <span class=note>LoanAppBorderTopDangerBackgroundEnd</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--border-top-danger-fg-color)"></i></span><span><code>--border-top-danger-fg-color</code><br>#3D1A1A <span class=note>LoanAppBorderTopDangerFgColor</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--border-control-gradient-border-line-start)"></i></span><span><code>--border-control-gradient-border-line-start</code><br>#2D3B4A <span class=note>LoanAppBorderControlGradientBorderLineStart</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--border-control-gradient-border-line-end)"></i></span><span><code>--border-control-gradient-border-line-end</code><br>#3A4E60 <span class=note>LoanAppBorderControlGradientBorderLineEnd</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--border-control-gradient-background-start)"></i></span><span><code>--border-control-gradient-background-start</code><br>#27374D <span class=note>LoanAppBorderControlGradientBackgroundStart</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--border-control-gradient-background-end)"></i></span><span><code>--border-control-gradient-background-end</code><br>#393E46 <span class=note>LoanAppBorderControlGradientBackgroundEnd</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--border-insights-gradient-outer-line-start)"></i></span><span><code>--border-insights-gradient-outer-line-start</code><br>#393E46 <span class=note>LoanAppBorderInsightsGradientOuterLineStart</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--border-insights-gradient-outer-line-end)"></i></span><span><code>--border-insights-gradient-outer-line-end</code><br>#222831 <span class=note>LoanAppBorderInsightsGradientOuterLineEnd</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--border-insights-gradient-background-start)"></i></span><span><code>--border-insights-gradient-background-start</code><br>#27374D <span class=note>LoanAppBorderInsightsGradientBackgroundStart</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--border-insights-gradient-background-end)"></i></span><span><code>--border-insights-gradient-background-end</code><br>#2F4258 <span class=note>LoanAppBorderInsightsGradientBackgroundEnd</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--insights-fg-color)"></i></span><span><code>--insights-fg-color</code><br>#DDE6ED <span class=note>LoanAppInsightsFgColor</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--expander-expanded-gradient-start)"></i></span><span><code>--expander-expanded-gradient-start</code><br>#393E46 <span class=note>LoanAppExpanderExpandedGradientStart</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--expander-expanded-gradient-end)"></i></span><span><code>--expander-expanded-gradient-end</code><br>#526D82 <span class=note>LoanAppExpanderExpandedGradientEnd</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--expander-collapsed-gradient-start)"></i></span><span><code>--expander-collapsed-gradient-start</code><br>#27374D <span class=note>LoanAppExpanderCollapsedGradientStart</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--expander-collapsed-gradient-end)"></i></span><span><code>--expander-collapsed-gradient-end</code><br>#393E46 <span class=note>LoanAppExpanderCollapsedGradientEnd</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--expander-header-text-color)"></i></span><span><code>--expander-header-text-color</code><br>#DDE6ED <span class=note>LoanAppExpanderHeaderTextColor</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--checkbox-back-color)"></i></span><span><code>--checkbox-back-color</code><br>#9DB2BF <span class=note>LoanAppCheckboxBackColor</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--disclaimer-body-background-color)"></i></span><span><code>--disclaimer-body-background-color</code><br>#526D82 <span class=note>LoanAppDisclaimerBodyBackgroundColor</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--disclaimer-header-background-color)"></i></span><span><code>--disclaimer-header-background-color</code><br>#222831 <span class=note>LoanAppDisclaimerHeaderBackgroundColor</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--disclaimer-header-text-color)"></i></span><span><code>--disclaimer-header-text-color</code><br>#DDE6ED <span class=note>LoanAppDisclaimerHeaderTextColor</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--disclaimer-header-border-color)"></i></span><span><code>--disclaimer-header-border-color</code><br>#9DB2BF <span class=note>LoanAppDisclaimerHeaderBorderColor</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--disclaimer-content-background-color)"></i></span><span><code>--disclaimer-content-background-color</code><br>#393E46 <span class=note>LoanAppDisclaimerContentBackgroundColor</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--disclaimer-content-foreground-color)"></i></span><span><code>--disclaimer-content-foreground-color</code><br>#e0e4e7 <span class=note>LoanAppDisclaimerContentForegroundColor</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--disclaimer-content-box-shadow-color)"></i></span><span><code>--disclaimer-content-box-shadow-color</code><br>#27374D <span class=note>LoanAppDisclaimerContentBoxShadowColor</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--disclaimer-header-2-text-color)"></i></span><span><code>--disclaimer-header-2-text-color</code><br>#c2c9d0 <span class=note>LoanAppDisclaimerHeader2TextColor</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--progress-track-color)"></i></span><span><code>--progress-track-color</code><br>#393E46 <span class=note>LoanAppProgressTrackColor</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--progress-color)"></i></span><span><code>--progress-color</code><br>#9DB2BF <span class=note>LoanAppProgressColor</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--purchase-text-font-color)"></i></span><span><code>--purchase-text-font-color</code><br>#DDE6ED <span class=note>LoanAppPurchaseTextFontColor</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--purchase-button-primary-fg-color)"></i></span><span><code>--purchase-button-primary-fg-color</code><br>#222831 <span class=note>LoanAppPurchaseButtonPrimaryFgColor</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--purchase-button-primary-bg-color)"></i></span><span><code>--purchase-button-primary-bg-color</code><br>#9DB2BF <span class=note>LoanAppPurchaseButtonPrimaryBgColor</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--purchase-button-secondary-fg-color)"></i></span><span><code>--purchase-button-secondary-fg-color</code><br>#9DB2BF <span class=note>LoanAppPurchaseButtonSecondaryFgColor</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--purchase-button-secondary-bg-color)"></i></span><span><code>--purchase-button-secondary-bg-color</code><br>transparent <span class=note>LoanAppPurchaseButtonSecondaryBgColor</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--purchase-button-secondary-border-color)"></i></span><span><code>--purchase-button-secondary-border-color</code><br>#9DB2BF <span class=note>LoanAppPurchaseButtonSecondaryBorderColor</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--purchase-window-bg-start)"></i></span><span><code>--purchase-window-bg-start</code><br>#526D82 <span class=note>LoanAppPurchaseWindowBgStart</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--purchase-window-bg-end)"></i></span><span><code>--purchase-window-bg-end</code><br>#393E46 <span class=note>LoanAppPurchaseWindowBgEnd</span></span></div>
+<div class=sw><span class=chip><i style="background:var(--purchase-popup-overlay-bg-color)"></i></span><span><code>--purchase-popup-overlay-bg-color</code><br>#27374D <span class=note>LoanAppPurchasePopupOverlayBgColor</span></span></div>
+</div><h2>Gradients (18)</h2><div class=grid>
+<div><div class=gr style="background:var(--lst-bg-brush)"></div><div class=sw><code>--lst-bg-brush</code></div></div>
+<div><div class=gr style="background:var(--lst-border-brush)"></div><div class=sw><code>--lst-border-brush</code></div></div>
+<div><div class=gr style="background:var(--border-insights-gradient-brush)"></div><div class=sw><code>--border-insights-gradient-brush</code></div></div>
+<div><div class=gr style="background:var(--border-insights-background-gradient-brush)"></div><div class=sw><code>--border-insights-background-gradient-brush</code></div></div>
+<div><div class=gr style="background:var(--expander-expanded-gradient-brush)"></div><div class=sw><code>--expander-expanded-gradient-brush</code></div></div>
+<div><div class=gr style="background:var(--expander-collapsed-gradient-brush)"></div><div class=sw><code>--expander-collapsed-gradient-brush</code></div></div>
+<div><div class=gr style="background:var(--information-background-gradient-brush)"></div><div class=sw><code>--information-background-gradient-brush</code></div></div>
+<div><div class=gr style="background:var(--warning-background-gradient-brush)"></div><div class=sw><code>--warning-background-gradient-brush</code></div></div>
+<div><div class=gr style="background:var(--purchase-gradient-brush)"></div><div class=sw><code>--purchase-gradient-brush</code></div></div>
+<div><div class=gr style="background:var(--tab-bar-background-gradient-brush)"></div><div class=sw><code>--tab-bar-background-gradient-brush</code></div></div>
+<div><div class=gr style="background:var(--chart-outer-border-gradient-brush)"></div><div class=sw><code>--chart-outer-border-gradient-brush</code></div></div>
+<div><div class=gr style="background:var(--chart-inner-border-gradient-brush)"></div><div class=sw><code>--chart-inner-border-gradient-brush</code></div></div>
+<div><div class=gr style="background:var(--border-top-gradient-brush)"></div><div class=sw><code>--border-top-gradient-brush</code></div></div>
+<div><div class=gr style="background:var(--border-top-background-gradient-brush)"></div><div class=sw><code>--border-top-background-gradient-brush</code></div></div>
+<div><div class=gr style="background:var(--border-top-danger-gradient-brush)"></div><div class=sw><code>--border-top-danger-gradient-brush</code></div></div>
+<div><div class=gr style="background:var(--border-top-danger-background-gradient-brush)"></div><div class=sw><code>--border-top-danger-background-gradient-brush</code></div></div>
+<div><div class=gr style="background:var(--border-control-gradient-brush)"></div><div class=sw><code>--border-control-gradient-brush</code></div></div>
+<div><div class=gr style="background:var(--border-control-background-gradient-brush)"></div><div class=sw><code>--border-control-background-gradient-brush</code></div></div>
+</div><h2>Type scale</h2>
+<div style="font-size:var(--font-size-xs)">--font-size-xs — 10px — The quick brown fox</div>
+<div style="font-size:var(--font-size-small)">--font-size-small — 11px — The quick brown fox</div>
+<div style="font-size:var(--font-size-body)">--font-size-body — 12px — The quick brown fox</div>
+<div style="font-size:var(--font-size-medium)">--font-size-medium — 14px — The quick brown fox</div>
+<div style="font-size:var(--font-size-large)">--font-size-large — 15px — The quick brown fox</div>
+<div style="font-size:var(--font-size-xl)">--font-size-xl — 18px — The quick brown fox</div>
+<div style="font-size:var(--font-size-heading)">--font-size-heading — 20px — The quick brown fox</div>

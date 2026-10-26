@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView
+    x:Class="LoanCalculatorMaui.Controls.ScenarioExplainerView"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:constants="clr-namespace:LoanCalculator.Core.Constants;assembly=LoanCalculator.Core"
+    xmlns:expander="clr-namespace:Syncfusion.Maui.Expander;assembly=Syncfusion.Maui.Expander"
+    x:Name="ExplainerRoot">
+
+    <!--
+        The plain-language explanation for one What If scenario: what it is for, what every figure
+        on the screen above means, what to watch out for, and one line stating what it means for
+        this user's own numbers.
+
+        Appended once by ScenarioPage.Configure for whichever scenario is open, so none of the nine
+        scenario views know about it. Content comes from ScenarioExplanations.For(scenario) in Core,
+        where it is unit-testable.
+
+        COLLAPSED BY DEFAULT. The figures are what people come here for; the explanation is what
+        they want the first time and once in a while after that. Expanded by default it would double
+        the length of every scenario page.
+
+        ⚠ An SfExpander header does not respond to taps on iOS unless the hosting page calls
+        SyncfusionIosTouchFix.ApplyToExpanders — ScenarioPage.OnAppearing does. See CLAUDE.md; this
+        defect is silent and cost three failed diagnoses.
+    -->
+    <Border Style="{DynamicResource ExpanderCardStyle}">
+        <expander:SfExpander
+            HeaderIconPosition="End"
+            IsExpanded="False"
+            Style="{DynamicResource CommonExpanderStyle}">
+
+            <expander:SfExpander.Header>
+                <Label
+                    AutomationId="ScenarioExplainerHeader"
+                    Style="{DynamicResource ExpanderHeaderLabelStyle}"
+                    Text="Understanding this scenario" />
+            </expander:SfExpander.Header>
+
+            <expander:SfExpander.Content>
+                <VerticalStackLayout Padding="15,4,15,16" Spacing="0">
+
+                    <!--
+                        Why this matters.
+
+                        The body's AutomationId lives on this Label rather than on the enclosing
+                        layout: a layout is not reliably surfaced as an accessibility element, and a
+                        Label with no text measures to zero height and is reported as absent on iOS.
+                        Purpose is guaranteed non-empty for all nine scenarios by
+                        ScenarioExplanationsTests, which makes this the one anchor a UI test can
+                        depend on.
+                    -->
+                    <Label Style="{DynamicResource PopupFieldLabelStyle}" Text="WHY THIS MATTERS" />
+                    <Label
+                        Margin="0,4,0,0"
+                        AutomationId="ScenarioExplainerBody"
+                        FontSize="{StaticResource FontSizeBody}"
+                        Text="{Binding Explanation.Purpose, Source={x:Reference ExplainerRoot}}"
+                        TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+
+                    <!--
+                        Worked example, where one exists. Only four of the nine have one, so the
+                        whole group collapses rather than leaving an orphan heading — IsVisible is
+                        driven from code-behind, because a converter for "is this string empty" is
+                        more machinery than one line of C#.
+                    -->
+                    <VerticalStackLayout x:Name="ExampleSection" Margin="0,14,0,0" Spacing="4">
+                        <Label Style="{DynamicResource PopupFieldLabelStyle}" Text="FOR EXAMPLE" />
+                        <Label
+                            FontAttributes="Italic"
+                            FontSize="{StaticResource FontSizeBody}"
+                            Opacity="0.85"
+                            Text="{Binding Explanation.Example, Source={x:Reference ExplainerRoot}}"
+                            TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                    </VerticalStackLayout>
+
+                    <!--
+                        Reading the numbers — one row per figure on screen above.
+
+                        BindableLayout with a DataTemplate rather than Labels built in code: a
+                        code-built Label needs SetDynamicResource for DefaultFontFamily and every
+                        theme colour by hand, which is how a control silently stops following the
+                        user's font choice. x:DataType makes the two paths compiled bindings, so a
+                        typo is a build error rather than an invisible empty Label.
+                    -->
+                    <Label Margin="0,16,0,0" Style="{DynamicResource PopupFieldLabelStyle}" Text="READING THE NUMBERS" />
+                    <VerticalStackLayout
+                        Margin="0,6,0,0"
+                        Spacing="10"
+                        BindableLayout.ItemsSource="{Binding Explanation.ReadingTheNumbers, Source={x:Reference ExplainerRoot}}">
+                        <BindableLayout.ItemTemplate>
+                            <DataTemplate x:DataType="constants:ExplanationTerm">
+                                <VerticalStackLayout Spacing="1">
+                                    <Label
+                                        FontAttributes="Bold"
+                                        FontSize="{StaticResource FontSizeBody}"
+                                        Text="{Binding Term}"
+                                        TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                                    <Label
+                                        FontSize="{StaticResource FontSizeBody}"
+                                        Opacity="0.75"
+                                        Text="{Binding Meaning}"
+                                        TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                                </VerticalStackLayout>
+                            </DataTemplate>
+                        </BindableLayout.ItemTemplate>
+                    </VerticalStackLayout>
+
+                    <!--  What to watch for  -->
+                    <Label Margin="0,16,0,0" Style="{DynamicResource PopupFieldLabelStyle}" Text="WHAT TO WATCH FOR" />
+                    <Label
+                        Margin="0,4,0,0"
+                        FontSize="{StaticResource FontSizeBody}"
+                        Opacity="0.85"
+                        Text="{Binding Explanation.WatchFor, Source={x:Reference ExplainerRoot}}"
+                        TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+
+                    <!--
+                        The one personalised line, closing the card the same way the data-entry
+                        cards close with their own figures. Bound to WhatIfViewModel.
+                        ScenarioExplainLine — a single fixed path, because the view model tracks
+                        which scenario is open rather than this control being told.
+                    -->
+                    <BoxView Style="{DynamicResource FormCardFootRuleStyle}" />
+                    <Label Style="{DynamicResource PopupFieldLabelStyle}" Text="IN YOUR CASE" />
+                    <!--
+                        Not FormCardFootSubStyle: that is FontSizeSmall, right for a figure caption
+                        on the entry pages and too small for a sentence here.
+                    -->
+                    <Label
+                        Margin="0,4,0,0"
+                        AutomationId="ScenarioExplainerPersonalLine"
+                        FontAttributes="Bold"
+                        FontSize="{StaticResource FontSizeBody}"
+                        Text="{Binding ScenarioExplainLine}"
+                        TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+
+                </VerticalStackLayout>
+            </expander:SfExpander.Content>
+
+        </expander:SfExpander>
+    </Border>
+
+</ContentView>

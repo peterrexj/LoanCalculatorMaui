@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<meta charset="utf-8">
+<title>Disclaimer / Privacy Policy — prototype</title>
+<link rel="stylesheet" href="tokens.css">
+<link rel="stylesheet" href="app.css">
+
+<!--
+  LEGAL POPUP — replaces the two near-identical full-screen SfPopups in SettingsView.xaml
+  (Disclaimer around line 40, Privacy Policy around line 130). They differ only in title and body
+  copy, so this is one layout with both states shown stacked — scroll to compare.
+
+  Uses the --popup-* token family (LoanAppPopupBg/Fg/Surface/Muted/Accent), NOT the generic
+  default/border tokens the real popups originally used. CLAUDE.md records why: that exact
+  nesting (a Border inside a BindableLayout inside a ScrollView, two DataTemplates deep) washed
+  the generic tokens out to a near-illegible pale tint, worst in Dark — the LoanAppPopup* family
+  is the fix, matched from the first-launch disclaimer that already rendered correctly at the same
+  nesting depth.
+
+  Disclaimer body text is the real copy from LoanAppDisclaimerBannerText
+  (Theme.CommonStyles.xaml) plus the "What This App Is" section visible in
+  iOS-11-settings-disclaimer.png — not invented. Both states dismiss back to Settings, matching
+  SettingsDisclaimerCloseButton / SettingsPrivacyCloseButton's Close commands.
+
+  Page-local CSS added: a thin divider between the two stacked states below, since app.css has no
+  "popup card" component — these full-screen legal popups are a new surface type not covered by
+  .card/.rows. Consolidate into app.css if this shape is reused elsewhere.
+-->
+
+<style>
+  .popup-page {
+    background: var(--popup-bg);
+    color: var(--popup-fg);
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+  .popup-page .ph-head {
+    padding: 18px 16px 12px;
+    text-align: center;
+    font-weight: 700;
+    font-size: var(--font-size-xl);
+  }
+  .popup-page .ph-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0 12px 12px;
+  }
+  .popup-card {
+    background: var(--popup-surface);
+    border: 1px solid var(--popup-muted);
+    border-radius: 12px;
+    padding: 16px;
+  }
+  .popup-card h2 {
+    margin: 14px 0 4px;
+    font-size: var(--font-size-large);
+    color: var(--popup-fg);
+  }
+  .popup-card h2:first-child { margin-top: 0; }
+  .popup-card p {
+    margin: 0;
+    font-size: var(--font-size-body);
+    color: var(--popup-accent);
+    line-height: 1.5;
+  }
+  .popup-page .ph-foot {
+    padding: 14px;
+    text-align: center;
+  }
+  .popup-page .ph-foot a {
+    text-decoration: none;
+    font-weight: 700;
+    font-size: var(--font-size-large);
+    color: var(--popup-button-fg);
+  }
+  .state-divider {
+    margin: 0 0 10px;
+    padding: 8px 16px;
+    font-size: var(--font-size-small);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    opacity: 0.55;
+    text-align: center;
+    background: #000;
+  }
+</style>
+
+<div class="phone">
+  <div class="scroll" style="padding:0">
+
+    <div class="state-divider">State 1 — Disclaimer</div>
+    <div class="popup-page" style="height:844px">
+      <div class="ph-head">Disclaimer</div>
+      <div class="ph-body">
+        <div class="popup-card">
+          <h2>What This App Is</h2>
+          <p>
+            This app is a calculator and estimation tool. It does not offer, arrange, broker, or
+            recommend any loan, credit, insurance, investment, or other financial product or
+            service, and it does not connect you with lenders or financial institutions. All
+            figures it produces are estimates, generated from the information you enter, for
+            general informational purposes only.
+          </p>
+          <h2>General Disclaimer</h2>
+          <p>
+            This app is a calculator for informational purposes only. Every figure is an estimate
+            based on the information you enter — not financial advice, and not an offer of any
+            loan or financial product. Consult a qualified financial adviser before making any
+            financial decision.
+          </p>
+        </div>
+      </div>
+      <div class="ph-foot"><a href="settings.html">Close</a></div>
+    </div>
+
+    <div class="state-divider">State 2 — Privacy Policy</div>
+    <div class="popup-page" style="height:844px">
+      <div class="ph-head">Privacy Policy</div>
+      <div class="ph-body">
+        <div class="popup-card">
+          <h2>What We Collect</h2>
+          <p>
+            Every figure you enter — asset value, deposit, loan amount, income, expenses — is
+            stored only on your device. Nothing you type is sent to us or to any third party.
+          </p>
+          <h2>Analytics &amp; Crash Reports</h2>
+          <p>
+            We use crash reporting to find and fix defects. These reports contain technical
+            details about the error, not your financial figures.
+          </p>
+        </div>
+        <p style="margin:16px 4px 0;font-weight:700;color:var(--popup-fg)">View the online privacy policy &rsaquo;</p>
+      </div>
+      <div class="ph-foot"><a href="settings.html">Close</a></div>
+    </div>
+
+  </div>
+</div>
+</html>

@@ -8,10 +8,7 @@ using LoanCalculator.Core.Services;
 using LoanCalculator.Core.Themes;
 using LoanCalculatorMaui.Extensions;
 using Pj.Library;
-using Syncfusion.Maui.Buttons;
 using Syncfusion.Maui.Charts;
-using Syncfusion.Maui.DataSource;
-using Syncfusion.Maui.TabView;
 
 namespace LoanCalculatorMaui.View;
 
@@ -45,6 +42,11 @@ public partial class LoanView : ContentPage
 
         BindingContext = _viewModel;
 
+        // The affordability box links through to the full answer. Assigned here rather than bound
+        // in XAML because switching Shell tabs is a MAUI concern and this page's BindingContext is
+        // LoanViewModel, which lives in Core and must stay ignorant of Shell.
+        LoanSummaryBox.Box3Command = new Command(() => _ = GoToWhatIfAnswerAsync());
+
         // Subscribe once — auto-show wizard after the disclaimer is accepted on first launch
         SharedServiceCore.DisclaimerAccepted += OnDisclaimerAccepted;
     }
@@ -71,6 +73,28 @@ public partial class LoanView : ContentPage
         _viewModel.PropertyChanged -= OnViewModelPropertyChanged;
         _viewModel.FlushPendingSave(() => SharedServiceCore.SaveData(_viewModel));
         SharedServiceCore.MarkLoanDirty();
+    }
+
+    /// <summary>
+    /// Takes the user from the affordability verdict to the full answer on What If.
+    /// </summary>
+    /// <remarks>
+    /// Sets <see cref="WhatIfView.PendingTabIndex"/> before navigating, because arriving at What
+    /// If lands on whichever sub-tab was last selected — so a link promising "the answer" could
+    /// legitimately drop you on Projection. That is not hypothetical: the screenshot sweep
+    /// captured What If showing Projection for exactly this reason.
+    /// </remarks>
+    private async Task GoToWhatIfAnswerAsync()
+    {
+        try
+        {
+            WhatIfView.PendingTabIndex = 0; // Answer
+            await Shell.Current.GoToAsync("//WhatIf");
+        }
+        catch (Exception ex)
+        {
+            _errorHandlingService.HandleException(ex);
+        }
     }
 
     protected override async void OnAppearing()
@@ -146,7 +170,8 @@ public partial class LoanView : ContentPage
     private void ReapplyIosTouchFixes()
     {
 #if IOS || MACCATALYST
-        SyncfusionIosTouchFix.ApplyToTabView(TabView);
+        // No ApplyToTabView: this page no longer has a tab strip, and passing a removed
+        // element would null-ref rather than fail visibly.
         SyncfusionIosTouchFix.ApplyToSegmentedControl(SegmentedRepaymentFrequency);
         // None of this page's expanders have an x:Name, so the fix walks the tree for them.
         SyncfusionIosTouchFix.ApplyToExpanders(this);
@@ -226,15 +251,8 @@ public partial class LoanView : ContentPage
             Task<IncomeViewModel> incomeSummaryTask = _incomeViewModel.HasInitialized
                 ? Task.FromResult(_incomeViewModel)
                 : SharedServiceCore.GetIncomeSummaryAsync();
-            var lstSourceTask = Task.Run(() =>
-            {
-                lstEntry.DataSource?.SortDescriptors.Clear();
-                lstEntry.DataSource?.SortDescriptors.Add(new SortDescriptor()
-                { PropertyName = "Name", Direction = ListSortDirection.Ascending });
-            });
 
-
-            await Task.WhenAll(viewModelInitializeTask, expenseSummaryTask, incomeSummaryTask, chartColorsTask, lstSourceTask);
+            await Task.WhenAll(viewModelInitializeTask, expenseSummaryTask, incomeSummaryTask, chartColorsTask);
 
             // PdfGenerator is now built lazily, in LoanViewModel.ExportInsights, on first actual
             // export — not here, on every page load. See the comment there for why: constructing
@@ -316,97 +334,6 @@ public partial class LoanView : ContentPage
         }
     }
 
-    private void autoComplete_Completed(object sender, EventArgs e) { }
-
-    private void autoComplete_SelectionChanged(object sender, Syncfusion.Maui.Inputs.SelectionChangedEventArgs e)
-    {
-        try
-        {
-            var text = autoComplete.SelectedItem as string ?? autoComplete.Text ?? string.Empty;
-            _viewModel.SearchExpenseIncomeName = text.Trim();
-            if (string.IsNullOrWhiteSpace(text))
-                autoComplete.IsDropDownOpen = false;
-        }
-        catch (Exception ex)
-        {
-            _errorHandlingService.HandleException(ex);
-        }
-    }
-
-
-
-    private void AddNewIncome_Clicked(object sender, EventArgs e)
-    {
-        try
-        {
-            // Surface inline validation errors only after a submit attempt.
-            _viewModel.ShowValidationErrors = true;
-            if (_viewModel.HasErrorIncomeDescription || _viewModel.HasErrorIncomeAmount) return;
-            if (_viewModel.AddOrUpdateEntryFromView() == false) return;
-            _viewModel.FlushPendingSave(() => SharedServiceCore.SaveData(_viewModel));
-            _viewModel.RefreshExpenseTabPropertyChanged();
-        }
-        catch (Exception ex)
-        {
-            _errorHandlingService.HandleException(ex);
-        }
-    }
-
-    private void ResetButton_Clicked(object sender, EventArgs e)
-    {
-        try
-        {
-            _viewModel.ResetTransactionEntryData();
-            _viewModel.RefreshExpenseTabPropertyChanged();
-        }
-        catch (Exception ex)
-        {
-            _errorHandlingService.HandleException(ex);
-        }
-    }
-
-    private void btnEditEntry_Clicked(object sender, EventArgs e)
-    {
-        try
-        {
-            if (sender is not SfButton button || !button.AutomationId.HasValue()) return;
-            _viewModel.ShowValidationErrors = false;
-            _viewModel.IncomeExpenseEntry = _viewModel.TransactionRecords.Get(Guid.Parse(button.AutomationId)).DeepClone();
-            _viewModel.IncomeExpenseFrequencySelectedIndex = _viewModel.IncomeExpenseEntry.Frequency.ToString();
-            _viewModel.RefreshExpenseTabPropertyChanged();
-            _viewModel.IsAddFormVisible = true;
-        }
-        catch (Exception ex)
-        {
-            _errorHandlingService.HandleException(ex);
-        }
-    }
-    private void btnDeleteEntry_Clicked(object sender, EventArgs e)
-    {
-        try
-        {
-            if (sender is not SfButton button || !button.AutomationId.HasValue()) return;
-
-            _viewModel.TransactionRecords.Delete(Guid.Parse(button.AutomationId));
-            _viewModel.ResetTransactionEntryData();
-            _viewModel.FlushPendingSave(() => SharedServiceCore.SaveData(_viewModel));
-            _viewModel.RefreshExpenseTabPropertyChanged();
-        }
-        catch (Exception ex)
-        {
-            _errorHandlingService.HandleException(ex);
-        }
-    }
-
-    // FAB drag state for Expense on Asset tab
-    private double _assetFabY;
-
-    private void OnAddAssetExpenseFab_Clicked(object sender, EventArgs e)
-    {
-        _viewModel.ResetTransactionEntryData();
-        _viewModel.IsAddFormVisible = true;
-    }
-
     // ── Quick Setup Wizard ────────────────────────────────────────────────────
     //
     // ── Loan Details page ────────────────────────────────────────────────────
@@ -436,11 +363,10 @@ public partial class LoanView : ContentPage
             if (page is null) return;
 
             await Navigation.PushModalAsync(page);
-            var committed = await page.Completion;
-
-            // Selecting this tab is the page's only dependency on LoanView's markup, and it is
-            // satisfied here — after the modal has gone — so the page stays independent of it.
-            if (committed) TabView.SelectedIndex = 0;
+            // The modal used to need the Asset tab reselected on commit; with the tab strip
+            // gone there is nothing to select, so its last dependency on this page's markup
+            // has disappeared along with it.
+            await page.Completion;
         }
         catch (Exception ex)
         {
@@ -454,135 +380,59 @@ public partial class LoanView : ContentPage
         }
     }
 
-    private void OnAssetFabPanUpdated(object sender, PanUpdatedEventArgs e)
+    // ── Upfront Costs page ─────────────────────────────────────────────────
+    private bool _isUpfrontCostsOpen;
+
+    private void OnUpfrontCostsTapped(object sender, TappedEventArgs e) => _ = LaunchUpfrontCostsAsync();
+
+    // ── Repayment schedule page ──────────────────────────────────────────────
+    private bool _isSchedulePageOpen;
+
+    private void OnScheduleTapped(object sender, TappedEventArgs e) => _ = LaunchSchedulePageAsync();
+
+    private async Task LaunchSchedulePageAsync()
     {
-        const double maxUp = -112;
-        const double maxDown = 0;
-        switch (e.StatusType)
+        if (_isSchedulePageOpen) return;
+        _isSchedulePageOpen = true;
+
+        try
         {
-            case GestureStatus.Running:
-                FabAddAssetExpense.TranslationY = Math.Clamp(_assetFabY + e.TotalY, maxUp, maxDown);
-                break;
-            case GestureStatus.Completed:
-                _assetFabY = FabAddAssetExpense.TranslationY;
-                break;
+            var page = ServiceLocator.GetService<AmortisationPage>();
+            await Navigation.PushModalAsync(page);
+            await page.Completion;
+        }
+        catch (Exception ex)
+        {
+            _errorHandlingService.HandleException(ex);
+        }
+        finally
+        {
+            // Always clear the latch, or the row goes permanently dead with no visible error.
+            _isSchedulePageOpen = false;
         }
     }
 
-    // ── Upfront Costs popup ─────────────────────────────────────────────────
-    private readonly Dictionary<string, Entry>  _upfrontEntries = new();
-    private readonly Dictionary<string, Label>  _upfrontLabels  = new();
-
-    private void OnUpfrontCostsTapped(object sender, TappedEventArgs e)
+    private async Task LaunchUpfrontCostsAsync()
     {
-        _viewModel.IsUpfrontInputVisible = true;
+        if (_isUpfrontCostsOpen) return;
+        _isUpfrontCostsOpen = true;
 
-    }
-
-    private void OnUpfrontDone(object sender, EventArgs e)
-    {
-        _viewModel.IsUpfrontInputVisible = false;
-        _viewModel.TriggerPropertyChangedOnPropertyTab();
-    }
-
-    private void OnUpfrontEntryLoaded(object sender, EventArgs e)
-    {
-        if (sender is Entry entry && !string.IsNullOrEmpty(entry.AutomationId))
+        try
         {
-            _upfrontEntries[entry.AutomationId] = entry;
-            PopulateUpfrontEntry(entry.AutomationId);
+            var page = ServiceLocator.GetService<UpfrontCostsPage>();
+            if (page is null) return;
+            await Navigation.PushModalAsync(page);
+            var committed = await page.Completion;
+        }
+        catch (Exception ex)
+        {
+            _errorHandlingService.HandleException(ex);
+        }
+        finally
+        {
+            _isUpfrontCostsOpen = false;
         }
     }
-
-    private void OnUpfrontLabelLoaded(object sender, EventArgs e)
-    {
-        if (sender is Label lbl && !string.IsNullOrEmpty(lbl.AutomationId))
-            _upfrontLabels[lbl.AutomationId] = lbl;
-    }
-
-    private void OnUpfrontControlLoaded(object sender, EventArgs e) { /* segment wired via binding */ }
-
-    private void OnUpfrontEntryTextChanged(object sender, TextChangedEventArgs e)
-    {
-        if (_suppressTextChanged || sender is not Entry entry) return;
-        var id = entry.AutomationId;
-        FormatEntry(entry, e.NewTextValue,
-            formatted => { /* no formatted label for upfront */ },
-            words     =>
-            {
-                var wordsId = id.Replace("Entry", "Words");
-                if (_upfrontLabels.TryGetValue(wordsId, out var lbl)) lbl.Text = words;
-            },
-            val       => SetUpfrontValue(id, val));
-    }
-
-    private void SetUpfrontValue(string automationId, double val)
-    {
-        if (!_viewModel.HasInitialized) return;
-        switch (automationId)
-        {
-            case "StampDutyEntry":     _viewModel.StampDuty         = val; break;
-            case "MortgageEntry":      _viewModel.MortgageCharges   = val; break;
-            case "ConveyanceEntry":    _viewModel.ConveyancerFee    = val; break;
-            case "BankFeeEntry":       _viewModel.BankFee           = val; break;
-            case "InspectionEntry":    _viewModel.InspectionFee     = val; break;
-            case "OtherExpensesEntry": _viewModel.OtherExpenses     = val; break;
-        }
-    }
-
-    private void PopulateUpfrontEntry(string automationId)
-    {
-        if (!_upfrontEntries.TryGetValue(automationId, out var entry)) return;
-        var val = automationId switch
-        {
-            "StampDutyEntry"     => _viewModel.StampDuty,
-            "MortgageEntry"      => _viewModel.MortgageCharges,
-            "ConveyanceEntry"    => _viewModel.ConveyancerFee,
-            "BankFeeEntry"       => _viewModel.BankFee,
-            "InspectionEntry"    => _viewModel.InspectionFee,
-            "OtherExpensesEntry" => _viewModel.OtherExpenses,
-            _                    => 0.0
-        };
-        _suppressTextChanged = true;
-        entry.Text = val > 0 ? $"{val:N0}" : string.Empty;
-        _suppressTextChanged = false;
-
-        var wordsId = automationId.Replace("Entry", "Words");
-        if (_upfrontLabels.TryGetValue(wordsId, out var lbl))
-            lbl.Text = val > 0 ? LoanCalculator.Core.Models.ViewModels.PrimaryModels.LoanViewModel.NumberToWordsPublic((long)Math.Round(val)) : string.Empty;
-    }
-
-
-    // Shared with the Upfront Costs popup's entries — see OnUpfrontEntryTextChanged.
-    private bool _suppressTextChanged;
-
-
-    private void FormatEntry(Entry entry, string rawText,
-        Action<string> setFormatted, Action<string> setWords, Action<double> setViewModel)
-    {
-        // Strip everything except digits
-        var digits = new string(rawText.Where(char.IsDigit).ToArray());
-        if (!double.TryParse(digits, out var val)) val = 0;
-
-        // Format with commas
-        var formatted = val > 0 ? $"{val:N0}" : string.Empty;
-        var words     = val > 0
-            ? LoanCalculator.Core.Models.ViewModels.PrimaryModels.LoanViewModel.NumberToWordsPublic((long)val)
-            : string.Empty;
-
-        // Update text without re-triggering TextChanged
-        _suppressTextChanged = true;
-        var cursorPos = Math.Min(entry.CursorPosition, formatted.Length);
-        entry.Text = formatted;
-        entry.CursorPosition = Math.Max(0, formatted.Length); // keep cursor at end
-        _suppressTextChanged = false;
-
-        setFormatted($"{_viewModel.CurrencySymbol}{formatted}");
-        setWords(words);
-        setViewModel(val);
-    }
-
-
 
     private void OnInterestRateDecrease(object sender, EventArgs e)
     {
@@ -635,63 +485,6 @@ public partial class LoanView : ContentPage
     }
 
     private void OnAmortizationAxisLabelCreated(object sender, ChartAxisLabelEventArgs e)
-    {
-        if (!double.TryParse(e.Label, out var val)) return;
-        var sym = _viewModel?.CurrencySymbol ?? "$";
-        e.Label = Math.Abs(val) >= 1_000_000
-            ? $"{sym}{val / 1_000_000:0.#}M"
-            : Math.Abs(val) >= 1_000
-                ? $"{sym}{val / 1_000:0.#}K"
-                : $"{sym}{val:0}";
-    }
+        => ChartAxisFormatter.Money(e, _viewModel?.CurrencySymbol);
 
-    private void TabView_OnSelectionChanging(object? sender, SelectionChangingEventArgs e)
-    {
-        try
-        {
-            // Update tab-visibility flags so TriggerPropertyChangedOnPropertyTab
-            // knows which chart updates to skip while other tabs are inactive.
-            _viewModel.IsAmortizationTabActive = e.Index == 1;
-            _viewModel.IsInsightsTabActive = e.Index == 3;
-
-            if (e.Index == 1)
-            {
-                _viewModel.SyncAmortization();
-            }
-            else if (e.Index == 2)
-            {
-                if (SharedServiceCore.IsTrialUser)
-                {
-                    PremiumWindow.ShowPremiumBuyWindow = true;
-                    e.Cancel = true;
-                    // Revert flag — tab switch was cancelled
-                    _viewModel.IsAmortizationTabActive = false;
-                    _viewModel.IsInsightsTabActive = false;
-                }
-                else
-                {
-                    _viewModel.RefreshExpenseTabPropertyChanged();
-                }
-            }
-            else if (e.Index == 3)
-            {
-                if (SharedServiceCore.IsTrialUser)
-                {
-                    PremiumWindow.ShowPremiumBuyWindow = true;
-                    e.Cancel = true;
-                    // Revert flag — tab switch was cancelled
-                    _viewModel.IsAmortizationTabActive = false;
-                    _viewModel.IsInsightsTabActive = false;
-                }
-                else
-                {
-                    _viewModel.RefreshInsightsTabPropertyChanged();
-                }
-            }
-        }
-        catch (Exception ex)
-        {
-            _errorHandlingService.HandleException(ex);
-        }
-    }
 }

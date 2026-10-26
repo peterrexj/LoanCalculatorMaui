@@ -22,6 +22,13 @@
             <localConverters:BoolToDisclaimerMarginConverter x:Key="BoolToDisclaimerMarginConverter" />
             <localConverters:ThemeNameToGradientConverter x:Key="ThemeNameToGradientConverter" />
             <localConverters:ThemeNameToTextColorConverter x:Key="ThemeNameToTextColorConverter" />
+            <!--
+                Two instances of the same converter, differing only in which negative key they
+                resolve — one for ordinary cards, one for the pale BorderTop* highlight cards.
+                Spans cannot carry a DataTrigger, which is why these exist at all.
+            -->
+            <localConverters:NegativeToThemeColorConverter x:Key="NegativeToThemeColorConverter" />
+            <localConverters:NegativeToThemeColorConverter x:Key="NegativeToHighlightColorConverter" NegativeKey="LoanAppNegativeValueOnHighlightColor" />
         </ResourceDictionary>
     </Application.Resources>
 </Application>

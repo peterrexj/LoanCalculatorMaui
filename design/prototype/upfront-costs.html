@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<meta charset="utf-8">
+<title>Upfront Costs — prototype</title>
+<link rel="stylesheet" href="tokens.css">
+<link rel="stylesheet" href="app.css">
+
+<!--
+  UPFRONT COSTS — replaces src/LoanCalculator/View/UpfrontCostsPage.xaml, opened from Loan (it
+  took over the role of LoanView's UpfrontCostsPopup). Reached once upfront costs already have a
+  value, or deliberately from Loan when the user wants to edit the breakdown directly.
+
+  Shown WITHOUT the stamp-duty field and its Australian-state segmented selector — both are
+  IsVisible-gated behind the retired Australian mode (see CLAUDE.md "Australian mode is retired
+  from the UI") and iOS-21-upfront-costs.png confirms the real page renders without them. Six
+  fields in the XAML become five visible ones here for the same reason.
+
+  Done appears twice in the real page — header AND a pinned bottom button — because this page,
+  unlike LoanDetailsPage/TransactionEntryPage, writes the model live with no deferred commit, so
+  there is no keyboard-reachability problem forcing it into the header only. Both are kept.
+-->
+
+<div class="phone">
+
+  <div class="modal-head">
+    <h1>Upfront Costs</h1>
+    <a href="loan.html">Done</a>
+  </div>
+
+  <div class="scroll" style="display:flex;flex-direction:column">
+
+    <div style="flex:1">
+
+      <!--
+        The five components sit in one card, and the total is its card-foot — the same closing
+        pattern Transaction Entry and Loan Details use. This page had the shape already (a
+        hairline, then the total) but built from a bare div and a .row with four inline style
+        overrides; it is now the shared class, so a change to the pattern reaches all of them.
+      -->
+      <div class="card">
+
+        <div style="display:flex;gap:8px">
+          <div class="field" style="flex:1;margin-top:0">
+            <label>Mortgage charges</label>
+            <div class="box">12</div>
+          </div>
+          <div class="field" style="flex:1;margin-top:0">
+            <label>Conveyance / solicitor</label>
+            <div class="box">10</div>
+          </div>
+        </div>
+
+        <div style="display:flex;gap:8px">
+          <div class="field" style="flex:1">
+            <label>Bank fees</label>
+            <div class="box">20</div>
+          </div>
+          <div class="field" style="flex:1">
+            <label>Inspection fee</label>
+            <div class="box">30</div>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Other expenses</label>
+          <div class="box">40</div>
+        </div>
+
+        <!--
+          The sum of the five fields above, and the figure Loan Details folds into the loan
+          amount — so this is the number that explains the 112 appearing over there. Stating it
+          here is what makes the two pages legible as one calculation.
+        -->
+        <div class="card-foot">
+          <span class="cap">Total upfront costs</span>
+          <span class="lead">$112</span>
+        </div>
+
+      </div>
+
+    </div>
+
+    <a href="loan.html" style="display:block;margin:16px 0;padding:14px;border-radius:12px;text-align:center;text-decoration:none;font-weight:700;font-size:var(--font-size-large);background:var(--navigation-button-background-color);color:var(--navigation-button-icon-color)">Done</a>
+
+  </div>
+
+</div>
+</html>

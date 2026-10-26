@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<meta charset="utf-8">
+<title>Loan — prototype</title>
+<link rel="stylesheet" href="tokens.css">
+<link rel="stylesheet" href="app.css">
+
+<!--
+  DEAL — replaces Loan ▸ Asset. The dense data surface.
+
+  Changes being tested:
+  • Running Cost has moved OUT to Budget (it is a monthly outflow), so this page
+    is now only about the purchase and the borrowing.
+  • Amortisation has moved to What If ▸ Reference, so there is no sub-tab strip
+    here at all — this is a single purposeful screen.
+  • The three full-bleed rules that used to cut this card into a ruled form are
+    gone (already fixed in the app); grouping is carried by whitespace and by
+    the sub-cards having their own borders.
+  • Tapping any figure opens a modal page, which is the pattern that already
+    works well and is kept.
+
+  REVISION (owner feedback round 2):
+  • Schedule stays put under Loan rather than moving to What If ▸ Reference —
+    it is purely loan-derived, so a sub-tab strip (Asset / Schedule) is added
+    right after .page-head, same shape as every other sub-tabbed section.
+  • The affordability verdict was removed from this page when it moved to
+    What If, which was a regression — today's app already shows an
+    affordability box here. The third hero box is now a link to whatif.html
+    carrying the verdict (surplus figure + "affordable"), so the answer is on
+    the tab the user is already configuring, not one switch away. .boxes > a
+    is already styled identically to .boxes > div in app.css, so no new CSS.
+  • Schedule is a linked page, not a sub-tab: one real view does not justify a
+    strip, so Loan stays a single screen and the schedule is reached by a row,
+    next to the repayment figure, for discovery at the moment that number is
+    shown — rather than requiring the user to already know the sub-tab exists.
+-->
+
+<div class="phone">
+
+  <div class="page-head">
+    <h1>Loan</h1>
+    <p>What you're buying, and what you're borrowing</p>
+  </div>
+
+
+  <div class="scroll">
+
+    <div class="banner warn-b">
+      This app is a calculator for informational purposes only. Every figure is an estimate —
+      not financial advice.
+    </div>
+
+    <div class="boxes">
+      <div><div class="amt">$2,792</div><div class="lbl">per month</div></div>
+      <div><div class="amt">$520k</div><div class="lbl">borrowed</div></div>
+      <a href="whatif.html"><div class="amt">$1,708</div><div class="lbl">✓ affordable</div></a>
+    </div>
+    <div class="rows" style="margin-top:10px">
+      <a class="row" href="schedule.html">
+        <span class="grow"><span class="t">Repayment schedule</span><br><span class="s">Year by year, principal against interest</span></span>
+        <span class="chev">&rsaquo;</span>
+      </a>
+    </div>
+
+    <!-- The purchase -->
+    <div class="section">The purchase</div>
+    <div class="card">
+      <a class="fig" href="#" style="text-decoration:none;color:inherit">
+        <span class="k">Asset value</span>
+        <span><span class="n">$650,000</span><span class="pen">&#9998;</span></span>
+      </a>
+      <a class="fig" href="#" style="text-decoration:none;color:inherit">
+        <span class="k">Upfront costs</span>
+        <span><span class="n">$112</span><span class="pen">&#9998;</span></span>
+      </a>
+      <div class="fig" style="border-top:1px solid color-mix(in srgb,var(--default-foreground-color) 10%,transparent)">
+        <span class="k">Total cost</span>
+        <span class="n">$650,112</span>
+      </div>
+    </div>
+
+    <!-- The borrowing -->
+    <div class="section">The borrowing</div>
+    <div class="card">
+      <a class="fig" href="#" style="text-decoration:none;color:inherit">
+        <span class="k">Deposit</span>
+        <span><span class="n">$130,000</span><span class="pen">&#9998;</span></span>
+      </a>
+      <input type="range" min="0" max="100" value="20" style="width:100%;accent-color:var(--slider-knob-fill-color)">
+      <div style="display:flex;justify-content:space-between;font-size:var(--font-size-small);opacity:.5">
+        <span>0%</span><span>20% of total</span><span>100%</span>
+      </div>
+      <a class="fig" href="#" style="text-decoration:none;color:inherit">
+        <span class="k">Loan amount</span>
+        <span><span class="n">$520,112</span><span class="pen">&#9998;</span></span>
+      </a>
+      <p class="micro">Upfront costs are folded into the loan, so deposit + loan equals the
+        total cost above — not the asset value alone.</p>
+    </div>
+
+    <!-- Terms -->
+    <div class="section">Terms</div>
+    <div class="card">
+      <div class="stepper">
+        <span><span class="t">Interest rate</span><br><span class="s" style="opacity:.5;font-size:var(--font-size-small)">&plusmn;0.05% per tap</span></span>
+        <button class="pm">&minus;</button>
+        <strong style="font-size:var(--font-size-xl);min-width:62px;text-align:center">5%</strong>
+        <button class="pm">+</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="stepper">
+        <span><span class="t">Loan term</span><br><span class="s" style="opacity:.5;font-size:var(--font-size-small)">&plusmn;1 year per tap</span></span>
+        <button class="pm">&minus;</button>
+        <strong style="font-size:var(--font-size-xl);min-width:62px;text-align:center">30 yr</strong>
+        <button class="pm">+</button>
+      </div>
+    </div>
+    <div class="card" style="padding:10px">
+      <div class="seg">
+        <button class="on">Monthly</button><button>Fortnightly</button><button>Weekly</button>
+      </div>
+    </div>
+
+    <p class="micro">Running costs for this asset now live under <strong>Budget</strong>, alongside
+      your other monthly outflows.</p>
+
+  </div>
+
+  <nav class="tabbar">
+    <a class="on" href="loan.html"><span class="ico">&#127968;</span>Loan</a>
+    <a href="budget.html"><span class="ico">&#128176;</span>Budget</a>
+    <a href="whatif.html"><span class="ico">&#10003;</span>What If</a>
+    <a href="settings.html"><span class="ico">&#9881;</span>Settings</a>
+  </nav>
+
+</div>
+</html>

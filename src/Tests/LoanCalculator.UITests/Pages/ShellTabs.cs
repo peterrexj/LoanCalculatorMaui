@@ -32,8 +32,12 @@ public sealed class ShellTabs(AppDriver app)
     /// <summary>An element that only exists once the tab's page has rendered.</summary>
     internal static string AnchorOf(AppTab tab) => tab switch
     {
-        // FabWizard is the Loan tab's only FAB since Quick Setup and Quick Input merged.
-        AppTab.Loan => "FabWizard",
+        // Deliberately NOT FabWizard, though it is unique to Loan and unconditional. The FAB is
+        // pinned bottom-right and sits OUTSIDE the page's ScrollView, so an open keyboard covers
+        // it (measured: keypad y 583–816, FAB y 715–771, reported visible="false") and the scroll
+        // fallback cannot move it. LoanSummaryBox is inside the ScrollView at the top of the page,
+        // so it is reachable by scrolling and is never occluded by the keyboard.
+        AppTab.Loan => "LoanSummaryBox",
         AppTab.Budget => "BudgetTabIncome",
         AppTab.WhatIf => "WhatIfPageTitle",
         AppTab.Settings => "SettingsPageTitle",
@@ -57,6 +61,10 @@ public sealed class ShellTabs(AppDriver app)
 
         // Fast path, no swiping: already here and at a position where the anchor shows.
         if (app.Exists(anchor, TimeSpan.FromMilliseconds(600))) return;
+
+        // Every pushed page covers the tab bar, so one left open makes the tab unfindable and
+        // reports as "could not find the 'Budget' tab" rather than as the modal it really is.
+        ModalPages.DismissAny(app);
 
         FindTabButton(TitleOf(tab)).Click();
 

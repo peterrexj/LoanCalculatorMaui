@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<meta charset="utf-8">
+<title>Premium — prototype</title>
+<link rel="stylesheet" href="tokens.css">
+<link rel="stylesheet" href="app.css">
+
+<!--
+  PREMIUM — replaces src/LoanCalculator/Controls/InAppPurchaseView.xaml, the full-screen SfPopup
+  upsell that can overlay any of the four tabs (reachable from all of Loan/Budget/What If/Settings,
+  per the coverage map in NAVIGATION-PROPOSAL.md — unchanged by the redesign).
+
+  Feature bullets are the real copy from InAppPurchaseViewModel.Features, not invented. Three
+  actions, same hierarchy as the XAML: a filled primary "Buy Now", an outlined secondary "Restore
+  purchases", and a plain-text tertiary "Continue with current version" (IgnoreOfferCommand).
+
+  Dismisses to Settings, since that is where this prototype set's "Restore purchase" row already
+  links from (per settings.html's Purchases section) and is the most natural landing tab for a
+  dismissed upsell.
+
+  Page-local CSS added: a small circular icon badge and a feature-row tick layout. app.css has no
+  equivalent component (its closest, .card, does not do icon+text rows), so these are page-local;
+  consolidate if a second surface needs the same shape.
+-->
+
+<style>
+  .pm-badge {
+    width: 68px; height: 68px; margin: 0 auto 10px;
+    border-radius: 34px;
+    background: var(--purchase-button-primary-bg-color);
+    display: grid; place-items: center;
+    font-size: 30px;
+  }
+  .pm-features {
+    background: var(--purchase-button-secondary-bg-color);
+    border: 1px solid var(--purchase-button-secondary-border-color);
+    border-radius: 16px;
+    padding: 14px 16px;
+    margin: 16px 0;
+  }
+  .pm-features .f {
+    display: flex; align-items: flex-start; gap: 10px;
+    padding: 7px 0;
+    font-size: var(--font-size-body);
+  }
+  .pm-features .f + .f { box-shadow: inset 0 1px 0 color-mix(in srgb, var(--purchase-text-font-color) 10%, transparent); }
+  .pm-features .tick { color: var(--chart-color-1); flex: 0 0 auto; }
+  .pm-btn {
+    display: block; width: 100%; margin-top: 10px;
+    padding: 15px; border-radius: 14px; text-align: center;
+    text-decoration: none; font-weight: 700; font-size: var(--font-size-large);
+    font-family: var(--font-family);
+  }
+  .pm-primary { background: var(--purchase-button-primary-bg-color); color: var(--purchase-button-primary-fg-color); }
+  .pm-secondary {
+    background: var(--purchase-button-secondary-bg-color);
+    color: var(--purchase-button-secondary-fg-color);
+    border: 1px solid var(--purchase-button-secondary-border-color);
+  }
+  .pm-tertiary { background: transparent; color: var(--purchase-text-font-color); opacity: .7; font-weight: 400; }
+</style>
+
+<div class="phone" style="background:linear-gradient(135deg, var(--purchase-window-bg-start) 0%, var(--purchase-window-bg-end) 100%)">
+
+  <div class="scroll" style="padding:28px 24px 24px">
+
+    <div class="pm-badge">&#11088;</div>
+    <h1 style="text-align:center;margin:0;font-size:26px;font-weight:700;color:var(--purchase-text-font-color)">Try Premium</h1>
+    <p style="text-align:center;margin:6px 0 0;opacity:.75;font-size:13px;color:var(--purchase-text-font-color)">
+      Unlock every feature and get the most out of your numbers.
+    </p>
+
+    <div class="pm-features" style="color:var(--purchase-text-font-color)">
+      <div class="f"><span class="tick">&#10003;</span><span>Instantly understand your affordability status</span></div>
+      <div class="f"><span class="tick">&#10003;</span><span>Explore What If scenarios — extra repayments, offset, lump sum &amp; more</span></div>
+      <div class="f"><span class="tick">&#10003;</span><span>Export and share detailed PDF reports with ease</span></div>
+      <div class="f"><span class="tick">&#10003;</span><span>Securely save your financial data for future access</span></div>
+      <div class="f"><span class="tick">&#10003;</span><span>Track new investment costs and project income over time</span></div>
+      <div class="f"><span class="tick">&#10003;</span><span>Visualize your long-term financial health</span></div>
+      <div class="f"><span class="tick">&#10003;</span><span>Gain complete access to every powerful feature</span></div>
+    </div>
+
+    <a href="settings.html" class="pm-btn pm-primary">Buy Now</a>
+    <a href="settings.html" class="pm-btn pm-secondary">Restore purchases</a>
+    <a href="settings.html" class="pm-btn pm-tertiary">Continue with current version</a>
+
+  </div>
+
+</div>
+</html>

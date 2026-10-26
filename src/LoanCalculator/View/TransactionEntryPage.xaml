@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="LoanCalculatorMaui.View.TransactionEntryPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:viewModels="clr-namespace:LoanCalculator.Core.Models.ViewModels;assembly=LoanCalculator.Core"
+    xmlns:editors="clr-namespace:Syncfusion.Maui.Inputs;assembly=Syncfusion.Maui.Inputs"
+    x:Name="thisPage"
+    x:DataType="viewModels:ExpenseEntryViewBaseModel">
+
+    <!--
+        Single data-entry page for Income/Expense across all call sites (Loan Add Asset Expense,
+        Budget Income add/edit, Budget Expense add/edit). Replaces the three `SfPopup` forms
+        that were previously distributed across LoanView and BudgetView.
+
+        Title, field labels, and automation IDs are supplied by the caller via Configure(Config).
+        The page itself has no knowledge of which ViewModel it is working with — it only binds
+        properties from ExpenseEntryViewBaseModel (the shared base class of LoanViewModel,
+        IncomeViewModel, ExpenseViewModel).
+
+        Amount entry follows the safe TextChanged + suppress-flag + cursor-restore pattern
+        documented in LoanDetailsPage.xaml.cs — never use Entry.Text binding for numeric input.
+    -->
+    <ContentPage.Content>
+        <Grid BackgroundColor="{DynamicResource LoanAppDefaultBackgroundColor}" RowDefinitions="Auto,*">
+
+            <!--
+                Save lives in the HEADER, not pinned to the bottom of the page, and must stay
+                there. The keyboard overlays this page rather than insetting it (same as
+                LoanDetailsPage — see the padding comment below), so a bottom-anchored primary
+                action is covered by the keyboard for as long as a field has focus. That made
+                Save unreachable while typing an amount, which is the whole point of the form.
+                The old SfPopup did not have this problem because the popup was only ~510pt tall
+                and sat above the keyboard.
+            -->
+            <Grid Grid.Row="0" Padding="16,14,8,4" ColumnDefinitions="*,Auto,Auto">
+                <Label
+                    x:Name="lblTitle"
+                    Grid.Column="0"
+                    Style="{DynamicResource PopupTitleLabelStyle}"
+                    Text="Entry" />
+                <Button
+                    x:Name="btnSave"
+                    Grid.Column="1"
+                    BackgroundColor="Transparent"
+                    Clicked="OnSave"
+                    FontSize="{StaticResource FontSizeLarge}"
+                    HeightRequest="36"
+                    Text="Save"
+                    TextColor="{DynamicResource LoanAppTabIndicatorStrokeColor}"
+                    WidthRequest="72" />
+                <Button
+                    AutomationId="TransactionEntryCancelButton"
+                    Grid.Column="2"
+                    Clicked="OnCancel"
+                    Style="{DynamicResource PopupDismissButtonStyle}" />
+            </Grid>
+
+            <!--  Scrollable form  -->
+            <ScrollView Grid.Row="1">
+                <VerticalStackLayout Padding="12,4,12,300" Spacing="0">
+
+                    <!--
+                        The three fields sit in one card, as every other grouped surface in the app
+                        does. They were loose on the page background before, which read as
+                        unfinished rather than minimal — nothing bounded the form, so the empty
+                        lower half looked like a layout fault instead of deliberate space.
+                    -->
+                    <Border Style="{DynamicResource FormCardStyle}">
+                        <VerticalStackLayout Spacing="0">
+
+                            <!--  Entry Name  -->
+                            <VerticalStackLayout Spacing="0">
+                                <Label Style="{DynamicResource PopupFieldLabelStyle}" Text="NAME" />
+                                <Border Style="{DynamicResource PopupInputBorderStyle}">
+                                    <Entry
+                                        x:Name="entryName"
+                                        BackgroundColor="Transparent"
+                                        FontAttributes="Bold"
+                                        FontSize="{StaticResource FontSizeXL}"
+                                        Placeholder="e.g. Salary"
+                                        PlaceholderColor="{DynamicResource LoanAppInputTextWhenUnFocusedColor}"
+                                        Text="{Binding IncomeEntryName, Mode=TwoWay}"
+                                        TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                                </Border>
+                                <Label
+                                    IsVisible="{Binding ShowErrorIncomeDescription}"
+                                    Style="{DynamicResource PopupErrorLabelStyle}"
+                                    Text="Name is required" />
+                            </VerticalStackLayout>
+
+                            <!--
+                                Amount. The label carries the currency symbol — the field itself has
+                                no currency affordance, and the symbol is user-selectable, so a bare
+                                "AMOUNT" leaves the user to assume which currency they are typing.
+                            -->
+                            <VerticalStackLayout Margin="0,14,0,0" Spacing="0">
+                                <Label
+                                    Style="{DynamicResource PopupFieldLabelStyle}"
+                                    Text="{Binding CurrencySymbol, StringFormat='AMOUNT {0}'}" />
+                                <Border Style="{DynamicResource PopupInputBorderStyle}">
+                                    <Entry
+                                        x:Name="entryAmount"
+                                        BackgroundColor="Transparent"
+                                        FontAttributes="Bold"
+                                        FontSize="{StaticResource FontSizeXL}"
+                                        Keyboard="Numeric"
+                                        Placeholder="e.g. 100,000"
+                                        PlaceholderColor="{DynamicResource LoanAppInputTextWhenUnFocusedColor}"
+                                        TextChanged="OnAmountTextChanged"
+                                        TextColor="{DynamicResource LoanAppDefaultForegroundColor}"
+                                        Unfocused="OnAmountUnfocused" />
+                                </Border>
+                                <!--
+                                    The WORD FORM only. This used to also repeat the formatted
+                                    figure ("$6,000  Six Thousand"), which the card foot below now
+                                    states with its period attached. Each device does one job: the
+                                    words catch a mistyped magnitude, the foot catches a wrong
+                                    frequency.
+                                -->
+                                <Label x:Name="lblAmountWords" Style="{DynamicResource PopupFieldHintStyle}" />
+                                <Label
+                                    IsVisible="{Binding ShowErrorIncomeAmount}"
+                                    Style="{DynamicResource PopupErrorLabelStyle}"
+                                    Text="Amount must be greater than 0" />
+                            </VerticalStackLayout>
+
+                            <!--  Frequency  -->
+                            <VerticalStackLayout Margin="0,14,0,0" Spacing="0">
+                                <Label Style="{DynamicResource PopupFieldLabelStyle}" Text="FREQUENCY" />
+                                <Border Style="{DynamicResource PopupInputBorderStyle}">
+                                    <!--
+                                        ShowBorder defaults to true, which would draw an underline inside the
+                                        rounded PopupInputBorderStyle container that already bounds this field.
+                                        Suppressed here rather than in the shared SfComboBoxStyle, because
+                                        Settings' three pickers have no container and need their underline.
+
+                                        FontSize/FontAttributes are set here for the same reason in reverse:
+                                        SfComboBoxStyle supplies 14pt regular, which is right for Settings and
+                                        wrong for a form field sitting between two 18pt bold Entries. Overriding
+                                        on the instance keeps all three boxes identical without touching the
+                                        style Settings depends on.
+                                    -->
+                                    <editors:SfComboBox
+                                        x:Name="comboFrequency"
+                                        BackgroundColor="Transparent"
+                                        FontAttributes="Bold"
+                                        FontSize="{StaticResource FontSizeXL}"
+                                        ItemsSource="{Binding IncomeFrequencyCollection}"
+                                        SelectionChanged="OnFrequencyChanged"
+                                        SelectedItem="{Binding IncomeExpenseFrequencySelectedIndex, Mode=TwoWay}"
+                                        ShowBorder="False"
+                                        Style="{DynamicResource SfComboBoxStyle}"
+                                        TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                                </Border>
+                            </VerticalStackLayout>
+
+                            <!--
+                                Card foot. Restates the entry in the two periods the rest of the app
+                                reports in — monthly (every Budget list and total) and yearly (the
+                                Budget Summary caption) — so a wrong FREQUENCY is visible here and
+                                nowhere else on the page. Both default to a dash rather than the
+                                empty string: an empty Label lays out at zero height and is reported
+                                as absent by iOS, so the row would be unfindable before anything is
+                                typed. See the binding note in CLAUDE.md.
+                            -->
+                            <BoxView Style="{DynamicResource FormCardFootRuleStyle}" />
+                            <Grid ColumnDefinitions="*,Auto">
+                                <Label
+                                    x:Name="lblEquivMonthly"
+                                    AutomationId="TransactionEntryEquivalentMonthly"
+                                    Grid.Column="0"
+                                    Style="{DynamicResource FormCardFootLeadStyle}"
+                                    Text="—"
+                                    VerticalOptions="End" />
+                                <Label
+                                    x:Name="lblEquivYearly"
+                                    AutomationId="TransactionEntryEquivalentYearly"
+                                    Grid.Column="1"
+                                    HorizontalOptions="End"
+                                    Style="{DynamicResource FormCardFootSubStyle}"
+                                    Text="—"
+                                    VerticalOptions="End" />
+                            </Grid>
+
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <!--
+                        Delete lives here, at the end of the form, and only when editing an
+                        existing entry — Configure hides it when adding, because there is nothing
+                        to delete yet.
+
+                        It is down here rather than in the header on purpose: the header holds
+                        Save, and putting a destructive action beside the one people reach for
+                        every time invites mis-taps. It replaces the per-row delete button that
+                        used to sit in the Budget lists, so this is now the only delete path.
+                    -->
+                    <!--
+                        Outlined, never filled, and in the negative-value colour rather than
+                        LoanAppChartColor2 — chart colours carry series meaning elsewhere, so
+                        borrowing one for a destructive action made this amber, reading as a
+                        warning rather than a delete. Stays visually subordinate to Save.
+                    -->
+                    <Button
+                        x:Name="btnDelete"
+                        Margin="0,24,0,0"
+                        BackgroundColor="Transparent"
+                        BorderColor="{DynamicResource LoanAppNegativeValueColor}"
+                        BorderWidth="1"
+                        Clicked="OnDelete"
+                        CornerRadius="10"
+                        FontSize="{StaticResource FontSizeBody}"
+                        HeightRequest="44"
+                        IsVisible="False"
+                        Text="Delete entry"
+                        TextColor="{DynamicResource LoanAppNegativeValueColor}" />
+
+                </VerticalStackLayout>
+            </ScrollView>
+
+        </Grid>
+    </ContentPage.Content>
+
+</ContentPage>

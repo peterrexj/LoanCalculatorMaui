@@ -238,6 +238,21 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
             try
             {
                 if (IsGeneratingPdf) return; // Prevent multiple exports at the same time
+
+                // The PDF is premium. Checked HERE rather than by hiding the button, because the
+                // button was the only thing standing between a free user and a full report — and it
+                // was not standing there on purpose: the export had no check anywhere, and was
+                // merely sitting on a tab that happened to be gated. A command is reachable from
+                // more than one place, so the command is what gets guarded.
+                //
+                // Before IsGeneratingPdf and the 500ms delay below, or the loader appears for half
+                // a second and is then replaced by a paywall, which reads as a failed export.
+                if (SharedServiceCore.IsTrialUser)
+                {
+                    ServiceLocator.GetService<InAppPurchaseViewModel>().ShowPremiumBuyWindow = true;
+                    return;
+                }
+
                 IsGeneratingPdf = true;
                 IsBusy = true;
 
@@ -537,22 +552,78 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
 
         // Live word representations for Quick Input popup
         [JsonIgnore]
-        public string PropertyAmountWords => NumberToWords((long)Math.Round(HomeLoanInfo?.PropertyAmount ?? 0));
+        public string PropertyAmountWords => AmountToWords(HomeLoanInfo?.PropertyAmount ?? 0);
         [JsonIgnore]
         public string PropertyAmountFormatted => $"{CurrencySymbol}{HomeLoanInfo?.PropertyAmount ?? 0:N0}";
         [JsonIgnore]
-        public string LoanAmountWords => NumberToWords((long)Math.Round(HomeLoanInfo?.LoanAmountDirectInput ?? 0));
+        public string LoanAmountWords => AmountToWords(HomeLoanInfo?.LoanAmountDirectInput ?? 0);
 
         private static string NumberToWords(long n) => NumberToWordsPublic(n);
+
+        /// <summary>
+        /// Largest amount any money field accepts, and the largest
+        /// <see cref="NumberToWordsPublic"/> renders without naming a scale twice.
+        /// </summary>
+        /// <remarks>
+        /// Callers must clamp to this before converting, which is what <see cref="AmountToWords"/>
+        /// does. Two independent reasons it cannot simply be left unbounded:
+        ///
+        /// · <c>double</c> holds integers exactly only up to 2^53 (about 9.0e15), so a longer entry
+        ///   silently becomes a different number — 22 typed ones displayed as
+        ///   111,111,111,111,111,114,752.
+        /// · casting an out-of-range <c>double</c> to <c>long</c> is unchecked and
+        ///   platform-dependent: ARM64 saturates to <c>long.MaxValue</c> (which rendered as a
+        ///   sixteen-word string beginning "Nine Billion") while x64 yields <c>long.MinValue</c>,
+        ///   which this method returns the empty string for. The same input produced different
+        ///   wrong output per CPU.
+        /// </remarks>
+        public const double MaxEnterableAmount = 999_999_999_999;
+
+        /// <summary>
+        /// Word form of an amount, clamped to <see cref="MaxEnterableAmount"/> so the cast to
+        /// <c>long</c> can never be out of range. Use this rather than casting at the call site.
+        /// </summary>
+        public static string AmountToWords(double value) =>
+            value <= 0
+                ? string.Empty
+                : NumberToWordsPublic((long)Math.Round(Math.Min(value, MaxEnterableAmount)));
+
+        /// <summary>
+        /// Scale names, largest first. Driving the tiers from a table rather than a fixed chain of
+        /// <c>if</c>s is what fixes values of a trillion and up: the old version's largest tier was
+        /// Billion and it recursed into itself for <c>n / 1_000_000_000</c>, so any quotient that
+        /// was itself a billion or more appended a SECOND "Billion" — 173.7 trillion came out as
+        /// "One Hundred, Seventy Three Thousand, Seven Hundred, One Billion".
+        /// </summary>
+        /// <remarks>
+        /// Quintillion is the top entry because <c>long.MaxValue</c> is 9.2 quintillion: with it,
+        /// every quotient <c>n / scale</c> is under a thousand for any <c>long</c>, so no scale
+        /// name can recurse into another one and the method is total over its input type. Stopping
+        /// at Quadrillion still produced "Nine Thousand, Two Hundred, Twenty Three Quadrillion …
+        /// Seventy Five Thousand" — two "Thousand"s, which is the same class of defect one tier up.
+        /// Amounts anywhere near this are unreachable through the UI (see
+        /// <see cref="MaxEnterableAmount"/>), but this method is public and should not have a hole.
+        /// </remarks>
+        private static readonly (long Scale, string Name)[] Scales =
+        [
+            (1_000_000_000_000_000_000, "Quintillion"),
+            (1_000_000_000_000_000, "Quadrillion"),
+            (1_000_000_000_000, "Trillion"),
+            (1_000_000_000, "Billion"),
+            (1_000_000, "Million"),
+            (1_000, "Thousand"),
+        ];
 
         public static string NumberToWordsPublic(long n)
         {
             if (n <= 0) return string.Empty;
-            if (n < 0) return "Minus " + NumberToWords(-n);
             var parts = new System.Collections.Generic.List<string>();
-            if (n >= 1_000_000_000) { parts.Add(NumberToWords(n / 1_000_000_000) + " Billion"); n %= 1_000_000_000; }
-            if (n >= 1_000_000)     { parts.Add(NumberToWords(n / 1_000_000) + " Million"); n %= 1_000_000; }
-            if (n >= 1_000)         { parts.Add(NumberToWords(n / 1_000) + " Thousand"); n %= 1_000; }
+            foreach (var (scale, name) in Scales)
+            {
+                if (n < scale) continue;
+                parts.Add(NumberToWords(n / scale) + " " + name);
+                n %= scale;
+            }
             if (n >= 100)           { parts.Add(Ones[n / 100] + " Hundred"); n %= 100; }
             if (n >= 20)            { parts.Add(Tens[n / 10] + (n % 10 > 0 ? " " + Ones[n % 10] : "")); }
             else if (n > 0)         { parts.Add(Ones[n]); }
@@ -694,6 +765,23 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
         [JsonIgnore]
         public ObservableCollection<ChartDataModel> InsightChartLoanDepositAxis => _insightChartLoanDepositAxis;
 
+        /// <summary>
+        /// Builds the Insights charts regardless of <see cref="IsInsightsTabActive"/>.
+        /// </summary>
+        /// <remarks>
+        /// The guarded path only runs when that flag is already true, which is no use on arrival:
+        /// the flag is being set in the same breath, and the notification that would have
+        /// triggered a rebuild has already been and gone. Mirrors
+        /// <see cref="ForceUpdateAmortizationCharts"/>, which exists for the same reason.
+        /// </remarks>
+        public void ForceUpdateInsightCharts()
+        {
+            UpdateInsightCharts();
+            OnPropertyChanged(nameof(InsightChartLoanAmountAxis));
+            OnPropertyChanged(nameof(InsightChartLoanInterestAxis));
+            OnPropertyChanged(nameof(InsightChartLoanDepositAxis));
+        }
+
         private void UpdateInsightCharts()
         {
             var year = DateTime.Now.Year.ToString();
@@ -789,6 +877,53 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
                 return " estimated monthly position (estimate only)";
             }
         }
+
+        // ── What If ▸ Answer hero ──────────────────────────────────────────────
+        //
+        // The prototype's hero states the verdict in words before the number
+        // ("AFFORDABLE — with room to spare"), rather than labelling the number
+        // "AFFORDABILITY" and leaving the reader to judge the sign themselves.
+
+        /// <summary>Verdict in words. Falls back to the neutral label when nothing is computable.</summary>
+        [JsonIgnore]
+        public string AnswerVerdictCaption
+        {
+            get
+            {
+                if (!IsAffordabilityAvailable) return "AFFORDABILITY";
+                if (IsAffordabilityNegative) return "NOT AFFORDABLE — you are short each month";
+
+                // "Room to spare" is claimed only above a month of repayments in hand; below that
+                // the figure is real but calling it comfortable would be editorialising.
+                var repayment = HomeLoanInfo?.PaymentSummary?.Payment?.TermPaymentMonthly ?? 0;
+                return MonthlySurplus >= repayment
+                    ? "AFFORDABLE — with room to spare"
+                    : "AFFORDABLE — but it is tight";
+            }
+        }
+
+        /// <summary>
+        /// The "monthly spare" tail on the hero figure. Empty when the figure is not a figure —
+        /// <see cref="Affordability"/> returns the literal word "Affordability" in that state, and
+        /// "Affordability monthly spare" is what appending unconditionally produces.
+        /// </summary>
+        /// <remarks>
+        /// Spelled out rather than "/mo". It sits in a FormattedString Span at half the size of
+        /// the figure, so the extra characters wrap inside the hero card rather than overflowing.
+        /// </remarks>
+        [JsonIgnore]
+        public string AnswerSpareSuffix => IsAffordabilityAvailable ? " monthly spare" : string.Empty;
+
+        /// <summary>
+        /// What the figure is net of. Defers to <see cref="AffordabilityTextDescription"/> when
+        /// there is no figure, so the card keeps carrying the "record your income &amp; expenses"
+        /// and trial prompts rather than asserting a basis for a number it does not have.
+        /// </summary>
+        [JsonIgnore]
+        public string AnswerSpareBasis =>
+            IsAffordabilityAvailable
+                ? "after the loan, running costs and your expenses"
+                : AffordabilityTextDescription.Trim();
 
         [JsonIgnore] public InsightsDetailsViewModel InsightsDetails { get; set; }
 
@@ -959,6 +1094,57 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
         [JsonIgnore]
         public List<PaymentAmortisationOutput>? PaymentAmortization => HomeLoanInfo?.PaymentSummary?.PaymentAmortizationTerms ?? new List<PaymentAmortisationOutput>();
 
+        // ── Schedule grouped into decades ──────────────────────────────────────
+        //
+        // Grouped off the same PaymentAmortization rows the grid used. Decade boundaries are taken
+        // from the loan's own first year rather than from calendar decades (…2020, …2030), so the
+        // first group starts at year one of the loan and every group holds ten of its years.
+        [JsonIgnore]
+        public List<AmortisationDecade> AmortisationDecades
+        {
+            get
+            {
+                var terms = PaymentAmortization;
+                if (terms == null || terms.Count == 0) return new List<AmortisationDecade>();
+
+                var sym = CurrencySymbol ?? "$";
+                var firstYear = terms.Min(t => t.YearOfPayment);
+
+                return terms
+                    .GroupBy(t => (t.YearOfPayment - firstYear) / 10)
+                    .OrderBy(g => g.Key)
+                    .Select(g =>
+                    {
+                        var years = g.OrderBy(t => t.YearOfPayment).ToList();
+                        var from = years.First().YearOfPayment;
+                        var to = years.Last().YearOfPayment;
+
+                        return new AmortisationDecade(
+                            periodLabel: from == to ? $"{from}" : $"{from}–{to}",
+                            repaymentTotal: $"{sym}{years.Sum(t => t.PaymentAmount):N0}",
+                            interestTotal: $"{sym}{years.Sum(t => t.InterestAmount):N0}",
+                            principalTotal: $"{sym}{years.Sum(t => t.PrincipalAmount):N0}",
+                            endBalance: $"{sym}{years.Last().BalanceAmount:N0}",
+                            years: years,
+                            isExpanded: g.Key == 0);
+                    })
+                    .ToList();
+            }
+        }
+
+        [JsonIgnore] public bool HasAmortisationDecades => AmortisationDecades.Count > 0;
+
+        /// <summary>
+        /// Re-reads the decade list. Needed because <see cref="AmortisationDecades"/> is computed
+        /// on every get from <see cref="PaymentAmortization"/> and raises nothing of its own, so a
+        /// recompute of the underlying terms is otherwise invisible to the bound list.
+        /// </summary>
+        public void RaiseAmortisationDecadesChanged()
+        {
+            OnPropertyChanged(nameof(AmortisationDecades));
+            OnPropertyChanged(nameof(HasAmortisationDecades));
+        }
+
         [JsonIgnore] private ObservableCollection<ChartDataModel> _amortizationChartPrincipal = new();
         [JsonIgnore] private ObservableCollection<ChartDataModel> _amortizationChartInterest = new();
         [JsonIgnore] private ObservableCollection<ChartDataModel> _amortizationChartBalance = new();
@@ -975,6 +1161,38 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
         [JsonIgnore] public string AmortizationBalanceSubtitle =>
             $"Remaining loan balance over {LoanTermInYears} yr{(LoanTermInYears == 1 ? "" : "s")}";
 
+        // ── "Where the money goes" (What If ▸ Answer) ──────────────────────────
+        //
+        // Same source as the two series above, but summed per year rather than left per payment
+        // row. The Answer chart is a stacked column with one column per year, so feeding it the
+        // per-row series would draw one thin column per repayment — 360 of them on a 30-year
+        // monthly loan — instead of the twelve the prototype shows.
+        [JsonIgnore] private ObservableCollection<ChartDataModel> _answerPrincipalByYear = new();
+        [JsonIgnore] private ObservableCollection<ChartDataModel> _answerInterestByYear = new();
+
+        [JsonIgnore]
+        public ObservableCollection<ChartDataModel> AnswerPrincipalByYearAxis => _answerPrincipalByYear;
+
+        [JsonIgnore]
+        public ObservableCollection<ChartDataModel> AnswerInterestByYearAxis => _answerInterestByYear;
+
+        [JsonIgnore] public bool HasAnswerChartData => _answerPrincipalByYear.Count > 0;
+
+        // ── PDF export section list ────────────────────────────────────────────
+        //
+        // Describes what the report contains; it does not control it. See ExportSectionOption
+        // for why these are read-only and the checkboxes bound to them are disabled.
+        [JsonIgnore]
+        public List<ExportSectionOption> ExportSections { get; } = new()
+        {
+            new("WhatIfExportSectionVerdict",   "Affordability verdict", "The headline answer and the three-box summary"),
+            new("WhatIfExportSectionLoan",      "Loan & borrowing",      "Asset, deposit, loan amount, rate and term"),
+            new("WhatIfExportSectionBudget",    "Income & expenses",     "Monthly and yearly totals, and the net surplus"),
+            new("WhatIfExportSectionSchedule",  "Repayment schedule",    "Full year-by-year amortisation table"),
+            new("WhatIfExportSectionProjection","Projection",            "Income and expense projection over time"),
+            new("WhatIfExportSectionScenarios", "Scenarios",             "All nine what-if results"),
+        };
+
         private void UpdateAmortizationCharts()
         {
             var terms = HomeLoanInfo?.PaymentSummary?.PaymentAmortizationTerms;
@@ -983,6 +1201,8 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
                 _amortizationChartPrincipal.Clear();
                 _amortizationChartInterest.Clear();
                 _amortizationChartBalance.Clear();
+                _answerPrincipalByYear.Clear();
+                _answerInterestByYear.Clear();
                 return;
             }
 
@@ -1001,6 +1221,14 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
                 .Select(g => new ChartDataModel(g.Key.ToString(), g.Last().BalanceAmount))
                 .ToList();
             RefillCollection(_amortizationChartBalance, balanceByYear);
+
+            // Answer chart: principal and interest summed per year, so the stacked columns show
+            // the shift from mostly-interest to mostly-principal across the life of the loan.
+            var byYear = filtered.GroupBy(f => f.YearOfPayment).OrderBy(g => g.Key).ToList();
+            RefillCollection(_answerPrincipalByYear,
+                byYear.Select(g => new ChartDataModel(g.Key.ToString(), g.Sum(f => f.PrincipalAmount))));
+            RefillCollection(_answerInterestByYear,
+                byYear.Select(g => new ChartDataModel(g.Key.ToString(), g.Sum(f => f.InterestAmount))));
         }
 
         // Called when currency changes — rebuilds chart data and notifies the grid
@@ -1185,6 +1413,93 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
         }
 
         [JsonIgnore] public string TotalMonthlyExistingExpense => $"{Math.Round(ExpenseSummary?.TransactionRecords?.IncomeExpenseSummary?.TotalMonthly ?? 0, 0):N0}";
+
+        // ── Answer-tab summary boxes (What If) ───────────────────────────────
+        //
+        // Three figures the prototype shows beneath the affordability hero. All three return the
+        // placeholder until income and expenses exist, matching every other derived figure here.
+
+        [JsonIgnore]
+        private double MonthlyIncomeRaw => IncomeSummary?.TransactionRecords?.IncomeExpenseSummary?.TotalMonthly ?? 0;
+
+        [JsonIgnore]
+        private double MonthlyExpenseRaw => ExpenseSummary?.TransactionRecords?.IncomeExpenseSummary?.TotalMonthly ?? 0;
+
+        /// <summary>The loan repayment at the frequency the user selected.</summary>
+        [JsonIgnore]
+        public string AnswerRepaymentDisplay =>
+            TermPaymentRoundedWithComma is null or "0" ? "--" : $"{CurrencySymbol}{TermPaymentRoundedWithComma}";
+
+        /// <summary>Income less living expenses, before the loan repayment.</summary>
+        /// <remarks>
+        /// The sign goes BEFORE the symbol. Interpolating a negative straight after the symbol
+        /// gives "$-41,295", which is what this did — the symbol and the minus have to be ordered
+        /// explicitly because `:N0` puts the minus on the number, not on the currency.
+        /// </remarks>
+        [JsonIgnore]
+        public string AnswerNetIncomeDisplay
+        {
+            get
+            {
+                if (!IsAffordabilityAvailable) return "--";
+
+                var net = Math.Round(MonthlyIncomeRaw - MonthlyExpenseRaw, 0);
+                return $"{(net < 0 ? "-" : string.Empty)}{CurrencySymbol}{Math.Abs(net):N0}";
+            }
+        }
+
+        /// <summary>True when <see cref="AnswerNetIncomeDisplay"/> shows a negative figure.</summary>
+        [JsonIgnore]
+        public bool AnswerNetIncomeIsNegative =>
+            IsAffordabilityAvailable && Math.Round(MonthlyIncomeRaw - MonthlyExpenseRaw, 0) < 0;
+
+        /// <summary>
+        /// The repayment as a share of gross monthly income — the standard payment-to-income
+        /// ratio lenders quote.
+        /// </summary>
+        /// <remarks>
+        /// <para>Defined deliberately, because the prototype's own figures do not reconcile: it
+        /// shows "35% of income" beside a $2,792 repayment and $6,000 income, which is 46.5%.
+        /// Gross income is the denominator (not net, and not income-after-expenses) so the number
+        /// means the same thing a lender means by it.</para>
+        ///
+        /// <para><b>TermPaymentMonthly, not TermPayment.</b> <c>TermPayment</c> is the payment at
+        /// whatever frequency the user selected, so dividing it by MONTHLY income only gave a
+        /// payment-to-income ratio when that frequency happened to be monthly — a weekly payer saw
+        /// roughly a quarter of the true ratio. The monthly-normalised payment is also what
+        /// <see cref="AnswerVerdictCaption"/> compares the surplus against, so the two agreed about
+        /// affordability while disagreeing about the payment.</para>
+        ///
+        /// <para>The display is capped. Past a few hundred percent the figure no longer measures
+        /// anything the reader can use — it only says "the repayment dwarfs the income", which the
+        /// verdict and the net-income box next to it already say — and four significant digits of
+        /// it ("3,099%") read as a defect rather than a measurement.</para>
+        /// </remarks>
+        [JsonIgnore]
+        public string AnswerRepaymentShareOfIncome
+        {
+            get
+            {
+                if (!IsAffordabilityAvailable || MonthlyIncomeRaw <= 0) return "--";
+                var repayment = HomeLoanInfo?.PaymentSummary?.Payment?.TermPaymentMonthly ?? 0;
+                if (repayment <= 0) return "--";
+
+                var share = repayment / MonthlyIncomeRaw * 100;
+                return share > ShareOfIncomeDisplayCap
+                    ? $">{ShareOfIncomeDisplayCap:N0}%"
+                    : $"{Math.Round(share, 0):N0}%";
+            }
+        }
+
+        /// <summary>
+        /// Highest payment-to-income ratio shown as a figure; above it the box reads "&gt;999%".
+        /// </summary>
+        /// <remarks>
+        /// 999 rather than 100: a ratio over 100% is implausible but still informative (it says
+        /// how far over), and percentages stay readable into the hundreds. Four digits are where
+        /// they stop being readable, which is where the cap sits.
+        /// </remarks>
+        private const double ShareOfIncomeDisplayCap = 999;
 
         [JsonIgnore]
         public string TotalMonthlyOverallExpense =>

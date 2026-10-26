@@ -8,6 +8,13 @@
         public double InterestAmount { get; set; }
         public double PrincipalAmount { get; set; }
         public double BalanceAmount { get; set; }
+        /// <summary>
+        /// The repayment for the period — principal + interest. Added for the schedule's
+        /// Repayment column: the grid showed Principal, Interest and Balance but never the
+        /// payment they add up to, which is the figure people actually recognise.
+        /// </summary>
+        public string PaymentAmountRounded => $"{Helper.CurrencySymbol}{Math.Round(PaymentAmount, 2):N2}";
+
         public string PrincipalAmountRounded => $"{Helper.CurrencySymbol}{Math.Round(PrincipalAmount, 2):N2}";
         public string InterestAmountRounded => $"{Helper.CurrencySymbol}{Math.Round(InterestAmount, 2):N2}";
         public string BalanceAmountRounded => $"{Helper.CurrencySymbol}{Math.Round(BalanceAmount, 2):N2}";

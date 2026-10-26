@@ -1,4 +1,5 @@
-﻿using LoanCalculator.Core.Helper;
+﻿using LoanCalculator.Core;
+using LoanCalculator.Core.Helper;
 using LoanCalculator.Core.Models;
 using LoanCalculator.Core.Models.Enums;
 using LoanCalculator.Core.Models.Income;
@@ -10,6 +11,26 @@ namespace LoanCalculator.UnitTests.Models.ViewModels.PrimaryModels
     [TestFixture]
     public class LoanViewModelTests
     {
+        /// <summary>
+        /// Declares a paid user, for the two AffordabilityTextDescription tests: it returns
+        /// " try premium" for a trial user, so they see that instead of the copy they assert on.
+        /// </summary>
+        /// <remarks>
+        /// Without this the whole fixture runs as TRIAL, because there is no MAUI host and the
+        /// SecureStorage read inside IsPremiumUser throws into a catch that returns false. That
+        /// went unnoticed while TESTING_PREMIUM_OVERRIDE was true, which short-circuited it.
+        ///
+        /// Scoped to this fixture and cleared afterwards — a test that asserts on TRIAL behaviour
+        /// needs the opposite value, and a leaked static would silently decide it.
+        /// </remarks>
+        [OneTimeSetUp]
+        public void GrantPremiumForFigureTests() =>
+            SharedServiceCore.EntitlementOverrideForTests = true;
+
+        [OneTimeTearDown]
+        public void ClearPremiumAfterFigureTests() =>
+            SharedServiceCore.EntitlementOverrideForTests = null;
+
         private LoanViewModel _vm;
 
         /// <summary>
@@ -571,6 +592,144 @@ namespace LoanCalculator.UnitTests.Models.ViewModels.PrimaryModels
             _vm.IsUpfrontInputVisible = true;
             Assert.That(changed, Does.Contain(nameof(_vm.IsUpfrontInputVisible)));
             Assert.That(_vm.IsUpfrontInputVisible, Is.True);
+        }
+
+        // ── The What If "Answer" hero and its three boxes ─────────────────────
+        //
+        // None of these three properties had a test, which is how both bugs below survived: a
+        // payment-to-income ratio built from mismatched periods, and a four-digit percentage.
+
+        /// <summary>
+        /// Seeds income and expenses so <c>IsAffordabilityAvailable</c> is true — every Answer
+        /// property short-circuits to a placeholder without it.
+        /// </summary>
+        private static LoanViewModel BuildWithBudget(
+            double monthlyIncome, double monthlyExpense,
+            double propertyAmount = 1_000_000, double depositDirect = 100_000,
+            int paymentsPerYear = 12)
+        {
+            var vm = BuildInitialized(propertyAmount, depositDirect);
+            vm.HomeLoanInfo.HomeLoanRepaymentRequest.TotalNumberPaymentPerYear = paymentsPerYear;
+
+            var income = new IncomeViewModel { TransactionRecords = new Incomes { IncomeExpenseEntries = [] } };
+            income.TransactionRecords.Add("Salary", monthlyIncome, TimeFrequencyEnum.Monthly, isCheckForExistingRequired: false);
+            income.TransactionRecords.SumUpData();
+            income.MarkInitializationComplete();
+
+            var expense = new ExpenseViewModel { TransactionRecords = new Incomes { IncomeExpenseEntries = [] } };
+            expense.TransactionRecords.Add("Rent", monthlyExpense, TimeFrequencyEnum.Monthly, isCheckForExistingRequired: false);
+            expense.TransactionRecords.SumUpData();
+            expense.MarkInitializationComplete();
+
+            vm.IncomeSummary = income;
+            vm.ExpenseSummary = expense;
+            vm.HasIncomeExpensesRecorded = true;
+
+            // PaymentSummary.Payment is null until the loan is calculated — HomeLoanInformation's
+            // constructor only creates an empty PaymentSummary — and without it every ratio below
+            // reads a null Payment and returns its placeholder, so the tests would pass while
+            // asserting nothing.
+            //
+            // Calculated directly rather than through EventsTriggerPriceUpdate(), which also runs
+            // LiveEventsUpdate() and re-runs SumUpData on the shared income/expense summaries.
+            // That leaks: it left ExpenseViewModelTests' property-cost case subtracting its
+            // groceries twice (5,300 became 4,800) — the exact contamination
+            // AffordabilityOrderDependenceTests exists to pin. This call has no side effects.
+            vm.HomeLoanInfo.PaymentSummary = HomeLoanCalculator.CalculateHomeLoanPayments(
+                vm.HomeLoanInfo.LoanAmount, vm.HomeLoanInfo.HomeLoanRepaymentRequest);
+            return vm;
+        }
+
+        [Test]
+        public void AnswerSpareSuffix_SpellsOutMonthly_RatherThanAbbreviating()
+        {
+            var vm = BuildWithBudget(monthlyIncome: 9_000, monthlyExpense: 2_000);
+
+            Assert.That(vm.AnswerSpareSuffix, Does.Contain("monthly"));
+            Assert.That(vm.AnswerSpareSuffix, Does.Not.Contain("/mo"));
+        }
+
+        [Test]
+        public void AnswerSpareSuffix_WithoutAffordability_IsEmpty()
+        {
+            _vm.HasIncomeExpensesRecorded = false;
+            Assert.That(_vm.AnswerSpareSuffix, Is.Empty);
+        }
+
+        /// <summary>
+        /// A plausible budget must produce a plausible ratio, so the cap below cannot be hiding a
+        /// broken numerator.
+        /// </summary>
+        [Test]
+        public void AnswerRepaymentShareOfIncome_PlausibleBudget_IsAReadablePercentage()
+        {
+            var vm = BuildWithBudget(monthlyIncome: 10_000, monthlyExpense: 2_000);
+
+            var monthlyPayment = vm.HomeLoanInfo.PaymentSummary.Payment.TermPaymentMonthly;
+            var expected = Math.Round(monthlyPayment / 10_000d * 100, 0);
+
+            Assert.That(vm.AnswerRepaymentShareOfIncome, Is.EqualTo($"{expected:N0}%"));
+            Assert.That(expected, Is.GreaterThan(0).And.LessThan(999),
+                "a $900k loan against $10k/mo income should land well inside the readable band");
+        }
+
+        /// <summary>
+        /// The unit bug: the ratio divided <c>TermPayment</c> — the payment at the user's SELECTED
+        /// frequency — by MONTHLY income. Switching only the frequency changes the numerator's
+        /// period but not the loan, so a correct ratio is unchanged by it. The old code returned
+        /// roughly a quarter of the true figure for a weekly payer.
+        /// </summary>
+        /// <remarks>
+        /// <para>12, 24 and 52 are the only values the app ever sets (see the frequency setter in
+        /// LoanViewModel), so those are what this covers.</para>
+        ///
+        /// <para>This asserts the ratio uses <c>TermPaymentMonthly</c>, NOT that the ratio is the
+        /// same across frequencies — which it should be, but is not, for a reason that lives
+        /// elsewhere: the app computes the "fortnightly" payment on 24 periods a year and then
+        /// converts it to monthly with <c>ModelHelper</c>'s true-fortnightly factor of 26/12,
+        /// overstating the monthly equivalent by 8.3%. That affects every consumer of
+        /// TermPaymentMonthly — the affordability surplus included — so it is not this property's
+        /// bug to fix and asserting cross-frequency equality here would just encode it.</para>
+        /// </remarks>
+        [TestCase(52)]
+        [TestCase(24)]
+        [TestCase(12)]
+        public void AnswerRepaymentShareOfIncome_UsesTheMonthlyPaymentNotThePerPeriodOne(int paymentsPerYear)
+        {
+            var vm = BuildWithBudget(10_000, 2_000, paymentsPerYear: paymentsPerYear);
+            var payment = vm.HomeLoanInfo.PaymentSummary.Payment;
+
+            var fromMonthly = Math.Round(payment.TermPaymentMonthly / 10_000d * 100, 0);
+            Assert.That(vm.AnswerRepaymentShareOfIncome, Is.EqualTo($"{fromMonthly:N0}%"));
+
+            if (paymentsPerYear == 12) return;
+
+            // The regression guard: for a non-monthly payer the per-period payment is a different
+            // number, and dividing THAT by monthly income is what the property used to do.
+            var fromPerPeriod = Math.Round(payment.TermPayment / 10_000d * 100, 0);
+            Assert.That(vm.AnswerRepaymentShareOfIncome, Is.Not.EqualTo($"{fromPerPeriod:N0}%"),
+                $"at {paymentsPerYear} payments a year the ratio must not be built from the "
+                + "per-period payment — both halves have to share a period");
+        }
+
+        /// <summary>
+        /// The presentation bug: $123/mo of income against a $3,812 repayment rendered "3,099%",
+        /// which reads as a defect rather than a measurement.
+        /// </summary>
+        [Test]
+        public void AnswerRepaymentShareOfIncome_AbsurdRatio_IsCappedRatherThanShownInFull()
+        {
+            var vm = BuildWithBudget(monthlyIncome: 123, monthlyExpense: 234);
+
+            Assert.That(vm.AnswerRepaymentShareOfIncome, Is.EqualTo(">999%"));
+        }
+
+        [Test]
+        public void AnswerRepaymentShareOfIncome_NoIncome_IsPlaceholder()
+        {
+            var vm = BuildWithBudget(monthlyIncome: 0, monthlyExpense: 2_000);
+
+            Assert.That(vm.AnswerRepaymentShareOfIncome, Is.EqualTo("--"));
         }
     }
 }

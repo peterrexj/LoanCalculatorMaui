@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<meta charset="utf-8">
+<title>Settings — tablet prototype</title>
+<link rel="stylesheet" href="tokens.css">
+<link rel="stylesheet" href="app.css">
+<link rel="stylesheet" href="tablet.css">
+
+<!--
+  SETTINGS — tablet counterpart of settings.html.
+
+  LAYOUT DECISION: this is the clearest sidebar candidate in the set, and the
+  brief calls it out directly — a list of section names plus a detail pane is
+  the conventional iPad Settings shape (System Settings, most third-party
+  apps). The phone page is five independently-scrolled sections stacked in one
+  column (Appearance, Defaults, Support, Purchases, Your data); at 1024px that
+  becomes a left list of those five section names (.list) and a right pane
+  (.detail) holding the selected section's full content (.sel marks
+  "Appearance" as pre-selected, the way a real app would open on its first
+  section). Selecting a different name would swap the pane's content — this
+  prototype shows the one state, same convention `.on` already uses to mark
+  the current page in the tab rail.
+
+  This also fixes the double-labelling problem the phone page already fixed
+  (section header IS the label, no redundant row title) — nothing new needed
+  there, it carries over unchanged into the detail pane.
+
+  Version string and the destructive "Your data" group stay in the list/pane
+  split like everything else, rather than being pulled out as a persistent
+  footer — Settings has no element on phone that is global chrome rather than
+  one of the five sections, so none is invented here either.
+-->
+
+<div class="tablet">
+
+  <nav class="railnav">
+    <a href="tablet-loan.html"><span class="ico">&#127968;</span>Loan</a>
+    <a href="tablet-budget.html"><span class="ico">&#128176;</span>Budget</a>
+    <a href="tablet-whatif.html"><span class="ico">&#10003;</span>What If</a>
+    <a class="on" href="tablet-settings.html"><span class="ico">&#9881;</span>Settings</a>
+    <div class="spacer"></div>
+  </nav>
+
+  <div class="main">
+
+    <div class="page-head">
+      <h1>Settings</h1>
+      <p>Manage your preferences</p>
+    </div>
+
+    <div class="scroll">
+
+      <div class="shell2">
+
+        <div class="list rows" style="margin-top:0">
+          <a class="row sel" href="#">
+            <span class="grow"><span class="t">Appearance</span><br><span class="s">Theme, font, currency</span></span>
+            <span class="chev">&rsaquo;</span>
+          </a>
+          <a class="row" href="#">
+            <span class="grow"><span class="t">Defaults</span><br><span class="s">Step sizes, scenarios, calculator</span></span>
+            <span class="chev">&rsaquo;</span>
+          </a>
+          <a class="row" href="#">
+            <span class="grow"><span class="t">Support</span><br><span class="s">Disclaimer, privacy, feedback</span></span>
+            <span class="chev">&rsaquo;</span>
+          </a>
+          <a class="row" href="#">
+            <span class="grow"><span class="t">Purchases</span><br><span class="s">Premium and restore</span></span>
+            <span class="chev">&rsaquo;</span>
+          </a>
+          <a class="row" href="#">
+            <span class="grow"><span class="t">Your data</span><br><span class="s">Delete loan, income, expenses</span></span>
+            <span class="chev">&rsaquo;</span>
+          </a>
+        </div>
+
+        <div class="detail">
+
+          <div class="section" style="margin-top:0">Appearance</div>
+          <div class="card">
+            <div class="field" style="margin-top:0">
+              <label>Theme</label>
+              <div class="box" style="display:flex;justify-content:space-between;align-items:center">
+                Dark <span style="opacity:.45;font-size:var(--font-size-small)">&#9662;</span>
+              </div>
+            </div>
+            <div class="field">
+              <label>Font</label>
+              <div class="box" style="display:flex;justify-content:space-between;align-items:center">
+                Lato <span style="opacity:.45;font-size:var(--font-size-small)">&#9662;</span>
+              </div>
+            </div>
+            <div class="field">
+              <label>Currency</label>
+              <div class="box" style="display:flex;justify-content:space-between;align-items:center">
+                US Dollar (USD) $ <span style="opacity:.45;font-size:var(--font-size-small)">&#9662;</span>
+              </div>
+            </div>
+          </div>
+
+          <p class="micro">Version 40</p>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+</html>

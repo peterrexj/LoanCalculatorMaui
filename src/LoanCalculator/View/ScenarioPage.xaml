@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="LoanCalculatorMaui.View.ScenarioPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:primaryModels="clr-namespace:LoanCalculator.Core.Models.ViewModels.PrimaryModels;assembly=LoanCalculator.Core"
+    x:Name="thisPage"
+    Title="Scenario"
+    x:DataType="primaryModels:WhatIfViewModel">
+
+    <!--
+        Host for one What If scenario. The nine scenarios used to be nine cards stacked in a
+        single ~9-screen scroll on WhatIfView, with no way to jump to one and no way to link to
+        one. They are now ContentViews under Controls/Scenarios/, reached from the index on
+        WhatIfView, and this page supplies the chrome each of them would otherwise duplicate:
+        the title, the back route and the dismissal plumbing.
+
+        ONE host, not nine pages. The scenarios differ too much in layout to share a single
+        parameterised body — steppers, three-column comparisons, charts, info buttons — but they
+        share all of their chrome, so the content is swapped in and everything around it is
+        written once. Compare TransactionEntryPage, which could share a body because its three
+        call sites are the same form.
+    -->
+    <ContentPage.Content>
+        <Grid BackgroundColor="{DynamicResource LoanAppDefaultBackgroundColor}" RowDefinitions="Auto,*">
+
+            <Grid Grid.Row="0" Padding="8,14,8,4" ColumnDefinitions="Auto,*">
+                <Button
+                    AutomationId="ScenarioBackButton"
+                    Grid.Column="0"
+                    BackgroundColor="Transparent"
+                    Clicked="OnBack"
+                    FontSize="{StaticResource FontSizeXL}"
+                    HeightRequest="44"
+                    Text="&#x2039;"
+                    TextColor="{DynamicResource LoanAppDefaultForegroundColor}"
+                    WidthRequest="44" />
+                <Label
+                    x:Name="lblTitle"
+                    Grid.Column="1"
+                    AutomationId="ScenarioTitle"
+                    Style="{DynamicResource PopupTitleLabelStyle}" />
+            </Grid>
+
+            <!--
+                The large bottom padding is the same trick LoanDetailsPage uses: the keyboard
+                overlays the ScrollView rather than insetting it, and several scenarios have
+                stepper rows near the bottom.
+            -->
+            <ScrollView Grid.Row="1">
+                <VerticalStackLayout x:Name="ScenarioHost" Padding="12,4,12,120" Spacing="4" />
+            </ScrollView>
+
+        </Grid>
+    </ContentPage.Content>
+
+</ContentPage>

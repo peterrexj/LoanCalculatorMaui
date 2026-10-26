@@ -1,4 +1,5 @@
 using LoanCalculator.Core.Exts;
+using LoanCalculator.Core.Models.Enums;
 using LoanCalculator.Core.Models.ViewModels.PrimaryModels;
 using LoanCalculator.Core.Services;
 using System.Collections.ObjectModel;
@@ -122,6 +123,8 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
             OnPropertyChanged(nameof(RateChangeHeadroom));
             OnPropertyChanged(nameof(RateChangeShowHeadroom));
             OnPropertyChanged(nameof(RateChangeHeadroomStatus));
+            OnPropertyChanged(nameof(RateChangeInYourCase));
+            OnPropertyChanged(nameof(ScenarioExplainLine));
         }
 
         // ── Scenario 2: Extra Repayment ───────────────────────────────────
@@ -161,6 +164,8 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
             OnPropertyChanged(nameof(ExtraRepaymentTimeSaved));
             OnPropertyChanged(nameof(ExtraRepaymentInterestSaved));
             OnPropertyChanged(nameof(ExtraRepaymentNewPayoff));
+            OnPropertyChanged(nameof(ExtraRepaymentInYourCase));
+            OnPropertyChanged(nameof(ScenarioExplainLine));
         }
 
         // ── Scenario 3: Loan Term Comparison ─────────────────────────────
@@ -179,6 +184,19 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
         [JsonIgnore] public bool TermIsCurrentColB  { get; private set; }
         [JsonIgnore] public bool TermIsCurrentColC  { get; private set; }
         [JsonIgnore] public ObservableCollection<ChartDataModel> TermComparisonChartData { get; } = new();
+
+        /// <summary>
+        /// One-line summary for the scenario index: what shortening the term by one step costs per
+        /// month. A three-column comparison has no single "the answer" figure, so this picks the
+        /// comparison the row's subtitle promises ("Shorter term, higher payment") — the column
+        /// immediately below the user's own term.
+        /// </summary>
+        /// <remarks>
+        /// Stays at the placeholder when the user is already on the shortest column, because then
+        /// there is no shorter term to cost. Always an increase when it has a value, hence the
+        /// index row renders it as a "warn".
+        /// </remarks>
+        [JsonIgnore] public string TermComparisonMonthlyDiff { get; private set; } = "--";
 
         private void RecalculateTermComparison()
         {
@@ -219,6 +237,21 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
             (TermColBLabel, TermColBMonthly, TermColBInterest) = BuildTermColumn(t2);
             (TermColCLabel, TermColCMonthly, TermColCInterest) = BuildTermColumn(t3);
 
+            // Index-row summary: the monthly cost of the next step down in term. The columns are
+            // ascending with the user's own term flagged, so "one step shorter" is the column
+            // below theirs — and there isn't one when they are already on col A.
+            var shorterTerm = TermIsCurrentColC ? t2 : TermIsCurrentColB ? t1 : (int?)null;
+            if (shorterTerm is int shorter)
+            {
+                var currentMonthly = HomeLoanCalculatorHelper.CalculateMonthlyRepayment(BaseLoanAmount, BaseRate, clamped);
+                var shorterMonthly = HomeLoanCalculatorHelper.CalculateMonthlyRepayment(BaseLoanAmount, BaseRate, shorter);
+                TermComparisonMonthlyDiff = $"{(shorterMonthly - currentMonthly).ToSignedCurrencyRounded()}/mo";
+            }
+            else
+            {
+                TermComparisonMonthlyDiff = "--";
+            }
+
             TermComparisonChartData.Clear();
             TermComparisonChartData.Add(new ChartDataModel($"{t1} YRS", HomeLoanCalculatorHelper.CalculateMonthlyRepayment(BaseLoanAmount, BaseRate, t1)));
             TermComparisonChartData.Add(new ChartDataModel($"{t2} YRS", HomeLoanCalculatorHelper.CalculateMonthlyRepayment(BaseLoanAmount, BaseRate, t2)));
@@ -230,6 +263,8 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
                 nameof(TermColBLabel), nameof(TermColBMonthly), nameof(TermColBInterest),
                 nameof(TermColCLabel), nameof(TermColCMonthly), nameof(TermColCInterest),
                 nameof(TermIsCurrentColA), nameof(TermIsCurrentColB), nameof(TermIsCurrentColC),
+                nameof(TermComparisonMonthlyDiff),
+                nameof(TermComparisonInYourCase), nameof(ScenarioExplainLine),
             })
                 OnPropertyChanged(n);
         }
@@ -252,6 +287,18 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
         [JsonIgnore] public string DepositColAMonthly    { get; private set; } = "--";
         [JsonIgnore] public string DepositColBMonthly    { get; private set; } = "--";
         [JsonIgnore] public string DepositColCMonthly    { get; private set; } = "--";
+
+        /// <summary>
+        /// One-line summary for the scenario index: the monthly saving from the next deposit
+        /// bracket up. Mirrors the row's subtitle ("What a bigger deposit changes") rather than
+        /// trying to reduce a three-column table to one number arbitrarily.
+        /// </summary>
+        /// <remarks>
+        /// Gated on <see cref="DepositColCAvailable"/>: when the deposit is already at or near the
+        /// ceiling there is no higher bracket to compare against, so this stays at the
+        /// placeholder. Always a saving when it has a value, hence the index renders it as "good".
+        /// </remarks>
+        [JsonIgnore] public string DepositScenariosMonthlyDiff { get; private set; } = "--";
         // False when the deposit is already at/near the ceiling — col C shows a "Max" placeholder
         [JsonIgnore] public bool   DepositColCAvailable  { get; private set; } = true;
         [JsonIgnore] public ObservableCollection<ChartDataModel> DepositScenariosChartData { get; } = new();
@@ -293,6 +340,21 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
             else
                 (DepositColCLabel, DepositColCLoan, DepositColCMonthly) = ("Max", "—", "—");
 
+            // Index-row summary: what the next bracket up saves per month. Computed from the same
+            // percentages the columns are built from, so the two cannot drift apart.
+            if (DepositColCAvailable)
+            {
+                var currentMonthly = HomeLoanCalculatorHelper.CalculateMonthlyRepayment(
+                    BasePropertyAmount * (1 - exactPct / 100.0), BaseRate, BaseTerm);
+                var higherMonthly = HomeLoanCalculatorHelper.CalculateMonthlyRepayment(
+                    BasePropertyAmount * (1 - highPct / 100.0), BaseRate, BaseTerm);
+                DepositScenariosMonthlyDiff = $"{(higherMonthly - currentMonthly).ToSignedCurrencyRounded()}/mo";
+            }
+            else
+            {
+                DepositScenariosMonthlyDiff = "--";
+            }
+
             DepositScenariosChartData.Clear();
             var pctDisplay = exactPct % 1 == 0 ? $"{exactPct:0}%" : $"{exactPct:0.#}%";
             DepositScenariosChartData.Add(new ChartDataModel($"{lowPct:0}%", HomeLoanCalculatorHelper.CalculateMonthlyRepayment(BasePropertyAmount * (1 - lowPct / 100.0), BaseRate, BaseTerm)));
@@ -305,7 +367,8 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
                 nameof(DepositColALabel), nameof(DepositColALoan), nameof(DepositColAMonthly),
                 nameof(DepositColBLabel), nameof(DepositColBLoan), nameof(DepositColBMonthly),
                 nameof(DepositColCLabel), nameof(DepositColCLoan), nameof(DepositColCMonthly),
-                nameof(DepositColCAvailable),
+                nameof(DepositColCAvailable), nameof(DepositScenariosMonthlyDiff),
+                nameof(DepositScenariosInYourCase), nameof(ScenarioExplainLine),
             })
                 OnPropertyChanged(n);
         }
@@ -365,6 +428,8 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
             OnPropertyChanged(nameof(LumpSumTimeSaved));
             OnPropertyChanged(nameof(LumpSumInterestSaved));
             OnPropertyChanged(nameof(LumpSumNewBalance));
+            OnPropertyChanged(nameof(LumpSumInYourCase));
+            OnPropertyChanged(nameof(ScenarioExplainLine));
         }
 
         // ── Scenario 6: Repayment Frequency ──────────────────────────────
@@ -434,6 +499,7 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
                 nameof(FreqMonthlyPayment), nameof(FreqMonthlyTimeSaved), nameof(FreqMonthlyIntSaved),
                 nameof(FreqFortPayment), nameof(FreqFortTimeSaved), nameof(FreqFortIntSaved),
                 nameof(FreqWeeklyPayment), nameof(FreqWeeklyTimeSaved), nameof(FreqWeeklyIntSaved),
+                nameof(RepaymentFrequencyInYourCase), nameof(ScenarioExplainLine),
             })
                 OnPropertyChanged(n);
         }
@@ -496,6 +562,8 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
             OnPropertyChanged(nameof(OffsetInterestSaved));
             OnPropertyChanged(nameof(OffsetTimeSaved));
             OnPropertyChanged(nameof(OffsetRateNote));
+            OnPropertyChanged(nameof(OffsetInYourCase));
+            OnPropertyChanged(nameof(ScenarioExplainLine));
         }
 
         // ── Scenario 8: Affordability Stress Test ────────────────────────
@@ -503,6 +571,13 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
         [JsonIgnore] public bool   StressTestUnavailable      => !StressTestAvailable;
         [JsonIgnore] public string StressTestBreakEvenRate    { get; private set; } = "--";
         [JsonIgnore] public string StressTestRateBuffer       { get; private set; } = "--";
+
+        /// <summary>
+        /// Whether there is any headroom left before the loan stops being affordable — the sign of
+        /// the rate buffer, nothing more. Lets the scenario index colour this row good/warn on a
+        /// derived fact rather than on an invented "how much buffer counts as safe" threshold.
+        /// </summary>
+        [JsonIgnore] public bool   StressTestHasBuffer       { get; private set; }
         [JsonIgnore] public string StressTestCurrentSurplus   { get; private set; } = "--";
         // -1 = safe (buffer > 2%), 0 = moderate (1–2%), 1 = at risk (< 1%)
         [JsonIgnore] public int    StressTestRisk             { get; private set; }
@@ -531,6 +606,7 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
             StressTestBreakEvenRate = breakEvenRate > 0
                 ? $"{breakEvenRate:0.##}%"
                 : "Already over budget (est.)";
+            StressTestHasBuffer = rateBuffer > 0;
             StressTestRateBuffer = rateBuffer > 0
                 ? $"+{rateBuffer:0.##}% buffer (est.)"
                 : $"{rateBuffer:0.##}% over est. limit";
@@ -546,8 +622,11 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
             OnPropertyChanged(nameof(StressTestUnavailable));
             OnPropertyChanged(nameof(StressTestBreakEvenRate));
             OnPropertyChanged(nameof(StressTestRateBuffer));
+            OnPropertyChanged(nameof(StressTestHasBuffer));
             OnPropertyChanged(nameof(StressTestCurrentSurplus));
             OnPropertyChanged(nameof(StressTestRisk));
+            OnPropertyChanged(nameof(StressTestInYourCase));
+            OnPropertyChanged(nameof(ScenarioExplainLine));
         }
 
         // ── Scenario 9: Combined Strategy ────────────────────────────────
@@ -677,6 +756,8 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
             OnPropertyChanged(nameof(CombinedTimeSaved));
             OnPropertyChanged(nameof(CombinedInterestSaved));
             OnPropertyChanged(nameof(CombinedNewTerm));
+            OnPropertyChanged(nameof(CombinedInYourCase));
+            OnPropertyChanged(nameof(ScenarioExplainLine));
             OnPropertyChanged(nameof(CombinedFrequencyPayment));
             OnPropertyChanged(nameof(CombinedExtraDisplay));
             OnPropertyChanged(nameof(CombinedLumpDisplay));
@@ -703,6 +784,124 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
         // ── No data state ─────────────────────────────────────────────────
         [JsonIgnore] public bool HasLoanData => BaseLoanAmount > 0;
         [JsonIgnore] public bool HasNoLoanData => !HasLoanData;
+
+        // ── "In your case" lines for the scenario explanation cards ───────
+        //
+        // Each scenario's explanation card closes with one sentence stating what the scenario
+        // means for THIS user. Every line is composed from the figure strings the scenario already
+        // displays rather than recalculated, so a line can never disagree with the boxes directly
+        // above it — and no new arithmetic is introduced to go wrong.
+
+        /// <summary>The placeholder a line shows before there is a loan to talk about.</summary>
+        private const string NoFigureYet =
+            "Enter your loan details to see what this means for your own numbers.";
+
+        /// <summary>True when a figure string holds a real value rather than its dash placeholder.</summary>
+        private static bool HasFigure(string? value) =>
+            !string.IsNullOrWhiteSpace(value) && value != "--";
+
+        /// <summary>
+        /// Which scenario's card is on screen. Set by <c>ScenarioPage.Configure</c>.
+        /// </summary>
+        /// <remarks>
+        /// A single value rather than one binding per scenario: <c>WhatIfView.LaunchScenarioAsync</c>
+        /// guards on an <c>_isScenarioOpen</c> latch, so exactly one scenario page exists at a time.
+        /// That is what lets the card bind <see cref="ScenarioExplainLine"/> on one fixed path
+        /// instead of having the page wire a different property name per scenario — a stringly-typed
+        /// binding path that no compiler follows, and which renders an empty zero-height Label when
+        /// wrong.
+        /// </remarks>
+        [JsonIgnore]
+        public WhatIfScenario ActiveScenario
+        {
+            get => _activeScenario;
+            set
+            {
+                _activeScenario = value;
+                OnPropertyChanged(nameof(ActiveScenario));
+                OnPropertyChanged(nameof(ScenarioExplainLine));
+            }
+        }
+        [JsonIgnore] private WhatIfScenario _activeScenario = WhatIfScenario.RateChange;
+
+        /// <summary>The personalised line for whichever scenario is currently open.</summary>
+        [JsonIgnore]
+        public string ScenarioExplainLine => ActiveScenario switch
+        {
+            WhatIfScenario.RateChange => RateChangeInYourCase,
+            WhatIfScenario.ExtraRepayment => ExtraRepaymentInYourCase,
+            WhatIfScenario.TermComparison => TermComparisonInYourCase,
+            WhatIfScenario.DepositScenarios => DepositScenariosInYourCase,
+            WhatIfScenario.LumpSum => LumpSumInYourCase,
+            WhatIfScenario.RepaymentFrequency => RepaymentFrequencyInYourCase,
+            WhatIfScenario.Offset => OffsetInYourCase,
+            WhatIfScenario.StressTest => StressTestInYourCase,
+            WhatIfScenario.Combined => CombinedInYourCase,
+            _ => NoFigureYet,
+        };
+
+        [JsonIgnore]
+        public string RateChangeInYourCase =>
+            !HasLoanData || !HasFigure(RateChangeMonthlyDiff) || !HasFigure(RateChangeNewRate)
+                ? NoFigureYet
+                : $"At {RateChangeNewRate} your repayment changes by {RateChangeMonthlyDiff} a month, "
+                  + $"and you would pay {RateChangeTotalInterest} in interest over the full term.";
+
+        [JsonIgnore]
+        public string ExtraRepaymentInYourCase =>
+            !HasLoanData || ExtraRepaymentMonthly <= 0 || !HasFigure(ExtraRepaymentTimeSaved)
+                ? NoFigureYet
+                : $"Adding {CurrencySymbol}{ExtraRepaymentMonthly:N0} a month would clear the loan "
+                  + $"{ExtraRepaymentTimeSaved} sooner and save {ExtraRepaymentInterestSaved} in interest.";
+
+        [JsonIgnore]
+        public string TermComparisonInYourCase =>
+            !HasLoanData || !HasFigure(TermComparisonMonthlyDiff)
+                ? NoFigureYet
+                : $"Across the terms shown, the repayment differs by {TermComparisonMonthlyDiff} a "
+                  + "month — that is what the extra years buy you, and cost you.";
+
+        [JsonIgnore]
+        public string DepositScenariosInYourCase =>
+            !HasLoanData || !HasFigure(DepositScenariosMonthlyDiff)
+                ? NoFigureYet
+                : $"Across the deposits shown, the repayment differs by {DepositScenariosMonthlyDiff} "
+                  + "a month.";
+
+        [JsonIgnore]
+        public string LumpSumInYourCase =>
+            !HasLoanData || LumpSumAmount <= 0 || !HasFigure(LumpSumTimeSaved)
+                ? NoFigureYet
+                : $"A {CurrencySymbol}{LumpSumAmount:N0} lump sum would clear the loan "
+                  + $"{LumpSumTimeSaved} sooner and save {LumpSumInterestSaved} in interest.";
+
+        [JsonIgnore]
+        public string RepaymentFrequencyInYourCase =>
+            !HasLoanData || !HasFigure(FreqFortTimeSaved)
+                ? NoFigureYet
+                : $"Paying fortnightly instead of monthly would clear the loan {FreqFortTimeSaved} "
+                  + $"sooner and save {FreqFortIntSaved} in interest.";
+
+        [JsonIgnore]
+        public string OffsetInYourCase =>
+            !HasLoanData || OffsetBalance <= 0 || !HasFigure(OffsetTimeSaved)
+                ? NoFigureYet
+                : $"Keeping {CurrencySymbol}{OffsetBalance:N0} in an offset account would clear the "
+                  + $"loan {OffsetTimeSaved} sooner and save {OffsetInterestSaved} in interest.";
+
+        [JsonIgnore]
+        public string StressTestInYourCase =>
+            !StressTestAvailable || !HasFigure(StressTestBreakEvenRate)
+                ? "Record your income and expenses to see how much of a rate rise your budget could absorb."
+                : $"On the budget you entered, your rate could reach {StressTestBreakEvenRate} before "
+                  + $"the repayment uses up everything coming in — a buffer of {StressTestRateBuffer}.";
+
+        [JsonIgnore]
+        public string CombinedInYourCase =>
+            !HasLoanData || !HasFigure(CombinedTimeSaved)
+                ? NoFigureYet
+                : $"The strategies you have selected would clear the loan {CombinedTimeSaved} sooner, "
+                  + $"save {CombinedInterestSaved} in interest, and pay it off in {CombinedNewTerm}.";
     }
 
     // Calculation helpers — pure math, no Syncfusion dependency

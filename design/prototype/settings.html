@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<meta charset="utf-8">
+<title>Settings — prototype</title>
+<link rel="stylesheet" href="tokens.css">
+<link rel="stylesheet" href="app.css">
+
+<!--
+  SETTINGS — the list-style surface.
+
+  The change being tested: today every group is labelled twice. A section header
+  reading "STEP SIZES" sits above a card whose only row reads "Step sizes"; same
+  for What-If Defaults and Calculator Defaults. That is three screens of chrome
+  for a modest number of controls.
+
+  Here the section header IS the label, and the groups below it are plain rows.
+  Appearance keeps its three pickers inline (they are one tap each, so hiding
+  them behind a disclosure costs more than it saves); the bulkier groups stay as
+  rows that open their own page.
+
+  Also: the redundant divider lines between the Appearance pickers are gone —
+  already fixed in the app. Each picker's own border is what marks it as a field.
+-->
+
+<div class="phone">
+
+  <div class="page-head">
+    <h1>Settings</h1>
+    <p>Manage your preferences</p>
+  </div>
+
+  <div class="scroll">
+
+    <div class="section">Appearance</div>
+    <div class="card">
+      <div class="field" style="margin-top:0">
+        <label>Theme</label>
+        <div class="box" style="display:flex;justify-content:space-between;align-items:center">
+          Dark <span style="opacity:.45;font-size:var(--font-size-small)">&#9662;</span>
+        </div>
+      </div>
+      <div class="field">
+        <label>Font</label>
+        <div class="box" style="display:flex;justify-content:space-between;align-items:center">
+          Lato <span style="opacity:.45;font-size:var(--font-size-small)">&#9662;</span>
+        </div>
+      </div>
+      <div class="field">
+        <label>Currency</label>
+        <div class="box" style="display:flex;justify-content:space-between;align-items:center">
+          US Dollar (USD) $ <span style="opacity:.45;font-size:var(--font-size-small)">&#9662;</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">Defaults</div>
+    <div class="rows">
+      <a class="row" href="#">
+        <span class="grow"><span class="t">Step sizes</span><br><span class="s">How much each +/&minus; press changes a value</span></span>
+        <span class="chev">&rsaquo;</span>
+      </a>
+      <a class="row" href="#">
+        <span class="grow"><span class="t">Scenario starting values</span><br><span class="s">What What If opens with</span></span>
+        <span class="chev">&rsaquo;</span>
+      </a>
+      <a class="row" href="#">
+        <span class="grow"><span class="t">Calculator defaults</span><br><span class="s">Pre-filled values and limits</span></span>
+        <span class="chev">&rsaquo;</span>
+      </a>
+    </div>
+
+    <div class="section">Support</div>
+    <div class="rows">
+      <a class="row" href="#">
+        <span class="grow"><span class="t">Disclaimer</span><br><span class="s">Legal information and terms</span></span>
+        <span class="chev">&rsaquo;</span>
+      </a>
+      <a class="row" href="#">
+        <span class="grow"><span class="t">Privacy policy</span><br><span class="s">How your data is handled</span></span>
+        <span class="chev">&rsaquo;</span>
+      </a>
+      <a class="row" href="#">
+        <span class="grow"><span class="t">Share the app</span></span>
+        <span class="chev">&rsaquo;</span>
+      </a>
+      <a class="row" href="#">
+        <span class="grow"><span class="t">Send feedback</span></span>
+        <span class="chev">&rsaquo;</span>
+      </a>
+    </div>
+
+    <div class="section">Purchases</div>
+    <div class="rows">
+      <a class="row" href="#">
+        <span class="grow"><span class="t">Restore purchase</span><br><span class="s">Already bought Premium? Restore it here</span></span>
+        <span class="chev">&rsaquo;</span>
+      </a>
+    </div>
+
+    <div class="section">Your data</div>
+    <div class="rows">
+      <a class="row" href="#">
+        <span class="grow"><span class="t">Delete loan data</span></span>
+        <span class="chev">&rsaquo;</span>
+      </a>
+      <a class="row" href="#">
+        <span class="grow"><span class="t">Delete income</span></span>
+        <span class="chev">&rsaquo;</span>
+      </a>
+      <a class="row" href="#">
+        <span class="grow"><span class="t">Delete expenses</span></span>
+        <span class="chev">&rsaquo;</span>
+      </a>
+      <a class="row" href="#">
+        <span class="grow"><span class="t" style="color:var(--input-error-text-fg-color)">Delete all data</span><br><span class="s">Permanently removes every saved record</span></span>
+        <span class="chev">&rsaquo;</span>
+      </a>
+    </div>
+
+    <p class="micro">Version 40</p>
+
+  </div>
+
+  <nav class="tabbar">
+    <a href="loan.html"><span class="ico">&#127968;</span>Loan</a>
+    <a href="budget.html"><span class="ico">&#128176;</span>Budget</a>
+    <a href="whatif.html"><span class="ico">&#10003;</span>What If</a>
+    <a class="on" href="settings.html"><span class="ico">&#9881;</span>Settings</a>
+  </nav>
+
+</div>
+</html>

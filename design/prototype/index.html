@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<meta charset="utf-8">
+<title>LoanCalculator — redesign prototypes</title>
+<link rel="stylesheet" href="tokens.css">
+<link rel="stylesheet" href="app.css">
+<style>
+  .grp { margin-top: 30px; }
+  .grp h2 { font-size: 15px; letter-spacing: .06em; text-transform: uppercase; opacity: .5; margin: 0 0 4px; }
+  .grp p.why { margin: 0 0 14px; opacity: .65; max-width: 70ch; font-size: 14px; }
+  figure { margin: 0; }
+  figure iframe { width: 390px; height: 844px; border: 0; border-radius: 28px; display: block; }
+  figcaption { opacity: .6; font-size: 12px; padding-top: 6px; }
+  figcaption b { opacity: .95; font-weight: 700; }
+</style>
+
+<div class="wrap">
+  <h1>LoanCalculator — redesign prototypes</h1>
+  <p style="opacity:.7;max-width:70ch">
+    The approved structure, built out. Read
+    <a href="../NAVIGATION-PROPOSAL.md">NAVIGATION-PROPOSAL.md</a> for what changed and why.
+    These pages are clickable — the bottom bar, the sub-tabs and the scenario rows all work, so you
+    can walk the structure rather than judge it from stills. Compare against the 17 PNGs in
+    <code>../screenshots/</code>, captured from the running app at this same 390pt width.
+  </p>
+  <p style="opacity:.7;max-width:70ch">
+    Still prototypes: static figures, no calculation, no business logic. Dark theme only — all four
+    themes share an identical token set, so the others follow mechanically.
+    <a href="tokens.html">Token reference sheet &rsaquo;</a>
+  </p>
+
+  <div class="grp">
+    <h2>1 &middot; Loan</h2>
+    <p class="why">What you're buying and borrowing. Running Cost has moved out to Budget; Amortisation
+      has moved to What If — so this is now a single purposeful screen with no sub-tabs.</p>
+    <div class="gallery">
+      <figure><iframe src="loan.html" title="Loan"></iframe><figcaption><b>Loan</b> — purchase &amp; borrowing</figcaption></figure>
+      <figure><iframe src="loan-details.html" title="Loan details, first run"></iframe><figcaption><b>Loan details</b> — first run, all fields</figcaption></figure>
+      <figure><iframe src="loan-details-return.html" title="Loan details, return visit"></iframe><figcaption><b>Loan details</b> — return visit, trimmed</figcaption></figure>
+      <figure><iframe src="schedule.html" title="Schedule"></iframe><figcaption><b>Schedule</b> — linked from Loan</figcaption></figure>
+      <figure><iframe src="upfront-costs.html" title="Upfront costs"></iframe><figcaption><b>Upfront costs</b></figcaption></figure>
+    </div>
+  </div>
+
+  <div class="grp">
+    <h2>2 &middot; Budget</h2>
+    <p class="why">Every recurring figure in one place. "Asset costs" is the old Loan ▸ Running Cost
+      tab, relocated because it is a monthly outflow like any other. This is the one destination that
+      keeps a sub-tab strip, because its views are genuine peers.</p>
+    <div class="gallery">
+      <figure><iframe src="budget.html" title="Budget summary"></iframe><figcaption><b>Budget</b> — summary</figcaption></figure>
+      <figure><iframe src="budget-income.html" title="Income"></iframe><figcaption><b>Income</b></figcaption></figure>
+      <figure><iframe src="budget-expenses.html" title="Expenses"></iframe><figcaption><b>Expenses</b></figcaption></figure>
+      <figure><iframe src="budget-asset-costs.html" title="Asset costs"></iframe><figcaption><b>Asset costs</b> — relocated</figcaption></figure>
+      <figure><iframe src="transaction-entry.html" title="Transaction entry"></iframe><figcaption><b>Entry</b> — one layout, 3 call sites</figcaption></figure>
+    </div>
+  </div>
+
+  <div class="grp">
+    <h2>3 &middot; What If</h2>
+    <p class="why">The headline change: nine What-If scenarios become a <em>list with headline
+      deltas</em> instead of a nine-screen scroll, and each scenario gets its own page. Four sub-views instead of one scroll with buried rows: the
+      <em>Answer</em> leads, <em>Scenarios</em> is the index that replaces the nine-screen scroll,
+      and Projection and <em>Insights</em> (the additive half of Insights) get real presence
+      rather than third-level rows.</p>
+    <div class="gallery">
+      <figure><iframe src="whatif.html" title="What If"></iframe><figcaption><b>What If</b> — answer + scenario index</figcaption></figure>
+      <figure><iframe src="whatif-scenarios.html" title="Scenarios"></iframe><figcaption><b>Scenarios</b> — the index</figcaption></figure>
+      <figure><iframe src="whatif-scenario.html" title="Scenario detail"></iframe><figcaption><b>Scenario</b> — one per page</figcaption></figure>
+      <figure><iframe src="whatif-empty.html" title="What If empty"></iframe><figcaption><b>Empty</b> — now links to Loan</figcaption></figure>
+      <figure><iframe src="insights.html" title="Insights"></iframe><figcaption><b>Insights</b> — the additive panels</figcaption></figure>
+      <figure><iframe src="projection.html" title="Projection"></iframe><figcaption><b>Projection</b></figcaption></figure>
+      <figure><iframe src="export.html" title="Export"></iframe><figcaption><b>Export</b> — choose sections</figcaption></figure>
+    </div>
+  </div>
+
+  <div class="grp">
+    <h2>4 &middot; Settings</h2>
+    <p class="why">Same content, labelled once instead of twice.</p>
+    <div class="gallery">
+      <figure><iframe src="settings.html" title="Settings"></iframe><figcaption><b>Settings</b></figcaption></figure>
+      <figure><iframe src="legal-popup.html" title="Legal"></iframe><figcaption><b>Legal</b> — disclaimer &amp; privacy</figcaption></figure>
+      <figure><iframe src="premium.html" title="Premium"></iframe><figcaption><b>Premium</b> — upsell</figcaption></figure>
+    </div>
+  </div>
+
+  <div class="grp">
+    <h2>Launch</h2>
+    <p class="why">Outside the tab structure. The splash is deliberately shown at its resting state —
+      it has no entrance or exit animation, and that is load-bearing, not an omission.</p>
+    <div class="gallery">
+      <figure><iframe src="splash.html" title="Splash"></iframe><figcaption><b>Splash</b></figcaption></figure>
+      <figure><iframe src="first-launch-disclaimer.html" title="First-launch disclaimer"></iframe><figcaption><b>First-launch disclaimer</b></figcaption></figure>
+    </div>
+  </div>
+
+  <div class="grp">
+    <h2>Tablet</h2>
+    <p class="why">The app ships on iPad and none of this had been seen at that width. These use the
+      real Tablet token column (body text 12&rarr;18, hero amount 18&rarr;32, chart height
+      250&rarr;350) and re-layout rather than stretch: What If becomes master&ndash;detail so the
+      scenario drill-down disappears entirely, Settings becomes a sidebar plus detail pane, and
+      Schedule drops the phone's decade grouping because the full table finally fits. The bottom
+      bar becomes a left rail &mdash; at 768px tall, vertical space is the scarce axis.</p>
+    <div class="gallery">
+      <figure><iframe src="tablet-loan.html" title="Tablet Loan" style="width:1024px;height:768px"></iframe><figcaption><b>Loan</b> — two column</figcaption></figure>
+      <figure><iframe src="tablet-budget.html" title="Tablet Budget" style="width:1024px;height:768px"></iframe><figcaption><b>Budget</b> — hero + chart paired</figcaption></figure>
+      <figure><iframe src="tablet-whatif.html" title="Tablet What If" style="width:1024px;height:768px"></iframe><figcaption><b>What If</b> — master&ndash;detail</figcaption></figure>
+      <figure><iframe src="tablet-settings.html" title="Tablet Settings" style="width:1024px;height:768px"></iframe><figcaption><b>Settings</b> — sidebar</figcaption></figure>
+      <figure><iframe src="tablet-schedule.html" title="Tablet Schedule" style="width:1024px;height:768px"></iframe><figcaption><b>Schedule</b> — flat 30-row table</figcaption></figure>
+    </div>
+  </div>
+
+  <div class="grp">
+    <h2>Known gaps</h2>
+    <p class="why">
+      The <strong>What If empty state</strong> has no screenshot to compare against: deleting data
+      clears the loan JSON but deliberately leaves the live form populated, so that panel is only
+      reachable on a fresh install. <code>whatif-empty.html</code> is built from the XAML instead.
+      The <strong>PDF document</strong> is out of scope by request — <code>export.html</code> is the
+      in-app screen that precedes it, not the report.
+    </p>
+  </div>
+</div>
+</html>

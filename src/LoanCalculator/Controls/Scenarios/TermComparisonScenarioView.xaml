@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView
+    x:Class="LoanCalculatorMaui.Controls.Scenarios.TermComparisonScenarioView"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:core="http://schemas.syncfusion.com/maui"
+    xmlns:chart="clr-namespace:Syncfusion.Maui.Charts;assembly=Syncfusion.Maui.Charts"
+    xmlns:customControls="clr-namespace:LoanCalculatorMaui.Controls"
+    xmlns:primaryModels="clr-namespace:LoanCalculator.Core.Models.ViewModels.PrimaryModels;assembly=LoanCalculator.Core"
+    x:DataType="primaryModels:WhatIfViewModel">
+
+    <!--
+        Lifted verbatim from WhatIfView.xaml, where this was one of nine cards stacked in a
+        single ~9-screen scroll. It is now reached from the scenario index and hosted by
+        ScenarioPage, so it gets a whole screen and is addressable.
+
+        BindingContext is inherited from the host page, which sets the WhatIfViewModel
+        singleton — so every binding in here resolves exactly as it did before the move.
+    -->
+    <Border
+        IsVisible="{Binding HasLoanData}"
+        Margin="0,0,0,14"
+        Padding="0"
+        BackgroundColor="{DynamicResource LoanAppPopupSurface}"
+        StrokeShape="RoundRectangle 12"
+        StrokeThickness="0">
+        <Grid ColumnDefinitions="4,*">
+            <BoxView Grid.Column="0" BackgroundColor="{DynamicResource LoanAppChartColor3}" CornerRadius="12,0,12,0" />
+            <VerticalStackLayout Grid.Column="1" Padding="14,14,14,16" Spacing="10">
+                <Label FontAttributes="Bold" FontSize="{StaticResource FontSizeMedium}" Text="Loan Term Comparison" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                <Label Margin="0,-6,0,0" FontSize="{StaticResource FontSizeSmall}" Opacity="0.6" Text="Same loan, different terms  ·  highlighted = yours" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                <BoxView Style="{DynamicResource LoanAppSeparatorStyle}" />
+                <Grid ColumnSpacing="6">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+
+                    <!--  Col A  -->
+                    <Border Grid.Column="0" Padding="6,8" BackgroundColor="{DynamicResource LoanAppDefaultBackgroundColor}" StrokeShape="RoundRectangle 8" StrokeThickness="0">
+                        <Border.Triggers>
+                            <DataTrigger Binding="{Binding TermIsCurrentColA}" TargetType="Border" Value="True">
+                                <Setter Property="BackgroundColor" Value="{DynamicResource LoanAppChartColor3}" />
+                            </DataTrigger>
+                        </Border.Triggers>
+                        <VerticalStackLayout Spacing="4">
+                            <Label FontAttributes="Bold" FontSize="{StaticResource FontSizeSmall}" HorizontalTextAlignment="Center" Text="{Binding TermColALabel}" TextColor="{DynamicResource LoanAppDefaultForegroundColor}">
+                                <Label.Triggers><DataTrigger Binding="{Binding TermIsCurrentColA}" TargetType="Label" Value="True"><Setter Property="TextColor" Value="{DynamicResource LoanAppChartDataMarkerTextColor3}" /></DataTrigger></Label.Triggers>
+                            </Label>
+                            <Label FontAttributes="Bold" FontSize="{StaticResource FontSizeBody}" HorizontalTextAlignment="Center" Text="{Binding TermColAMonthly}" TextColor="{DynamicResource LoanAppDefaultForegroundColor}">
+                                <Label.Triggers><DataTrigger Binding="{Binding TermIsCurrentColA}" TargetType="Label" Value="True"><Setter Property="TextColor" Value="{DynamicResource LoanAppChartDataMarkerTextColor3}" /></DataTrigger></Label.Triggers>
+                            </Label>
+                            <Label FontSize="{StaticResource FontSizeSmall}" HorizontalTextAlignment="Center" Opacity="0.65" Text="{Binding TermColAInterest}" TextColor="{DynamicResource LoanAppDefaultForegroundColor}">
+                                <Label.Triggers><DataTrigger Binding="{Binding TermIsCurrentColA}" TargetType="Label" Value="True"><Setter Property="TextColor" Value="{DynamicResource LoanAppChartDataMarkerTextColor3}" /><Setter Property="Opacity" Value="1" /></DataTrigger></Label.Triggers>
+                            </Label>
+                            <Label FontSize="{StaticResource FontSizeSmall}" HorizontalTextAlignment="Center" Opacity="0.45" Text="interest" TextColor="{DynamicResource LoanAppDefaultForegroundColor}">
+                                <Label.Triggers><DataTrigger Binding="{Binding TermIsCurrentColA}" TargetType="Label" Value="True"><Setter Property="TextColor" Value="{DynamicResource LoanAppChartDataMarkerTextColor3}" /><Setter Property="Opacity" Value="0.75" /></DataTrigger></Label.Triggers>
+                            </Label>
+                            <Label FontAttributes="Bold" FontSize="9" HorizontalTextAlignment="Center" IsVisible="{Binding TermIsCurrentColA}" Text="YOUR TERM" TextColor="{DynamicResource LoanAppChartDataMarkerTextColor3}" />
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <!--  Col B  -->
+                    <Border Grid.Column="1" Padding="6,8" BackgroundColor="{DynamicResource LoanAppDefaultBackgroundColor}" StrokeShape="RoundRectangle 8" StrokeThickness="0">
+                        <Border.Triggers>
+                            <DataTrigger Binding="{Binding TermIsCurrentColB}" TargetType="Border" Value="True">
+                                <Setter Property="BackgroundColor" Value="{DynamicResource LoanAppChartColor3}" />
+                            </DataTrigger>
+                        </Border.Triggers>
+                        <VerticalStackLayout Spacing="4">
+                            <Label FontAttributes="Bold" FontSize="{StaticResource FontSizeSmall}" HorizontalTextAlignment="Center" Text="{Binding TermColBLabel}" TextColor="{DynamicResource LoanAppDefaultForegroundColor}">
+                                <Label.Triggers><DataTrigger Binding="{Binding TermIsCurrentColB}" TargetType="Label" Value="True"><Setter Property="TextColor" Value="{DynamicResource LoanAppChartDataMarkerTextColor3}" /></DataTrigger></Label.Triggers>
+                            </Label>
+                            <Label FontAttributes="Bold" FontSize="{StaticResource FontSizeBody}" HorizontalTextAlignment="Center" Text="{Binding TermColBMonthly}" TextColor="{DynamicResource LoanAppDefaultForegroundColor}">
+                                <Label.Triggers><DataTrigger Binding="{Binding TermIsCurrentColB}" TargetType="Label" Value="True"><Setter Property="TextColor" Value="{DynamicResource LoanAppChartDataMarkerTextColor3}" /></DataTrigger></Label.Triggers>
+                            </Label>
+                            <Label FontSize="{StaticResource FontSizeSmall}" HorizontalTextAlignment="Center" Opacity="0.65" Text="{Binding TermColBInterest}" TextColor="{DynamicResource LoanAppDefaultForegroundColor}">
+                                <Label.Triggers><DataTrigger Binding="{Binding TermIsCurrentColB}" TargetType="Label" Value="True"><Setter Property="TextColor" Value="{DynamicResource LoanAppChartDataMarkerTextColor3}" /><Setter Property="Opacity" Value="1" /></DataTrigger></Label.Triggers>
+                            </Label>
+                            <Label FontSize="{StaticResource FontSizeSmall}" HorizontalTextAlignment="Center" Opacity="0.45" Text="interest" TextColor="{DynamicResource LoanAppDefaultForegroundColor}">
+                                <Label.Triggers><DataTrigger Binding="{Binding TermIsCurrentColB}" TargetType="Label" Value="True"><Setter Property="TextColor" Value="{DynamicResource LoanAppChartDataMarkerTextColor3}" /><Setter Property="Opacity" Value="0.75" /></DataTrigger></Label.Triggers>
+                            </Label>
+                            <Label FontAttributes="Bold" FontSize="9" HorizontalTextAlignment="Center" IsVisible="{Binding TermIsCurrentColB}" Text="YOUR TERM" TextColor="{DynamicResource LoanAppChartDataMarkerTextColor3}" />
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <!--  Col C  -->
+                    <Border Grid.Column="2" Padding="6,8" BackgroundColor="{DynamicResource LoanAppDefaultBackgroundColor}" StrokeShape="RoundRectangle 8" StrokeThickness="0">
+                        <Border.Triggers>
+                            <DataTrigger Binding="{Binding TermIsCurrentColC}" TargetType="Border" Value="True">
+                                <Setter Property="BackgroundColor" Value="{DynamicResource LoanAppChartColor3}" />
+                            </DataTrigger>
+                        </Border.Triggers>
+                        <VerticalStackLayout Spacing="4">
+                            <Label FontAttributes="Bold" FontSize="{StaticResource FontSizeSmall}" HorizontalTextAlignment="Center" Text="{Binding TermColCLabel}" TextColor="{DynamicResource LoanAppDefaultForegroundColor}">
+                                <Label.Triggers><DataTrigger Binding="{Binding TermIsCurrentColC}" TargetType="Label" Value="True"><Setter Property="TextColor" Value="{DynamicResource LoanAppChartDataMarkerTextColor3}" /></DataTrigger></Label.Triggers>
+                            </Label>
+                            <Label FontAttributes="Bold" FontSize="{StaticResource FontSizeBody}" HorizontalTextAlignment="Center" Text="{Binding TermColCMonthly}" TextColor="{DynamicResource LoanAppDefaultForegroundColor}">
+                                <Label.Triggers><DataTrigger Binding="{Binding TermIsCurrentColC}" TargetType="Label" Value="True"><Setter Property="TextColor" Value="{DynamicResource LoanAppChartDataMarkerTextColor3}" /></DataTrigger></Label.Triggers>
+                            </Label>
+                            <Label FontSize="{StaticResource FontSizeSmall}" HorizontalTextAlignment="Center" Opacity="0.65" Text="{Binding TermColCInterest}" TextColor="{DynamicResource LoanAppDefaultForegroundColor}">
+                                <Label.Triggers><DataTrigger Binding="{Binding TermIsCurrentColC}" TargetType="Label" Value="True"><Setter Property="TextColor" Value="{DynamicResource LoanAppChartDataMarkerTextColor3}" /><Setter Property="Opacity" Value="1" /></DataTrigger></Label.Triggers>
+                            </Label>
+                            <Label FontSize="{StaticResource FontSizeSmall}" HorizontalTextAlignment="Center" Opacity="0.45" Text="interest" TextColor="{DynamicResource LoanAppDefaultForegroundColor}">
+                                <Label.Triggers><DataTrigger Binding="{Binding TermIsCurrentColC}" TargetType="Label" Value="True"><Setter Property="TextColor" Value="{DynamicResource LoanAppChartDataMarkerTextColor3}" /><Setter Property="Opacity" Value="0.75" /></DataTrigger></Label.Triggers>
+                            </Label>
+                            <Label FontAttributes="Bold" FontSize="9" HorizontalTextAlignment="Center" IsVisible="{Binding TermIsCurrentColC}" Text="YOUR TERM" TextColor="{DynamicResource LoanAppChartDataMarkerTextColor3}" />
+                        </VerticalStackLayout>
+                    </Border>
+
+                </Grid>
+
+            </VerticalStackLayout>
+        </Grid>
+    </Border>
+
+</ContentView>

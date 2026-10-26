@@ -214,6 +214,24 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
             || WizardIncomeHasValue || WizardExpenseHasValue;
 
         /// <summary>
+        /// True while at least one deferred field still needs a value — i.e. while Section B has
+        /// anything to show at all.
+        /// </summary>
+        /// <remarks>
+        /// Not the inverse of <see cref="WizardShowInheritedNote"/>: both are true in the common
+        /// middle case where some of the four figures are recorded and some are not, which is why
+        /// this has to exist rather than be written as a negation of that.
+        ///
+        /// Section B's card binds to this. Gating the four fields individually was sufficient
+        /// while they sat loose on the page background — all four hidden left simply nothing. Now
+        /// that they are inside a card, all four hidden would render a bordered, padded, empty box
+        /// on every return visit.
+        /// </remarks>
+        public bool WizardShowDeferredFields =>
+            WizardUpfrontNeedsInput || WizardRunningCostNeedsInput
+            || WizardIncomeNeedsInput || WizardExpenseNeedsInput;
+
+        /// <summary>
         /// Names the figures this page is using but not showing, so the calculation never depends
         /// on something invisible — while keeping them out of the way of what the user came to
         /// change.
@@ -355,6 +373,9 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
             OnPropertyChanged(nameof(WizardExpenseHasValue));
             OnPropertyChanged(nameof(WizardExpenseNeedsInput));
             OnPropertyChanged(nameof(WizardShowInheritedNote));
+            // Derived from the four *NeedsInput above, so it has to be raised with them or
+            // Section B's card keeps whatever visibility it had when the page opened.
+            OnPropertyChanged(nameof(WizardShowDeferredFields));
             OnPropertyChanged(nameof(WizardInheritedNote));
             OnPropertyChanged(nameof(WizardExpenseSummary));
             OnPropertyChanged(nameof(WizardShowAssetTotal));

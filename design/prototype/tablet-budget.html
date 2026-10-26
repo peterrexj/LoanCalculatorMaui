@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<meta charset="utf-8">
+<title>Budget — tablet prototype</title>
+<link rel="stylesheet" href="tokens.css">
+<link rel="stylesheet" href="app.css">
+<link rel="stylesheet" href="tablet.css">
+
+<!--
+  BUDGET — tablet counterpart of budget.html.
+
+  LAYOUT DECISION: the phone page reads top-to-bottom as hero -> chart ->
+  breakdown -> top expenses -> banner, which is a single narrative with no
+  real competing content. At 1024px that stays a sensible read order, so
+  rather than inventing an artificial split, this keeps ONE column of content
+  but gives it a side-by-side treatment for the two things that genuinely are
+  parallel, not sequential: the net-amount hero and its chart.
+
+    Left (380px, .colA)  — hero (net/month) sitting directly beside its own
+                            donut chart, since both answer "how much is left"
+                            and reading them side by side is one glance
+                            instead of two scrolls.
+    Right (flexible)     — the breakdown rows, top expenses and the loan-
+                            repayment banner, which are themselves a list and
+                            benefit from the extra width mainly through
+                            larger row text (handled by the tablet type
+                            scale), not a second list column.
+
+  The sub-tab strip (Summary/Income/Expenses/Asset costs) is unchanged in
+  structure — Budget is the one destination that keeps sub-tabs on phone, and
+  nothing about tablet width changes that; it's reproduced here at the larger
+  tablet type scale, inset to match the page rather than edge-to-edge, which
+  suits a tablet's framed layout better than a full-bleed phone strip.
+-->
+
+<div class="tablet">
+
+  <nav class="railnav">
+    <a href="tablet-loan.html"><span class="ico">&#127968;</span>Loan</a>
+    <a class="on" href="tablet-budget.html"><span class="ico">&#128176;</span>Budget</a>
+    <a href="tablet-whatif.html"><span class="ico">&#10003;</span>What If</a>
+    <a href="tablet-settings.html"><span class="ico">&#9881;</span>Settings</a>
+    <div class="spacer"></div>
+  </nav>
+
+  <div class="main">
+
+    <div class="page-head">
+      <h1>Budget</h1>
+      <p>What comes in, and what goes out</p>
+    </div>
+
+    <nav class="subtabs">
+      <a href="#">Income</a>
+      <a href="#">Expenses</a>
+      <a class="on" href="tablet-budget.html">Summary</a>
+      <a href="#">Asset costs</a>
+    </nav>
+
+    <div class="scroll">
+
+      <div class="cols2">
+
+        <div class="colA">
+          <div class="hero">
+            <div class="cap">NET EVERY MONTH</div>
+            <div class="big">+$4,500</div>
+            <div class="cap">$54,000 a year</div>
+          </div>
+
+          <div class="chart">
+            <div class="donut">
+              <div>
+                <div class="k">NET / MONTH</div>
+                <div class="v">+$4,500</div>
+              </div>
+            </div>
+            <div class="legend">
+              <span><i style="background:var(--chart-color-1)"></i>Income $6,000</span>
+              <span><i style="background:var(--chart-color-2)"></i>Out $1,500</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="colB">
+
+          <div class="section" style="margin-top:0">Insights</div>
+          <div class="rows">
+            <a class="row" href="#">
+              <span class="grow"><span class="t">Income</span><br><span class="s">1 source</span></span>
+              <span class="v good">+$6,000</span><span class="chev">&rsaquo;</span>
+            </a>
+            <a class="row" href="#">
+              <span class="grow"><span class="t">Living expenses</span><br><span class="s">1 recorded</span></span>
+              <span class="v">&minus;$1,500</span><span class="chev">&rsaquo;</span>
+            </a>
+            <a class="row" href="#">
+              <span class="grow"><span class="t">Asset running costs</span><br><span class="s">Maintenance, insurance, rates</span></span>
+              <span class="v">&minus;$0</span><span class="chev">&rsaquo;</span>
+            </a>
+            <div class="row">
+              <span class="grow"><span class="t"><strong>Net</strong></span></span>
+              <span class="v good">+$4,500</span><span class="chev" style="opacity:0">&rsaquo;</span>
+            </div>
+          </div>
+
+          <div class="section">Top expenses</div>
+          <div class="rows">
+            <a class="row" href="#">
+              <span class="grow"><span class="t">Groceries</span><br><span class="s">Monthly</span></span>
+              <span class="v">$1,500</span><span class="chev">&rsaquo;</span>
+            </a>
+          </div>
+
+          <div class="banner">
+            Your loan repayment of <strong>$2,792/mo</strong> is not counted above. See
+            <a href="tablet-whatif.html" style="color:inherit;font-weight:700">What If</a> for what's left
+            once it is.
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+</html>

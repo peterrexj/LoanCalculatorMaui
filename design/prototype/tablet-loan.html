@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<meta charset="utf-8">
+<title>Loan — tablet prototype</title>
+<link rel="stylesheet" href="tokens.css">
+<link rel="stylesheet" href="app.css">
+<link rel="stylesheet" href="tablet.css">
+
+<!--
+  LOAN — tablet counterpart of loan.html.
+
+  LAYOUT DECISION: at 1024px, stacking "purchase" above "borrowing" above
+  "terms" the way the phone does would leave two-thirds of the width empty and
+  the page would read as a phone screenshot stretched sideways. Instead this
+  splits into two columns:
+
+    Left (380px, .colA)  — the three-box summary + "The purchase" card. These
+                            are the figures that read top-to-bottom as a
+                            narrative ("what you're buying"), so they keep a
+                            phone-like narrow column deliberately — stretching
+                            a dollar figure across 600px of width doesn't make
+                            it more legible, it just makes the eye travel
+                            further to read one number.
+    Right (flexible)      — "The borrowing" card, then rate/term/frequency
+                            laid out as a 2-up grid (.grid2) instead of three
+                            stacked cards. Rate and term are independent
+                            steppers that have no reason to force a vertical
+                            read order, so putting them side by side removes
+                            scrolling with no loss of clarity; frequency's
+                            segmented control spans the full right column
+                            underneath, since 3 buttons at 54px tap height
+                            want more width than half the right column gives.
+
+  The banner and the two sections' relationship (deposit+loan = total cost)
+  stay directly under what they explain, just within the right column rather
+  than full width — reading them next to "The borrowing" card is a shorter
+  eye-path than reading them below a second card width away.
+
+  REVISION (owner feedback round 2), mirroring loan.html's phone changes:
+  • A .subtabs strip (Asset / Schedule) is added after .page-head, same as
+    phone — tablet.css already has `.tablet .subtabs` rules for this.
+  • The third box in the left column's vertical boxes stack is now a link to
+    tablet-whatif.html carrying the affordability verdict, instead of the
+    static "deposit" box — deposit is still readable just below in "The
+    purchase"/"The borrowing" cards, so nothing is lost, and the verdict that
+    used to only live on What If is now visible on the tab being configured.
+  • A "See the full schedule ›" micro-link sits under the boxes stack.
+-->
+
+<div class="tablet">
+
+  <nav class="railnav">
+    <a class="on" href="tablet-loan.html"><span class="ico">&#127968;</span>Loan</a>
+    <a href="tablet-budget.html"><span class="ico">&#128176;</span>Budget</a>
+    <a href="tablet-whatif.html"><span class="ico">&#10003;</span>What If</a>
+    <a href="tablet-settings.html"><span class="ico">&#9881;</span>Settings</a>
+    <div class="spacer"></div>
+  </nav>
+
+  <div class="main">
+
+    <div class="page-head">
+      <h1>Loan</h1>
+      <p>What you're buying, and what you're borrowing</p>
+    </div>
+
+    <div class="scroll">
+
+      <div class="banner warn-b">
+        This app is a calculator for informational purposes only. Every figure is an estimate —
+        not financial advice.
+      </div>
+
+      <div class="cols2">
+
+        <div class="colA">
+          <div class="boxes" style="flex-direction:column">
+            <div><div class="amt">$2,792</div><div class="lbl">per month</div></div>
+            <div><div class="amt">$520k</div><div class="lbl">borrowed</div></div>
+            <a href="tablet-whatif.html"><div class="amt">$1,708</div><div class="lbl">✓ affordable</div></a>
+          </div>
+          <p class="micro" style="margin-top:-4px"><a href="tablet-schedule.html" style="color:inherit">See the full schedule &rsaquo;</a></p>
+
+          <div class="section">The purchase</div>
+          <div class="card">
+            <a class="fig" href="#" style="text-decoration:none;color:inherit">
+              <span class="k">Asset value</span>
+              <span><span class="n">$650,000</span><span class="pen">&#9998;</span></span>
+            </a>
+            <a class="fig" href="#" style="text-decoration:none;color:inherit">
+              <span class="k">Upfront costs</span>
+              <span><span class="n">$112</span><span class="pen">&#9998;</span></span>
+            </a>
+            <div class="fig" style="border-top:1px solid color-mix(in srgb,var(--default-foreground-color) 10%,transparent)">
+              <span class="k">Total cost</span>
+              <span class="n">$650,112</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="colB">
+
+          <div class="section" style="margin-top:0">The borrowing</div>
+          <div class="card">
+            <a class="fig" href="#" style="text-decoration:none;color:inherit">
+              <span class="k">Deposit</span>
+              <span><span class="n">$130,000</span><span class="pen">&#9998;</span></span>
+            </a>
+            <input type="range" min="0" max="100" value="20" style="width:100%;accent-color:var(--slider-knob-fill-color)">
+            <div style="display:flex;justify-content:space-between;font-size:var(--font-size-small);opacity:.5">
+              <span>0%</span><span>20% of total</span><span>100%</span>
+            </div>
+            <a class="fig" href="#" style="text-decoration:none;color:inherit">
+              <span class="k">Loan amount</span>
+              <span><span class="n">$520,112</span><span class="pen">&#9998;</span></span>
+            </a>
+            <p class="micro">Upfront costs are folded into the loan, so deposit + loan equals the
+              total cost above — not the asset value alone.</p>
+          </div>
+
+          <div class="section">Terms</div>
+          <div class="grid2">
+            <div class="card">
+              <div class="stepper">
+                <span><span class="t">Interest rate</span><br><span class="s" style="opacity:.5;font-size:var(--font-size-small)">&plusmn;0.05% per tap</span></span>
+                <button class="pm">&minus;</button>
+                <strong style="font-size:var(--font-size-xl);min-width:72px;text-align:center">5%</strong>
+                <button class="pm">+</button>
+              </div>
+            </div>
+            <div class="card">
+              <div class="stepper">
+                <span><span class="t">Loan term</span><br><span class="s" style="opacity:.5;font-size:var(--font-size-small)">&plusmn;1 year per tap</span></span>
+                <button class="pm">&minus;</button>
+                <strong style="font-size:var(--font-size-xl);min-width:72px;text-align:center">30 yr</strong>
+                <button class="pm">+</button>
+              </div>
+            </div>
+          </div>
+          <div class="card" style="padding:12px">
+            <div class="seg">
+              <button class="on">Monthly</button><button>Fortnightly</button><button>Weekly</button>
+            </div>
+          </div>
+
+          <p class="micro">Running costs for this asset now live under <strong>Budget</strong>, alongside
+            your other monthly outflows.</p>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+</html>

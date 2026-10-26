@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<meta charset="utf-8">
+<title>What If — tablet prototype</title>
+<link rel="stylesheet" href="tokens.css">
+<link rel="stylesheet" href="app.css">
+<link rel="stylesheet" href="tablet.css">
+
+<!--
+  NOTE: Projection, Insights and Export are inert here rather than linking to the
+  phone pages of those names — following tablet-budget.html, an unbuilt tablet target
+  stays inert so a tablet page never drops the user into a 390px phone frame.
+
+  WHAT IF — tablet counterpart of whatif.html (and whatif-scenario.html).
+
+  LAYOUT DECISION, the biggest win in this set: on phone, tapping a scenario
+  row pushes to a full-screen detail page (whatif-scenario.html) because a
+  phone has nowhere else to show it. A tablet does. This page puts the
+  scenario list on the left and the SELECTED scenario's full detail on the
+  right (.shell2) — which removes the drill-down navigation entirely rather
+  than just making the pushed page wider. "Rate change impact" is shown
+  pre-selected (`.row.sel`) as a static stand-in for "the user tapped a row";
+  the detail pane is the same content whatif-scenario.html carries for that
+  scenario, just inline instead of behind a navigation.
+
+  The hero verdict and the three supporting stats stay full-width above the
+  list/detail split, because they are the single headline answer the whole
+  page exists to give, not something that competes for either column.
+
+  SUB-TABS CALL: the phone redesign gives What If a four-way sub-tab strip
+  (Answer · Scenarios · Projection · Insights) because the Answer and
+  Scenarios views were fighting for the same scroll — reaching the scenario
+  list, Projection or Insights meant tab -> scroll past the hero -> a
+  "Reference" heading -> tap. That is exactly the depth problem the strip
+  fixes. At 1024px that problem doesn't exist in the same shape: .shell2
+  already puts the Answer (hero + boxes) and the full Scenarios list on
+  screen together, with the selected scenario's detail alongside it — no tap,
+  no scroll-past, no second page. Adding a sub-tab strip here would ask the
+  user to tab away from a view that already shows Answer and Scenarios at
+  once, which is a step backwards, not consistency for its own sake. So this
+  page keeps NO sub-tab strip; Projection and Insights remain one-tap rows
+  below the fold (renamed from "Reference" to a plainer label, and no longer
+  hiding Schedule under it — see below), which is still shallower than the
+  phone's old shape and not deeper than its new one.
+
+  Schedule has moved out of What If entirely, to Loan (another work item), so
+  the "Repayment schedule" row that used to sit here is gone; a contextual
+  "See the full schedule" row still points at tablet-schedule.html, which
+  exists and is unchanged. Export is now an action row rather than buried in
+  the same list — it links to export.html (no tablet-specific export page
+  exists, same placeholder convention tablet-budget.html's unbuilt sub-tabs
+  use for "#", except export.html already exists so it gets a real link).
+  Projection and Insights link to projection.html/insights.html directly —
+  neither has a tablet-specific layout yet, which is a known gap, not an
+  oversight; a future pass can give them the same side-by-side treatment
+  tablet-budget.html gives its hero+chart if their content warrants it.
+
+  The "where the money goes" chart stays below, full width, same as phone.
+-->
+
+<div class="tablet">
+
+  <nav class="railnav">
+    <a href="tablet-loan.html"><span class="ico">&#127968;</span>Loan</a>
+    <a href="tablet-budget.html"><span class="ico">&#128176;</span>Budget</a>
+    <a class="on" href="tablet-whatif.html"><span class="ico">&#10003;</span>What If</a>
+    <a href="tablet-settings.html"><span class="ico">&#9881;</span>Settings</a>
+    <div class="spacer"></div>
+  </nav>
+
+  <div class="main">
+
+    <div class="page-head">
+      <h1>What If</h1>
+      <p>Can you afford it, and what breaks it?</p>
+    </div>
+
+    <div class="scroll">
+
+      <div class="hero">
+        <div class="cap">AFFORDABLE — with room to spare</div>
+        <div class="big">$1,708<span style="font-size:22px;font-weight:400">/mo spare</span></div>
+        <div class="cap">after the loan, running costs and your expenses</div>
+      </div>
+
+      <div class="boxes">
+        <div><div class="amt">$2,792</div><div class="lbl">repayment</div></div>
+        <div><div class="amt">$4,500</div><div class="lbl">net income</div></div>
+        <div><div class="amt">35%</div><div class="lbl">of income</div></div>
+      </div>
+
+      <div class="section">Scenarios</div>
+      <div class="shell2">
+
+        <div class="list rows">
+          <a class="row accent sel" href="#" style="--stripe:var(--chart-color-1)">
+            <span class="grow"><span class="t">Rate change impact</span><br><span class="s">If rates move &plusmn;0.5%</span></span>
+            <span class="delta warn">+$161/mo</span>
+          </a>
+          <a class="row accent" href="#" style="--stripe:var(--chart-color-2)">
+            <span class="grow"><span class="t">Extra repayments</span><br><span class="s">Pay $200/mo more</span></span>
+            <span class="delta good">&minus;4 yr 2 mo</span>
+          </a>
+          <a class="row accent" href="#" style="--stripe:var(--chart-color-3)">
+            <span class="grow"><span class="t">Loan term</span><br><span class="s">25 yr vs 30 yr</span></span>
+            <span class="delta warn">+$287/mo</span>
+          </a>
+          <a class="row accent" href="#" style="--stripe:var(--chart-color-1)">
+            <span class="grow"><span class="t">Deposit scenarios</span><br><span class="s">A bigger deposit</span></span>
+            <span class="delta good">&minus;$96/mo</span>
+          </a>
+          <a class="row accent" href="#" style="--stripe:var(--chart-color-2)">
+            <span class="grow"><span class="t">Lump sum</span><br><span class="s">A one-off $20,000</span></span>
+            <span class="delta good">&minus;2 yr 1 mo</span>
+          </a>
+          <a class="row accent" href="#" style="--stripe:var(--chart-color-3)">
+            <span class="grow"><span class="t">Repayment frequency</span><br><span class="s">Weekly vs monthly</span></span>
+            <span class="delta good">&minus;$18,400</span>
+          </a>
+          <a class="row accent" href="#" style="--stripe:var(--chart-color-1)">
+            <span class="grow"><span class="t">Offset account</span><br><span class="s">$30,000 offset</span></span>
+            <span class="delta good">&minus;$41,900</span>
+          </a>
+          <a class="row accent" href="#" style="--stripe:var(--chart-color-2)">
+            <span class="grow"><span class="t">Stress test</span><br><span class="s">Rates at 8.5%</span></span>
+            <span class="delta warn">still affordable</span>
+          </a>
+          <a class="row accent" href="#" style="--stripe:var(--chart-color-3)">
+            <span class="grow"><span class="t">Combined strategy</span><br><span class="s">Everything at once</span></span>
+            <span class="delta good">&minus;7 yr 4 mo</span>
+          </a>
+        </div>
+
+        <div class="detail">
+          <div class="card" style="margin-top:0">
+            <div class="stepper">
+              <span class="k" style="font-size:var(--font-size-small);opacity:.55">CHANGE</span>
+              <button class="pm">&minus;</button>
+              <strong class="good" style="font-size:var(--font-size-xl);min-width:110px;text-align:center">+0.50%</strong>
+              <button class="pm">+</button>
+            </div>
+          </div>
+
+          <div class="boxes">
+            <div><div class="amt">5.5%</div><div class="lbl">new rate</div></div>
+            <div><div class="amt">$2,953</div><div class="lbl">new monthly</div></div>
+          </div>
+
+          <div class="hero bad">
+            <div class="cap">MONTHLY CHANGE</div>
+            <div class="big">+$161<span style="font-size:22px;font-weight:400">/mo</span></div>
+            <div class="cap">$543,018 total interest over the full term</div>
+          </div>
+
+          <div class="chart">
+            <div class="bars">
+              <span><i class="i" style="height:64px"></i><i class="p" style="height:10px"></i></span>
+              <span><i class="i" style="height:62px"></i><i class="p" style="height:13px"></i></span>
+              <span><i class="i" style="height:59px"></i><i class="p" style="height:16px"></i></span>
+              <span><i class="i" style="height:56px"></i><i class="p" style="height:20px"></i></span>
+              <span><i class="i" style="height:52px"></i><i class="p" style="height:24px"></i></span>
+              <span><i class="i" style="height:48px"></i><i class="p" style="height:29px"></i></span>
+              <span><i class="i" style="height:43px"></i><i class="p" style="height:34px"></i></span>
+              <span><i class="i" style="height:37px"></i><i class="p" style="height:40px"></i></span>
+              <span><i class="i" style="height:31px"></i><i class="p" style="height:46px"></i></span>
+              <span><i class="i" style="height:24px"></i><i class="p" style="height:53px"></i></span>
+              <span><i class="i" style="height:16px"></i><i class="p" style="height:61px"></i></span>
+              <span><i class="i" style="height:7px"></i><i class="p" style="height:70px"></i></span>
+            </div>
+            <div class="legend">
+              <span><i style="background:var(--chart-color-1)"></i>Principal</span>
+              <span><i style="background:var(--chart-color-2)"></i>Interest</span>
+            </div>
+          </div>
+
+          <div class="banner">
+            Even at 5.5% you'd have about <strong>$1,386/mo</strong> headroom remaining.
+          </div>
+        </div>
+
+      </div>
+
+      <div class="section">More detail</div>
+      <div class="rows">
+        <a class="row" href="#">
+          <span class="grow"><span class="t">Projection</span><br><span class="s">Where your surplus goes over time</span></span>
+          <span class="chev">&rsaquo;</span>
+        </a>
+        <a class="row" href="#">
+          <span class="grow"><span class="t">Insights</span><br><span class="s">What the asset costs, what the loan costs, what's left</span></span>
+          <span class="chev">&rsaquo;</span>
+        </a>
+        <a class="row" href="tablet-schedule.html">
+          <span class="grow"><span class="t">See the full schedule</span><br><span class="s">Year-by-year principal and interest, now under Loan</span></span>
+          <span class="chev">&rsaquo;</span>
+        </a>
+        <a class="row" href="#">
+          <span class="grow"><span class="t">Export a PDF report</span><br><span class="s">Everything above, as a document</span></span>
+          <span class="chev">&rsaquo;</span>
+        </a>
+      </div>
+
+      <div class="section">Where the money goes</div>
+      <div class="chart">
+        <div class="bars">
+          <span><i class="i" style="height:62px"></i><i class="p" style="height:12px"></i></span>
+          <span><i class="i" style="height:60px"></i><i class="p" style="height:15px"></i></span>
+          <span><i class="i" style="height:57px"></i><i class="p" style="height:18px"></i></span>
+          <span><i class="i" style="height:54px"></i><i class="p" style="height:22px"></i></span>
+          <span><i class="i" style="height:50px"></i><i class="p" style="height:26px"></i></span>
+          <span><i class="i" style="height:46px"></i><i class="p" style="height:31px"></i></span>
+          <span><i class="i" style="height:41px"></i><i class="p" style="height:36px"></i></span>
+          <span><i class="i" style="height:35px"></i><i class="p" style="height:42px"></i></span>
+          <span><i class="i" style="height:29px"></i><i class="p" style="height:48px"></i></span>
+          <span><i class="i" style="height:22px"></i><i class="p" style="height:55px"></i></span>
+          <span><i class="i" style="height:14px"></i><i class="p" style="height:63px"></i></span>
+          <span><i class="i" style="height:6px"></i><i class="p" style="height:71px"></i></span>
+        </div>
+        <div class="legend">
+          <span><i style="background:var(--chart-color-1)"></i>Principal</span>
+          <span><i style="background:var(--chart-color-2)"></i>Interest</span>
+        </div>
+      </div>
+
+      <p class="micro">Estimates only — not financial advice. Figures depend on the information you
+        enter. Consult a qualified financial adviser before deciding.</p>
+
+    </div>
+
+  </div>
+
+</div>
+</html>

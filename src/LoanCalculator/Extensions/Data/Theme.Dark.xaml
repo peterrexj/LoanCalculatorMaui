@@ -17,6 +17,18 @@
     <Color x:Key="LoanAppInputTextFgColor">#DDE6ED</Color>
     <Color x:Key="LoanAppInputTextWhenFocusedColor">#DDE6ED</Color>
     <Color x:Key="LoanAppInputTextWhenUnFocusedColor">#9DB2BF</Color>
+    <!--
+        Negative figures. Two keys because negatives appear on two different grounds: the ordinary
+        control/page cards, and the pale BorderTop* highlight cards the What If hero and its three
+        boxes use (which are LIGHT even in the Dark theme). One colour cannot serve both — a light
+        pastel red vanishes on pale silver, and a deep red disappears into a dark card.
+
+        Purpose-named rather than reusing LoanAppInputErrorTextFgColor / LoanAppBorderTopDangerFgColor,
+        which happen to hold similar values: a negative figure is not an input error, and the next
+        person changing one should not silently change the other.
+    -->
+    <Color x:Key="LoanAppNegativeValueColor">#E57373</Color>
+    <Color x:Key="LoanAppNegativeValueOnHighlightColor">#8F2525</Color>
     <Color x:Key="LoanAppInputErrorTextFgColor">#E57373</Color>
 
     <Color x:Key="LoanAppSegBgColor">Transparent</Color>
@@ -146,23 +158,34 @@
     <Color x:Key="LoanAppExportButtonFgColor">#222831</Color>
 
     <!--  Charts — distinct pastels (teal / amber / violet) on the dark bg  -->
-    <!--  Axis/legend text must be dark: the chart card background is light (#DDE6ED)  -->
-    <Color x:Key="LoanAppChartAxisTextColor">#27374D</Color>
-    <Color x:Key="LoanAppChartLegendTextColor">#27374D</Color>
-    <Color x:Key="LoanAppChartTitleTextColor">#27374D</Color>
-    <Color x:Key="LoanAppChartDataMarkerTextColor">#27374D</Color>
-    <Color x:Key="LoanAppDonutCenterTextColor">#27374D</Color>
+    <!--
+        Chart cards are dark, like every other card on the page. They used to be light
+        (#DDE6ED) with dark ink, which made every chart read as a bright white panel
+        punched into a dark page — the most conspicuous visual defect in this theme.
+        Light, Forest and Warm were always correct: each puts the chart card in its own
+        page's colour family. Dark was the lone outlier.
+
+        The card tone matches what Dark already uses for its other cards
+        (BorderControlGradientBackground is #27374D -> #393E46), so charts sit in the
+        same material as everything around them.
+    -->
+    <Color x:Key="LoanAppChartAxisTextColor">#DDE6ED</Color>
+    <Color x:Key="LoanAppChartLegendTextColor">#DDE6ED</Color>
+    <Color x:Key="LoanAppChartTitleTextColor">#DDE6ED</Color>
+    <Color x:Key="LoanAppChartDataMarkerTextColor">#DDE6ED</Color>
+    <Color x:Key="LoanAppDonutCenterTextColor">#DDE6ED</Color>
     <Color x:Key="LoanAppChartOuterBorderGradientStart">#526D82</Color>
     <Color x:Key="LoanAppChartOuterBorderGradientEnd">#9DB2BF</Color>
-    <Color x:Key="LoanAppChartInnerBorderGradientStart">#DDE6ED</Color>
-    <Color x:Key="LoanAppChartInnerBorderGradientEnd">#9DB2BF</Color>
+    <Color x:Key="LoanAppChartInnerBorderGradientStart">#27374D</Color>
+    <Color x:Key="LoanAppChartInnerBorderGradientEnd">#393E46</Color>
     <Color x:Key="LoanAppChartColor1">#5FBDB0</Color>
     <Color x:Key="LoanAppChartDataMarkerTextColor1">#0E2B27</Color>
     <Color x:Key="LoanAppChartColor2">#E0A85A</Color>
     <Color x:Key="LoanAppChartDataMarkerTextColor2">#3A2A10</Color>
     <Color x:Key="LoanAppChartColor3">#A98FD0</Color>
     <Color x:Key="LoanAppChartDataMarkerTextColor3">#241733</Color>
-    <Color x:Key="LoanAppChartCardBackground">#DDE6ED</Color>
+    <!--  See the note above: dark card, light ink, same as every other card in this theme.  -->
+    <Color x:Key="LoanAppChartCardBackground">#27374D</Color>
     <Color x:Key="LoanAppChartColorSeries1">#5FBDB0</Color>
     <Color x:Key="LoanAppChartColorSeries2">#E0A85A</Color>
     <Color x:Key="LoanAppChartColorSeries3">#A98FD0</Color>

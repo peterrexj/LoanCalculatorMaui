@@ -208,6 +208,38 @@ namespace LoanCalculator.UnitTests.Models.ViewModels.PrimaryModels
             Assert.That(ParseCurrency(_vm.TermColAInterest), Is.LessThan(ParseCurrency(_vm.TermColCInterest)));
         }
 
+        // ── Index-row summary delta ──────────────────────────────────────
+        //
+        // The scenario index shows one figure per row. For a three-column comparison that figure
+        // has to be defined by choice rather than read off, so these pin the choice: the cost of
+        // the column one step shorter than the user's own term.
+
+        [Test]
+        public void TermComparisonMonthlyDiff_ShorteningTheTerm_CostsMorePerMonth()
+        {
+            // Default is 30yr, the ceiling case, so the column below is the comparison.
+            Assert.That(_vm.TermIsCurrentColC, Is.True, "precondition: default term sits in col C");
+            Assert.Multiple(() =>
+            {
+                Assert.That(_vm.TermComparisonMonthlyDiff, Does.StartWith("+"),
+                    "A shorter term must cost more per month, so the delta should read as an increase.");
+                Assert.That(_vm.TermComparisonMonthlyDiff, Does.EndWith("/mo"));
+            });
+        }
+
+        [Test]
+        public void TermComparisonMonthlyDiff_WhenAlreadyOnTheShortestColumn_StaysPlaceholder()
+        {
+            // 2yr ≤ step(2) → floor case → the user IS col A, so there is no shorter term to cost.
+            var vm = new WhatIfViewModel(null!);
+            vm.SetLoanViewModel(BuildLoanVm(termYears: 2));
+
+            Assert.That(vm.TermIsCurrentColA, Is.True, "precondition: a 2yr term sits in col A");
+            Assert.That(vm.TermComparisonMonthlyDiff, Is.EqualTo("--"),
+                "With no shorter column there is nothing to compare, so the row must show no figure "
+                + "rather than a misleading zero.");
+        }
+
         [Test]
         public void TermComparison_2yrTerm_ColAIsHighlighted()
         {
@@ -239,6 +271,31 @@ namespace LoanCalculator.UnitTests.Models.ViewModels.PrimaryModels
         [Test]
         public void DepositColBLabel_AfterSetup_EndsWithPercent()
             => Assert.That(_vm.DepositColBLabel, Does.EndWith("%"));
+
+        [Test]
+        public void DepositScenariosMonthlyDiff_ABiggerDeposit_SavesPerMonth()
+        {
+            // Default is a 10% deposit, so the 15% bracket above it is available.
+            Assert.That(_vm.DepositColCAvailable, Is.True, "precondition: a higher bracket exists");
+            Assert.Multiple(() =>
+            {
+                Assert.That(_vm.DepositScenariosMonthlyDiff, Does.StartWith("-"),
+                    "A bigger deposit borrows less, so the delta should read as a saving.");
+                Assert.That(_vm.DepositScenariosMonthlyDiff, Does.EndWith("/mo"));
+            });
+        }
+
+        [Test]
+        public void DepositScenariosMonthlyDiff_WhenThereIsNoHigherBracket_StaysPlaceholder()
+        {
+            // A 99.5% deposit clamps to 99%, and the next 5% bracket (100%) is out of range —
+            // so col C is unavailable and there is nothing above to compare against.
+            var vm = new WhatIfViewModel(null!);
+            vm.SetLoanViewModel(BuildLoanVm(propertyAmount: 1_000_000, loanAmount: 5_000));
+
+            Assert.That(vm.DepositColCAvailable, Is.False, "precondition: no higher bracket");
+            Assert.That(vm.DepositScenariosMonthlyDiff, Is.EqualTo("--"));
+        }
 
         [Test]
         public void DepositColBMonthly_AfterSetup_EndsWithMoSuffix()

@@ -21,6 +21,23 @@ public static class Artifacts
         TrySave($"{stem}.xml", () => File.WriteAllText($"{stem}.xml", app.PageSource));
     }
 
+    /// <summary>
+    /// Screenshots a surface the run reached successfully, for design review rather than
+    /// diagnosis. Deliberately omits the timestamp <see cref="CaptureFailure"/> uses — these
+    /// files get overwritten on each sweep so the output directory stays a clean, ordered
+    /// set rather than accumulating one copy per run.
+    /// </summary>
+    public static void Capture(AppDriver app, string surfaceName)
+    {
+        Directory.CreateDirectory(UITestConfig.ArtifactDirectory);
+
+        var path = Path.Combine(
+            UITestConfig.ArtifactDirectory,
+            $"{UITestConfig.Platform}-{Sanitise(surfaceName)}.png");
+
+        TrySave(path, () => File.WriteAllBytes(path, app.Screenshot()));
+    }
+
     private static void TrySave(string path, Action save)
     {
         try

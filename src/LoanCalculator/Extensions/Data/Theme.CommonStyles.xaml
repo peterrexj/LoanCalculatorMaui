@@ -49,6 +49,25 @@
              x:TypeArguments="x:Double"
              Phone="20" Tablet="28" Desktop="28" TV="28" Watch="16" Default="20" />
 
+    <!--
+        The editable-figure size — app.css `.fig .n` is a literal 22px, deliberately larger than
+        FontSizeHeading because these are the numbers the page exists to show (deposit, loan
+        amount). It is its own token rather than a literal so the two figures cannot drift apart,
+        and because it is NOT on the 10/11/12/14/15/18/20 ramp.
+    -->
+    <OnIdiom x:Key="FontSizeFigure"
+             x:TypeArguments="x:Double"
+             Phone="22" Tablet="34" Desktop="34" TV="34" Watch="18" Default="22" />
+
+    <!--
+        Tracking for uppercase labels, converted from app.css's em values at their own font size:
+        `.section` is .08em on 11px ≈ 0.9, and `.fig .k` is .06em on 11px ≈ 0.7. MAUI
+        CharacterSpacing is in device-independent units, not em, so these cannot be copied across
+        verbatim. Their absence is why uppercase labels read tighter than the prototype's.
+    -->
+    <x:Double x:Key="TrackingSectionHeader">0.9</x:Double>
+    <x:Double x:Key="TrackingFigureLabel">0.7</x:Double>
+
     <!--  Margins  -->
     <OnIdiom x:Key="MarginSection"
              x:TypeArguments="Thickness"
@@ -123,14 +142,29 @@
     </Style>
 
     <!--  Border insights box styles  -->
+    <!--
+        The rows card inside an Insights expander.
+
+        Corner radius was 3 and the margin 12 on every side, which read as a separate slab dropped
+        inside the panel rather than as the panel's own content — the expander card around it is
+        `RoundRectangle 12`, and its content area is already inset. Now 12 to match every other
+        card in the app, with the horizontal margin dropped so the rows use the width they have
+        (the fixed 150pt figure column was squeezing long names against a doubled inset).
+    -->
     <Style x:Key="BorderInsightsHighlightBox" TargetType="Border">
-        <Setter Property="StrokeShape" Value="RoundRectangle 3,3,3,3" />
+        <Setter Property="StrokeShape" Value="RoundRectangle 12,12,12,12" />
         <Setter Property="StrokeThickness" Value="1" />
         <Setter Property="Stroke" Value="{DynamicResource BorderInsightsGradientBrush}" />
         <Setter Property="Background" Value="{DynamicResource BorderInsightsBackgroundGradientBrush}" />
         <Setter Property="HorizontalOptions" Value="Fill" />
         <Setter Property="VerticalOptions" Value="Center" />
-        <Setter Property="Margin" Value="12,10,12,10" />
+        <Setter Property="Padding" Value="14,4" />
+        <!--
+            Horizontally flush with the expander card that holds it. Any horizontal margin here
+            shows as a channel of page background down both sides of the rows, which is what the
+            12 on each side used to produce.
+        -->
+        <Setter Property="Margin" Value="0,6" />
     </Style>
 
     <!--  Expander styles  -->
@@ -148,10 +182,43 @@
     -->
     <Style x:Key="ExpanderCardStyle" TargetType="Border">
         <Setter Property="Margin" Value="0,5" />
-        <Setter Property="BackgroundColor" Value="{DynamicResource BorderControlBackgroundGradientBrush}" />
+        <!--  Background, not BackgroundColor: the value is a LinearGradientBrush. See CLAUDE.md.  -->
+        <Setter Property="Background" Value="{DynamicResource BorderControlBackgroundGradientBrush}" />
         <Setter Property="Stroke" Value="{DynamicResource BorderControlGradientBrush}" />
         <Setter Property="StrokeShape" Value="RoundRectangle 12" />
         <Setter Property="StrokeThickness" Value="1" />
+    </Style>
+
+    <!--
+        ═══════════════════════════════════════════════════════════════════════
+        Separators. There used to be 55 inline BoxViews across the views at five
+        different opacities (0.08 / 0.1 / 0.12 / 0.15 / 0.20) with no shared style,
+        so the same visual element was four different weights depending on which
+        file you were in. 0.1 is the value these settled on, being by far the most
+        common, so most instances did not visibly change when they moved here.
+
+        Two things that LOOK like separators and are not — do not sweep them onto
+        these styles:
+          • WhatIfView has 4pt VERTICAL accent stripes in a Grid ColumnDefinitions="4,*".
+            They are BoxViews, they are not rules, and they carry a chart colour.
+          • A BoxView with no HeightRequest is not necessarily a rule either; check
+            before converting.
+        ═══════════════════════════════════════════════════════════════════════
+    -->
+    <Style x:Key="LoanAppSeparatorStyle" TargetType="BoxView">
+        <Setter Property="HeightRequest" Value="1" />
+        <Setter Property="Opacity" Value="0.1" />
+        <Setter Property="Color" Value="{DynamicResource LoanAppDefaultForegroundColor}" />
+    </Style>
+
+    <!--
+        For a rule BETWEEN ROWS INSIDE A CARD. The 16 margin is row alignment: it matches
+        the Padding="16,…" of the rows it divides, so the rule starts where the row text
+        starts rather than running to the card edge. It is NOT page-edge padding, and
+        changing the page inset must not change this. Settings alone has 17 of these.
+    -->
+    <Style x:Key="LoanAppSeparatorInsetStyle" TargetType="BoxView" BasedOn="{StaticResource LoanAppSeparatorStyle}">
+        <Setter Property="Margin" Value="16,0" />
     </Style>
 
     <Style x:Key="CommonExpanderStyle" TargetType="expander:SfExpander">
@@ -391,19 +458,96 @@
     </Style>
     <!--  ── Shared popup (input form) styles — the "Quick Input" look ──────────  -->
     <!--  Uppercase field label sitting above a bordered input.  -->
+    <!--
+        The micro-label above a form field, and the same treatment the card foot's caption uses.
+        CharacterSpacing is the prototype's `letter-spacing: .06em` — a flat 0.7 rather than an
+        OnIdiom pair, since .06em is 0.66pt at the phone's 11pt and 0.96pt at the tablet's 16pt
+        and the third of a point between them is not worth a second resource. The uppercasing is
+        in the Text itself, not a TextTransform, so it stays visible in the markup.
+    -->
     <Style x:Key="PopupFieldLabelStyle" TargetType="Label">
         <Setter Property="FontSize" Value="{StaticResource FontSizeSmall}" />
+        <Setter Property="CharacterSpacing" Value="0.7" />
         <Setter Property="Opacity" Value="0.45" />
         <Setter Property="TextColor" Value="{DynamicResource LoanAppDefaultForegroundColor}" />
     </Style>
 
-    <!--  Rounded container that wraps an Entry / SfComboBox inside a popup.  -->
+    <!--
+        Rounded container that wraps an Entry / SfComboBox inside a popup.
+        Mirrors the prototype's `.field .box`, including its 6pt gap below the field label — which
+        lived as a per-element Margin before, so the three entry pages each set it (or forgot to).
+    -->
     <Style x:Key="PopupInputBorderStyle" TargetType="Border">
+        <Setter Property="Margin" Value="0,6,0,0" />
         <Setter Property="Padding" Value="14,10" />
         <Setter Property="BackgroundColor" Value="{DynamicResource LoanAppAppShellBgColor}" />
         <Setter Property="StrokeThickness" Value="0" />
         <Setter Property="StrokeShape" Value="RoundRectangle 10" />
     </Style>
+
+    <!--
+        ══ Data-entry form cards ══════════════════════════════════════════════════════════════
+
+        The four entry pages (TransactionEntry, LoanDetails ×2 states, UpfrontCosts) group their
+        fields in a card closed by a summary row. These styles are the prototype's `.card` and
+        `.card-foot` rules, kept here rather than per page so the pattern cannot drift between
+        them — it did before, which is how one page ended up with its total built from a bare
+        separator div and four inline overrides.
+    -->
+
+    <!--  `.card` — the field group. Padding 14 matches the prototype; the horizontal page inset
+          stays on the page container, per the 12pt rule in CLAUDE.md.  -->
+    <Style x:Key="FormCardStyle" TargetType="Border">
+        <Setter Property="Margin" Value="0,10" />
+        <Setter Property="Padding" Value="14" />
+        <!--  Background, not BackgroundColor: the value is a LinearGradientBrush. See CLAUDE.md.  -->
+        <Setter Property="Background" Value="{DynamicResource BorderControlBackgroundGradientBrush}" />
+        <Setter Property="Stroke" Value="{DynamicResource LoanAppBorderControlGradientBorderLineEnd}" />
+        <Setter Property="StrokeShape" Value="RoundRectangle 12" />
+        <Setter Property="StrokeThickness" Value="1" />
+    </Style>
+
+    <!--  `.card-foot`'s top hairline. Carries the row's 14pt lead-in and 12pt gap as its own
+          Margin, so the foot content needs no spacing of its own.  -->
+    <Style x:Key="FormCardFootRuleStyle" TargetType="BoxView">
+        <Setter Property="HeightRequest" Value="1" />
+        <Setter Property="Margin" Value="0,14,0,12" />
+        <Setter Property="Color" Value="{DynamicResource LoanAppBorderControlGradientBorderLineEnd}" />
+    </Style>
+
+    <!--  `.card-foot .lead` — the figure the foot exists to state.  -->
+    <Style x:Key="FormCardFootLeadStyle" TargetType="Label">
+        <Setter Property="FontAttributes" Value="Bold" />
+        <Setter Property="FontSize" Value="{StaticResource FontSizeLarge}" />
+        <Setter Property="TextColor" Value="{DynamicResource LoanAppDefaultForegroundColor}" />
+    </Style>
+
+    <!--  `.card-foot .sub` — the secondary framing or breakdown beside it.  -->
+    <Style x:Key="FormCardFootSubStyle" TargetType="Label">
+        <Setter Property="FontSize" Value="{StaticResource FontSizeSmall}" />
+        <Setter Property="Opacity" Value="0.55" />
+        <Setter Property="TextColor" Value="{DynamicResource LoanAppDefaultForegroundColor}" />
+    </Style>
+
+    <!--  `.field .hint` — the muted line under an input. The word form of an amount goes here;
+          it is the anti-typo device for that one field, so it is not a place for figures about
+          the form as a whole, which belong in the foot.  -->
+    <Style x:Key="PopupFieldHintStyle" TargetType="Label">
+        <Setter Property="Margin" Value="0,4,0,0" />
+        <Setter Property="FontSize" Value="{StaticResource FontSizeSmall}" />
+        <Setter Property="Opacity" Value="0.45" />
+        <Setter Property="TextColor" Value="{DynamicResource LoanAppDefaultForegroundColor}" />
+    </Style>
+
+    <!--
+        There is deliberately no shared style for the VALUE inside an input container. The
+        prototype gives every `.field .box` one treatment (font-size-xl / 700), but the three
+        field types are an Entry, an SfComboBox and an SfSegmentedControl — no single TargetType
+        covers them, so each sets FontSize/FontAttributes on the instance. The one that matters is
+        the combo: SfComboBoxStyle supplies 14pt regular, which is right for Settings' pickers and
+        wrong for a form field between two 18pt bold Entries, so TransactionEntryPage overrides it
+        there rather than changing the style Settings depends on.
+    -->
 
     <!--  Full-width primary action button at the bottom of a popup (the "Apply" button).  -->
     <Style x:Key="PopupPrimaryButtonStyle" TargetType="Button">
@@ -431,11 +575,13 @@
     <Style x:Key="PopupDismissButtonStyle" TargetType="Button">
         <Setter Property="Text" Value="✕" />
         <Setter Property="BackgroundColor" Value="Transparent" />
-        <Setter Property="FontSize" Value="{StaticResource FontSizeLarge}" />
+        <Setter Property="FontSize" Value="{StaticResource FontSizeXL}" />
         <Setter Property="HeightRequest" Value="36" />
         <Setter Property="WidthRequest" Value="44" />
         <Setter Property="Padding" Value="0" />
         <Setter Property="TextColor" Value="{DynamicResource LoanAppDefaultForegroundColor}" />
+        <!--  app.css `.modal-head .x` is 0.6 — the dismiss glyph recedes.  -->
+        <Setter Property="Opacity" Value="0.6" />
     </Style>
 
     <!--  Inline validation error shown under a bordered input.  -->
@@ -529,6 +675,39 @@
         </Setter>
     </Style>
 
+    <!--  Schedule decade rows. Plain labels now the schedule is expanders rather than an SfDataGrid.  -->
+    <Style x:Key="LabelScheduleColumnHeader" TargetType="Label">
+        <Setter Property="FontFamily" Value="{DynamicResource DefaultFontFamily}" />
+        <Setter Property="FontSize" Value="{StaticResource FontSizeXS}" />
+        <Setter Property="Opacity" Value="0.45" />
+        <Setter Property="TextColor" Value="{DynamicResource LoanAppDefaultForegroundColor}" />
+    </Style>
+
+    <Style x:Key="LabelScheduleCell" TargetType="Label">
+        <Setter Property="FontFamily" Value="{DynamicResource DefaultFontFamily}" />
+        <Setter Property="FontSize" Value="{StaticResource FontSizeSmall}" />
+        <Setter Property="TextColor" Value="{DynamicResource LoanAppDefaultForegroundColor}" />
+    </Style>
+
+    <!--
+        The three Budget filter boxes, which are a different shape from the autocompletes used
+        for data entry: the prototype draws them as one short row inside a card, so they take the
+        body size (12 on phone) rather than the 14 the entry fields use, and no vertical margin.
+
+        The base style's `Margin="5,3,5,0"` is 3 at the top and 0 at the bottom, which sits the
+        text visibly above the centre of the card it is in — fine against a label above a field,
+        wrong when the card IS the control.
+    -->
+    <Style
+        x:Key="SfAutocompleteFilterStyle"
+        BasedOn="{StaticResource SfAutocompleteStyle}"
+        TargetType="editors:SfAutocomplete">
+        <Setter Property="Margin" Value="0" />
+        <Setter Property="FontSize" Value="{StaticResource FontSizeBody}" />
+        <Setter Property="MinimumPrefixCharacters" Value="1" />
+        <Setter Property="VerticalTextAlignment" Value="Center" />
+    </Style>
+
     <!--  Style for SfComboBox  -->
     <Style x:Key="SfComboBoxStyle" TargetType="editors:SfComboBox">
         <Setter Property="DropDownBackground" Value="{DynamicResource LoanAppComboDropDownBackgroundColor}" />
@@ -561,6 +740,34 @@
         <Setter Property="CharacterSpacing" Value="{OnIdiom Phone=-0.2, Tablet=0, Desktop=1, TV=1, Default=-0.2}" />
         <Setter Property="FontAttributes" Value="None" />
         <Setter Property="FontSize" Value="{OnIdiom Phone=12, Tablet=20, Desktop=16, TV=16, Watch=10, Default=12}" />
+        <!--
+            app.css `.boxes .lbl` is opacity 0.85 and this style has no equivalent, deliberately:
+            Span is not a VisualElement, so it has no Opacity property at all. Matching it would
+            need an 85%-alpha colour key added to all four theme files (which
+            ThemeFiles_ShouldHave_EqualKeys would then require in every one) for a 15% difference
+            on a caption. Left as-is; the Label twin below can use Opacity because it is a
+            VisualElement.
+        -->
+    </Style>
+
+    <!--
+        Label twins of the two Span styles above, for three-box rows built from plain Labels
+        rather than a FormattedString. Same sizes and tracking, so a box reads identically
+        whichever way it is composed — these mirror app.css's `.boxes .amt` / `.boxes .lbl`
+        (18px bold / -1px tracking, and 12px / -0.2px tracking at 0.85 opacity).
+        Keep the four in step: changing one Span size without its Label twin splits the look.
+    -->
+    <Style x:Key="LabelThreeBoxAmountStyle" TargetType="Label">
+        <Setter Property="CharacterSpacing" Value="{OnIdiom Phone=-1, Tablet=0.5, Desktop=1, TV=1, Default=-1}" />
+        <Setter Property="FontAttributes" Value="Bold" />
+        <Setter Property="FontSize" Value="{OnIdiom Phone=18, Tablet=32, Desktop=32, TV=32, Watch=14, Default=18}" />
+        <Setter Property="TextColor" Value="{DynamicResource LoanAppHighlightFgColor}" />
+    </Style>
+    <Style x:Key="LabelThreeBoxTextStyle" TargetType="Label">
+        <Setter Property="CharacterSpacing" Value="{OnIdiom Phone=-0.2, Tablet=0, Desktop=1, TV=1, Default=-0.2}" />
+        <Setter Property="FontSize" Value="{OnIdiom Phone=12, Tablet=20, Desktop=16, TV=16, Watch=10, Default=12}" />
+        <Setter Property="Opacity" Value="0.85" />
+        <Setter Property="TextColor" Value="{DynamicResource LoanAppHighlightFgColor}" />
     </Style>
 
 

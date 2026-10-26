@@ -190,6 +190,50 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
         [JsonIgnore] public string NetYearlyFormatted =>
             $"{(NetYearly >= 0 ? "+" : "-")}{CurrencySymbol}{Math.Abs(NetYearly):N0}";
 
+        // ── Insights rows ─────────────────────────────────────────────────
+        // Counts only entries carrying a figure: the expense list is pre-seeded with
+        // every category at zero, so a raw Count would read "23 recorded" on a budget
+        // the user has entered one number into.
+        [JsonIgnore] public int IncomeSourceCount =>
+            Income.TransactionRecords?.IncomeExpenseEntries?.Count(e => e.Amount > 0) ?? 0;
+
+        [JsonIgnore] public int ExpenseRecordCount =>
+            Expense.TransactionRecords?.IncomeExpenseEntries?.Count(e => e.Amount > 0) ?? 0;
+
+        [JsonIgnore] public string IncomeSourceCountText =>
+            $"{IncomeSourceCount} {(IncomeSourceCount == 1 ? "source" : "sources")}";
+
+        [JsonIgnore] public string ExpenseRecordCountText => $"{ExpenseRecordCount} recorded";
+
+        [JsonIgnore] public double AssetRunningCostMonthly =>
+            _loanVm?.TransactionRecords?.IncomeExpenseSummary?.TotalMonthly ?? 0;
+
+        [JsonIgnore] public string AssetRunningCostMonthlyFormatted =>
+            $"-{CurrencySymbol}{AssetRunningCostMonthly:N0}";
+
+        [JsonIgnore] public string TotalIncomeMonthlySigned => $"+{TotalIncomeMonthlyFormatted}";
+        [JsonIgnore] public string TotalExpenseMonthlySigned => $"-{TotalExpenseMonthlyFormatted}";
+
+        // "Spare after loan" — the net above does NOT include the repayment, so this is the
+        // only figure on the page that answers what is actually left. Deliberately reuses
+        // LoanViewModel.MonthlySurplus rather than subtracting a repayment here: that figure
+        // is already net of income, living expenses, asset running costs AND the repayment,
+        // so doing the arithmetic locally would double-count the asset costs.
+        [JsonIgnore] public bool IsSpareAfterLoanAvailable => _loanVm?.IsAffordabilityAvailable ?? false;
+
+        [JsonIgnore] public double SpareAfterLoan => _loanVm?.MonthlySurplus ?? 0;
+
+        /// <summary>
+        /// True when there is a figure AND it is negative — not simply <c>SpareAfterLoan &lt; 0</c>,
+        /// so that the colour and the displayed value are deciding off the same condition.
+        /// </summary>
+        [JsonIgnore] public bool IsSpareAfterLoanNegative => IsSpareAfterLoanAvailable && SpareAfterLoan < 0;
+
+        [JsonIgnore] public string SpareAfterLoanFormatted =>
+            IsSpareAfterLoanAvailable
+                ? $"{(SpareAfterLoan >= 0 ? "+" : "-")}{CurrencySymbol}{Math.Abs(SpareAfterLoan):N0}"
+                : "--";
+
         // Top 5 expenses by amount
         [JsonIgnore] public List<IncomeExpense> TopExpenses =>
             Expense.TransactionRecords?.IncomeExpenseEntries?
@@ -296,6 +340,18 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
             OnPropertyChanged(nameof(NetYearly));
             OnPropertyChanged(nameof(NetYearlyFormatted));
             OnPropertyChanged(nameof(TopExpenses));
+            OnPropertyChanged(nameof(IncomeSourceCount));
+            OnPropertyChanged(nameof(ExpenseRecordCount));
+            OnPropertyChanged(nameof(IncomeSourceCountText));
+            OnPropertyChanged(nameof(ExpenseRecordCountText));
+            OnPropertyChanged(nameof(AssetRunningCostMonthly));
+            OnPropertyChanged(nameof(AssetRunningCostMonthlyFormatted));
+            OnPropertyChanged(nameof(TotalIncomeMonthlySigned));
+            OnPropertyChanged(nameof(TotalExpenseMonthlySigned));
+            OnPropertyChanged(nameof(IsSpareAfterLoanAvailable));
+            OnPropertyChanged(nameof(IsSpareAfterLoanNegative));
+            OnPropertyChanged(nameof(SpareAfterLoan));
+            OnPropertyChanged(nameof(SpareAfterLoanFormatted));
             OnPropertyChanged(nameof(Affordability));
             OnPropertyChanged(nameof(IsAffordabilityAvailable));
             OnPropertyChanged(nameof(AffordabilityTextDescription));

@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<meta charset="utf-8">
+<title>Budget — Asset costs — prototype</title>
+<link rel="stylesheet" href="tokens.css">
+<link rel="stylesheet" href="app.css">
+
+<!--
+  MONEY ▸ ASSET COSTS — this is the old Loan ▸ Running Cost tab
+  (LoanTabRunningCost in LoanView.xaml), relocated to Budget. Source:
+  design/screenshots/iOS-03-loan-running-cost.png.
+
+  This is the central move the navigation proposal argues for: Running Cost is
+  a monthly outflow, so it belongs beside Income and Expenses rather than
+  beside the Loan data-entry form. The content is unchanged — Instructions
+  banner, three-box summary, filter box, row list, empty state, add FAB — only
+  its destination and tab-bar context are new. It now reads as a native fourth
+  peer in Budget's sub-tab strip instead of a fourth peer in Loan's.
+-->
+
+<div class="phone">
+
+  <div class="page-head">
+    <h1>Budget</h1>
+    <p>What comes in, and what goes out</p>
+  </div>
+
+  <nav class="subtabs">
+    <a href="budget-income.html">Income</a>
+    <a href="budget-expenses.html">Expenses</a>
+    <a href="budget.html">Summary</a>
+    <a class="on" href="budget-asset-costs.html">Asset costs</a>
+  </nav>
+
+  <div class="scroll">
+
+    <div class="banner">
+      <strong>Instructions.</strong> Enter the anticipated ongoing costs for this asset
+      (such as maintenance, insurance, and taxes) after purchase, excluding mortgage
+      payments.
+    </div>
+
+    <div class="boxes">
+      <div><div class="amt">$0</div><div class="lbl">monthly new asset</div></div>
+      <div><div class="amt">$0</div><div class="lbl">yearly new asset</div></div>
+      <div><div class="amt">$2,792</div><div class="lbl">monthly overall</div></div>
+    </div>
+
+    <div class="card" style="padding:10px 14px;display:flex;align-items:center;gap:8px">
+      <span style="opacity:.45">&#128269;</span>
+      <span style="opacity:.45;font-size:var(--font-size-body)">Filter expenses&hellip;</span>
+    </div>
+
+    <!-- Populated list, matching the screenshot. -->
+    <div class="section">Asset expenses</div>
+    <div class="rows">
+      <a class="row" href="#">
+        <span class="grow"><span class="t">Council bills</span><br><span class="s">Monthly</span></span>
+        <span class="v">$0</span><span class="chev">&rsaquo;</span>
+      </a>
+      <a class="row" href="#">
+        <span class="grow"><span class="t">Electricity bills</span><br><span class="s">Monthly</span></span>
+        <span class="v">$0</span><span class="chev">&rsaquo;</span>
+      </a>
+      <a class="row" href="#">
+        <span class="grow"><span class="t">Gas bills</span><br><span class="s">Monthly</span></span>
+        <span class="v">$0</span><span class="chev">&rsaquo;</span>
+      </a>
+      <a class="row" href="#">
+        <span class="grow"><span class="t">Maintenance cost</span><br><span class="s">Monthly</span></span>
+        <span class="v">$0</span><span class="chev">&rsaquo;</span>
+      </a>
+      <a class="row" href="#">
+        <span class="grow"><span class="t">Water bills</span><br><span class="s">Monthly</span></span>
+        <span class="v">$0</span><span class="chev">&rsaquo;</span>
+      </a>
+    </div>
+
+    <!--
+      Empty state, shown here instead of a sixth identical row so both source
+      states are represented across the four Budget pages. XAML copy, unchanged:
+        "No asset expenses yet" / "Tap + to add ongoing costs for this asset"
+    -->
+    <div class="card" style="padding:32px 24px;text-align:center">
+      <div style="font-size:var(--font-size-medium);font-weight:700">No asset expenses yet</div>
+      <div style="font-size:var(--font-size-body);opacity:.55;margin-top:6px">Tap + to add ongoing costs for this asset</div>
+    </div>
+
+  </div>
+
+  <a class="fab" href="#" aria-label="Add asset expense">+</a>
+
+  <nav class="tabbar">
+    <a href="loan.html"><span class="ico">&#127968;</span>Loan</a>
+    <a class="on" href="budget.html"><span class="ico">&#128176;</span>Budget</a>
+    <a href="whatif.html"><span class="ico">&#10003;</span>What If</a>
+    <a href="settings.html"><span class="ico">&#9881;</span>Settings</a>
+  </nav>
+
+</div>
+
+</html>

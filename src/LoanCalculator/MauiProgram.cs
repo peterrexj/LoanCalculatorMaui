@@ -91,6 +91,12 @@ namespace LoanCalculatorMaui
             // launch gets fresh input state and a fresh completion signal.
             builder.Services.AddTransient<WizardViewModel>();
             builder.Services.AddTransient<LoanDetailsPage>();
+            builder.Services.AddTransient<TransactionEntryPage>();
+            builder.Services.AddTransient<UpfrontCostsPage>();
+            // Transient, so each scenario opened gets a fresh Completion signal. One page class
+            // hosts all nine scenarios; the content is chosen by Configure(WhatIfScenario).
+            builder.Services.AddTransient<ScenarioPage>();
+            builder.Services.AddTransient<AmortisationPage>();
             builder.Services.AddSingleton<WhatIfViewModel>();
             builder.Services.AddSingleton<WhatIfView>();
             builder.Services.AddSingleton<BudgetViewModel>();

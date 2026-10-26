@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<meta charset="utf-8">
+<title>What If — no data yet — prototype</title>
+<link rel="stylesheet" href="tokens.css">
+<link rel="stylesheet" href="app.css">
+
+<!--
+  VERDICT — empty state. Replaces WhatIfNoDataPanel in WhatIfView.xaml, shown
+  when HasNoLoanData is true (no asset/loan entered yet).
+
+  The explicit improvement this demonstrates: today's panel is static text —
+  "Enter your asset value and loan details on the Loan tab first" — with no
+  way to act on it, because What If has no route to Loan. What If and Loan are
+  both top-level tabs in the new structure, so this page gives that sentence a
+  real link to deal.html instead of just naming a destination the user has to
+  find themselves via the tab bar.
+
+  Also carries the sub-tab strip now that whatif.html (Answer) has one, so
+  the empty state sits in the same structure as the populated one rather than
+  looking like a different page shape. Scenarios/Projection/Insights aren't
+  reachable with no loan data either, so the strip is shown but not wired to
+  working destinations beyond Answer itself — consistent with there being
+  nothing to show on any of those views yet.
+-->
+
+<div class="phone">
+
+  <div class="page-head">
+    <h1>What If</h1>
+    <p>Can you afford it, and what breaks it?</p>
+  </div>
+
+  <nav class="subtabs">
+    <a class="on" href="whatif-empty.html">Answer</a>
+    <a href="whatif-empty.html">Scenarios</a>
+    <a href="whatif-empty.html">Projection</a>
+    <a href="whatif-empty.html">Insights</a>
+  </nav>
+
+  <div class="scroll">
+
+    <div class="card" style="padding:28px 24px;text-align:center;margin-top:20px">
+      <div style="font-size:var(--font-size-large)">No loan data yet</div>
+      <div style="font-size:var(--font-size-body);opacity:.6;margin-top:8px">
+        Enter your asset value and loan details on the Loan tab first.
+      </div>
+      <a href="loan.html" class="cta-link">Go to Loan&nbsp;&rsaquo;</a>
+    </div>
+
+    <p class="micro">Estimates only &mdash; not financial advice. Figures depend on the information you
+      enter. Consult a qualified financial adviser before deciding.</p>
+
+  </div>
+
+  <nav class="tabbar">
+    <a href="loan.html"><span class="ico">&#127968;</span>Loan</a>
+    <a href="budget.html"><span class="ico">&#128176;</span>Budget</a>
+    <a class="on" href="whatif.html"><span class="ico">&#10003;</span>What If</a>
+    <a href="settings.html"><span class="ico">&#9881;</span>Settings</a>
+  </nav>
+
+</div>
+
+<style>
+  /* Page-local: app.css has no button/CTA component (the exemplars only use
+     .row/.chev links for navigation). This is the one new primary action the
+     redesign calls for, so it is a small addition rather than reuse. */
+  .cta-link {
+    display: inline-block;
+    margin-top: 18px;
+    padding: 11px 22px;
+    border-radius: 10px;
+    background: var(--button-bg-color);
+    color: var(--button-fg-color);
+    font-size: var(--font-size-body);
+    font-weight: 700;
+    text-decoration: none;
+  }
+</style>
+</html>

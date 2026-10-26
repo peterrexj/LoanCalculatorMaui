@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<meta charset="utf-8">
+<title>Loan Details (return visit) — prototype</title>
+<link rel="stylesheet" href="tokens.css">
+<link rel="stylesheet" href="app.css">
+
+<!--
+  LOAN DETAILS — the same page as loan-details.html, on a RETURN visit.
+
+  Deliberately a separate file from loan-details.html so the two states are comparable side by
+  side, which is the point: Section B (upfront costs, running cost, income, expenses) is GONE here
+  because all four now have recorded values, each with its own editing screen elsewhere (Upfront
+  Costs page, and Budget's Income/Expenses/Asset-costs tabs). In its place, WizardInheritedNote
+  names what the calculation is still using so it is never silently invisible — see
+  WizardViewModel.WizardInheritedNote in Core.
+
+  Section A is unchanged — asset/deposit/loan have no other typed route, so they stay. Note the
+  asset field also now carries the "Total asset cost" / breakdown preview lines
+  (WizardShowAssetTotal / WizardShowAssetInsights), which only appear once an upfront cost
+  exists to explain the gap between the asset value and deposit+loan.
+-->
+
+<div class="phone">
+
+  <div class="modal-head">
+    <h1>Loan Details</h1>
+    <a href="loan.html">Done</a>
+    <a href="loan.html" class="x">&times;</a>
+  </div>
+
+  <div class="scroll">
+
+    <!-- ══ Section A — always shown ══ -->
+
+    <div class="card">
+
+      <!--
+        The asset field carried THREE stacked hint lines: its own formatted value and word form,
+        then "Total asset cost", then the "asset + upfront" breakdown. The last two are figures
+        about the whole form rather than about this one field, so they belonged at the foot of
+        the card, not under the input — they are now there. What stays is the one line that is
+        about THIS field: its value formatted, which confirms the grouping and the currency, plus
+        the word form, which catches a mistyped magnitude.
+      -->
+      <div class="field">
+        <label>Asset value $</label>
+        <div class="box">650,000</div>
+        <p class="hint">$650,000&nbsp;&nbsp;Six Hundred, Fifty Thousand</p>
+      </div>
+
+      <div class="field">
+        <label>Deposit amount $</label>
+        <div class="box">130,000</div>
+        <p class="hint">$130,000&nbsp;&nbsp;One Hundred, Thirty Thousand</p>
+      </div>
+
+      <div class="field">
+        <label>Loan amount $</label>
+        <div class="box">520,112</div>
+        <p class="hint">$520,112&nbsp;&nbsp;Five Hundred, Twenty Thousand, One Hundred, Twelve</p>
+      </div>
+
+      <!--
+        WizardShowAssetTotal / WizardShowAssetInsights, relocated here from under the asset
+        field. This is the state the figures exist to explain: the loan is 520,112 rather than
+        520,000 because $112 of upfront costs was folded into it, so deposit + loan exceeds the
+        asset value by exactly that much. Seeing the identity is the only thing on the page that
+        accounts for the 112 — which is why it reads as a reconciliation and not as decoration.
+      -->
+      <div class="card-foot stack">
+        <span class="lead">Total asset cost: $650,112</span>
+        <span class="sub">$650,000 asset + $112 upfront costs</span>
+      </div>
+
+    </div>
+
+    <!-- ══ Section B is gone — every deferred figure now has a value ══ -->
+
+    <p class="micro" style="margin-top:28px">
+      Also using your recorded upfront costs, running costs, income and expenses. Edit those on
+      their own screens.
+    </p>
+
+    <p class="micro" style="text-align:center;margin-top:20px">&uarr; Tap Done above to save</p>
+
+  </div>
+
+</div>
+</html>

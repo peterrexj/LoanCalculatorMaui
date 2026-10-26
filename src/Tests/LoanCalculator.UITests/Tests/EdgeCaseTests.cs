@@ -114,7 +114,7 @@ public class EdgeCaseTests : UITestBase
 
         // Both of these throw if their content never renders, which is the assertion.
         Loan.OpenAmortisationTab();
-        Loan.OpenInsightsTab();
+        WhatIf.OpenInsightsTab();
 
         Assert.That(App.Exists("LoanInsightsExportButton"), Is.True,
             "The Insights tab did not render while the loan principal was zero.");

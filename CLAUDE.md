@@ -110,6 +110,23 @@ Two things to know before touching it:
   ```
   If the APK is older, the run proved nothing — the fix is *untested*, not disproven. The script
   warns about this for XAML and C#, but heed it: it has cost real time here twice.
+- **"No visible element with AutomationId X" often means a broken *binding*, not a missing id.**
+  A `Label` whose binding path does not resolve renders the empty string, lays out at zero height,
+  and is therefore not *visible* — so iOS reports it as absent and the message sends you to the
+  one attribute that is actually correct. MAUI does not warn on an unresolved path.
+  **The specific way this gets written:** copying the element's own `AutomationId` into its
+  `Binding` path. They are different namespaces that look interchangeable
+  (`AutomationId="WhatIfScenarioRateChangeDelta"` alongside the real property
+  `RateChangeMonthlyDiff`), and the two sit on adjacent lines.
+  Before touching the markup, check the path exists:
+  ```bash
+  grep -E "public [A-Za-z<>?]+ <PropertyName>\b" <the ViewModel>.cs
+  ```
+  Two things make this cheap to prevent: the What If outcome properties all default to a dash
+  placeholder rather than `""`, which keeps the row findable before anything is calculated, and
+  asserting on the *figure* rather than the element's mere existence is what catches it at all.
+  Note a comment mentioning a binding will trip any grep-based audit of binding paths, so write
+  such comments without the literal `{Binding …}` syntax.
 
 ### Run UI Tests in parallel (sharded across devices)
 
@@ -387,7 +404,7 @@ Two other things that look like the same attribute but are not:
 
 - A `BoxView` separator's `Margin="16,0"` **inside** a card is row alignment — it matches the
   `Padding="16,10"` of the rows it divides and has nothing to do with the page edge. Settings has
-  16 of these and 6 real cards, all reading `Margin="16,0"`; a single find-and-replace hits both.
+  17 of these and 6 real cards, all reading `Margin="16,0"`; a single find-and-replace hits both.
 - Section header labels sit 4pt further in than the cards (`Margin="4,…"` on top of the
   container's 12 = 16). That offset is deliberate, so it has to be re-derived, not preserved
   verbatim, whenever the container value changes.
@@ -396,11 +413,42 @@ An indentation-based ancestor walk is not good enough to audit this — multi-li
 closed-but-indented siblings both mislead it. Parse the XAML and sum `Padding` down the real
 element tree, skipping `SfListView`/`DataTemplate` subtrees (list items are inset by the list).
 
+### A list that must hug its rows AND scroll needs three settings, not one
+
+The Budget lists (Income, Expenses, Asset costs) are one rounded card whose bottom edge sits where
+the last row ends — but Expenses has ~23 categories and has to scroll. Those two requirements pull
+against each other, and each was fixed on its own first, breaking the other:
+
+- `AutoFitMode="Height"` sizes `SfListView` to its content, which **switches off its own scrolling**.
+  Alone, a long list is clipped with no way to reach the bottom.
+- `AutoFitMode="None"` + `VerticalOptions="Fill"` scrolls correctly but stretches the card into a
+  tall empty box around one row.
+
+What works is all three together: a **`ScrollView`** wrapper, `AutoFitMode="Height"`, and
+`VerticalOptions="Start"` on the `Border`. The list measures to its content, the Border wraps that,
+and the ScrollView supplies the scrolling the list gave up. No nested-scrolling conflict, because a
+content-sized `SfListView` does not scroll. Remove any one and one of the two bugs returns.
+
+Related, and the actual cause of a whole-page collapse: **the three tabs must share one skeleton.**
+Asset costs had a nested Grid (fixed rows outside, one `Height="*"` row holding the list) while
+Income and Expenses were flat with every row `Auto`. A FAB has nothing to anchor to without that
+flex row, so it landed against whatever its assigned row measured — over the section header. Moving
+it between rows cannot fix that; the row definitions are what is wrong. All three are now:
+
+```
+outer:  row 0 Auto = summary boxes   row 1 Auto = switches   row 2 *  = ↓
+inner:  row 0 Auto = search          row 1 Auto = header     row 2 *  = ScrollView(list) + empty state + FAB
+```
+
+Verify this by **parsing the XAML and printing each child's `Grid.Row`**, not by reading it — three
+separate row-assignment bugs here were invisible on inspection (a missing `Grid.Row` defaults to 0,
+silently stacking elements on top of each other).
+
 ### SfPopup ContentTemplate Binding
 
-Still relevant for the popups that remain (`AddAssetExpensePopup`, `UpfrontCostsPopup` on the Loan page, and the Budget add/edit popups).
+**Deprecated: all numeric-entry popups have been converted to pages.** This section remains for reference only for the two static informational popups still using `SfPopup` (Settings' Disclaimer and Privacy Policy popups). Numeric data entry now uses `TransactionEntryPage` (for Income/Expense across Loan Add Asset Expense and Budget Income/Expense add/edit) and `UpfrontCostsPage` (for upfront costs and Australian state selection).
 
-`SfPopup.ContentTemplate` DataTemplate does **not** inherit the page's `BindingContext` automatically. Always set it explicitly on the root element inside the template:
+For any future popups, `SfPopup.ContentTemplate` DataTemplate does **not** inherit the page's `BindingContext` automatically. Always set it explicitly on the root element inside the template:
 
 ```xml
 <sfPopup:SfPopup.ContentTemplate>
@@ -477,6 +525,72 @@ Two dead ends recorded so they are not repeated: the Settings/Loan asymmetry loo
 **Debugging technique that cracked it:** `UIWindow.HitTest(point, null)` to ask iOS which view *would* receive the touch, plus a recursive subview dump logging class / frame / `UserInteractionEnabled` / recognizer count. Note `run-ios.sh`'s log filter only passes lines matching `error|Error|exception|…`, so plain `Console.WriteLine` is invisible unless you use `--logs` or add your tag to the filter. **Also: probing at `OnAppearing` shows inner views with zero frames** because layout has not happened — a measurement artifact, not the bug. Re-probe a few seconds later.
 
 **Wrong turns not worth repeating:** "`NavBarIsVisible="False"` puts headers under the status bar" is FALSE (MAUI already applies the iOS safe-area inset); a lingering full-screen `SfPopup` overlay was ruled out.
+
+### `BackgroundColor` takes a Color; a gradient needs `Background`
+
+`BackgroundColor` is a `Color` property and `Background` is a `Brush` property. Assigning a
+`LinearGradientBrush` resource to `BackgroundColor` **compiles, raises no binding error, and paints
+nothing.** The element renders transparent against whatever is behind it.
+
+`BorderControlBackgroundGradientBrush` is a `LinearGradientBrush` in all four theme files, and it
+was assigned to `BackgroundColor` in **32 places** across six views — every card using it was
+unpainted. It surfaced three separate times as "the gradient from the prototype is missing" before
+being recognised as one systematic error rather than three local ones, and once as unreadable text
+(dark foreground on an unpainted card, on What If ▸ Answer).
+
+**It has two syntaxes, and auditing only the first misses the worst case.** A `Setter` inside a
+`Style` is the same bug with none of the visibility, because it breaks every element using that
+style at once — `ExpanderCardStyle` carried it, so *every* expander card in the app was unpainted.
+That is what made the Insights panels look like they had "a gap round the border": the body of the
+card painted nothing, so the page background showed between the rows card and the card's own
+stroke. Only the header looked right, because it takes its gradient from a different style.
+
+Audit **both** forms:
+```bash
+grep -rn 'BackgroundColor="{DynamicResource [A-Za-z]*Brush}"' --include='*.xaml' src/
+grep -rn 'Property="BackgroundColor" Value="{DynamicResource [A-Za-z]*Brush}"' --include='*.xaml' src/
+```
+Anything that matches is a bug. The reverse — a `Color` assigned to `Background` — is fine; MAUI
+wraps it in a `SolidColorBrush`.
+
+### `SfTabView.SelectedIndex` assigned in code does not raise `SelectionChanging`
+
+Syncfusion raises `SelectionChanging` for a **user tap on the tab strip only**. Setting
+`tabView.SelectedIndex` from code changes the tab silently — no event, no handler.
+
+That matters because `SelectionChanging` is where this app does per-tab arrival work, and two
+separate things broke on it in `WhatIfView`:
+
+- **Projection rendered completely empty** when reached from Budget's "See the projection ›" link,
+  which sets `WhatIfView.PendingTabIndex` and lets `OnAppearing` assign the index. `RefreshProjection()`
+  is the *only* thing that fills that tab — summary figures, growth percentages, chart series and
+  both data pagers are all populated imperatively — so none of it ran. Tapping any other tab and
+  coming back populated it, which made the bug look intermittent rather than structural.
+- **The premium gate was bypassed**, handing trial users Projection for free, because the gate lives
+  in the same handler.
+
+Fixed by extracting `EnterTab(int index)` — gate, then refresh — called from the user path (via
+`e.Cancel`) *and* from the programmatic path. It is also called for the **already-selected** tab on
+arrival, because simply landing on the page raises nothing either: that is why the Answer tab's
+chart was empty on first visit.
+
+So: **any per-tab work must live in a method both paths call, never in the event handler alone.**
+`SelectedIndex` is also a `double` on `SfTabView`, not an `int`.
+
+**The same class of bug, one step worse, hit Insights.** After it moved off LoanView, *nothing in
+the app set `IsInsightsTabActive` or called `RefreshInsightsTabPropertyChanged()` at all* — the
+obligation lost its owner entirely rather than just one of its two entry points. `BuildInsights()`
+therefore never ran, `InsightsDetails` stayed empty, and all nine panels rendered their accent bar,
+their `ⓘ` and their expander chrome with **no label and no value** — which reads as a styling fault,
+not as missing data. Insights was also premium-gated on its old page, so it was free as well.
+
+`IsInsightsTabActive` is doubly load-bearing: it gates `UpdateInsightCharts()` inside the shared
+notification path, so arriving needs `ForceUpdateInsightCharts()` (the guarded path checks a flag
+being set in the same breath), and leaving must clear it or nine charts recompute on every
+notification for a page that is off screen.
+
+When moving a tab between pages, grep for **every** flag and refresh method the old host called and
+confirm each has a new caller. A silent `grep` returning nothing is the signature of this bug.
 
 ### Syncfusion controls that *draw* their content are invisible to accessibility
 

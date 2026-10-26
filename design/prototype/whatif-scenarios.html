@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<meta charset="utf-8">
+<title>Scenarios — prototype</title>
+<link rel="stylesheet" href="tokens.css">
+<link rel="stylesheet" href="app.css">
+
+<!--
+  SCENARIOS — new file, the second of What If's four sub-tab views.
+
+  This is the nine-row scenario index moved out of whatif.html verbatim —
+  same rows, same hrefs, same --stripe colours — so it gets a sub-tab of its
+  own instead of sharing scroll space with the hero and chart. Preserving
+  this list is the single biggest usability win in the whole redesign: nine
+  screens of scrolling collapses to one screen of choosing. Nothing about the
+  list itself changes here, only where it lives.
+
+  Each row still opens whatif-scenario.html full-screen; that page's back
+  link now returns here instead of to the Answer view.
+-->
+
+<div class="phone">
+
+  <div class="page-head">
+    <h1>What If</h1>
+    <p>Can you afford it, and what breaks it?</p>
+  </div>
+
+  <nav class="subtabs">
+    <a href="whatif.html">Answer</a>
+    <a class="on" href="whatif-scenarios.html">Scenarios</a>
+    <a href="projection.html">Projection</a>
+    <a href="insights.html">Insights</a>
+  </nav>
+
+  <div class="scroll">
+
+    <div class="section">Scenarios</div>
+    <div class="rows">
+      <a class="row accent" href="whatif-scenario.html" style="--stripe:var(--chart-color-1)">
+        <span class="grow"><span class="t">Rate change impact</span><br><span class="s">If rates move &plusmn;0.5%</span></span>
+        <span class="delta warn">+$161/mo</span><span class="chev">&rsaquo;</span>
+      </a>
+      <a class="row accent" href="whatif-scenario.html" style="--stripe:var(--chart-color-2)">
+        <span class="grow"><span class="t">Extra repayments</span><br><span class="s">Pay $200/mo more</span></span>
+        <span class="delta good">&minus;4 yr 2 mo</span><span class="chev">&rsaquo;</span>
+      </a>
+      <a class="row accent" href="whatif-scenario.html" style="--stripe:var(--chart-color-3)">
+        <span class="grow"><span class="t">Loan term</span><br><span class="s">25 yr vs 30 yr</span></span>
+        <span class="delta warn">+$287/mo</span><span class="chev">&rsaquo;</span>
+      </a>
+      <a class="row accent" href="whatif-scenario.html" style="--stripe:var(--chart-color-1)">
+        <span class="grow"><span class="t">Deposit scenarios</span><br><span class="s">A bigger deposit</span></span>
+        <span class="delta good">&minus;$96/mo</span><span class="chev">&rsaquo;</span>
+      </a>
+      <a class="row accent" href="whatif-scenario.html" style="--stripe:var(--chart-color-2)">
+        <span class="grow"><span class="t">Lump sum</span><br><span class="s">A one-off $20,000</span></span>
+        <span class="delta good">&minus;2 yr 1 mo</span><span class="chev">&rsaquo;</span>
+      </a>
+      <a class="row accent" href="whatif-scenario.html" style="--stripe:var(--chart-color-3)">
+        <span class="grow"><span class="t">Repayment frequency</span><br><span class="s">Weekly vs monthly</span></span>
+        <span class="delta good">&minus;$18,400</span><span class="chev">&rsaquo;</span>
+      </a>
+      <a class="row accent" href="whatif-scenario.html" style="--stripe:var(--chart-color-1)">
+        <span class="grow"><span class="t">Offset account</span><br><span class="s">$30,000 offset</span></span>
+        <span class="delta good">&minus;$41,900</span><span class="chev">&rsaquo;</span>
+      </a>
+      <a class="row accent" href="whatif-scenario.html" style="--stripe:var(--chart-color-2)">
+        <span class="grow"><span class="t">Stress test</span><br><span class="s">Rates at 8.5%</span></span>
+        <span class="delta warn">still affordable</span><span class="chev">&rsaquo;</span>
+      </a>
+      <a class="row accent" href="whatif-scenario.html" style="--stripe:var(--chart-color-3)">
+        <span class="grow"><span class="t">Combined strategy</span><br><span class="s">Everything at once</span></span>
+        <span class="delta good">&minus;7 yr 4 mo</span><span class="chev">&rsaquo;</span>
+      </a>
+    </div>
+
+    <p class="micro">Estimates only — not financial advice. Figures depend on the information you
+      enter. Consult a qualified financial adviser before deciding.</p>
+
+  </div>
+
+  <nav class="tabbar">
+    <a href="loan.html"><span class="ico">&#127968;</span>Loan</a>
+    <a href="budget.html"><span class="ico">&#128176;</span>Budget</a>
+    <a class="on" href="whatif.html"><span class="ico">&#10003;</span>What If</a>
+    <a href="settings.html"><span class="ico">&#9881;</span>Settings</a>
+  </nav>
+
+</div>
+</html>

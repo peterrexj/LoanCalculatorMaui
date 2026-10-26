@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<meta charset="utf-8">
+<title>Export — prototype</title>
+<link rel="stylesheet" href="tokens.css">
+<link rel="stylesheet" href="app.css">
+
+<!--
+  EXPORT — replaces the "Export Detailed Insights" button on Loan ▸ Insights
+  (LoanInsightsExportButton). Today that button sits beneath a single
+  disclaimer expander with no choice of what gets included — one tap produces
+  one fixed PDF. Per the nav proposal, Insights itself is absorbed into
+  What If's affordability answer, so this becomes its own reference row
+  ("Export a PDF report") rather than a button buried under an expander.
+
+  Change being tested: the user picks what goes into the report before
+  generating it, since What If now actually has distinct sections (answer,
+  scenarios, schedule, projection) worth choosing between — a fixed export
+  made sense when there was only one page's worth of content to export.
+
+  Out of scope, per the task brief: the PDF document itself is not
+  prototyped here. This is only the in-app screen that precedes it.
+
+  Checkboxes are plain native <input type="checkbox"> rather than a styled
+  switch, since this is a multi-select list (not a binary on/off setting like
+  projection.html's switches) and a native checkbox communicates that
+  distinction for free, with no JS needed to track state.
+-->
+
+<div class="phone">
+
+  <div class="modal-head">
+    <a href="whatif.html" class="x" style="font-size:var(--font-size-xl)">&lsaquo;</a>
+    <h1>Export</h1>
+  </div>
+
+  <div class="scroll">
+
+    <p class="micro" style="margin-top:0">Choose what to include in the PDF report.</p>
+
+    <div class="section">Include</div>
+    <div class="rows">
+      <label class="row">
+        <input type="checkbox" checked style="accent-color:var(--slider-knob-fill-color);width:18px;height:18px">
+        <span class="grow"><span class="t">Affordability verdict</span><br><span class="s">The headline answer and the three-box summary</span></span>
+      </label>
+      <label class="row">
+        <input type="checkbox" checked style="accent-color:var(--slider-knob-fill-color);width:18px;height:18px">
+        <span class="grow"><span class="t">Loan &amp; borrowing</span><br><span class="s">Asset, deposit, loan amount, rate and term</span></span>
+      </label>
+      <label class="row">
+        <input type="checkbox" checked style="accent-color:var(--slider-knob-fill-color);width:18px;height:18px">
+        <span class="grow"><span class="t">Income &amp; expenses</span><br><span class="s">Monthly and yearly totals, and the net surplus</span></span>
+      </label>
+      <label class="row">
+        <input type="checkbox" style="accent-color:var(--slider-knob-fill-color);width:18px;height:18px">
+        <span class="grow"><span class="t">Repayment schedule</span><br><span class="s">Full year-by-year amortisation table</span></span>
+      </label>
+      <label class="row">
+        <input type="checkbox" style="accent-color:var(--slider-knob-fill-color);width:18px;height:18px">
+        <span class="grow"><span class="t">Projection</span><br><span class="s">Income and expense projection over time</span></span>
+      </label>
+      <label class="row">
+        <input type="checkbox" style="accent-color:var(--slider-knob-fill-color);width:18px;height:18px">
+        <span class="grow"><span class="t">Scenarios</span><br><span class="s">All 9 what-if results, one page each</span></span>
+      </label>
+    </div>
+
+    <p class="micro">4 sections selected · about 6 pages</p>
+
+    <button style="width:100%;height:48px;border:0;border-radius:12px;background:var(--export-button-bg-color);color:var(--export-button-fg-color);font-size:var(--font-size-xl);font-weight:700;margin-top:10px;font-family:var(--font-family)">
+      Export PDF
+    </button>
+
+    <div class="banner" style="margin-top:16px">
+      This app is a calculator for informational purposes only. Every figure is an estimate based
+      on the information you enter — not financial advice, and not an offer of any loan or
+      financial product. Consult a qualified financial adviser before making any financial
+      decision.
+    </div>
+
+  </div>
+
+  <nav class="tabbar">
+    <a href="loan.html"><span class="ico">&#127968;</span>Loan</a>
+    <a href="budget.html"><span class="ico">&#128176;</span>Budget</a>
+    <a class="on" href="whatif.html"><span class="ico">&#10003;</span>What If</a>
+    <a href="settings.html"><span class="ico">&#9881;</span>Settings</a>
+  </nav>
+
+</div>
+</html>

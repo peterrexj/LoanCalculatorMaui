@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<meta charset="utf-8">
+<title>Schedule — tablet prototype</title>
+<link rel="stylesheet" href="tokens.css">
+<link rel="stylesheet" href="app.css">
+<link rel="stylesheet" href="tablet.css">
+
+<!--
+  SCHEDULE — tablet counterpart of schedule.html.
+
+  LAYOUT DECISION — the opposite problem to phone, as the brief anticipates:
+  schedule.html groups 30 years into 3 decades behind <details> because a
+  390px-wide, 5-column grid has no room to show 30 rows without either six
+  pages of pagination or endless scrolling through a cramped table. At
+  1024px wide and with the tablet type scale, neither constraint applies —
+  there is width for a 6th column and height (with a normal scroll, not a
+  pager) for all 30 rows to just be there. So this version DROPS the decade
+  grouping entirely: no <details>, no collapse/expand, every year is a row
+  in one flat table, read top to bottom like any desktop/tablet data grid.
+
+  The 6th column restores OPENING BALANCE, which the phone version dropped
+  on the reasoning that it always equals the row above's closing balance —
+  true, but worth showing explicitly once there's room, since a flat 30-row
+  table benefits from each row being self-contained rather than requiring a
+  glance at the row above to find a figure. Column order follows the
+  conceptual read order: period, opening, repayment, interest, principal,
+  closing — the same six CLAUDE.md's reference notes as "the conceptual six"
+  that the phone grid (and schedule.html) each had to cut down from.
+
+  A sticky header row keeps the column labels visible while the body scrolls,
+  which a 30-row table needs and a 3-row decade list did not.
+
+  REVISION (owner feedback round 2): Schedule stays with Loan rather than
+  moving under What If, matching schedule.html's phone reversal — it is
+  purely loan-derived. The railnav now marks Loan active (this is reached
+  from tablet-loan.html's subtabs, not from What If), and the modal back-link
+  is replaced with the same .page-head + .subtabs shape tablet-loan.html uses.
+-->
+
+<div class="tablet">
+
+  <nav class="railnav">
+    <a class="on" href="tablet-loan.html"><span class="ico">&#127968;</span>Loan</a>
+    <a href="tablet-budget.html"><span class="ico">&#128176;</span>Budget</a>
+    <a href="tablet-whatif.html"><span class="ico">&#10003;</span>What If</a>
+    <a href="tablet-settings.html"><span class="ico">&#9881;</span>Settings</a>
+    <div class="spacer"></div>
+  </nav>
+
+  <div class="main">
+
+    <div class="page-head">
+      <h1>Schedule</h1>
+      <p>Your repayment schedule, year by year</p>
+    </div>
+
+    <div class="scroll">
+
+      <p class="micro" style="margin-top:0">$520,112 at 5% over 30 years, monthly repayments of
+        $2,792. Full year-by-year detail — nothing is grouped or paginated at this width.</p>
+
+      <div class="sched-table">
+        <div class="sched-head">
+          <span>Period</span><span>Opening</span><span>Repayment</span><span>Interest</span><span>Principal</span><span>Closing</span>
+        </div>
+        <div class="sched-body">
+          <div class="row3"><span>2027</span><span>$520,112</span><span>$33,505</span><span>$25,831</span><span>$7,674</span><span>$512,438</span></div>
+          <div class="row3"><span>2028</span><span>$512,438</span><span>$33,505</span><span>$25,439</span><span>$8,066</span><span>$504,372</span></div>
+          <div class="row3"><span>2029</span><span>$504,372</span><span>$33,505</span><span>$25,026</span><span>$8,479</span><span>$495,893</span></div>
+          <div class="row3"><span>2030</span><span>$495,893</span><span>$33,505</span><span>$24,592</span><span>$8,913</span><span>$486,981</span></div>
+          <div class="row3"><span>2031</span><span>$486,981</span><span>$33,505</span><span>$24,136</span><span>$9,369</span><span>$477,612</span></div>
+          <div class="row3"><span>2032</span><span>$477,612</span><span>$33,505</span><span>$23,656</span><span>$9,849</span><span>$467,763</span></div>
+          <div class="row3"><span>2033</span><span>$467,763</span><span>$33,505</span><span>$23,150</span><span>$10,355</span><span>$457,408</span></div>
+          <div class="row3"><span>2034</span><span>$457,408</span><span>$33,505</span><span>$22,618</span><span>$10,887</span><span>$446,521</span></div>
+          <div class="row3"><span>2035</span><span>$446,521</span><span>$33,505</span><span>$22,057</span><span>$11,448</span><span>$435,073</span></div>
+          <div class="row3"><span>2036</span><span>$435,073</span><span>$33,505</span><span>$21,466</span><span>$12,039</span><span>$423,034</span></div>
+          <div class="row3"><span>2037</span><span>$423,034</span><span>$33,505</span><span>$20,843</span><span>$12,662</span><span>$410,372</span></div>
+          <div class="row3"><span>2038</span><span>$410,372</span><span>$33,505</span><span>$20,186</span><span>$13,319</span><span>$397,053</span></div>
+          <div class="row3"><span>2039</span><span>$397,053</span><span>$33,505</span><span>$19,494</span><span>$14,011</span><span>$383,042</span></div>
+          <div class="row3"><span>2040</span><span>$383,042</span><span>$33,505</span><span>$18,765</span><span>$14,740</span><span>$368,302</span></div>
+          <div class="row3"><span>2041</span><span>$368,302</span><span>$33,505</span><span>$17,996</span><span>$15,509</span><span>$352,793</span></div>
+          <div class="row3"><span>2042</span><span>$352,793</span><span>$33,505</span><span>$17,186</span><span>$16,319</span><span>$336,474</span></div>
+          <div class="row3"><span>2043</span><span>$336,474</span><span>$33,505</span><span>$16,332</span><span>$17,173</span><span>$319,301</span></div>
+          <div class="row3"><span>2044</span><span>$319,301</span><span>$33,505</span><span>$15,431</span><span>$18,074</span><span>$301,227</span></div>
+          <div class="row3"><span>2045</span><span>$301,227</span><span>$33,505</span><span>$14,481</span><span>$19,024</span><span>$282,203</span></div>
+          <div class="row3"><span>2046</span><span>$282,203</span><span>$33,505</span><span>$13,480</span><span>$20,025</span><span>$262,178</span></div>
+          <div class="row3"><span>2047</span><span>$262,178</span><span>$33,505</span><span>$12,424</span><span>$21,081</span><span>$241,097</span></div>
+          <div class="row3"><span>2048</span><span>$241,097</span><span>$33,505</span><span>$11,311</span><span>$22,194</span><span>$218,903</span></div>
+          <div class="row3"><span>2049</span><span>$218,903</span><span>$33,505</span><span>$10,138</span><span>$23,367</span><span>$195,536</span></div>
+          <div class="row3"><span>2050</span><span>$195,536</span><span>$33,505</span><span>$8,901</span><span>$24,604</span><span>$170,932</span></div>
+          <div class="row3"><span>2051</span><span>$170,932</span><span>$33,505</span><span>$7,598</span><span>$25,907</span><span>$145,025</span></div>
+          <div class="row3"><span>2052</span><span>$145,025</span><span>$33,505</span><span>$6,225</span><span>$27,280</span><span>$117,745</span></div>
+          <div class="row3"><span>2053</span><span>$117,745</span><span>$33,505</span><span>$4,778</span><span>$28,727</span><span>$89,018</span></div>
+          <div class="row3"><span>2054</span><span>$89,018</span><span>$33,505</span><span>$3,254</span><span>$30,251</span><span>$58,767</span></div>
+          <div class="row3"><span>2055</span><span>$58,767</span><span>$33,505</span><span>$1,649</span><span>$31,856</span><span>$26,911</span></div>
+          <div class="row3"><span>2056</span><span>$26,911</span><span>$27,537</span><span>$626</span><span>$26,911</span><span>$0</span></div>
+        </div>
+      </div>
+
+      <p class="micro">Figures are estimates — see What If for the full affordability picture.</p>
+
+    </div>
+
+  </div>
+
+</div>
+
+<!--
+  Page-local styles, same reasoning as schedule.html's own local block: app.css
+  has no dense-data-table component, so the 6-column grid lives here rather
+  than being invented into the shared sheet.
+-->
+<style>
+  .sched-table {
+    border-radius: 12px;
+    overflow: hidden;
+    background: var(--border-control-background-gradient-brush);
+    border: 1px solid var(--border-control-gradient-border-line-end);
+  }
+  .sched-head, .row3 {
+    display: grid;
+    grid-template-columns: 0.8fr 1.1fr 1fr 1fr 1fr 1.1fr;
+    gap: 10px;
+    align-items: center;
+  }
+  .sched-head {
+    position: sticky;
+    top: 0;
+    padding: 12px 16px;
+    font-size: var(--font-size-small);
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    background: var(--data-grid-header-background-color);
+    color: var(--data-grid-header-text-color);
+    font-weight: 700;
+  }
+  .sched-head span:not(:first-child),
+  .row3 span:not(:first-child) {
+    text-align: right;
+  }
+  .row3 {
+    padding: 10px 16px;
+    font-size: var(--font-size-small);
+    background: var(--data-grid-cell-bg-3);
+    color: var(--data-grid-cell-fg-1);
+  }
+  .row3:nth-child(even) { background: var(--data-grid-cell-bg-4); }
+  .row3 span:first-child { font-weight: 700; opacity: .85; }
+</style>
+</html>

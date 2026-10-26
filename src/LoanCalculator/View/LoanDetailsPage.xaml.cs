@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using LoanCalculator.Core.Models;
 using LoanCalculator.Core.Models.ViewModels.PrimaryModels;
 using LoanCalculator.Core.Services;
 
@@ -145,15 +146,18 @@ public partial class LoanDetailsPage : ContentPage
     {
         if (_suppressTextChanged || sender is not Entry) return;
 
-        var value = ParseAmount(e.NewTextValue);
-        SetPair(lblDepositFormatted, lblDepositWords, value);
-        _viewModel.WizardDepositText = Grouped(value);
+        var typed = ParseAmount(e.NewTextValue);
 
         // Record the intent: the model cannot hold an independent deposit AND loan, so Commit()
         // needs to know which side the user actually typed last.
         _viewModel.LastEditedSplit = LoanSplit.Deposit;
 
-        if (_loanViewModel.HasInitialized) _loanViewModel.DepositAmountDirectInput = value;
+        if (_loanViewModel.HasInitialized) _loanViewModel.DepositAmountDirectInput = typed;
+
+        var effective = EffectiveDeposit(typed);
+        SetPair(lblDepositFormatted, lblDepositWords, effective);
+        ShowCapNote(lblDepositCapNote, typed, effective);
+        _viewModel.WizardDepositText = Grouped(effective);
 
         // The preview labels read committed loan state; nothing else notifies them per keystroke.
         _viewModel.NotifyPreviewLabels();
@@ -163,15 +167,68 @@ public partial class LoanDetailsPage : ContentPage
     {
         if (_suppressTextChanged || sender is not Entry) return;
 
-        var value = ParseAmount(e.NewTextValue);
-        SetPair(lblLoanFormatted, lblLoanWords, value);
-        _viewModel.WizardLoanText = Grouped(value);
+        var typed = ParseAmount(e.NewTextValue);
         _viewModel.LastEditedSplit = LoanSplit.Loan;
 
-        if (_loanViewModel.HasInitialized) _loanViewModel.LoanAmountDirectInput = value;
+        if (_loanViewModel.HasInitialized) _loanViewModel.LoanAmountDirectInput = typed;
+
+        var effective = EffectiveLoan(typed);
+        SetPair(lblLoanFormatted, lblLoanWords, effective);
+        ShowCapNote(lblLoanCapNote, typed, effective);
+        _viewModel.WizardLoanText = Grouped(effective);
 
         // The preview labels read committed loan state; nothing else notifies them per keystroke.
         _viewModel.NotifyPreviewLabels();
+    }
+
+    /// <summary>
+    /// What the model ACCEPTED for the deposit, which is not always what was typed.
+    /// </summary>
+    /// <remarks>
+    /// <see cref="HomeLoanInformation.DepositAmountDirectInput"/> clamps anything above
+    /// <c>PropertyTotalAmount</c> — asset plus upfront costs — because deposit and loan are two
+    /// views of one split, not independent amounts. The page used to display the raw typed figure
+    /// instead, so the preview and the word form contradicted the model for as long as the user
+    /// kept typing, and the Entry itself only snapped back on unfocus, when
+    /// <see cref="RefreshDepositAndLoan"/> finally read the model. Reading the value back here is
+    /// what makes the cap visible while it is being hit rather than after.
+    ///
+    /// Before the first load there is nothing to clamp against, so the typed value stands.
+    /// </remarks>
+    private double EffectiveDeposit(double typed) =>
+        _loanViewModel.HasInitialized ? _loanViewModel.DepositAmountDirectInput : typed;
+
+    /// <inheritdoc cref="EffectiveDeposit"/>
+    private double EffectiveLoan(double typed) =>
+        _loanViewModel.HasInitialized
+            ? _loanViewModel.HomeLoanInfo?.LoanAmountDirectInput ?? typed
+            : typed;
+
+    /// <summary>
+    /// Explains a clamp, and only while one is actually in effect.
+    /// </summary>
+    /// <remarks>
+    /// Shown rather than blocking the keystroke: reverting <c>Entry.Text</c> from inside
+    /// <c>TextChanged</c> is what moved the caret backwards on Android (see the remarks on this
+    /// class), so the field keeps the digits and the page states the limit instead.
+    ///
+    /// With no asset value there is no cap to name — <c>PropertyTotalAmount</c> is zero, so every
+    /// deposit clamps to zero and "cannot exceed 0" would be true but useless. Naming the missing
+    /// input is the actionable message there.
+    /// </remarks>
+    private void ShowCapNote(Label note, double typed, double effective)
+    {
+        if (typed <= effective)
+        {
+            note.IsVisible = false;
+            return;
+        }
+
+        var cap = _loanViewModel.HomeLoanInfo?.PropertyTotalAmount ?? 0;
+        note.Text = cap > 0
+            ? $"Cannot exceed the total asset cost of {_viewModel.CurrencySymbol}{cap:N0}"
+            : "Enter the asset value first";
+        note.IsVisible = true;
     }
 
     // ── Section B: deferred ──────────────────────────────────────────────────
@@ -220,11 +277,15 @@ public partial class LoanDetailsPage : ContentPage
         if (sender is not Entry entry) return;
 
         var grouped = Grouped(ParseAmount(entry.Text));
-        if (grouped == entry.Text) return;
+        if (grouped != entry.Text)
+        {
+            _suppressTextChanged = true;
+            entry.Text = grouped;
+            _suppressTextChanged = false;
+        }
 
-        _suppressTextChanged = true;
-        entry.Text = grouped;
-        _suppressTextChanged = false;
+        if (entry == entryDeposit || entry == entryLoan)
+            RefreshDepositAndLoan();
     }
 
     private void PopulateAll()
@@ -260,22 +321,32 @@ public partial class LoanDetailsPage : ContentPage
         if (!entryLoan.IsFocused) entryLoan.Text = Grouped(loan);
         _suppressTextChanged = false;
 
-        SetPair(lblDepositFormatted, lblDepositWords, deposit);
-        SetPair(lblLoanFormatted, lblLoanWords, loan);
+        if (!entryDeposit.IsFocused) SetPair(lblDepositFormatted, lblDepositWords, deposit);
+        if (!entryLoan.IsFocused) SetPair(lblLoanFormatted, lblLoanWords, loan);
+
+        // A field refreshed from the model now agrees with it by definition, so any clamp note on
+        // it is stale. Clearing matters most for the field NOT being edited: lowering the asset
+        // re-clamps the other side of the split, and without this its note would keep accusing the
+        // user of exceeding a cap they are no longer anywhere near.
+        if (!entryDeposit.IsFocused) lblDepositCapNote.IsVisible = false;
+        if (!entryLoan.IsFocused) lblLoanCapNote.IsVisible = false;
     }
 
     private void SetPair(Label formatted, Label words, double value)
     {
         formatted.Text = value > 0 ? $"{_viewModel.CurrencySymbol}{value:N0}" : string.Empty;
-        words.Text = value > 0
-            ? LoanViewModel.NumberToWordsPublic((long)Math.Round(value))
-            : string.Empty;
+        words.Text = LoanViewModel.AmountToWords(value);
     }
 
     private static double ParseAmount(string? text)
     {
         var digits = new string((text ?? string.Empty).Where(char.IsDigit).ToArray());
-        return double.TryParse(digits, out var value) ? value : 0;
+        if (!double.TryParse(digits, out var value)) return 0;
+
+        // Ceiling, not just a guard against silly input: above 2^53 a double stops holding
+        // integers exactly, so the figure shown stops being the figure typed. See
+        // LoanViewModel.MaxEnterableAmount.
+        return Math.Min(value, LoanViewModel.MaxEnterableAmount);
     }
 
     private static string Grouped(double value) => value > 0 ? $"{value:N0}" : string.Empty;

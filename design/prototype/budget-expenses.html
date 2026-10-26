@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<meta charset="utf-8">
+<title>Budget — Expenses — prototype</title>
+<link rel="stylesheet" href="tokens.css">
+<link rel="stylesheet" href="app.css">
+
+<!--
+  MONEY ▸ EXPENSES — replaces Budget ▸ Expenses (BudgetTabExpenses in
+  BudgetView.xaml), per design/screenshots/iOS-06-budget-expenses.png.
+
+  Same shape as budget-income.html: three-box summary, filter box, row list
+  with edit/delete. BudgetTabExpenses carries no switches of its own (those
+  live only on the Income tab), so this page omits that card rather than
+  duplicating it.
+-->
+
+<div class="phone">
+
+  <div class="page-head">
+    <h1>Budget</h1>
+    <p>What comes in, and what goes out</p>
+  </div>
+
+  <nav class="subtabs">
+    <a href="budget-income.html">Income</a>
+    <a class="on" href="budget-expenses.html">Expenses</a>
+    <a href="budget.html">Summary</a>
+    <a href="budget-asset-costs.html">Asset costs</a>
+  </nav>
+
+  <div class="scroll">
+
+    <div class="boxes">
+      <div><div class="amt">$1,500</div><div class="lbl">monthly expenses</div></div>
+      <div><div class="amt">$18,000</div><div class="lbl">yearly expenses</div></div>
+      <div><div class="amt">$4,500</div><div class="lbl">net / month</div></div>
+    </div>
+
+    <div class="card" style="padding:10px 14px;display:flex;align-items:center;gap:8px">
+      <span style="opacity:.45">&#128269;</span>
+      <span style="opacity:.45;font-size:var(--font-size-body)">Filter expenses&hellip;</span>
+    </div>
+
+    <div class="section">Living expenses</div>
+    <div class="rows">
+      <a class="row" href="#">
+        <span class="grow"><span class="t">Groceries</span><br><span class="s">Monthly</span></span>
+        <span class="v">$900</span><span class="chev">&rsaquo;</span>
+      </a>
+      <a class="row" href="#">
+        <span class="grow"><span class="t">Utilities</span><br><span class="s">Monthly</span></span>
+        <span class="v">$350</span><span class="chev">&rsaquo;</span>
+      </a>
+      <a class="row" href="#">
+        <span class="grow"><span class="t">Transport</span><br><span class="s">Monthly</span></span>
+        <span class="v">$250</span><span class="chev">&rsaquo;</span>
+      </a>
+    </div>
+
+    <!--
+      Empty-state reference, for when FilteredTransactions.Count == 0:
+        "No expenses yet" / "Add your first expense entry above to get started"
+      (same card shape as Income's empty state; not shown live here since this
+      page demonstrates the populated list, matching the screenshot.)
+    -->
+
+  </div>
+
+  <a class="fab" href="#" aria-label="Add expense">+</a>
+
+  <nav class="tabbar">
+    <a href="loan.html"><span class="ico">&#127968;</span>Loan</a>
+    <a class="on" href="budget.html"><span class="ico">&#128176;</span>Budget</a>
+    <a href="whatif.html"><span class="ico">&#10003;</span>What If</a>
+    <a href="settings.html"><span class="ico">&#9881;</span>Settings</a>
+  </nav>
+
+</div>
+
+</html>

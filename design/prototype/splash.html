@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<meta charset="utf-8">
+<title>Splash — prototype</title>
+<link rel="stylesheet" href="tokens.css">
+<link rel="stylesheet" href="app.css">
+
+<!--
+  SPLASH — src/LoanCalculator/View/SplashPage.xaml, unchanged by the
+  redesign. Included for completeness of the five surfaces, not because
+  navigation touches it.
+
+  Per CLAUDE.md this page is composed at its RESTING state deliberately: no
+  entrance animation, no exit fade. Both were removed because together they
+  cost ~1.8s and the exit fade couldn't cross-fade into anything (the shell
+  swap is an instant Window.Page replacement that runs after the fade). So
+  this file shows the page exactly as it sits once rendered — nothing starts
+  at opacity 0, scaled, or offset, matching the "no reintroducing those start
+  values" instruction in SplashPage.xaml's own comment.
+
+  The one surviving animation is the three-dot pulse, shown here mid-pulse
+  (middle dot brighter) as a static frame — animating it would misrepresent
+  it as more motion than the real "fire-and-forget, 30s hard lifetime" pulse
+  that CLAUDE.md describes, and this task is explicitly static HTML/CSS.
+
+  No .tabbar — there is no shell yet at this point in the app's lifecycle.
+  Background is the brand gradient from the XAML verbatim (theme-independent:
+  this is a brand moment, not a themed surface), so it does not use tokens.css.
+-->
+
+<div class="phone" style="background:linear-gradient(135deg, #0A1A20 0%, #0E3340 55%, #10545C 100%)">
+
+  <div style="position:relative;flex:1;display:flex;flex-direction:column;align-items:center">
+
+    <!-- Soft glow behind the logo -->
+    <div style="position:absolute;top:18%;left:50%;width:300px;height:300px;margin-left:-150px;border-radius:50%;background:#16BAC5;opacity:.22"></div>
+
+    <div style="flex:1"></div>
+
+    <!-- Logo card -->
+    <div style="width:148px;height:148px;border-radius:34px;background:#fff;display:grid;place-items:center;position:relative;z-index:1">
+      <span style="font-size:52px">&#127974;</span>
+    </div>
+
+    <h1 style="margin:28px 0 0;color:#fff;font-size:25px;font-weight:700;text-align:center">Loan Affordability Calculator</h1>
+    <p style="margin:8px 0 0;color:#9FD9DE;font-size:14px;text-align:center">Plan smarter, borrow wiser</p>
+
+    <div style="flex:1"></div>
+
+    <!-- Loading dots — static frame of the pulse, mid-cycle -->
+    <div style="display:flex;gap:10px;margin-bottom:56px">
+      <span style="width:9px;height:9px;border-radius:50%;background:#16BAC5;opacity:.35"></span>
+      <span style="width:9px;height:9px;border-radius:50%;background:#16BAC5;opacity:1"></span>
+      <span style="width:9px;height:9px;border-radius:50%;background:#16BAC5;opacity:.35"></span>
+    </div>
+
+  </div>
+
+</div>
+</html>

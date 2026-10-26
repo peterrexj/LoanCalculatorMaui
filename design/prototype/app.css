@@ -1,0 +1,332 @@
+/* ============================================================================
+   Prototype component styles. Built entirely on tokens.css — no raw colour
+   literals below this line except rgba() scrims, which have no token.
+
+   Phone-first: the frame is pinned to 390px, matching the captured iPhone
+   screenshots so prototypes and screenshots can be compared side by side.
+   ============================================================================ */
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  background: #000;
+  font-family: var(--font-family);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* The device frame. Content scrolls inside; the tab bar is pinned. */
+.phone {
+  position: relative;
+  width: 390px;
+  height: 844px;
+  margin: 24px auto;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-radius: 28px;
+  background: var(--default-background-color);
+  color: var(--default-foreground-color);
+}
+
+.scroll {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0 var(--page-inset) 24px;
+}
+.scroll::-webkit-scrollbar { width: 0; }
+
+/* ── Page header ─────────────────────────────────────────────────────────── */
+.page-head { padding: 14px var(--page-inset) 4px; }
+.page-head h1 {
+  margin: 0;
+  font-size: var(--font-size-heading);
+  font-weight: 700;
+}
+.page-head p {
+  margin: 2px 0 0;
+  font-size: var(--font-size-small);
+  opacity: 0.55;
+}
+
+/* ── Sub-tab strip (second level, e.g. Money's Income/Expenses) ──────────── */
+.subtabs {
+  display: flex;
+  background: var(--tab-bar-background-gradient-brush);
+  flex: 0 0 auto;
+}
+.subtabs a {
+  flex: 1;
+  padding: 14px 4px 12px;
+  text-align: center;
+  text-decoration: none;
+  font-size: var(--font-size-small);
+  color: var(--tab-text-color-normal);
+  border-bottom: 5px solid transparent;
+  border-radius: 1px;
+}
+.subtabs a.on {
+  color: var(--tab-text-color-selected);
+  font-weight: 700;
+  border-bottom-color: var(--tab-indicator-stroke-color);
+}
+
+/* ── Cards ───────────────────────────────────────────────────────────────── */
+.card {
+  margin: 10px 0;
+  padding: 14px;
+  border-radius: 12px;
+  background: var(--border-control-background-gradient-brush);
+  border: 1px solid var(--border-control-gradient-border-line-end);
+}
+
+/* Hero card — the headline answer on a page. */
+.hero {
+  margin: 10px 0;
+  padding: 16px;
+  border-radius: 12px;
+  background: var(--border-top-background-gradient-brush);
+  border: 2px solid var(--border-top-gradient-outer-line-end);
+  color: var(--highlight-fg-color);
+}
+.hero.bad {
+  background: var(--border-top-danger-background-gradient-brush);
+  border-color: var(--border-top-danger-outer-line-end);
+  color: var(--border-top-danger-fg-color);
+}
+.hero .big {
+  font-size: 30px;
+  font-weight: 700;
+  letter-spacing: var(--hero-amount-tracking);
+  line-height: 1.1;
+}
+.hero .cap {
+  font-size: var(--hero-caption-size);
+  letter-spacing: var(--hero-caption-tracking);
+  opacity: 0.8;
+}
+
+/* Three-box summary row. */
+.boxes { display: flex; gap: 8px; margin: 10px 0; }
+/* An <a> is allowed here so the affordability verdict can be tappable while
+   sitting in the same row as the static figures, as it does in the app today. */
+.boxes > div,
+.boxes > a {
+  text-decoration: none;
+  flex: 1;
+  padding: 12px 10px;
+  border-radius: 12px;
+  text-align: center;
+  background: var(--border-top-background-gradient-brush);
+  border: 2px solid var(--border-top-gradient-outer-line-end);
+  color: var(--highlight-fg-color);
+}
+.boxes .amt { font-size: var(--hero-amount-size); font-weight: 700; }
+.boxes a .lbl { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 2px; }
+.boxes .lbl { font-size: var(--hero-caption-size); opacity: 0.85; }
+
+/* ── Section label ───────────────────────────────────────────────────────── */
+.section {
+  margin: 20px 0 6px var(--section-header-inset);
+  font-size: var(--font-size-small);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.45;
+}
+
+/* ── Rows ────────────────────────────────────────────────────────────────── */
+.rows { border-radius: 12px; overflow: hidden; background: var(--border-control-background-gradient-brush); border: 1px solid var(--border-control-gradient-border-line-end); }
+.row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 13px 16px;
+  text-decoration: none;
+  color: inherit;
+}
+/* One separator treatment, replacing the five opacities in use today. */
+.row + .row { box-shadow: inset 0 1px 0 color-mix(in srgb, var(--default-foreground-color) 10%, transparent); }
+.row .grow { flex: 1; min-width: 0; }
+.row .t { font-size: var(--font-size-body); }
+.row .s { font-size: var(--font-size-small); opacity: 0.55; }
+.row .v { font-size: var(--font-size-body); font-weight: 700; }
+.row .chev { opacity: 0.4; font-size: var(--font-size-medium); }
+.row .delta { font-size: var(--font-size-small); font-weight: 700; }
+
+/* Accent stripe, carried over from What If's colour-coded scenarios. */
+.row.accent { position: relative; padding-left: 20px; }
+.row.accent::before {
+  content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px;
+  background: var(--stripe, var(--chart-color-1));
+}
+
+/* ── Floating add button ─────────────────────────────────────────────────────
+   Hoisted here from three identical page-local copies (Money's Income, Expenses
+   and Asset costs). Positioned against the .phone frame, clear of the tab bar. */
+.fab {
+  position: absolute; right: 20px; bottom: 94px;
+  width: 56px; height: 56px; border-radius: 28px;
+  background: var(--input-text-fg-color); color: var(--app-shell-bg-color);
+  display: grid; place-items: center; font-size: var(--font-size-heading);
+  font-weight: 700; text-decoration: none; opacity: .85;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, .35);
+}
+
+/* ── Editable figure (tap to open a modal page) ──────────────────────────── */
+.fig {
+  display: flex; align-items: baseline; justify-content: space-between;
+  padding: 10px 0;
+}
+.fig .k { font-size: var(--font-size-small); opacity: 0.55; text-transform: uppercase; letter-spacing: .06em; }
+.fig .n { font-size: 22px; font-weight: 700; }
+.fig .pen { opacity: .45; font-size: var(--font-size-small); margin-left: 6px; }
+
+/* ── Charts: dark-on-dark. This is the fix, demonstrated. ─────────────────
+   Today --chart-card-background is #DDE6ED even in Dark, so every chart is a
+   white box. Here the card inherits the page surface and the ink is light. */
+.chart {
+  margin: 10px 0;
+  padding: 12px;
+  border-radius: 12px;
+  background: var(--border-control-background-gradient-brush);
+  border: 1px solid var(--border-control-gradient-border-line-end);
+}
+.chart .axis { font-size: var(--font-size-xs); opacity: .5; }
+.chart .legend { display: flex; gap: 14px; justify-content: center; margin-top: 10px; font-size: var(--font-size-xs); opacity: .75; }
+.chart .legend i { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 5px; }
+
+.bars { display: flex; align-items: flex-end; gap: 3px; height: 120px; }
+.bars span { flex: 1; display: flex; flex-direction: column; justify-content: flex-end; }
+.bars i { display: block; }
+.bars .p { background: var(--chart-color-1); }
+.bars .i { background: var(--chart-color-2); }
+
+/* Donut, dark-on-dark. */
+.donut {
+  width: 180px; height: 180px; margin: 6px auto; border-radius: 50%;
+  display: grid; place-items: center;
+  background: conic-gradient(var(--chart-color-1) 0 75%, var(--chart-color-2) 75% 100%);
+}
+.donut > div {
+  width: 118px; height: 118px; border-radius: 50%;
+  background: var(--default-background-color);
+  display: grid; place-items: center; text-align: center;
+}
+.donut .k { font-size: var(--font-size-xs); opacity: .55; }
+.donut .v { font-size: var(--font-size-xl); font-weight: 700; }
+
+/* ── Pills / controls ────────────────────────────────────────────────────── */
+.stepper { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.stepper .pm {
+  width: 38px; height: 38px; flex: 0 0 auto; border-radius: 10px; border: 0;
+  background: var(--numeric-button-background-color);
+  color: var(--numeric-button-text-color);
+  font-size: var(--font-size-xl);
+}
+.seg { display: flex; border: 2px solid var(--seg-border-color); border-radius: 15px; overflow: hidden; }
+.seg button {
+  flex: 1; padding: 11px 0; border: 0; background: transparent;
+  color: var(--seg-text-fg-color); font-size: var(--font-size-body);
+  font-family: var(--font-family);
+}
+.seg button.on { background: var(--seg-selected-bg-color); color: var(--default-foreground-color); font-weight: 700; }
+
+.good { color: var(--chart-color-1); }
+.warn { color: var(--chart-color-2); }
+
+/* Advisory banner. */
+.banner {
+  margin: 10px 0; padding: 12px 14px; border-radius: 12px;
+  background: var(--information-background-gradient-brush);
+  color: var(--notification-text-color);
+  font-size: var(--font-size-small);
+}
+.banner.warn-b { background: var(--warning-background-gradient-brush); }
+
+.micro { font-size: var(--font-size-small); opacity: .5; margin: 8px 0 0; }
+
+/* ── Bottom tab bar ──────────────────────────────────────────────────────── */
+.tabbar {
+  flex: 0 0 auto;
+  display: flex;
+  padding: 8px 10px 14px;
+  background: var(--app-shell-tab-bar-background-color);
+}
+.tabbar a {
+  flex: 1; text-align: center; text-decoration: none; padding: 7px 0;
+  border-radius: 20px;
+  color: var(--app-shell-tab-bar-unselected-color);
+  font-size: var(--font-size-xs);
+}
+.tabbar a.on {
+  background: color-mix(in srgb, var(--default-foreground-color) 12%, transparent);
+  color: var(--app-shell-tab-bar-foreground-color);
+  font-weight: 700;
+}
+.tabbar .ico { display: block; font-size: 17px; margin-bottom: 2px; }
+
+/* ── Modal page (data entry) ─────────────────────────────────────────────── */
+.modal-head {
+  display: flex; align-items: center; gap: 8px;
+  padding: 14px var(--page-inset) 4px;
+}
+.modal-head h1 { flex: 1; margin: 0; font-size: var(--font-size-xl); font-weight: 700; }
+.modal-head a {
+  text-decoration: none; font-size: var(--font-size-large);
+  color: var(--tab-indicator-stroke-color);
+}
+.modal-head .x { opacity: .6; font-size: var(--font-size-xl); }
+
+.field { margin: 14px 0 0; }
+.field label { display: block; font-size: var(--font-size-small); opacity: .45; text-transform: uppercase; letter-spacing: .06em; }
+.field .box {
+  margin-top: 6px; padding: 14px 10px; border-radius: 10px;
+  background: var(--app-shell-bg-color);
+  font-size: var(--font-size-xl); font-weight: 700;
+}
+.field .hint { margin-top: 4px; font-size: var(--font-size-small); opacity: .45; }
+
+/* The three fields are grouped in one card, so the card's own padding supplies the
+   leading inset and the first field must not add a second one. */
+.card .field:first-child { margin-top: 0; }
+
+/* Closing row of a form card: a hairline, then the entered figures restated as the one
+   number that matters. Every data-entry page gets one, and each catches the mistake its
+   own form invites — a wrong FREQUENCY on Transaction Entry (the amount looks right and
+   the period is wrong), a deposit/loan split that does not reconcile on Loan Details, a
+   mis-keyed component on Upfront Costs. In each case the error is invisible in the fields
+   themselves, which is why the restatement earns its space rather than merely filling it.
+
+   One rule for all of them so the pattern reads as deliberate: `lead` is the figure, `sub`
+   the secondary framing, `cap` an uppercase caption matching the field labels. */
+.card-foot {
+  margin-top: 14px; padding-top: 12px;
+  border-top: 1px solid var(--border-control-gradient-border-line-end);
+  display: flex; align-items: baseline; justify-content: space-between; gap: 8px;
+}
+.card-foot .lead { font-size: var(--font-size-large); font-weight: 700; }
+.card-foot .sub { font-size: var(--font-size-small); opacity: .55; }
+.card-foot .cap {
+  font-size: var(--font-size-small); opacity: .45;
+  text-transform: uppercase; letter-spacing: .06em;
+}
+/* Stacked variant, for when the secondary line is a breakdown too long to sit beside the
+   figure (Loan Details' "deposit + loan" identity). */
+.card-foot.stack { display: block; }
+.card-foot.stack .sub { display: block; margin-top: 3px; }
+
+/* Destructive action: outlined, never filled, and it uses the negative-value colour
+   rather than a chart accent — chart colours carry series meaning elsewhere. */
+.btn-danger {
+  display: block; margin-top: 24px; padding: 12px; border-radius: 10px;
+  background: none; border: 1px solid var(--negative-value-color);
+  color: var(--negative-value-color);
+  font-size: var(--font-size-body); font-family: var(--font-family);
+  text-align: center; text-decoration: none;
+}
+
+/* Index page chrome (not part of the app) */
+.wrap { max-width: 1180px; margin: 0 auto; padding: 32px 20px 60px; color: #dde6ed; font-family: var(--font-family); }
+.wrap h1 { font-size: 24px; }
+.wrap a { color: #9db2bf; }
+.gallery { display: flex; flex-wrap: wrap; gap: 20px; }

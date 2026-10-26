@@ -18,6 +18,79 @@ namespace LoanCalculatorMaui.Controls
         public static readonly BindableProperty FormattedText3Property =
             BindableProperty.Create(nameof(FormattedText3), typeof(FormattedString), typeof(ThreeColumnBorderedContentView), new FormattedString(), propertyChanged: OnFormattedText3Changed);
 
+        /// <summary>
+        /// Makes box 3 tappable. Null by default, so every existing use of this control keeps
+        /// three inert boxes — a <c>TapGestureRecognizer</c> with no Command does nothing.
+        /// </summary>
+        /// <remarks>
+        /// Only box 3 is wired. The Loan page uses it to link the affordability verdict through to
+        /// What If, which is the one place in the design where a hero box is also a link.
+        /// </remarks>
+        public static readonly BindableProperty Box3CommandProperty =
+            BindableProperty.Create(nameof(Box3Command), typeof(System.Windows.Input.ICommand), typeof(ThreeColumnBorderedContentView));
+
+        /// <summary>
+        /// Automation id for box 3 specifically. The control's own AutomationId lands on the whole
+        /// three-box row, whose centre is box 2 — so a test tapping that would hit the wrong box.
+        /// </summary>
+        public static readonly BindableProperty Box3AutomationIdProperty =
+            BindableProperty.Create(nameof(Box3AutomationId), typeof(string), typeof(ThreeColumnBorderedContentView), propertyChanged: OnBox3AutomationIdChanged);
+
+        public System.Windows.Input.ICommand? Box3Command
+        {
+            get => (System.Windows.Input.ICommand?)GetValue(Box3CommandProperty);
+            set => SetValue(Box3CommandProperty, value);
+        }
+
+        public string? Box3AutomationId
+        {
+            get => (string?)GetValue(Box3AutomationIdProperty);
+            set => SetValue(Box3AutomationIdProperty, value);
+        }
+
+        private static void OnBox3AutomationIdChanged(BindableObject bindable, object oldValue, object newValue)
+        {
+            if (bindable is ThreeColumnBorderedContentView control && newValue is string id)
+                control.Box3Border.AutomationId = id;
+        }
+
+        /// <summary>
+        /// Shows or hides the third box. When hidden, its column collapses so the two remaining
+        /// boxes take half the width each.
+        /// </summary>
+        /// <remarks>
+        /// Added for the Projection summary, where the third box held a two-digit year count next
+        /// to two currency totals. At a third of the width an eight-digit figure wrapped
+        /// mid-number ("$19,336,98 / 9"), so the box that needed the least space was costing the
+        /// two that needed the most. Defaults to true, so every existing three-box use is
+        /// untouched.
+        /// </remarks>
+        public static readonly BindableProperty Box3VisibleProperty =
+            BindableProperty.Create(
+                nameof(Box3Visible),
+                typeof(bool),
+                typeof(ThreeColumnBorderedContentView),
+                true,
+                propertyChanged: OnBox3VisibleChanged);
+
+        public bool Box3Visible
+        {
+            get => (bool)GetValue(Box3VisibleProperty);
+            set => SetValue(Box3VisibleProperty, value);
+        }
+
+        private static void OnBox3VisibleChanged(BindableObject bindable, object oldValue, object newValue)
+        {
+            if (bindable is not ThreeColumnBorderedContentView control || newValue is not bool visible)
+                return;
+
+            control.Box3Border.IsVisible = visible;
+
+            // Collapsing the column as well as the Border is what redistributes the width —
+            // hiding the Border alone leaves its third of the grid empty.
+            control.Box3Column.Width = visible ? new GridLength(33, GridUnitType.Star) : new GridLength(0);
+        }
+
         public FormattedString FormattedText1
         {
             get => (FormattedString)GetValue(FormattedText1Property);

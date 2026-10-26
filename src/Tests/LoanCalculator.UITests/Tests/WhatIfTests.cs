@@ -18,18 +18,67 @@ public class WhatIfTests : UITestBase
     /// </summary>
     private void SeedLoan() => TestData.EnsureLoan(Tabs, Loan);
 
+    /// <summary>
+    /// The nine scenarios are an index of rows now, not nine stacked cards, so this asserts the
+    /// index renders rather than that any one card does.
+    /// </summary>
+    /// <remarks>
+    /// It asserts from the <b>Scenarios</b> sub-tab, which matters: both the placeholder and the
+    /// index live there, and arriving at What If lands on Answer. Asserting from Answer passed
+    /// vacuously — neither element exists on that tab, so the placeholder read as "hidden"
+    /// whether or not a loan had been entered.
+    /// </remarks>
+    /// <summary>
+    /// The affordability verdict on Loan is a link through to the full answer.
+    /// </summary>
+    /// <remarks>
+    /// Deliberately leaves What If on a *different* sub-tab first. Shell keeps the page alive, so
+    /// without an explicit request the link lands wherever the user last was — and a link that
+    /// promises the answer dropping you on Projection is the defect this guards.
+    /// </remarks>
     [Test]
-    public void ScenarioCardsAppearOnceALoanExists()
+    public void TappingTheLoanVerdictOpensTheWhatIfAnswerTab()
     {
         SeedLoan();
-        Tabs.GoTo(AppTab.WhatIf);
+
+        WhatIf.OpenProjectionTab();
+        Loan.TapVerdictLink();
+
+        Assert.That(App.Exists("WhatIfAnswerCard", TimeSpan.FromSeconds(15)), Is.True,
+            "Tapping the affordability verdict did not land on What If ▸ Answer.");
+    }
+
+    [Test]
+    public void ScenarioIndexAppearsOnceALoanExists()
+    {
+        SeedLoan();
+        WhatIf.OpenScenariosTab();
 
         Assert.Multiple(() =>
         {
             Assert.That(WhatIf.ShowsNoDataPlaceholder(), Is.False,
                 "The 'no loan data' placeholder was still showing after a loan was entered.");
-            Assert.That(App.Exists(WhatIfPage.RateDeltaValue), Is.True,
-                "The Rate Change card did not render.");
+
+            // Each row's headline figure, one assertion per row. A failed binding path renders an
+            // empty label rather than throwing, so asserting the figure — not just the row — is
+            // what catches it. Named individually so the failure says which row broke.
+            foreach (var (row, id, needsBudget) in WhatIfPage.AllScenarioDeltas)
+            {
+                var delta = App.ScrollTo(id).Text;
+
+                Assert.That(delta, Is.Not.Empty,
+                    $"The {row} row rendered without its headline delta figure.");
+
+                // "--" is the un-computed placeholder. Every scenario that derives from the loan
+                // alone must have a real figure by now, so a placeholder means the binding
+                // resolved but nothing computed. The stress test is exempt: it measures headroom
+                // against income and expenses, and this test seeds only a loan.
+                if (!needsBudget)
+                {
+                    Assert.That(delta, Is.Not.EqualTo("--"),
+                        $"The {row} row is still showing the placeholder with a loan entered.");
+                }
+            }
         });
     }
 
@@ -120,6 +169,38 @@ public class WhatIfTests : UITestBase
         Assert.That(WhatIf.StressTestResultsShowing(), Is.False,
             "With no income or expenses recorded, the stress test is still showing results — so " +
             "they are computed from nothing, or the card did not refresh after the data was deleted.");
+    }
+
+    /// <summary>
+    /// Every scenario carries a collapsed explanation card; this proves one opens and renders.
+    /// </summary>
+    /// <remarks>
+    /// The assertion is on the card's <b>text</b>, not on the element existing, because the
+    /// failure this guards against is a card that opens empty: the content is supplied as a
+    /// <c>ScenarioExplanation</c> from Core, and a card wired without one would render its
+    /// headings and no prose — which looks like a styling fault rather than missing data. Exactly
+    /// the way the Insights panels failed when nothing set their refresh flag.
+    ///
+    /// If this fails on iOS with the header found but the body never appearing, the cause is
+    /// almost certainly <c>ScenarioPage.ApplyExpanderTouchFix</c> not landing rather than this
+    /// locator — a Syncfusion drawing overlay swallowing the header tap is silent and is the
+    /// documented trap for SfExpander on iOS.
+    /// </remarks>
+    [Test]
+    public void EachScenarioExplainsItselfInPlainLanguage()
+    {
+        SeedLoan();
+        Tabs.GoTo(AppTab.WhatIf);
+
+        // Any scenario would do; Rate change is the one every other test already opens, so it is
+        // the cheapest to reach from a warm state.
+        WhatIf.IncreaseRate(steps: 1);
+
+        var body = WhatIf.ExpandExplanation();
+
+        Assert.That(body, Does.Match("(?i)rate"),
+            "The Rate change explanation opened but does not mention rates, so the card is "
+            + "showing another scenario's content or none at all.");
     }
 
     private static decimal ParseMoney(string text)

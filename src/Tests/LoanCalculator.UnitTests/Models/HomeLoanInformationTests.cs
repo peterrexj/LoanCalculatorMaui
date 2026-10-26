@@ -358,5 +358,39 @@ namespace LoanCalculator.UnitTests.Models
             Assert.DoesNotThrow(() => sdo.SumUpData());
         }
 
+        /// <summary>
+        /// Outside Australian mode nothing populates the state-calculated fee entries, so the
+        /// roll-up in <c>AutoUpdateMortgageCharges</c> has nothing to sum. It used to overwrite
+        /// the typed figure with that empty sum (0), and since <c>SumUpData</c> runs inside
+        /// <c>OtherExpenseTotalAmount</c>'s getter, just displaying the upfront total erased it.
+        /// </summary>
+        [Test]
+        public void SumUpData_PreservesAManuallyTypedMortgageCharge()
+        {
+            var sdo = new StampDutyOutput { MortgageCharges = 12 };
+
+            sdo.SumUpData();
+
+            Assert.That(sdo.MortgageCharges, Is.EqualTo(12));
+            Assert.That(sdo.Total, Is.EqualTo(12));
+        }
+
+        /// <summary>
+        /// The whole upfront total, through the same getter the Upfront Costs page binds to:
+        /// every field the page offers must be counted, mortgage charges included.
+        /// </summary>
+        [Test]
+        public void OtherExpenseTotalAmount_CountsEveryUpfrontField()
+        {
+            var info = new HomeLoanInformation();
+            info.StampDuty.MortgageCharges = 12;
+            info.ConveyanceExpense.ConveyancerFee = 10;
+            info.BankExpense.BankSettlementFee = 20;
+            info.OtherExpense.InspectionFee = 30;
+            info.OtherExpense.OtherExpenses = 40;
+
+            Assert.That(info.OtherExpenseTotalAmount, Is.EqualTo(112));
+        }
+
     }
 }

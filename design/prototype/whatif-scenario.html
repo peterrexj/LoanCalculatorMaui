@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<meta charset="utf-8">
+<title>Rate change impact — prototype</title>
+<link rel="stylesheet" href="tokens.css">
+<link rel="stylesheet" href="app.css">
+
+<!--
+  SCENARIO DETAIL — the payoff of the scenario index on verdict.html.
+
+  This is the content of what is today one of the nine What-If cards, given a
+  whole screen instead of 1/9th of a scroll. Because it is a page rather than a
+  card in a stack, it can afford a proper control, a full-width chart and a
+  plain-language conclusion — and the user arrives here having CHOSEN it.
+
+  Back goes to the index — now whatif-scenarios.html, the Scenarios sub-tab,
+  since the index moved out of whatif.html (now the Answer sub-tab) to make
+  room for a sub-tab strip. One scenario per page means the nine are
+  addressable, which they are not today.
+-->
+
+<div class="phone">
+
+  <div class="modal-head">
+    <a href="whatif-scenarios.html" class="x" style="font-size:var(--font-size-xl)">&lsaquo;</a>
+    <h1>Rate change</h1>
+  </div>
+
+  <div class="scroll">
+
+    <p class="micro" style="margin-top:0">What happens if rates move?</p>
+
+    <div class="card">
+      <div class="stepper">
+        <span class="k" style="font-size:var(--font-size-small);opacity:.55">CHANGE</span>
+        <button class="pm">&minus;</button>
+        <strong class="good" style="font-size:22px;min-width:92px;text-align:center">+0.50%</strong>
+        <button class="pm">+</button>
+      </div>
+    </div>
+
+    <div class="boxes" style="flex-wrap:wrap">
+      <div style="flex:1 1 45%"><div class="amt">5.5%</div><div class="lbl">new rate</div></div>
+      <div style="flex:1 1 45%"><div class="amt">$2,953</div><div class="lbl">new monthly</div></div>
+    </div>
+
+    <!-- The single most important number on the page, given the danger styling. -->
+    <div class="hero bad">
+      <div class="cap">MONTHLY CHANGE</div>
+      <div class="big">+$161<span style="font-size:15px;font-weight:400">/mo</span></div>
+      <div class="cap">$543,018 total interest over the full term</div>
+    </div>
+
+    <div class="chart">
+      <div class="bars">
+        <span><i class="i" style="height:64px"></i><i class="p" style="height:10px"></i></span>
+        <span><i class="i" style="height:62px"></i><i class="p" style="height:13px"></i></span>
+        <span><i class="i" style="height:59px"></i><i class="p" style="height:16px"></i></span>
+        <span><i class="i" style="height:56px"></i><i class="p" style="height:20px"></i></span>
+        <span><i class="i" style="height:52px"></i><i class="p" style="height:24px"></i></span>
+        <span><i class="i" style="height:48px"></i><i class="p" style="height:29px"></i></span>
+        <span><i class="i" style="height:43px"></i><i class="p" style="height:34px"></i></span>
+        <span><i class="i" style="height:37px"></i><i class="p" style="height:40px"></i></span>
+        <span><i class="i" style="height:31px"></i><i class="p" style="height:46px"></i></span>
+        <span><i class="i" style="height:24px"></i><i class="p" style="height:53px"></i></span>
+        <span><i class="i" style="height:16px"></i><i class="p" style="height:61px"></i></span>
+        <span><i class="i" style="height:7px"></i><i class="p" style="height:70px"></i></span>
+      </div>
+      <div class="legend">
+        <span><i style="background:var(--chart-color-1)"></i>Principal</span>
+        <span><i style="background:var(--chart-color-2)"></i>Interest</span>
+      </div>
+    </div>
+
+    <div class="banner">
+      Even at 5.5% you'd have about <strong>$1,547/mo</strong> headroom remaining.
+    </div>
+
+    <div class="section">Compare</div>
+    <div class="rows">
+      <a class="row" href="whatif-scenario.html">
+        <span class="grow"><span class="t">Stress test</span><br><span class="s">What if rates hit 8.5%?</span></span>
+        <span class="chev">&rsaquo;</span>
+      </a>
+      <a class="row" href="whatif-scenario.html">
+        <span class="grow"><span class="t">Extra repayments</span><br><span class="s">Offset the increase</span></span>
+        <span class="chev">&rsaquo;</span>
+      </a>
+    </div>
+
+    <p class="micro">Estimates only — not financial advice.</p>
+
+  </div>
+
+  <nav class="tabbar">
+    <a href="loan.html"><span class="ico">&#127968;</span>Loan</a>
+    <a href="budget.html"><span class="ico">&#128176;</span>Budget</a>
+    <a class="on" href="whatif.html"><span class="ico">&#10003;</span>What If</a>
+    <a href="settings.html"><span class="ico">&#9881;</span>Settings</a>
+  </nav>
+
+</div>
+</html>

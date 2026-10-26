@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<meta charset="utf-8">
+<title>Loan Details (first run) — prototype</title>
+<link rel="stylesheet" href="tokens.css">
+<link rel="stylesheet" href="app.css">
+
+<!--
+  LOAN DETAILS — the single data-entry page, FIRST-RUN state.
+
+  Replaces src/LoanCalculator/View/LoanDetailsPage.xaml, opened from Loan's ⚡ FabWizard or by
+  tapping the asset/deposit/loan figures there. Nothing about its navigation changed in the
+  redesign — Loan plays the role LoanView's Asset tab used to — this file exists to show the
+  page's own two states side by side with loan-details-return.html.
+
+  Section A (asset, deposit, loan) is always shown — no other screen lets you type these.
+  Section B (upfront costs, running cost, income, expenses) is shown here because nothing has
+  been recorded yet: this is a brand-new user filling in the wizard for the first time, so every
+  deferred field is present and empty, and there is no "also using your recorded ..." note
+  (WizardShowInheritedNote is false until at least one of those four has a value).
+
+  Done sits in the header, not pinned to the bottom — ScrollView's bottom padding is 300pt in the
+  real page for exactly the reason noted in TransactionEntryPage: the keyboard overlays rather
+  than insets, so a bottom button would be unreachable while typing. Preserved here by putting
+  "Done" next to the title rather than as a page-end button.
+-->
+
+<div class="phone">
+
+  <div class="modal-head">
+    <h1>Loan Details</h1>
+    <a href="loan.html">Done</a>
+    <a href="loan.html" class="x">&times;</a>
+  </div>
+
+  <div class="scroll">
+
+    <!--
+      ══ Section A — always shown ══
+
+      Its own card. The A/B split was previously carried only by a 28px gap and a comment,
+      which made two groups with different rules look like one list of seven fields. Two cards
+      state the distinction structurally: A is permanent, B disappears field by field as each
+      value is recorded elsewhere.
+    -->
+    <div class="card">
+
+      <!--
+        These hints keep the formatted figure as well as the word form — unlike Transaction
+        Entry, where the foot restates the same single amount and the echo was redundant. Here
+        the foot states a DIFFERENT figure (the total), so each field still needs its own
+        formatted echo, and it earns its place twice over: it confirms the grouping applied to
+        the raw digits being typed, and it is the only node carrying the currency symbol, which
+        is what SettingsTests asserts on when the currency is switched to Euro.
+      -->
+      <div class="field">
+        <label>Asset value $</label>
+        <div class="box">650,000</div>
+        <p class="hint">$650,000&nbsp;&nbsp;Six Hundred, Fifty Thousand</p>
+      </div>
+
+      <div class="field">
+        <label>Deposit amount $</label>
+        <div class="box">130,000</div>
+        <p class="hint">$130,000&nbsp;&nbsp;One Hundred, Thirty Thousand</p>
+      </div>
+
+      <div class="field">
+        <!--
+          520,000 — not 520,112. Section B's upfront-costs field is empty on a first run, so
+          there is nothing to add to the loan and the split must reconcile exactly:
+          650,000 asset − 130,000 deposit. The 112 here was copied from the return-visit file,
+          where $112 of upfront costs does exist; the card-foot identity below is what made the
+          mismatch visible.
+        -->
+        <label>Loan amount $</label>
+        <div class="box">520,000</div>
+        <p class="hint">$520,000&nbsp;&nbsp;Five Hundred, Twenty Thousand</p>
+      </div>
+
+      <!--
+        The identity that ties the three fields together. These are not three independent
+        amounts — HomeLoanInformation stores a total and ONE split point, so the model has two
+        degrees of freedom and asset = deposit + loan + upfront always holds. Stating it is
+        what reveals a deposit or loan figure that did not land where the user expected, which
+        the fields alone cannot show. No upfront cost exists on a first run, so this is the
+        plain split; loan-details-return.html shows it with upfront costs folded in.
+      -->
+      <!--
+        WizardAssetTotalLabel. The breakdown line that normally sits under it
+        (WizardAssetBreakdownLabel) is absent here because WizardShowAssetBreakdown gates on
+        upfront costs being greater than zero, and this is a first run with none recorded —
+        with nothing folded into the loan, deposit + loan equal the asset value exactly and
+        there is no gap to explain. loan-details-return.html shows it with both lines.
+      -->
+      <div class="card-foot stack">
+        <span class="lead">Total asset cost: $650,000</span>
+      </div>
+
+    </div>
+
+    <!--
+      ══ Section B — only while empty; this is a first run, so all four are present ══
+
+      Each of these has its own editing screen, so the field is shown here ONLY while the value
+      is missing. On a return visit the whole card is gone and WizardInheritedNote names what
+      the calculation is still using instead — see loan-details-return.html.
+    -->
+    <div class="card">
+
+      <div class="field">
+        <label>Upfront costs (optional) $</label>
+        <div class="box" style="opacity:.5">e.g. 15,000</div>
+        <p class="hint" style="opacity:.75;font-weight:700">&#9398;&nbsp; Added to your loan amount — not paid separately</p>
+      </div>
+
+      <div class="field">
+        <label>Monthly running cost (optional) $</label>
+        <div class="box" style="opacity:.5">e.g. 2,000</div>
+      </div>
+
+      <div class="field">
+        <label>Total monthly income $</label>
+        <div class="box" style="opacity:.5">e.g. 5,000</div>
+      </div>
+
+      <div class="field">
+        <label>Total monthly expenses $</label>
+        <div class="box" style="opacity:.5">e.g. 3,500</div>
+      </div>
+
+    </div>
+
+    <p class="micro" style="text-align:center;margin-top:28px">&uarr; Tap Done above to save</p>
+
+  </div>
+
+</div>
+</html>

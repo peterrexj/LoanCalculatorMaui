@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<meta charset="utf-8">
+<title>Schedule — prototype</title>
+<link rel="stylesheet" href="tokens.css">
+<link rel="stylesheet" href="app.css">
+
+<!--
+  SCHEDULE — Loan ▸ Schedule sub-tab, reached from loan.html's subtabs strip
+  (Asset / Schedule) and from its "See the full schedule ›" micro-link.
+
+  REVISION (owner feedback round 2): this was originally moved to be a
+  reference view under What If, but that's reverted — it stays with Loan,
+  both because it is purely loan-derived (period/repayment/interest/
+  principal/balance, no income or expenses involved) and because leaving it
+  put is the lower-churn fix once the owner flagged that Schedule had been
+  demoted from a tab to a buried row. It is still read-only — you read it,
+  you don't edit anything here — so the page itself hasn't changed, only its
+  home and how you get to it: a .page-head + .subtabs strip like loan.html,
+  instead of a modal back-link to whatif.html, and a real .tabbar at the
+  bottom with Loan active.
+
+  THE DENSE-TABLE-ON-A-PHONE PROBLEM, and how this solves it:
+  Today's grid already paginates 5 rows at a time through a flat list of ~30
+  annual rows plus a 4-column SfDataGrid — which still means paging through
+  6 screens of controls to see the whole loan life, and the pager itself eats
+  vertical space before any data appears.
+
+  This prototype groups rows by DECADE instead of paging, and nests the years
+  inside using the native HTML <details>/<summary> disclosure element — no JS,
+  which this task set is static-only, so a decade is one row until opened. The
+  schedule is read start-to-finish in one scroll with three taps at most
+  (open early / middle / late decade), rather than six pages of five rows.
+  Opening a decade reveals its year rows directly beneath — no separate drill
+  page, so you can compare an opened decade against the collapsed shape of the
+  others.
+
+  Columns are reduced from the conceptual six (period, opening balance,
+  repayment, interest, principal, closing balance) to five: period, repayment,
+  interest, principal, closing balance. Opening balance is dropped because on
+  a sequential table it always equals the row above's closing balance — showing
+  it twice doubles column count for zero new information, and the current app
+  already makes this same simplification (its grid has no opening-balance
+  column either). Repayment is restored as its own column (the current grid
+  omits it) because principal + interest = repayment is the one relationship
+  worth seeing without doing the arithmetic.
+
+  First decade is pre-opened to show the shape; the rest start collapsed.
+-->
+
+<div class="phone">
+
+  <div class="modal-head">
+    <a href="loan.html" class="x" style="font-size:var(--font-size-xl)">&lsaquo;</a>
+    <h1>Schedule</h1>
+  </div>
+
+
+  <div class="scroll">
+
+    <p class="micro" style="margin-top:0">$520,112 at 5% over 30 years, monthly repayments of
+      $2,792. Tap a decade to see its years.</p>
+
+    <div class="sched-head">
+      <span>Period</span><span>Repayment</span><span>Interest</span><span>Principal</span><span>Balance</span>
+    </div>
+
+    <details class="sched-decade" open>
+      <summary>
+        <span class="yr">2026–2035</span>
+        <span class="n">$335,049</span><span class="n">$238,007</span><span class="n">$97,042</span><span class="n">$423,070</span>
+      </summary>
+      <div class="sched-rows">
+                <div class="row2"><span>2027</span><span>$33,505</span><span>$25,831</span><span>$7,674</span><span>$512,438</span></div>
+        <div class="row2"><span>2028</span><span>$33,505</span><span>$25,439</span><span>$8,066</span><span>$504,372</span></div>
+        <div class="row2"><span>2029</span><span>$33,505</span><span>$25,026</span><span>$8,479</span><span>$495,893</span></div>
+        <div class="row2"><span>2030</span><span>$33,505</span><span>$24,592</span><span>$8,913</span><span>$486,981</span></div>
+        <div class="row2"><span>2031</span><span>$33,505</span><span>$24,136</span><span>$9,369</span><span>$477,612</span></div>
+        <div class="row2"><span>2032</span><span>$33,505</span><span>$23,656</span><span>$9,849</span><span>$467,763</span></div>
+        <div class="row2"><span>2033</span><span>$33,505</span><span>$23,150</span><span>$10,355</span><span>$457,408</span></div>
+        <div class="row2"><span>2034</span><span>$33,505</span><span>$22,618</span><span>$10,887</span><span>$446,521</span></div>
+        <div class="row2"><span>2035</span><span>$33,505</span><span>$22,057</span><span>$11,448</span><span>$435,073</span></div>
+      </div>
+    </details>
+
+    <details class="sched-decade">
+      <summary>
+        <span class="yr">2036–2045</span>
+        <span class="n">$335,049</span><span class="n">$175,219</span><span class="n">$159,829</span><span class="n">$263,240</span>
+      </summary>
+      <div class="sched-rows">
+        <div class="row2"><span>2036</span><span>$33,505</span><span>$21,466</span><span>$12,039</span><span>$423,034</span></div>
+        <div class="row2"><span>2037</span><span>$33,505</span><span>$20,843</span><span>$12,662</span><span>$410,372</span></div>
+        <div class="row2"><span>2038</span><span>$33,505</span><span>$20,186</span><span>$13,319</span><span>$397,053</span></div>
+        <div class="row2"><span>2039</span><span>$33,505</span><span>$19,494</span><span>$14,011</span><span>$383,042</span></div>
+        <div class="row2"><span>2040</span><span>$33,505</span><span>$18,765</span><span>$14,740</span><span>$368,302</span></div>
+        <div class="row2"><span>2041</span><span>$33,505</span><span>$17,996</span><span>$15,509</span><span>$352,793</span></div>
+        <div class="row2"><span>2042</span><span>$33,505</span><span>$17,186</span><span>$16,319</span><span>$336,474</span></div>
+        <div class="row2"><span>2043</span><span>$33,505</span><span>$16,332</span><span>$17,173</span><span>$319,301</span></div>
+        <div class="row2"><span>2044</span><span>$33,505</span><span>$15,431</span><span>$18,074</span><span>$301,227</span></div>
+        <div class="row2"><span>2045</span><span>$33,505</span><span>$14,481</span><span>$19,024</span><span>$282,203</span></div>
+      </div>
+    </details>
+
+    <details class="sched-decade">
+      <summary>
+        <span class="yr">2046–2056</span>
+        <span class="n">$335,049</span><span class="n">$71,808</span><span class="n">$263,240</span><span class="n">$0</span>
+      </summary>
+      <div class="sched-rows">
+        <div class="row2"><span>2046</span><span>$33,505</span><span>$13,480</span><span>$20,025</span><span>$262,178</span></div>
+        <div class="row2"><span>2047</span><span>$33,505</span><span>$12,424</span><span>$21,081</span><span>$241,097</span></div>
+        <div class="row2"><span>2048</span><span>$33,505</span><span>$11,311</span><span>$22,194</span><span>$218,903</span></div>
+        <div class="row2"><span>2049</span><span>$33,505</span><span>$10,138</span><span>$23,367</span><span>$195,536</span></div>
+        <div class="row2"><span>2050</span><span>$33,505</span><span>$8,901</span><span>$24,604</span><span>$170,932</span></div>
+        <div class="row2"><span>2051</span><span>$33,505</span><span>$7,598</span><span>$25,907</span><span>$145,025</span></div>
+        <div class="row2"><span>2052</span><span>$33,505</span><span>$6,225</span><span>$27,280</span><span>$117,745</span></div>
+        <div class="row2"><span>2053</span><span>$33,505</span><span>$4,778</span><span>$28,727</span><span>$89,018</span></div>
+        <div class="row2"><span>2054</span><span>$33,505</span><span>$3,254</span><span>$30,251</span><span>$58,767</span></div>
+        <div class="row2"><span>2055</span><span>$33,505</span><span>$1,649</span><span>$31,856</span><span>$26,911</span></div>
+        <div class="row2"><span>2056</span><span>$27,537</span><span>$626</span><span>$26,911</span><span>$0</span></div>
+      </div>
+    </details>
+
+    <p class="micro">Totals above are per decade. Figures are estimates — see What If for the
+      full affordability picture.</p>
+
+  </div>
+
+  <nav class="tabbar">
+    <a class="on" href="loan.html"><span class="ico">&#127968;</span>Loan</a>
+    <a href="budget.html"><span class="ico">&#128176;</span>Budget</a>
+    <a href="whatif.html"><span class="ico">&#10003;</span>What If</a>
+    <a href="settings.html"><span class="ico">&#9881;</span>Settings</a>
+  </nav>
+
+</div>
+
+<!--
+  Page-local styles. app.css has no dense-data-table component (its only grid-
+  shaped thing is .rows/.row, built for one line of text + one value, not five
+  numeric columns), so this table lives here rather than being invented into
+  the shared sheet. Flagging for consolidation: a shared ".datatable" component
+  would also suit any future per-row numeric breakdown (e.g. a per-scenario
+  month-by-month view).
+-->
+<style>
+  .sched-head, .sched-decade summary, .row2 {
+    display: grid;
+    grid-template-columns: 1.1fr 1fr 1fr 1fr 1.2fr;
+    gap: 4px;
+    align-items: center;
+  }
+  .sched-head {
+    padding: 6px 10px;
+    font-size: var(--font-size-xs);
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    opacity: .5;
+  }
+  .sched-head span:not(:first-child),
+  .sched-decade summary .n,
+  .row2 span:not(:first-child) {
+    text-align: right;
+  }
+  .sched-decade {
+    margin: 6px 0;
+    border-radius: 12px;
+    background: var(--border-control-background-gradient-brush);
+    border: 1px solid var(--border-control-gradient-border-line-end);
+    overflow: hidden;
+  }
+  .sched-decade summary {
+    list-style: none;
+    cursor: pointer;
+    padding: 12px 10px;
+    background: var(--data-grid-header-background-color);
+    color: var(--data-grid-header-text-color);
+    font-weight: 700;
+    font-size: var(--font-size-small);
+  }
+  .sched-decade summary::-webkit-details-marker { display: none; }
+  .sched-decade summary .yr { font-weight: 700; }
+  .sched-decade summary .n { font-weight: 400; opacity: .85; }
+  .sched-decade[open] summary { background: var(--data-grid-cell-bg-1); }
+  .sched-rows { padding: 2px 0; }
+  .row2 {
+    padding: 8px 10px;
+    font-size: var(--font-size-small);
+    background: var(--data-grid-cell-bg-3);
+    color: var(--data-grid-cell-fg-1);
+  }
+  .row2:nth-child(even) { background: var(--data-grid-cell-bg-4); }
+  .row2 span:first-child { font-weight: 700; opacity: .85; }
+</style>
+</html>

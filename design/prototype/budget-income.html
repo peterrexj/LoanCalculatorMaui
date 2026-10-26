@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<meta charset="utf-8">
+<title>Budget — Income — prototype</title>
+<link rel="stylesheet" href="tokens.css">
+<link rel="stylesheet" href="app.css">
+
+<!--
+  MONEY ▸ INCOME — replaces Budget ▸ Income (BudgetTabIncome in BudgetView.xaml).
+
+  The change being tested: this sub-tab now sits inside Budget's three-way strip
+  (Summary / Income / Expenses / Asset costs) instead of Budget's own four-tab
+  strip (Income / Expenses / Summary / Projection) — Projection moved out to
+  What If, so this list no longer shares a tab bar with a reference view.
+
+  Content is otherwise a direct carry-over: the three-box summary bar, the two
+  "show income after expenses" switches, the filter box, and the row list with
+  edit/delete actions. Rows link to the Transaction Entry modal (owned by
+  another agent) rather than this agent's own markup.
+-->
+
+<div class="phone">
+
+  <div class="page-head">
+    <h1>Budget</h1>
+    <p>What comes in, and what goes out</p>
+  </div>
+
+  <nav class="subtabs">
+    <a class="on" href="budget-income.html">Income</a>
+    <a href="budget-expenses.html">Expenses</a>
+    <a href="budget.html">Summary</a>
+    <a href="budget-asset-costs.html">Asset costs</a>
+  </nav>
+
+  <div class="scroll">
+
+    <div class="boxes">
+      <div><div class="amt">$6,000</div><div class="lbl">monthly income</div></div>
+      <div><div class="amt">$72,000</div><div class="lbl">yearly income</div></div>
+      <div><div class="amt">$1,500</div><div class="lbl">monthly expenses</div></div>
+    </div>
+
+    <div class="card">
+      <div style="display:flex;align-items:center;gap:10px;padding:4px 0">
+        <div class="pill-switch on" aria-hidden="true"></div>
+        <div style="flex:1">
+          <div style="font-size:var(--font-size-body)">Show income after expenses</div>
+          <div style="font-size:var(--font-size-small);opacity:.55">Display remaining income in summary</div>
+        </div>
+      </div>
+      <div style="height:1px;margin:8px 0;background:color-mix(in srgb, var(--default-foreground-color) 12%, transparent)"></div>
+      <div style="display:flex;align-items:center;gap:10px;padding:4px 0">
+        <div class="pill-switch on" aria-hidden="true"></div>
+        <div style="flex:1">
+          <div style="font-size:var(--font-size-body)">Income after new asset expense</div>
+          <div style="font-size:var(--font-size-small);opacity:.55">Include property loan costs in calculation</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="padding:10px 14px;display:flex;align-items:center;gap:8px">
+      <span style="opacity:.45">&#128269;</span>
+      <span style="opacity:.45;font-size:var(--font-size-body)">Filter income&hellip;</span>
+    </div>
+
+    <div class="section">Sources</div>
+    <div class="rows">
+      <a class="row" href="#">
+        <span class="grow"><span class="t">SeedIncome121437085</span><br><span class="s">Monthly</span></span>
+        <span class="v good">$6,000</span><span class="chev">&rsaquo;</span>
+      </a>
+    </div>
+
+    <!--
+      Empty-state reference kept as a comment rather than shown live, since this
+      page demonstrates the populated list (matching iOS-05-budget-income.png).
+      Source copy, for the state when FilteredTransactions.Count == 0:
+        "No income yet" / "Add your first income entry above to get started"
+    -->
+
+  </div>
+
+  <a class="fab" href="#" aria-label="Add income">+</a>
+
+  <nav class="tabbar">
+    <a href="loan.html"><span class="ico">&#127968;</span>Loan</a>
+    <a class="on" href="budget.html"><span class="ico">&#128176;</span>Budget</a>
+    <a href="whatif.html"><span class="ico">&#10003;</span>What If</a>
+    <a href="settings.html"><span class="ico">&#9881;</span>Settings</a>
+  </nav>
+
+</div>
+
+<style>
+  /* Page-local: app.css has no switch component (the FAB now lives in app.css). Kept minimal and built only from existing tokens. */
+  .pill-switch {
+    width: 38px; height: 22px; border-radius: 11px; flex: 0 0 auto;
+    background: var(--switch-track-color-off);
+    border: 1px solid var(--switch-track-border-color-off);
+    position: relative;
+  }
+  .pill-switch.on {
+    background: var(--switch-track-color-on);
+    border-color: var(--switch-track-border-color-on);
+  }
+  .pill-switch::after {
+    content: ''; position: absolute; top: 2px; left: 2px; width: 16px; height: 16px;
+    border-radius: 50%; background: var(--switch-thumb-color-off);
+    border: 1px solid var(--switch-thumb-border-color-off);
+  }
+  .pill-switch.on::after {
+    left: 18px; background: var(--switch-thumb-color-on);
+    border-color: var(--switch-thumb-border-color-on);
+  }
+</style>
+</html>

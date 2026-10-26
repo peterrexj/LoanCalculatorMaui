@@ -112,6 +112,9 @@ public abstract class PageBase(AppDriver app)
 
         if (App.Exists(contentAnchorAutomationId, TimeSpan.FromMilliseconds(600))) return;
 
+        // A pushed page covers the tab strip too, so clear it before reaching for a tab.
+        ModalPages.DismissAny(App);
+
         App.Tap(tabAutomationId);
         App.WaitUntilVisible(contentAnchorAutomationId, TimeSpan.FromSeconds(20));
     }

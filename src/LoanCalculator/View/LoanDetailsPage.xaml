@@ -48,209 +48,259 @@
                     rather than insetting it, so without extra content height the tail of the form
                     cannot be scrolled clear of it.
                 -->
-                <VerticalStackLayout Padding="12,4,12,300" Spacing="4">
+                <VerticalStackLayout Padding="12,4,12,300" Spacing="0">
 
-                    <!--  ══ Section A — always shown: no other way to type these ══  -->
-
-                    <HorizontalStackLayout Margin="0,8,0,4" Spacing="4">
-                        <Label Style="{DynamicResource PopupFieldLabelStyle}" Text="ASSET VALUE" />
-                        <Label FontAttributes="Bold" FontSize="{StaticResource FontSizeSmall}" Opacity="0.7" Text="{Binding CurrencySymbol}" TextColor="{DynamicResource LoanAppNavigationButtonBackgroundColor}" />
-                    </HorizontalStackLayout>
-                    <Border Style="{DynamicResource PopupInputBorderStyle}">
-                        <Entry
-                            x:Name="entryAsset"
-                            AutomationId="AssetEntry"
-                            BackgroundColor="Transparent"
-                            FontAttributes="Bold"
-                            FontSize="{StaticResource FontSizeXL}"
-                            Keyboard="Numeric"
-                            Placeholder="e.g. 650,000"
-                            PlaceholderColor="{DynamicResource LoanAppInputTextWhenUnFocusedColor}"
-                            TextChanged="OnAssetTextChanged"
-                            TextColor="{DynamicResource LoanAppDefaultForegroundColor}"
-                            Unfocused="OnEntryUnfocused" />
-                    </Border>
-                    <Grid Margin="4,2,0,0" ColumnDefinitions="Auto,*">
-                        <Label x:Name="lblAssetFormatted" Grid.Column="0" AutomationId="AssetFormatted" FontAttributes="Bold" FontSize="{StaticResource FontSizeSmall}" Opacity="0.6" TextColor="{DynamicResource LoanAppTabIndicatorStrokeColor}" />
-                        <Label x:Name="lblAssetWords" Grid.Column="1" Margin="6,0,0,0" AutomationId="AssetWords" FontSize="{StaticResource FontSizeSmall}" Opacity="0.4" TextColor="{DynamicResource LoanAppTabIndicatorStrokeColor}" />
-                    </Grid>
-                    <Label Margin="4,4,0,0" FontSize="{StaticResource FontSizeSmall}" IsVisible="{Binding WizardShowAssetTotal}" Text="{Binding WizardAssetTotalLabel}" TextColor="{DynamicResource LoanAppNavigationButtonBackgroundColor}" />
                     <!--
-                        Answers "why is the loan bigger than the asset I typed?" — upfront costs
-                        are folded into the loan rather than paid separately, so deposit + loan
-                        below add up to the TOTAL asset cost above, not the asset value alone.
-                        Only shown once there is an upfront cost to explain; see
-                        WizardShowAssetBreakdown.
+                        ══ Section A — always shown: no other way to type these ══
+
+                        Its own card. The A/B split used to be carried only by a slightly larger
+                        margin and the comments below, so two groups with different rules read as
+                        one list of seven fields. Two cards state it structurally: A is permanent,
+                        B disappears field by field as each value gets recorded elsewhere.
                     -->
-                    <Label Margin="4,1,0,0" FontSize="{StaticResource FontSizeSmall}" IsVisible="{Binding WizardShowAssetBreakdown}" Opacity="0.6" Text="{Binding WizardAssetBreakdownLabel}" TextColor="{DynamicResource LoanAppNavigationButtonBackgroundColor}" />
+                    <Border Style="{DynamicResource FormCardStyle}">
+                        <VerticalStackLayout Spacing="0">
 
-                    <HorizontalStackLayout Margin="0,16,0,4" Spacing="4">
-                        <Label Style="{DynamicResource PopupFieldLabelStyle}" Text="DEPOSIT AMOUNT" />
-                        <Label FontAttributes="Bold" FontSize="{StaticResource FontSizeSmall}" Opacity="0.7" Text="{Binding CurrencySymbol}" TextColor="{DynamicResource LoanAppNavigationButtonBackgroundColor}" />
-                    </HorizontalStackLayout>
-                    <Border Style="{DynamicResource PopupInputBorderStyle}">
-                        <Entry
-                            x:Name="entryDeposit"
-                            AutomationId="DepositEntry"
-                            BackgroundColor="Transparent"
-                            FontAttributes="Bold"
-                            FontSize="{StaticResource FontSizeXL}"
-                            Keyboard="Numeric"
-                            Placeholder="e.g. 130,000"
-                            PlaceholderColor="{DynamicResource LoanAppInputTextWhenUnFocusedColor}"
-                            TextChanged="OnDepositTextChanged"
-                            TextColor="{DynamicResource LoanAppDefaultForegroundColor}"
-                            Unfocused="OnEntryUnfocused" />
-                    </Border>
-                    <Grid Margin="4,2,0,0" ColumnDefinitions="Auto,*">
-                        <Label x:Name="lblDepositFormatted" Grid.Column="0" AutomationId="DepositFormatted" FontAttributes="Bold" FontSize="{StaticResource FontSizeSmall}" Opacity="0.6" TextColor="{DynamicResource LoanAppTabIndicatorStrokeColor}" />
-                        <Label x:Name="lblDepositWords" Grid.Column="1" Margin="6,0,0,0" AutomationId="DepositWords" FontSize="{StaticResource FontSizeSmall}" Opacity="0.4" TextColor="{DynamicResource LoanAppTabIndicatorStrokeColor}" />
-                    </Grid>
+                            <VerticalStackLayout Spacing="0">
+                                <Label Style="{DynamicResource PopupFieldLabelStyle}" Text="{Binding CurrencySymbol, StringFormat='ASSET VALUE {0}'}" />
+                                <Border Style="{DynamicResource PopupInputBorderStyle}">
+                                    <Entry
+                                        x:Name="entryAsset"
+                                        AutomationId="AssetEntry"
+                                        BackgroundColor="Transparent"
+                                        FontAttributes="Bold"
+                                        FontSize="{StaticResource FontSizeXL}"
+                                        Keyboard="Numeric"
+                                        Placeholder="e.g. 650,000"
+                                        PlaceholderColor="{DynamicResource LoanAppInputTextWhenUnFocusedColor}"
+                                        TextChanged="OnAssetTextChanged"
+                                        TextColor="{DynamicResource LoanAppDefaultForegroundColor}"
+                                        Unfocused="OnEntryUnfocused" />
+                                </Border>
+                                <!--
+                                    The formatted figure stays alongside the word form here, unlike
+                                    on TransactionEntryPage where the card foot restates the same
+                                    single amount and the echo was redundant. The foot below states
+                                    a DIFFERENT figure (the total), so each field still needs its
+                                    own — and this is the only node carrying the currency symbol,
+                                    which is what SettingsTests asserts on via LoanFormatted after
+                                    switching the currency to Euro.
+                                -->
+                                <Grid ColumnDefinitions="Auto,*">
+                                    <Label x:Name="lblAssetFormatted" Grid.Column="0" AutomationId="AssetFormatted" Style="{DynamicResource PopupFieldHintStyle}" />
+                                    <Label x:Name="lblAssetWords" Grid.Column="1" Margin="6,4,0,0" AutomationId="AssetWords" Style="{DynamicResource PopupFieldHintStyle}" />
+                                </Grid>
+                            </VerticalStackLayout>
 
-                    <HorizontalStackLayout Margin="0,16,0,4" Spacing="4">
-                        <Label Style="{DynamicResource PopupFieldLabelStyle}" Text="LOAN AMOUNT" />
-                        <Label FontAttributes="Bold" FontSize="{StaticResource FontSizeSmall}" Opacity="0.7" Text="{Binding CurrencySymbol}" TextColor="{DynamicResource LoanAppNavigationButtonBackgroundColor}" />
-                    </HorizontalStackLayout>
-                    <Border Style="{DynamicResource PopupInputBorderStyle}">
-                        <Entry
-                            x:Name="entryLoan"
-                            AutomationId="LoanEntry"
-                            BackgroundColor="Transparent"
-                            FontAttributes="Bold"
-                            FontSize="{StaticResource FontSizeXL}"
-                            Keyboard="Numeric"
-                            Placeholder="0"
-                            PlaceholderColor="{DynamicResource LoanAppInputTextWhenUnFocusedColor}"
-                            TextChanged="OnLoanTextChanged"
-                            TextColor="{DynamicResource LoanAppDefaultForegroundColor}"
-                            Unfocused="OnEntryUnfocused" />
+                            <VerticalStackLayout Margin="0,14,0,0" Spacing="0">
+                                <Label Style="{DynamicResource PopupFieldLabelStyle}" Text="{Binding CurrencySymbol, StringFormat='DEPOSIT AMOUNT {0}'}" />
+                                <Border Style="{DynamicResource PopupInputBorderStyle}">
+                                    <Entry
+                                        x:Name="entryDeposit"
+                                        AutomationId="DepositEntry"
+                                        BackgroundColor="Transparent"
+                                        FontAttributes="Bold"
+                                        FontSize="{StaticResource FontSizeXL}"
+                                        Keyboard="Numeric"
+                                        Placeholder="e.g. 130,000"
+                                        PlaceholderColor="{DynamicResource LoanAppInputTextWhenUnFocusedColor}"
+                                        TextChanged="OnDepositTextChanged"
+                                        TextColor="{DynamicResource LoanAppDefaultForegroundColor}"
+                                        Unfocused="OnEntryUnfocused" />
+                                </Border>
+                                <Grid ColumnDefinitions="Auto,*">
+                                    <Label x:Name="lblDepositFormatted" Grid.Column="0" AutomationId="DepositFormatted" Style="{DynamicResource PopupFieldHintStyle}" />
+                                    <Label x:Name="lblDepositWords" Grid.Column="1" Margin="6,4,0,0" AutomationId="DepositWords" Style="{DynamicResource PopupFieldHintStyle}" />
+                                </Grid>
+                                <!--
+                                    Names the cap at the moment it bites. The model silently clamps
+                                    deposit and loan to PropertyTotalAmount, and nothing said so —
+                                    the figures above simply stopped following what was being typed
+                                    and then the field itself jumped on blur. IsVisible is driven
+                                    from code beside the clamp read-back, not bound, because the
+                                    comparison is between the typed text and what the model
+                                    accepted, and the typed text is deliberately unbound here.
+                                -->
+                                <Label
+                                    x:Name="lblDepositCapNote"
+                                    AutomationId="DepositCapNote"
+                                    IsVisible="False"
+                                    Style="{DynamicResource PopupErrorLabelStyle}" />
+                            </VerticalStackLayout>
+
+                            <VerticalStackLayout Margin="0,14,0,0" Spacing="0">
+                                <Label Style="{DynamicResource PopupFieldLabelStyle}" Text="{Binding CurrencySymbol, StringFormat='LOAN AMOUNT {0}'}" />
+                                <Border Style="{DynamicResource PopupInputBorderStyle}">
+                                    <Entry
+                                        x:Name="entryLoan"
+                                        AutomationId="LoanEntry"
+                                        BackgroundColor="Transparent"
+                                        FontAttributes="Bold"
+                                        FontSize="{StaticResource FontSizeXL}"
+                                        Keyboard="Numeric"
+                                        Placeholder="0"
+                                        PlaceholderColor="{DynamicResource LoanAppInputTextWhenUnFocusedColor}"
+                                        TextChanged="OnLoanTextChanged"
+                                        TextColor="{DynamicResource LoanAppDefaultForegroundColor}"
+                                        Unfocused="OnEntryUnfocused" />
+                                </Border>
+                                <Grid ColumnDefinitions="Auto,*">
+                                    <Label x:Name="lblLoanFormatted" Grid.Column="0" AutomationId="LoanFormatted" Style="{DynamicResource PopupFieldHintStyle}" />
+                                    <Label x:Name="lblLoanWords" Grid.Column="1" Margin="6,4,0,0" AutomationId="LoanWords" Style="{DynamicResource PopupFieldHintStyle}" />
+                                </Grid>
+                                <!--  Same clamp note as the deposit field above.  -->
+                                <Label
+                                    x:Name="lblLoanCapNote"
+                                    AutomationId="LoanCapNote"
+                                    IsVisible="False"
+                                    Style="{DynamicResource PopupErrorLabelStyle}" />
+                            </VerticalStackLayout>
+
+                            <!--
+                                Card foot: the identity tying the three fields together. These are
+                                not three independent amounts — HomeLoanInformation stores a total
+                                and ONE split point, so asset + upfront = deposit + loan always
+                                holds (see "Cost increases grow the loan" in CLAUDE.md). Stating it
+                                is what answers "why is the loan bigger than the asset I typed?":
+                                upfront costs are folded into the loan rather than paid separately,
+                                so without this line a user who typed 650,000 and sees a 670,003
+                                loan has no way to see where the extra went.
+
+                                Moved here from two stacked labels under the asset field, where
+                                figures about the whole form sat in the place reserved for hints
+                                about that one input. The breakdown line appears only once there is
+                                an upfront cost to explain — see WizardShowAssetBreakdown.
+                            -->
+                            <BoxView IsVisible="{Binding WizardShowAssetTotal}" Style="{DynamicResource FormCardFootRuleStyle}" />
+                            <Label
+                                IsVisible="{Binding WizardShowAssetTotal}"
+                                Style="{DynamicResource FormCardFootLeadStyle}"
+                                Text="{Binding WizardAssetTotalLabel}" />
+                            <Label
+                                Margin="0,3,0,0"
+                                IsVisible="{Binding WizardShowAssetBreakdown}"
+                                Style="{DynamicResource FormCardFootSubStyle}"
+                                Text="{Binding WizardAssetBreakdownLabel}" />
+
+                        </VerticalStackLayout>
                     </Border>
-                    <Grid Margin="4,2,0,0" ColumnDefinitions="Auto,*">
-                        <Label x:Name="lblLoanFormatted" Grid.Column="0" AutomationId="LoanFormatted" FontAttributes="Bold" FontSize="{StaticResource FontSizeSmall}" Opacity="0.6" TextColor="{DynamicResource LoanAppTabIndicatorStrokeColor}" />
-                        <Label x:Name="lblLoanWords" Grid.Column="1" Margin="6,0,0,0" AutomationId="LoanWords" FontSize="{StaticResource FontSizeSmall}" Opacity="0.4" TextColor="{DynamicResource LoanAppTabIndicatorStrokeColor}" />
-                    </Grid>
 
                     <!--
                         ══ Section B — only while empty ══
-                        Each of these has its own editing screen, so once a value exists the whole
-                        group disappears. IsVisible binds the *NeedsInput inverse.
+
+                        Each of these has its own editing screen, so once a value exists that field
+                        disappears; IsVisible binds the *NeedsInput inverse. The CARD binds
+                        WizardShowDeferredFields, the aggregate — without it a return visit, where
+                        all four have values, would render a bordered padded empty box.
                     -->
+                    <Border IsVisible="{Binding WizardShowDeferredFields}" Style="{DynamicResource FormCardStyle}">
+                        <VerticalStackLayout Spacing="0">
 
-                    <VerticalStackLayout IsVisible="{Binding WizardUpfrontNeedsInput}" Spacing="4">
-                        <HorizontalStackLayout Margin="0,20,0,4" Spacing="4">
-                            <Label Style="{DynamicResource PopupFieldLabelStyle}" Text="UPFRONT COSTS (OPTIONAL)" />
-                            <Label FontAttributes="Bold" FontSize="{StaticResource FontSizeSmall}" Opacity="0.7" Text="{Binding CurrencySymbol}" TextColor="{DynamicResource LoanAppNavigationButtonBackgroundColor}" />
-                        </HorizontalStackLayout>
-                        <!--
-                            Standout hint, shown only while this field is visible (i.e. only until
-                            the user commits a value and it disappears for good — see the comment
-                            on Section B above). Deliberately NOT styled like the ⓘ "learn more"
-                            buttons elsewhere (WhatIfView's offset/frequency/stress-test buttons):
-                            those are muted (Opacity 0.6) because they are secondary, tap-to-expand
-                            explainers. This is the one piece of information in this field that a
-                            first-time user needs before they type anything, so it stays at full
-                            opacity and bold rather than receding like those do.
-                        -->
-                        <Label
-                            Margin="4,0,0,4"
-                            FontAttributes="Bold"
-                            FontSize="{StaticResource FontSizeSmall}"
-                            Text="ⓘ  Added to your loan amount — not paid separately"
-                            TextColor="{DynamicResource LoanAppNavigationButtonBackgroundColor}" />
-                        <Border Style="{DynamicResource PopupInputBorderStyle}">
-                            <Entry
-                                x:Name="entryUpfront"
-                                AutomationId="WizardUpfront"
-                                BackgroundColor="Transparent"
-                                FontAttributes="Bold"
-                                FontSize="{StaticResource FontSizeXL}"
-                                Keyboard="Numeric"
-                                Placeholder="e.g. 15,000"
-                                PlaceholderColor="{DynamicResource LoanAppInputTextWhenUnFocusedColor}"
-                                TextChanged="OnDeferredTextChanged"
-                                TextColor="{DynamicResource LoanAppDefaultForegroundColor}"
-                                Unfocused="OnEntryUnfocused" />
-                        </Border>
-                        <Grid Margin="4,2,0,0" ColumnDefinitions="Auto,*">
-                            <Label x:Name="lblUpfrontFormatted" Grid.Column="0" AutomationId="WizardUpfrontFormatted" FontAttributes="Bold" FontSize="{StaticResource FontSizeSmall}" Opacity="0.6" TextColor="{DynamicResource LoanAppTabIndicatorStrokeColor}" />
-                            <Label x:Name="lblUpfrontWords" Grid.Column="1" Margin="6,0,0,0" AutomationId="WizardUpfrontWords" FontSize="{StaticResource FontSizeSmall}" Opacity="0.4" TextColor="{DynamicResource LoanAppTabIndicatorStrokeColor}" />
-                        </Grid>
-                    </VerticalStackLayout>
+                            <VerticalStackLayout IsVisible="{Binding WizardUpfrontNeedsInput}" Spacing="0">
+                                <Label Style="{DynamicResource PopupFieldLabelStyle}" Text="{Binding CurrencySymbol, StringFormat='UPFRONT COSTS (OPTIONAL) {0}'}" />
+                                <Border Style="{DynamicResource PopupInputBorderStyle}">
+                                    <Entry
+                                        x:Name="entryUpfront"
+                                        AutomationId="WizardUpfront"
+                                        BackgroundColor="Transparent"
+                                        FontAttributes="Bold"
+                                        FontSize="{StaticResource FontSizeXL}"
+                                        Keyboard="Numeric"
+                                        Placeholder="e.g. 15,000"
+                                        PlaceholderColor="{DynamicResource LoanAppInputTextWhenUnFocusedColor}"
+                                        TextChanged="OnDeferredTextChanged"
+                                        TextColor="{DynamicResource LoanAppDefaultForegroundColor}"
+                                        Unfocused="OnEntryUnfocused" />
+                                </Border>
+                                <!--
+                                    Standout hint, shown only while this field is visible (i.e. only
+                                    until the user commits a value and it disappears for good).
+                                    Deliberately NOT styled like the ⓘ "learn more" buttons
+                                    elsewhere (WhatIfView's offset/frequency/stress-test buttons):
+                                    those are muted because they are secondary, tap-to-expand
+                                    explainers. This is the one thing a first-time user needs to
+                                    know about this field, so it stays bold and only slightly
+                                    receded — .75 against the .45 of an ordinary hint.
+                                -->
+                                <Label
+                                    FontAttributes="Bold"
+                                    Opacity="0.75"
+                                    Style="{DynamicResource PopupFieldHintStyle}"
+                                    Text="ⓘ  Added to your loan amount — not paid separately" />
+                                <Grid ColumnDefinitions="Auto,*">
+                                    <Label x:Name="lblUpfrontFormatted" Grid.Column="0" AutomationId="WizardUpfrontFormatted" Style="{DynamicResource PopupFieldHintStyle}" />
+                                    <Label x:Name="lblUpfrontWords" Grid.Column="1" Margin="6,4,0,0" AutomationId="WizardUpfrontWords" Style="{DynamicResource PopupFieldHintStyle}" />
+                                </Grid>
+                            </VerticalStackLayout>
 
-                    <VerticalStackLayout IsVisible="{Binding WizardRunningCostNeedsInput}" Spacing="4">
-                        <HorizontalStackLayout Margin="0,16,0,4" Spacing="4">
-                            <Label Style="{DynamicResource PopupFieldLabelStyle}" Text="MONTHLY RUNNING COST (OPTIONAL)" />
-                            <Label FontAttributes="Bold" FontSize="{StaticResource FontSizeSmall}" Opacity="0.7" Text="{Binding CurrencySymbol}" TextColor="{DynamicResource LoanAppNavigationButtonBackgroundColor}" />
-                        </HorizontalStackLayout>
-                        <Border Style="{DynamicResource PopupInputBorderStyle}">
-                            <Entry
-                                x:Name="entryRunning"
-                                AutomationId="WizardRunning"
-                                BackgroundColor="Transparent"
-                                FontAttributes="Bold"
-                                FontSize="{StaticResource FontSizeXL}"
-                                Keyboard="Numeric"
-                                Placeholder="e.g. 2,000"
-                                PlaceholderColor="{DynamicResource LoanAppInputTextWhenUnFocusedColor}"
-                                TextChanged="OnDeferredTextChanged"
-                                TextColor="{DynamicResource LoanAppDefaultForegroundColor}"
-                                Unfocused="OnEntryUnfocused" />
-                        </Border>
-                        <Grid Margin="4,2,0,0" ColumnDefinitions="Auto,*">
-                            <Label x:Name="lblRunningFormatted" Grid.Column="0" AutomationId="WizardRunningFormatted" FontAttributes="Bold" FontSize="{StaticResource FontSizeSmall}" Opacity="0.6" TextColor="{DynamicResource LoanAppTabIndicatorStrokeColor}" />
-                            <Label x:Name="lblRunningWords" Grid.Column="1" Margin="6,0,0,0" AutomationId="WizardRunningWords" FontSize="{StaticResource FontSizeSmall}" Opacity="0.4" TextColor="{DynamicResource LoanAppTabIndicatorStrokeColor}" />
-                        </Grid>
-                    </VerticalStackLayout>
+                            <VerticalStackLayout Margin="0,14,0,0" IsVisible="{Binding WizardRunningCostNeedsInput}" Spacing="0">
+                                <Label Style="{DynamicResource PopupFieldLabelStyle}" Text="{Binding CurrencySymbol, StringFormat='MONTHLY RUNNING COST (OPTIONAL) {0}'}" />
+                                <Border Style="{DynamicResource PopupInputBorderStyle}">
+                                    <Entry
+                                        x:Name="entryRunning"
+                                        AutomationId="WizardRunning"
+                                        BackgroundColor="Transparent"
+                                        FontAttributes="Bold"
+                                        FontSize="{StaticResource FontSizeXL}"
+                                        Keyboard="Numeric"
+                                        Placeholder="e.g. 2,000"
+                                        PlaceholderColor="{DynamicResource LoanAppInputTextWhenUnFocusedColor}"
+                                        TextChanged="OnDeferredTextChanged"
+                                        TextColor="{DynamicResource LoanAppDefaultForegroundColor}"
+                                        Unfocused="OnEntryUnfocused" />
+                                </Border>
+                                <Grid ColumnDefinitions="Auto,*">
+                                    <Label x:Name="lblRunningFormatted" Grid.Column="0" AutomationId="WizardRunningFormatted" Style="{DynamicResource PopupFieldHintStyle}" />
+                                    <Label x:Name="lblRunningWords" Grid.Column="1" Margin="6,4,0,0" AutomationId="WizardRunningWords" Style="{DynamicResource PopupFieldHintStyle}" />
+                                </Grid>
+                            </VerticalStackLayout>
 
-                    <VerticalStackLayout IsVisible="{Binding WizardIncomeNeedsInput}" Spacing="4">
-                        <HorizontalStackLayout Margin="0,16,0,4" Spacing="4">
-                            <Label Style="{DynamicResource PopupFieldLabelStyle}" Text="TOTAL MONTHLY INCOME" />
-                            <Label FontAttributes="Bold" FontSize="{StaticResource FontSizeSmall}" Opacity="0.7" Text="{Binding CurrencySymbol}" TextColor="{DynamicResource LoanAppNavigationButtonBackgroundColor}" />
-                        </HorizontalStackLayout>
-                        <Border Style="{DynamicResource PopupInputBorderStyle}">
-                            <Entry
-                                x:Name="entryIncome"
-                                AutomationId="WizardIncome"
-                                BackgroundColor="Transparent"
-                                FontAttributes="Bold"
-                                FontSize="{StaticResource FontSizeXL}"
-                                Keyboard="Numeric"
-                                Placeholder="e.g. 5,000"
-                                PlaceholderColor="{DynamicResource LoanAppInputTextWhenUnFocusedColor}"
-                                TextChanged="OnDeferredTextChanged"
-                                TextColor="{DynamicResource LoanAppDefaultForegroundColor}"
-                                Unfocused="OnEntryUnfocused" />
-                        </Border>
-                        <Grid Margin="4,2,0,0" ColumnDefinitions="Auto,*">
-                            <Label x:Name="lblIncomeFormatted" Grid.Column="0" AutomationId="WizardIncomeFormatted" FontAttributes="Bold" FontSize="{StaticResource FontSizeSmall}" Opacity="0.6" TextColor="{DynamicResource LoanAppTabIndicatorStrokeColor}" />
-                            <Label x:Name="lblIncomeWords" Grid.Column="1" Margin="6,0,0,0" AutomationId="WizardIncomeWords" FontSize="{StaticResource FontSizeSmall}" Opacity="0.4" TextColor="{DynamicResource LoanAppTabIndicatorStrokeColor}" />
-                        </Grid>
-                    </VerticalStackLayout>
+                            <VerticalStackLayout Margin="0,14,0,0" IsVisible="{Binding WizardIncomeNeedsInput}" Spacing="0">
+                                <Label Style="{DynamicResource PopupFieldLabelStyle}" Text="{Binding CurrencySymbol, StringFormat='TOTAL MONTHLY INCOME {0}'}" />
+                                <Border Style="{DynamicResource PopupInputBorderStyle}">
+                                    <Entry
+                                        x:Name="entryIncome"
+                                        AutomationId="WizardIncome"
+                                        BackgroundColor="Transparent"
+                                        FontAttributes="Bold"
+                                        FontSize="{StaticResource FontSizeXL}"
+                                        Keyboard="Numeric"
+                                        Placeholder="e.g. 5,000"
+                                        PlaceholderColor="{DynamicResource LoanAppInputTextWhenUnFocusedColor}"
+                                        TextChanged="OnDeferredTextChanged"
+                                        TextColor="{DynamicResource LoanAppDefaultForegroundColor}"
+                                        Unfocused="OnEntryUnfocused" />
+                                </Border>
+                                <Grid ColumnDefinitions="Auto,*">
+                                    <Label x:Name="lblIncomeFormatted" Grid.Column="0" AutomationId="WizardIncomeFormatted" Style="{DynamicResource PopupFieldHintStyle}" />
+                                    <Label x:Name="lblIncomeWords" Grid.Column="1" Margin="6,4,0,0" AutomationId="WizardIncomeWords" Style="{DynamicResource PopupFieldHintStyle}" />
+                                </Grid>
+                            </VerticalStackLayout>
 
-                    <VerticalStackLayout IsVisible="{Binding WizardExpenseNeedsInput}" Spacing="4">
-                        <HorizontalStackLayout Margin="0,16,0,4" Spacing="4">
-                            <Label Style="{DynamicResource PopupFieldLabelStyle}" Text="TOTAL MONTHLY EXPENSES" />
-                            <Label FontAttributes="Bold" FontSize="{StaticResource FontSizeSmall}" Opacity="0.7" Text="{Binding CurrencySymbol}" TextColor="{DynamicResource LoanAppNavigationButtonBackgroundColor}" />
-                        </HorizontalStackLayout>
-                        <Border Style="{DynamicResource PopupInputBorderStyle}">
-                            <Entry
-                                x:Name="entryExpense"
-                                AutomationId="WizardExpense"
-                                BackgroundColor="Transparent"
-                                FontAttributes="Bold"
-                                FontSize="{StaticResource FontSizeXL}"
-                                Keyboard="Numeric"
-                                Placeholder="e.g. 3,500"
-                                PlaceholderColor="{DynamicResource LoanAppInputTextWhenUnFocusedColor}"
-                                TextChanged="OnDeferredTextChanged"
-                                TextColor="{DynamicResource LoanAppDefaultForegroundColor}"
-                                Unfocused="OnEntryUnfocused" />
-                        </Border>
-                        <Grid Margin="4,2,0,0" ColumnDefinitions="Auto,*">
-                            <Label x:Name="lblExpenseFormatted" Grid.Column="0" AutomationId="WizardExpenseFormatted" FontAttributes="Bold" FontSize="{StaticResource FontSizeSmall}" Opacity="0.6" TextColor="{DynamicResource LoanAppTabIndicatorStrokeColor}" />
-                            <Label x:Name="lblExpenseWords" Grid.Column="1" Margin="6,0,0,0" AutomationId="WizardExpenseWords" FontSize="{StaticResource FontSizeSmall}" Opacity="0.4" TextColor="{DynamicResource LoanAppTabIndicatorStrokeColor}" />
-                        </Grid>
-                    </VerticalStackLayout>
+                            <VerticalStackLayout Margin="0,14,0,0" IsVisible="{Binding WizardExpenseNeedsInput}" Spacing="0">
+                                <Label Style="{DynamicResource PopupFieldLabelStyle}" Text="{Binding CurrencySymbol, StringFormat='TOTAL MONTHLY EXPENSES {0}'}" />
+                                <Border Style="{DynamicResource PopupInputBorderStyle}">
+                                    <Entry
+                                        x:Name="entryExpense"
+                                        AutomationId="WizardExpense"
+                                        BackgroundColor="Transparent"
+                                        FontAttributes="Bold"
+                                        FontSize="{StaticResource FontSizeXL}"
+                                        Keyboard="Numeric"
+                                        Placeholder="e.g. 3,500"
+                                        PlaceholderColor="{DynamicResource LoanAppInputTextWhenUnFocusedColor}"
+                                        TextChanged="OnDeferredTextChanged"
+                                        TextColor="{DynamicResource LoanAppDefaultForegroundColor}"
+                                        Unfocused="OnEntryUnfocused" />
+                                </Border>
+                                <Grid ColumnDefinitions="Auto,*">
+                                    <Label x:Name="lblExpenseFormatted" Grid.Column="0" AutomationId="WizardExpenseFormatted" Style="{DynamicResource PopupFieldHintStyle}" />
+                                    <Label x:Name="lblExpenseWords" Grid.Column="1" Margin="6,4,0,0" AutomationId="WizardExpenseWords" Style="{DynamicResource PopupFieldHintStyle}" />
+                                </Grid>
+                            </VerticalStackLayout>
+
+                        </VerticalStackLayout>
+                    </Border>
 
                     <!--
                         Deliberately quiet: the figures taken from elsewhere still feed the

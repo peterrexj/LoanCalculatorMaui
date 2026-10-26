@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView
+    x:Class="LoanCalculatorMaui.Controls.Scenarios.RepaymentFrequencyScenarioView"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:core="http://schemas.syncfusion.com/maui"
+    xmlns:chart="clr-namespace:Syncfusion.Maui.Charts;assembly=Syncfusion.Maui.Charts"
+    xmlns:customControls="clr-namespace:LoanCalculatorMaui.Controls"
+    xmlns:primaryModels="clr-namespace:LoanCalculator.Core.Models.ViewModels.PrimaryModels;assembly=LoanCalculator.Core"
+    x:DataType="primaryModels:WhatIfViewModel">
+
+    <!--
+        Lifted verbatim from WhatIfView.xaml, where this was one of nine cards stacked in a
+        single ~9-screen scroll. It is now reached from the scenario index and hosted by
+        ScenarioPage, so it gets a whole screen and is addressable.
+
+        BindingContext is inherited from the host page, which sets the WhatIfViewModel
+        singleton — so every binding in here resolves exactly as it did before the move.
+    -->
+    <Border
+        IsVisible="{Binding HasLoanData}"
+        Margin="0,0,0,14"
+        Padding="0"
+        BackgroundColor="{DynamicResource LoanAppPopupSurface}"
+        StrokeShape="RoundRectangle 12"
+        StrokeThickness="0">
+        <Grid ColumnDefinitions="4,*">
+            <BoxView Grid.Column="0" BackgroundColor="{DynamicResource LoanAppChartColor3}" CornerRadius="12,0,12,0" />
+            <VerticalStackLayout Grid.Column="1" Padding="14,14,14,16" Spacing="10">
+
+                <Label FontAttributes="Bold" FontSize="{StaticResource FontSizeMedium}" Text="Repayment Frequency" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                <Label Margin="0,-6,0,0" FontSize="{StaticResource FontSizeSmall}" Opacity="0.6" Text="Compare monthly, fortnightly and weekly  ·  highlighted = yours" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                <BoxView Style="{DynamicResource LoanAppSeparatorStyle}" />
+
+                <Grid ColumnSpacing="6">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+
+                    <!--  Monthly  -->
+                    <Border Grid.Column="0" Padding="6,8" BackgroundColor="{DynamicResource LoanAppDefaultBackgroundColor}" StrokeShape="RoundRectangle 8" StrokeThickness="0">
+                        <Border.Triggers>
+                            <DataTrigger Binding="{Binding FreqIsMonthly}" TargetType="Border" Value="True">
+                                <Setter Property="BackgroundColor" Value="{DynamicResource LoanAppChartColor3}" />
+                            </DataTrigger>
+                        </Border.Triggers>
+                        <VerticalStackLayout Spacing="4">
+                            <Label FontAttributes="Bold" FontSize="{StaticResource FontSizeSmall}" HorizontalTextAlignment="Center" Text="Monthly" TextColor="{DynamicResource LoanAppDefaultForegroundColor}">
+                                <Label.Triggers><DataTrigger Binding="{Binding FreqIsMonthly}" TargetType="Label" Value="True"><Setter Property="TextColor" Value="{DynamicResource LoanAppChartDataMarkerTextColor3}" /></DataTrigger></Label.Triggers>
+                            </Label>
+                            <Label FontAttributes="Bold" FontSize="{StaticResource FontSizeBody}" HorizontalTextAlignment="Center" Text="{Binding FreqMonthlyPayment}" TextColor="{DynamicResource LoanAppDefaultForegroundColor}">
+                                <Label.Triggers><DataTrigger Binding="{Binding FreqIsMonthly}" TargetType="Label" Value="True"><Setter Property="TextColor" Value="{DynamicResource LoanAppChartDataMarkerTextColor3}" /></DataTrigger></Label.Triggers>
+                            </Label>
+                            <Label FontSize="{StaticResource FontSizeSmall}" HorizontalTextAlignment="Center" Opacity="0.65" Text="{Binding FreqMonthlyTimeSaved}" TextColor="{DynamicResource LoanAppDefaultForegroundColor}">
+                                <Label.Triggers><DataTrigger Binding="{Binding FreqIsMonthly}" TargetType="Label" Value="True"><Setter Property="TextColor" Value="{DynamicResource LoanAppChartDataMarkerTextColor3}" /><Setter Property="Opacity" Value="1" /></DataTrigger></Label.Triggers>
+                            </Label>
+                            <Label FontSize="{StaticResource FontSizeSmall}" HorizontalTextAlignment="Center" Opacity="0.45" Text="{Binding FreqMonthlyIntSaved}" TextColor="{DynamicResource LoanAppDefaultForegroundColor}">
+                                <Label.Triggers><DataTrigger Binding="{Binding FreqIsMonthly}" TargetType="Label" Value="True"><Setter Property="TextColor" Value="{DynamicResource LoanAppChartDataMarkerTextColor3}" /><Setter Property="Opacity" Value="0.75" /></DataTrigger></Label.Triggers>
+                            </Label>
+                            <Label FontAttributes="Bold" FontSize="9" HorizontalTextAlignment="Center" IsVisible="{Binding FreqIsMonthly}" Text="YOUR FREQUENCY" TextColor="{DynamicResource LoanAppChartDataMarkerTextColor3}" />
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <!--  Fortnightly  -->
+                    <Border Grid.Column="1" Padding="6,8" BackgroundColor="{DynamicResource LoanAppDefaultBackgroundColor}" StrokeShape="RoundRectangle 8" StrokeThickness="0">
+                        <Border.Triggers>
+                            <DataTrigger Binding="{Binding FreqIsFortnightly}" TargetType="Border" Value="True">
+                                <Setter Property="BackgroundColor" Value="{DynamicResource LoanAppChartColor3}" />
+                            </DataTrigger>
+                        </Border.Triggers>
+                        <VerticalStackLayout Spacing="4">
+                            <Label FontAttributes="Bold" FontSize="{StaticResource FontSizeSmall}" HorizontalTextAlignment="Center" Text="Fortnightly" TextColor="{DynamicResource LoanAppDefaultForegroundColor}">
+                                <Label.Triggers><DataTrigger Binding="{Binding FreqIsFortnightly}" TargetType="Label" Value="True"><Setter Property="TextColor" Value="{DynamicResource LoanAppChartDataMarkerTextColor3}" /></DataTrigger></Label.Triggers>
+                            </Label>
+                            <Label FontAttributes="Bold" FontSize="{StaticResource FontSizeBody}" HorizontalTextAlignment="Center" Text="{Binding FreqFortPayment}" TextColor="{DynamicResource LoanAppDefaultForegroundColor}">
+                                <Label.Triggers><DataTrigger Binding="{Binding FreqIsFortnightly}" TargetType="Label" Value="True"><Setter Property="TextColor" Value="{DynamicResource LoanAppChartDataMarkerTextColor3}" /></DataTrigger></Label.Triggers>
+                            </Label>
+                            <Label FontSize="{StaticResource FontSizeSmall}" HorizontalTextAlignment="Center" Opacity="0.65" Text="{Binding FreqFortTimeSaved}" TextColor="{DynamicResource LoanAppDefaultForegroundColor}">
+                                <Label.Triggers><DataTrigger Binding="{Binding FreqIsFortnightly}" TargetType="Label" Value="True"><Setter Property="TextColor" Value="{DynamicResource LoanAppChartDataMarkerTextColor3}" /><Setter Property="Opacity" Value="1" /></DataTrigger></Label.Triggers>
+                            </Label>
+                            <Label FontSize="{StaticResource FontSizeSmall}" HorizontalTextAlignment="Center" Opacity="0.45" Text="{Binding FreqFortIntSaved}" TextColor="{DynamicResource LoanAppDefaultForegroundColor}">
+                                <Label.Triggers><DataTrigger Binding="{Binding FreqIsFortnightly}" TargetType="Label" Value="True"><Setter Property="TextColor" Value="{DynamicResource LoanAppChartDataMarkerTextColor3}" /><Setter Property="Opacity" Value="0.75" /></DataTrigger></Label.Triggers>
+                            </Label>
+                            <Label FontAttributes="Bold" FontSize="9" HorizontalTextAlignment="Center" IsVisible="{Binding FreqIsFortnightly}" Text="YOUR FREQUENCY" TextColor="{DynamicResource LoanAppChartDataMarkerTextColor3}" />
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <!--  Weekly  -->
+                    <Border Grid.Column="2" Padding="6,8" BackgroundColor="{DynamicResource LoanAppDefaultBackgroundColor}" StrokeShape="RoundRectangle 8" StrokeThickness="0">
+                        <Border.Triggers>
+                            <DataTrigger Binding="{Binding FreqIsWeekly}" TargetType="Border" Value="True">
+                                <Setter Property="BackgroundColor" Value="{DynamicResource LoanAppChartColor3}" />
+                            </DataTrigger>
+                        </Border.Triggers>
+                        <VerticalStackLayout Spacing="4">
+                            <Label FontAttributes="Bold" FontSize="{StaticResource FontSizeSmall}" HorizontalTextAlignment="Center" Text="Weekly" TextColor="{DynamicResource LoanAppDefaultForegroundColor}">
+                                <Label.Triggers><DataTrigger Binding="{Binding FreqIsWeekly}" TargetType="Label" Value="True"><Setter Property="TextColor" Value="{DynamicResource LoanAppChartDataMarkerTextColor3}" /></DataTrigger></Label.Triggers>
+                            </Label>
+                            <Label FontAttributes="Bold" FontSize="{StaticResource FontSizeBody}" HorizontalTextAlignment="Center" Text="{Binding FreqWeeklyPayment}" TextColor="{DynamicResource LoanAppDefaultForegroundColor}">
+                                <Label.Triggers><DataTrigger Binding="{Binding FreqIsWeekly}" TargetType="Label" Value="True"><Setter Property="TextColor" Value="{DynamicResource LoanAppChartDataMarkerTextColor3}" /></DataTrigger></Label.Triggers>
+                            </Label>
+                            <Label FontSize="{StaticResource FontSizeSmall}" HorizontalTextAlignment="Center" Opacity="0.65" Text="{Binding FreqWeeklyTimeSaved}" TextColor="{DynamicResource LoanAppDefaultForegroundColor}">
+                                <Label.Triggers><DataTrigger Binding="{Binding FreqIsWeekly}" TargetType="Label" Value="True"><Setter Property="TextColor" Value="{DynamicResource LoanAppChartDataMarkerTextColor3}" /><Setter Property="Opacity" Value="1" /></DataTrigger></Label.Triggers>
+                            </Label>
+                            <Label FontSize="{StaticResource FontSizeSmall}" HorizontalTextAlignment="Center" Opacity="0.45" Text="{Binding FreqWeeklyIntSaved}" TextColor="{DynamicResource LoanAppDefaultForegroundColor}">
+                                <Label.Triggers><DataTrigger Binding="{Binding FreqIsWeekly}" TargetType="Label" Value="True"><Setter Property="TextColor" Value="{DynamicResource LoanAppChartDataMarkerTextColor3}" /><Setter Property="Opacity" Value="0.75" /></DataTrigger></Label.Triggers>
+                            </Label>
+                            <Label FontAttributes="Bold" FontSize="9" HorizontalTextAlignment="Center" IsVisible="{Binding FreqIsWeekly}" Text="YOUR FREQUENCY" TextColor="{DynamicResource LoanAppChartDataMarkerTextColor3}" />
+                        </VerticalStackLayout>
+                    </Border>
+
+                </Grid>
+
+                <!--  Chart: Balance payoff trajectory across frequencies  -->
+                <Border
+                    Margin="0,2,0,0"
+                    Padding="8,8,8,4"
+                    BackgroundColor="{DynamicResource LoanAppChartCardBackground}"
+                    StrokeShape="RoundRectangle 8"
+                    StrokeThickness="0">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="200"/>
+                        </Grid.RowDefinitions>
+                        <Label Grid.Row="0" Text="Loan Balance Over Time" FontSize="{StaticResource FontSizeXS}" TextColor="{DynamicResource LoanAppChartAxisTextColor}" Opacity="0.7" Margin="0,0,0,2"/>
+                        <chart:SfCartesianChart Grid.Row="1">
+                            <chart:SfCartesianChart.Legend>
+                                <chart:ChartLegend Placement="Bottom" LabelStyle="{chart:ChartLegendLabelStyle TextColor={DynamicResource LoanAppChartLegendTextColor}, FontSize=10}"/>
+                            </chart:SfCartesianChart.Legend>
+                            <chart:SfCartesianChart.XAxes>
+                                <chart:NumericalAxis ShowMajorGridLines="False" LabelStyle="{chart:ChartAxisLabelStyle TextColor={DynamicResource LoanAppChartAxisTextColor}, FontSize=10}"/>
+                            </chart:SfCartesianChart.XAxes>
+                            <chart:SfCartesianChart.YAxes>
+                                <chart:NumericalAxis RangePadding="None" LabelCreated="OnWhatIfAxisLabelCreated" LabelStyle="{chart:ChartAxisLabelStyle TextColor={DynamicResource LoanAppChartAxisTextColor}, FontSize=10}"/>
+                            </chart:SfCartesianChart.YAxes>
+                            <chart:SplineSeries ItemsSource="{Binding FreqMonthlyBalanceData}" XBindingPath="Name" YBindingPath="Value" StrokeWidth="2.5" Label="Monthly" LegendIcon="HorizontalLine" Fill="{DynamicResource LoanAppChartColorSeries1}"/>
+                            <chart:SplineSeries ItemsSource="{Binding FreqFortBalanceData}" XBindingPath="Name" YBindingPath="Value" StrokeWidth="2.5" Label="Fortnightly" LegendIcon="HorizontalLine" Fill="{DynamicResource LoanAppChartColorSeries2}"/>
+                            <chart:SplineSeries ItemsSource="{Binding FreqWeeklyBalanceData}" XBindingPath="Name" YBindingPath="Value" StrokeWidth="2.5" Label="Weekly" LegendIcon="HorizontalLine" Fill="{DynamicResource LoanAppChartColorSeries3}"/>
+                        </chart:SfCartesianChart>
+                    </Grid>
+                </Border>
+
+
+            </VerticalStackLayout>
+        </Grid>
+    </Border>
+
+</ContentView>

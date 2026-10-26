@@ -17,6 +17,7 @@ namespace LoanCalculatorMaui
             AppDomain.CurrentDomain.UnhandledException += HandleUnhandledException;
             TaskScheduler.UnobservedTaskException += HandleTaskSchedulerException;
 
+
             // Set MainPage immediately — must happen before any optional work that could throw,
             // otherwise a swallowed exception leaves the app on a black screen.
             MainPage = splash;

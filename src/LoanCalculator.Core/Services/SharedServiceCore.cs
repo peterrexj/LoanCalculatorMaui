@@ -234,12 +234,30 @@ namespace LoanCalculator.Core.Services
         private const bool TESTING_PREMIUM_OVERRIDE = false; // ← set true to bypass trial gates during local testing
         // ────────────────────────────────────────────────────────────────────────
 
+        /// <summary>
+        /// Forces entitlement for unit tests. <c>null</c> means normal resolution.
+        /// </summary>
+        /// <remarks>
+        /// <c>internal</c>, reachable only by <c>LoanCalculator.UnitTests</c> via the
+        /// <c>InternalsVisibleTo</c> already on this assembly — deliberately NOT a public switch,
+        /// which would be a way to turn premium on from anywhere.
+        ///
+        /// Needed because the unit tests run with no MAUI host, so <c>SecureStorage</c> throws, the
+        /// catch below returns false, and every test is a trial user. That was invisible while
+        /// <c>TESTING_PREMIUM_OVERRIDE</c> was true, and it matters to any test asserting on copy
+        /// or a figure that entitlement changes — see <c>AffordabilityTextDescription</c>, which
+        /// returns " try premium" rather than the real description.
+        /// </remarks>
+        internal static bool? EntitlementOverrideForTests { get; set; }
+
         public static bool IsTrialUser => !IsPremiumUser();
 
         public static bool IsPremiumUser()
         {
             try
             {
+                if (EntitlementOverrideForTests is bool forTests) return forTests;
+
                 if (TESTING_PREMIUM_OVERRIDE) return true; // ← comment out for release
 
                 if (AppInformation is { IsFullyPaidApplication: true }) return true;
@@ -254,10 +272,19 @@ namespace LoanCalculator.Core.Services
             }
         }
 
+        /// <remarks>
+        /// Honours <c>TESTING_PREMIUM_OVERRIDE</c>, which it did NOT before. The sync overload has
+        /// always short-circuited on it, so while the flag was on these two returned opposite
+        /// answers — gating through the async path looked like a gate that did not work.
+        /// </remarks>
         public static async Task<bool> IsPremiumUserAsync()
         {
             try
             {
+                if (EntitlementOverrideForTests is bool forTests) return forTests;
+
+                if (TESTING_PREMIUM_OVERRIDE) return true; // ← comment out for release
+
                 if (AppInformation is { IsFullyPaidApplication: true }) return true;
 
                 var value = await SecureStorage.GetAsync("IsPremium").ConfigureAwait(false);
@@ -270,17 +297,53 @@ namespace LoanCalculator.Core.Services
             }
         }
 
+        /// <summary>
+        /// Raised after entitlement changes, so masked figures can be rebuilt without the user
+        /// having to leave and re-enter the tab. The write below is fire-and-forget and notified
+        /// nobody, which meant a successful purchase left every locked figure locked.
+        /// </summary>
+        public static event Action? PremiumStateChanged;
+
         public static void UpdateToPremium()
         {
             try
             {
                 _ = Task.Run(() => SecureStorage.SetAsync("IsPremium", "true"));
+                PremiumStateChanged?.Invoke();
             }
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine($"[SecureStorage] IsPremium write failed: {ex.Message}");
             }
         }
+
+#if DEBUG
+        /// <summary>
+        /// Clears the purchase, DEBUG builds only.
+        /// </summary>
+        /// <remarks>
+        /// Nothing in the app has ever cleared entitlement, so on any device that has purchased —
+        /// which includes every dev device after one test — the locked state could not be reached
+        /// again without uninstalling. That made the whole of premium effectively untestable, which
+        /// is a large part of why the gates were never exercised.
+        ///
+        /// DEBUG-only and surfaced only in Settings under the same guard, so it cannot ship.
+        /// Note it cannot revoke a real store entitlement: a restore will legitimately bring
+        /// premium back, which is the correct behaviour and worth knowing when testing.
+        /// </remarks>
+        public static void DebugResetPremium()
+        {
+            try
+            {
+                SecureStorage.Remove("IsPremium");
+                PremiumStateChanged?.Invoke();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"[SecureStorage] IsPremium reset failed: {ex.Message}");
+            }
+        }
+#endif
 
         #endregion
 

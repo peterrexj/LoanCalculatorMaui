@@ -348,6 +348,31 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
         private async Task DeleteIncomeData() => await DeleteDataWithConfirmationAsync<IncomeViewModel>();
         private async Task DeleteExpenseData() => await DeleteDataWithConfirmationAsync<ExpenseViewModel>();
 
+        /// <summary>
+        /// Version string for the foot of the Settings page, e.g. "Version 1.12.0 (1)".
+        /// </summary>
+        /// <remarks>
+        /// Read from <see cref="AppInfo"/> rather than hard-coded, so it tracks
+        /// ApplicationDisplayVersion/ApplicationVersion in the csproj instead of drifting from the
+        /// shipped build. Guarded: AppInfo throws outside a running app host, which would
+        /// otherwise take the unit tests down with it.
+        /// </remarks>
+        [JsonIgnore]
+        public string AppVersionDisplay
+        {
+            get
+            {
+                try
+                {
+                    return $"Version {AppInfo.Current.VersionString} ({AppInfo.Current.BuildString})";
+                }
+                catch
+                {
+                    return string.Empty;
+                }
+            }
+        }
+
         public string AppLaunchDisclaimerData => SharedServiceCore.DisclaimerData;
 
         // Rendered natively (BindableLayout) in the Settings disclaimer popup — see

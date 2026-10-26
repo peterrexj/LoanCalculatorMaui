@@ -49,14 +49,24 @@ public class SmokeTests : UITestBase
     [Test]
     public void LoanPageInPageTabsAllRender()
     {
+        // Loan has no in-page tabs any more — it is a single screen. What this now covers is
+        // that the two views which LEFT it are still reachable, and that returning to Loan
+        // restores its content. The schedule is a pushed page; Insights is a What If sub-tab.
         Tabs.GoTo(AppTab.Loan);
 
         Loan.OpenAmortisationTab();
-        Loan.OpenInsightsTab();
-        Loan.OpenAssetTab();
+        Assert.That(App.Exists(LoanPage.AmortisationGrid), Is.True,
+            "The repayment schedule page did not render its grid.");
+        Loan.CloseAmortisation();
 
+        WhatIf.OpenInsightsTab();
+        Assert.That(App.Exists("LoanInsightsExportButton"), Is.True,
+            "Insights did not render after moving to What If.");
+
+        Tabs.GoTo(AppTab.Loan);
+        Loan.OpenAssetTab();
         Assert.That(App.Exists(LoanPage.LoanDetailsFab), Is.True,
-            "Returning to the Asset tab did not restore its content.");
+            "Returning to Loan did not restore its content.");
     }
 
     [Test]
@@ -67,7 +77,7 @@ public class SmokeTests : UITestBase
         Budget.OpenIncomeTab();
         Budget.OpenExpensesTab();
         Budget.OpenSummaryTab();
-        Budget.OpenProjectionTab();
+        WhatIf.OpenProjectionTab();
         Budget.OpenIncomeTab();
 
         Assert.That(App.Exists(BudgetPage.IncomeAddFab), Is.True,

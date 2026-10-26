@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView
+    x:Class="LoanCalculatorMaui.Controls.Scenarios.LumpSumScenarioView"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:core="http://schemas.syncfusion.com/maui"
+    xmlns:chart="clr-namespace:Syncfusion.Maui.Charts;assembly=Syncfusion.Maui.Charts"
+    xmlns:customControls="clr-namespace:LoanCalculatorMaui.Controls"
+    xmlns:primaryModels="clr-namespace:LoanCalculator.Core.Models.ViewModels.PrimaryModels;assembly=LoanCalculator.Core"
+    x:DataType="primaryModels:WhatIfViewModel">
+
+    <!--
+        Lifted verbatim from WhatIfView.xaml, where this was one of nine cards stacked in a
+        single ~9-screen scroll. It is now reached from the scenario index and hosted by
+        ScenarioPage, so it gets a whole screen and is addressable.
+
+        BindingContext is inherited from the host page, which sets the WhatIfViewModel
+        singleton — so every binding in here resolves exactly as it did before the move.
+    -->
+    <Border
+        IsVisible="{Binding HasLoanData}"
+        Margin="0,0,0,14"
+        Padding="0"
+        BackgroundColor="{DynamicResource LoanAppPopupSurface}"
+        StrokeShape="RoundRectangle 12"
+        StrokeThickness="0">
+        <Grid ColumnDefinitions="4,*">
+            <BoxView Grid.Column="0" BackgroundColor="{DynamicResource LoanAppChartColor2}" CornerRadius="12,0,12,0" />
+            <VerticalStackLayout Grid.Column="1" Padding="14,14,14,16" Spacing="10">
+
+                <Label FontAttributes="Bold" FontSize="{StaticResource FontSizeMedium}" Text="Lump Sum Payment" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                <Label Margin="0,-6,0,0" FontSize="{StaticResource FontSizeSmall}" Opacity="0.6" Text="What if you put a windfall directly onto your loan?" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+
+                <!--  Stepper pill  -->
+                <Border
+                    Padding="4,2"
+                    BackgroundColor="{DynamicResource LoanAppDefaultBackgroundColor}"
+                    HorizontalOptions="Start"
+                    StrokeShape="RoundRectangle 24"
+                    StrokeThickness="0">
+                    <HorizontalStackLayout Spacing="2" VerticalOptions="Center">
+                        <Label FontSize="{StaticResource FontSizeSmall}" Margin="6,0,0,0" Opacity="0.7" Text="Amount:" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" VerticalOptions="Center" />
+                        <Button BackgroundColor="Transparent" Padding="0" Clicked="OnLumpSumDecrease" FontAttributes="Bold" FontSize="{StaticResource FontSizeXL}" TextColor="{DynamicResource LoanAppChartColor2}" WidthRequest="36" Text="−" />
+                        <Label FontAttributes="Bold" FontSize="{StaticResource FontSizeLarge}" HorizontalTextAlignment="Center" MinimumWidthRequest="96" Text="{Binding LumpSumAmount, StringFormat='{0:N0}'}" TextColor="{DynamicResource LoanAppChartColor2}" VerticalOptions="Center" />
+                        <Button BackgroundColor="Transparent" Padding="0" Clicked="OnLumpSumIncrease" FontAttributes="Bold" FontSize="{StaticResource FontSizeXL}" TextColor="{DynamicResource LoanAppChartColor2}" WidthRequest="36" Text="+" />
+                    </HorizontalStackLayout>
+                </Border>
+
+                <BoxView Style="{DynamicResource LoanAppSeparatorStyle}" />
+
+                <Grid ColumnSpacing="8">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Border Grid.Column="0" Padding="10,10" BackgroundColor="{DynamicResource LoanAppChartColor1}" StrokeShape="RoundRectangle 8" StrokeThickness="0">
+                        <VerticalStackLayout Spacing="2">
+                            <Label FontSize="{StaticResource FontSizeSmall}" Opacity="0.85" Text="TIME SAVED" TextColor="{DynamicResource LoanAppChartDataMarkerTextColor1}" />
+                            <Label FontAttributes="Bold" FontSize="{StaticResource FontSizeXL}" Text="{Binding LumpSumTimeSaved}" TextColor="{DynamicResource LoanAppChartDataMarkerTextColor1}" />
+                        </VerticalStackLayout>
+                    </Border>
+                    <Border Grid.Column="1" Padding="10,10" BackgroundColor="{DynamicResource LoanAppChartColor1}" StrokeShape="RoundRectangle 8" StrokeThickness="0">
+                        <VerticalStackLayout Spacing="2">
+                            <Label FontSize="{StaticResource FontSizeSmall}" Opacity="0.85" Text="INTEREST SAVED" TextColor="{DynamicResource LoanAppChartDataMarkerTextColor1}" />
+                            <Label FontAttributes="Bold" FontSize="{StaticResource FontSizeXL}" Text="{Binding LumpSumInterestSaved}" TextColor="{DynamicResource LoanAppChartDataMarkerTextColor1}" />
+                        </VerticalStackLayout>
+                    </Border>
+                </Grid>
+
+                <!--  Chart: Balance payoff trajectory — standard vs after lump sum  -->
+                <Border
+                    Margin="0,2,0,0"
+                    Padding="8,8,8,4"
+                    BackgroundColor="{DynamicResource LoanAppChartCardBackground}"
+                    StrokeShape="RoundRectangle 8"
+                    StrokeThickness="0">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="200"/>
+                        </Grid.RowDefinitions>
+                        <Label Grid.Row="0" Text="Loan Balance Over Time" FontSize="{StaticResource FontSizeXS}" TextColor="{DynamicResource LoanAppChartAxisTextColor}" Opacity="0.7" Margin="0,0,0,2"/>
+                        <chart:SfCartesianChart Grid.Row="1">
+                            <chart:SfCartesianChart.Legend>
+                                <chart:ChartLegend Placement="Bottom" LabelStyle="{chart:ChartLegendLabelStyle TextColor={DynamicResource LoanAppChartLegendTextColor}, FontSize=10}"/>
+                            </chart:SfCartesianChart.Legend>
+                            <chart:SfCartesianChart.XAxes>
+                                <chart:NumericalAxis ShowMajorGridLines="False" LabelStyle="{chart:ChartAxisLabelStyle TextColor={DynamicResource LoanAppChartAxisTextColor}, FontSize=10}"/>
+                            </chart:SfCartesianChart.XAxes>
+                            <chart:SfCartesianChart.YAxes>
+                                <chart:NumericalAxis RangePadding="None" LabelCreated="OnWhatIfAxisLabelCreated" LabelStyle="{chart:ChartAxisLabelStyle TextColor={DynamicResource LoanAppChartAxisTextColor}, FontSize=10}"/>
+                            </chart:SfCartesianChart.YAxes>
+                            <chart:SplineSeries ItemsSource="{Binding LumpSumOriginalBalanceData}" XBindingPath="Name" YBindingPath="Value" StrokeWidth="2.5" Label="Standard" LegendIcon="HorizontalLine" Fill="{DynamicResource LoanAppChartColorSeries1}"/>
+                            <chart:SplineSeries ItemsSource="{Binding LumpSumReducedBalanceData}" XBindingPath="Name" YBindingPath="Value" StrokeWidth="2.5" Label="With Lump Sum" LegendIcon="HorizontalLine" Fill="{DynamicResource LoanAppChartColorSeries2}"/>
+                        </chart:SfCartesianChart>
+                    </Grid>
+                </Border>
+
+                <Border Padding="10,8" BackgroundColor="{DynamicResource LoanAppDefaultBackgroundColor}" StrokeShape="RoundRectangle 8" StrokeThickness="0">
+                    <VerticalStackLayout Spacing="2">
+                        <Label FontSize="{StaticResource FontSizeSmall}" Opacity="0.6" Text="NEW LOAN BALANCE" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                        <Label FontAttributes="Bold" FontSize="{StaticResource FontSizeMedium}" Text="{Binding LumpSumNewBalance}" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                    </VerticalStackLayout>
+                </Border>
+
+            </VerticalStackLayout>
+        </Grid>
+    </Border>
+
+</ContentView>

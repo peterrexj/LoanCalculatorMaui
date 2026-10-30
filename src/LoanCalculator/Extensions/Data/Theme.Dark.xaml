@@ -90,7 +90,7 @@
     <Color x:Key="LoanAppAutoCompleteDropdownTextColor">#DDE6ED</Color>
     <Color x:Key="LoanAppAutoCompleteDropdownBorderColor">#393E46</Color>
     <Color x:Key="LoanAppAutoCompleteHighlightedTextColor">#E57373</Color>
-    <Color x:Key="LoanAppAutoCompleteWaterColor">#222831</Color>
+    <Color x:Key="LoanAppAutoCompleteWaterColor">#8A94A6</Color>
     <Color x:Key="LoanAppAutoCompleteTextColor">#DDE6ED</Color>
     <Color x:Key="LoanAppAutoCompleteNoResultsFoundTextColor">#393E46</Color>
 

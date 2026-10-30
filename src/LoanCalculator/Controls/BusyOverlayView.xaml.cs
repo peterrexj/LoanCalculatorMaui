@@ -71,6 +71,47 @@ public partial class BusyOverlayView : ContentView
         });
     }
 
+    /// <summary>
+    /// Shows the scrim, gives it a frame to actually paint, runs <paramref name="work"/>, then
+    /// hides it again whatever happens.
+    /// </summary>
+    /// <remarks>
+    /// The one-tick delay is the whole point of this helper, and leaving it out is why a scrim
+    /// around a page-opening tap appears to do nothing.
+    ///
+    /// <see cref="Show"/> only sets <c>IsVisible</c> and queues a render. Opening a page is
+    /// <em>synchronous</em> UI-thread work — <c>ServiceLocator.GetService&lt;SomePage&gt;()</c>
+    /// constructs the whole view tree before anything is awaited — so without a yield the UI
+    /// thread goes straight from Show into that construction and never renders a frame in
+    /// between. The scrim then becomes visible only after the slow part has finished, which is
+    /// exactly when it is no longer wanted.
+    ///
+    /// The corollary is worth stating because it limits what this helper can ever fix: you cannot
+    /// show a spinner over synchronous work on the UI thread without yielding to it first. Where
+    /// the blocking work is not ours to yield before — Shell constructing a page from
+    /// <c>ContentTemplate</c> on the first tab tap — no scrim can help at all, and the only real
+    /// fix is to build less (see InsightsTabView).
+    ///
+    /// One tick, not Budget's 100 ms: that is long enough for the scrim to paint but short enough
+    /// that a fast operation shows it only briefly, instead of adding a tenth of a second to
+    /// every tap.
+    /// </remarks>
+    public async Task RunWithScrimAsync(string message, Func<Task> work)
+    {
+        Show(message);
+
+        await Task.Delay(1);
+
+        try
+        {
+            await work();
+        }
+        finally
+        {
+            Hide();
+        }
+    }
+
     private void StartFailsafe()
     {
         CancelFailsafe();

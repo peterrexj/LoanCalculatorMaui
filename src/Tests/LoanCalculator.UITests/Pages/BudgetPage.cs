@@ -230,6 +230,35 @@ public sealed class BudgetPage(AppDriver app) : PageBase(app)
         App.Tap(IncomeAfterExpenseSwitch);
     }
 
+    // ── The ⓘ explanation on a switch row ────────────────────────────────────
+
+    public const string IncomeAfterExpenseInfo = "BudgetIncomeAfterExpenseInfo";
+    public const string IncomeAfterExpenseDetail = "BudgetIncomeAfterExpenseDetail";
+
+    /// <summary>
+    /// Opens the ⓘ on the Income tab's FIRST switch and returns the explanation it reveals.
+    /// </summary>
+    /// <remarks>
+    /// The first row specifically, because that is the one that failed: the row's copy is chosen by
+    /// a <c>BudgetToggle</c> BindableProperty, and the first row's value is the same as that
+    /// property's default — so MAUI saw no change, never raised <c>propertyChanged</c>, and the row
+    /// rendered with no label, no sub-line and no detail while every other row was fine.
+    ///
+    /// Only a UI test can catch that class of bug. The copy itself lives in Core and was complete
+    /// and unit-tested the whole time; what was broken was the control failing to apply it.
+    /// </remarks>
+    public string ExpandIncomeAfterExpenseExplanation()
+    {
+        OpenIncomeTab();
+        App.ScrollTo(IncomeAfterExpenseInfo);
+        App.Tap(IncomeAfterExpenseInfo);
+
+        return App.WaitForText(
+            IncomeAfterExpenseDetail,
+            shown => shown.Trim().Length > 0,
+            "the switch's ⓘ revealed its explanation");
+    }
+
     /// <summary>The Income tab's summary block as text — assert on what it contains.</summary>
     public string IncomeTabSummaryText()
     {

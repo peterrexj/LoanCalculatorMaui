@@ -170,10 +170,15 @@ namespace LoanCalculator.UnitTests.Models.ViewModels.PrimaryModels
         }
 
         [Test]
+        /// <remarks>
+        /// "expenses", plural. This read "(after expense)" while the two summary-box captions beside
+        /// it already said "expenses" — all three now come from the shared DeductionCaption helper,
+        /// which is what removed the discrepancy.
+        /// </remarks>
         public void StringChartTitleText_WithExpense_SaysAfterExpense()
         {
             _vm.ShowIncomeAfterExpense = true;
-            Assert.That(_vm.StringChartTitleText, Is.EqualTo("Income Growth Projection (after expense)"));
+            Assert.That(_vm.StringChartTitleText, Is.EqualTo("Income Growth Projection (after expenses)"));
         }
 
         // ── StringProjectionInfoText ───────────────────────────────────────────
@@ -358,10 +363,10 @@ namespace LoanCalculator.UnitTests.Models.ViewModels.PrimaryModels
         }
 
         [Test]
-        public void StringMonthlyExpenseOnTopBox_WithPropertyExpense_SaysMonthlyAndProperty()
+        public void StringMonthlyExpenseOnTopBox_WithPropertyExpense_NamesTheLoanAndAssetCosts()
         {
             _vm.ShowIncomeAfterPropertyExpense = true;
-            Assert.That(_vm.StringMonthlyExpenseOnTopBox, Does.Contain("Property loan"));
+            Assert.That(_vm.StringMonthlyExpenseOnTopBox, Does.Contain("loan & asset costs"));
         }
     }
 }

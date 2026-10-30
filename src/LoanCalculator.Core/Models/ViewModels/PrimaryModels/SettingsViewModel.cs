@@ -280,8 +280,18 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
 
             if (dataType == typeof(LoanViewModel))
             {
-                // Only the persisted loan is cleared. Blanking the live loan form mid-session would
-                // wipe inputs the user can still see, which is a different decision from this one.
+                // Reset the LIVE loan too, not just the file. Clearing only the file left Settings
+                // reporting the data deleted while Loan, What If and Budget carried on showing and
+                // calculating from it — and a restart then produced different figures again. The
+                // asset running costs go back to placeholders with it: they live in the loan file,
+                // so leaving them meant Budget's Asset costs tab still listed figures whose file
+                // had been deleted.
+                TryGetLoanViewModel()?.ResetToDefaults();
+
+                // The loan is now sample data, not the user's, so invite them to re-enter it. The
+                // Loan tab picks this up on its next appearance — see SharedServiceCore.
+                SharedServiceCore.RequestLoanSetupPrompt();
+
                 SharedServiceCore.MarkLoanDirty();
                 return;
             }
@@ -304,13 +314,18 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
         /// ServiceLocator dereferences a settable provider, so a null is a better failure here than
         /// taking down the delete action.
         /// </summary>
-        private static BudgetViewModel? TryGetBudgetViewModel()
+        private static BudgetViewModel? TryGetBudgetViewModel() => TryGetService<BudgetViewModel>();
+
+        /// <summary>The singleton every tab reads the loan from.</summary>
+        private static LoanViewModel? TryGetLoanViewModel() => TryGetService<LoanViewModel>();
+
+        private static T? TryGetService<T>() where T : class
         {
             try
             {
                 return ServiceLocator.ServiceProvider == null
                     ? null
-                    : ServiceLocator.GetService<BudgetViewModel>();
+                    : ServiceLocator.GetService<T>();
             }
             catch
             {

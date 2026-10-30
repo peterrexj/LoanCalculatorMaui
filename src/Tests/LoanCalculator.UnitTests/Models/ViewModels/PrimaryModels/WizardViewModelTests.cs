@@ -196,8 +196,8 @@ namespace LoanCalculator.UnitTests.Models.ViewModels.PrimaryModels
         // ── Summary labels ───────────────────────────────────────────────────
 
         [Test]
-        public void WizardRunningCostSummary_ContainsMoSuffix() =>
-            Assert.That(_vm.WizardRunningCostSummary, Does.Contain("/mo"));
+        public void WizardRunningCostSummary_StatesTheMonthlyPeriod() =>
+            Assert.That(_vm.WizardRunningCostSummary, Does.Contain(" monthly"));
 
         [Test]
         public void WizardRunningCostSummary_WithEntry_ContainsAmount()

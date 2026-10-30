@@ -34,7 +34,7 @@
                 <Label
                     AutomationId="ScenarioExplainerHeader"
                     Style="{DynamicResource ExpanderHeaderLabelStyle}"
-                    Text="Understanding this scenario" />
+                    Text="{Binding HeaderText, Source={x:Reference ExplainerRoot}}" />
             </expander:SfExpander.Header>
 
             <expander:SfExpander.Content>
@@ -118,17 +118,27 @@
                     <!--
                         The one personalised line, closing the card the same way the data-entry
                         cards close with their own figures. Bound to WhatIfViewModel.
-                        ScenarioExplainLine — a single fixed path, because the view model tracks
-                        which scenario is open rather than this control being told.
+                        PersonalLine, supplied by whoever hosts the card. It used to bind
+                        WhatIfViewModel.ScenarioExplainLine directly, which meant the card only
+                        worked on a page whose BindingContext was that view model — the reason it
+                        could not be reused on the What If Answer tab, which is bound to
+                        LoanViewModel.
                     -->
-                    <BoxView Style="{DynamicResource FormCardFootRuleStyle}" />
-                    <Label Style="{DynamicResource PopupFieldLabelStyle}" Text="IN YOUR CASE" />
+                    <!--
+                        Collapses entirely when there is no personalised line. The What If Answer
+                        card writes the reader's figures into the explanations themselves, so it
+                        has nothing to add here — and a heading over an empty Label just looked
+                        like a rendering fault.
+                    -->
+                    <BoxView x:Name="PersonalLineRule" Style="{DynamicResource FormCardFootRuleStyle}" />
+                    <Label x:Name="PersonalLineHeading" Style="{DynamicResource PopupFieldLabelStyle}" Text="IN YOUR CASE" />
                     <!--
                         Not FormCardFootSubStyle: that is FontSizeSmall, right for a figure caption
                         on the entry pages and too small for a sentence here.
                     -->
                     <Label
                         Margin="0,4,0,0"
+                        x:Name="PersonalLineLabel"
                         AutomationId="ScenarioExplainerPersonalLine"
                         FontAttributes="Bold"
                         FontSize="{StaticResource FontSizeBody}"

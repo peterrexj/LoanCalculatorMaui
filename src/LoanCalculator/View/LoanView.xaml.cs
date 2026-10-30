@@ -152,6 +152,38 @@ public partial class LoanView : ContentPage
 
             ReapplyIosTouchFixes();
         }
+
+        PromptForLoanSetupIfRequested();
+    }
+
+    /// <summary>
+    /// Opens the setup wizard once, if the user deleted their loan data in Settings.
+    /// </summary>
+    /// <remarks>
+    /// After the <c>finally</c>, not inside the try: the page has to finish loading and clear
+    /// <c>IsPageBusy</c> before a modal goes over it, or the wizard opens on top of a page still
+    /// showing its busy state and the two fight over the screen.
+    ///
+    /// Fire-and-forget with a delay, mirroring <see cref="OnDisclaimerAccepted"/> — pushing a modal
+    /// while the tab transition is still animating leaves them competing on iOS. The flag is
+    /// consumed before the delay so a fast double-appearance cannot queue two wizards.
+    /// </remarks>
+    private void PromptForLoanSetupIfRequested()
+    {
+        if (!SharedServiceCore.ConsumeLoanSetupPrompt()) return;
+
+        MainThread.BeginInvokeOnMainThread(async () =>
+        {
+            try
+            {
+                await Task.Delay(400);
+                await LaunchLoanDetailsAsync();
+            }
+            catch (Exception ex)
+            {
+                _errorHandlingService.HandleException(ex);
+            }
+        });
     }
 
     /// <summary>
@@ -182,6 +214,20 @@ public partial class LoanView : ContentPage
     /// Watches for the busy/PDF flags falling back to false — the point at which a modal alert or
     /// the loader has gone and Syncfusion may have rebuilt its overlays.
     /// </summary>
+    /// <summary>
+    /// True while a touch-fix pass is already queued, so repeated busy-state changes collapse into
+    /// one pass instead of one each.
+    /// </summary>
+    /// <remarks>
+    /// <c>TriggerPropertyChangedOnPropertyTab</c> ends by setting <c>IsBusy = false</c>, and it runs
+    /// for every change to any loan figure — so dragging the deposit slider across its range used to
+    /// queue up to 99 of these, each a walk of the whole native visual tree landing 150 ms later.
+    /// That pile-up arrives on the UI thread just as the user lets go of the thumb, which is
+    /// precisely when the page felt worst. Coalescing costs one bool and changes nothing about the
+    /// fix itself: the last pass still runs after the last change.
+    /// </remarks>
+    private bool _touchFixQueued;
+
     private void OnViewModelPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
     {
         if (e.PropertyName is not (nameof(LoanViewModel.IsBusy) or nameof(LoanViewModel.IsGeneratingPdf)))
@@ -189,12 +235,22 @@ public partial class LoanView : ContentPage
 
         if (_viewModel.IsBusy || _viewModel.IsGeneratingPdf) return;
 
+        if (_touchFixQueued) return;
+        _touchFixQueued = true;
+
         // Queued rather than immediate: the alert is still tearing down when the flag flips, and
         // the overlay we need to disable may not exist yet at this instant.
         MainThread.BeginInvokeOnMainThread(async () =>
         {
-            await Task.Delay(150);
-            ReapplyIosTouchFixes();
+            try
+            {
+                await Task.Delay(150);
+                ReapplyIosTouchFixes();
+            }
+            finally
+            {
+                _touchFixQueued = false;
+            }
         });
     }
 
@@ -397,9 +453,35 @@ public partial class LoanView : ContentPage
 
         try
         {
-            var page = ServiceLocator.GetService<AmortisationPage>();
-            await Navigation.PushModalAsync(page);
-            await page.Completion;
+            // AmortisationPage is the heaviest modal in the app — 33 Syncfusion controls — and
+            // ServiceLocator.GetService constructs the whole thing synchronously, so the tap used
+            // to sit there with no acknowledgement until the page appeared.
+            //
+            // This reuses the IsPageBusy-bound loading overlay already in LoanView.xaml rather
+            // than a BusyOverlayView, which this page does not have. The one-tick delay is not
+            // optional: setting IsPageBusy only queues a render, so without it the UI thread goes
+            // straight into constructing the page and the scrim appears only once the slow part
+            // is over. Same reasoning as BusyOverlayView.RunWithScrimAsync.
+            //
+            // Scrimmed around the construction and the push only — page.Completion waits for the
+            // user to dismiss the modal, and holding an input-blocking overlay for that would
+            // leave it up behind the modal and still up on return.
+            AmortisationPage? page = null;
+
+            _viewModel.IsPageBusy = true;
+            try
+            {
+                await Task.Delay(1);
+
+                page = ServiceLocator.GetService<AmortisationPage>();
+                await Navigation.PushModalAsync(page);
+            }
+            finally
+            {
+                _viewModel.IsPageBusy = false;
+            }
+
+            if (page is not null) await page.Completion;
         }
         catch (Exception ex)
         {

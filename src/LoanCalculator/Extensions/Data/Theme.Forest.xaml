@@ -90,8 +90,8 @@
     <Color x:Key="LoanAppAutoCompleteDropdownTextColor">#8b9e9e</Color>
     <Color x:Key="LoanAppAutoCompleteDropdownBorderColor">#1b2722</Color>
     <Color x:Key="LoanAppAutoCompleteHighlightedTextColor">#E57373</Color>
-    <Color x:Key="LoanAppAutoCompleteWaterColor">#183d3d</Color>
-    <Color x:Key="LoanAppAutoCompleteTextColor">#183d3d</Color>
+    <Color x:Key="LoanAppAutoCompleteWaterColor">#7f9a90</Color>
+    <Color x:Key="LoanAppAutoCompleteTextColor">#bed0c9</Color>
     <Color x:Key="LoanAppAutoCompleteNoResultsFoundTextColor">#183d3d</Color>
 
     <!--  AppShell  -->

@@ -9,6 +9,34 @@ namespace LoanCalculator.Core.Models.ViewModels
 {
     public class ExpenseEntryViewBaseModel : ViewModelUiBase
     {
+        /// <summary>
+        /// Builds the caption for a summary figure that has had deductions applied, naming every
+        /// deduction that was actually made.
+        /// </summary>
+        /// <remarks>
+        /// <para>The Budget tabs each have two independent "show the figure net of…" toggles, which
+        /// gives four states — but their captions only ever distinguished two, because they read the
+        /// first toggle and ignored the second. The results were wrong in both directions: with only
+        /// the second toggle on, a figure that had already had the loan repayment and the asset
+        /// running costs taken off was still captioned as plain income; with both on, the caption
+        /// said "after expenses" and named none of the rest. A reader had no way to tell what the
+        /// number was net of.</para>
+        ///
+        /// <para>Shared here rather than written per tab so the Income and Expense captions cannot
+        /// drift apart — they describe the same two deductions and previously disagreed about what
+        /// to call them. Note the two tabs do not <i>apply</i> the deductions identically: on the
+        /// Expense tab the property deduction only takes effect inside the after-expenses one, so
+        /// each caller passes what it actually subtracted rather than its raw toggle state.</para>
+        /// </remarks>
+        protected static string DeductionCaption(string noun, bool afterExpenses, bool afterLoanAndAssetCosts)
+            => (afterExpenses, afterLoanAndAssetCosts) switch
+            {
+                (false, false) => noun,
+                (true, false) => $"{noun} (after expenses)",
+                (false, true) => $"{noun} (after loan & asset costs)",
+                (true, true) => $"{noun} (after expenses, loan & asset costs)",
+            };
+
         [JsonIgnore]
         public bool HasInitialized { get; private set; } = false;
 

@@ -66,9 +66,9 @@ namespace LoanCalculator.UnitTests.Models.ViewModels.PrimaryModels
         }
 
         [Test]
-        public void WizardExpenseSummary_ContainsMoSuffix()
+        public void WizardExpenseSummary_StatesTheMonthlyPeriod()
         {
-            Assert.That(_vm.WizardExpenseSummary, Does.Contain("/mo"));
+            Assert.That(_vm.WizardExpenseSummary, Does.Contain(" monthly"));
         }
 
         // ── TotalMonthlyExpense ───────────────────────────────────────────────
@@ -400,10 +400,10 @@ namespace LoanCalculator.UnitTests.Models.ViewModels.PrimaryModels
         }
 
         [Test]
-        public void StringMonthlyExpenseOnTopBox_WithPropertyFlag_SaysMonthlyAndProperty()
+        public void StringMonthlyExpenseOnTopBox_WithPropertyFlag_NamesTheLoanAndAssetCosts()
         {
             _vm.ShowPropertyExpense = true;
-            Assert.That(_vm.StringMonthlyExpenseOnTopBox, Does.Contain("Property loan"));
+            Assert.That(_vm.StringMonthlyExpenseOnTopBox, Does.Contain("loan & asset costs"));
         }
 
         // ── StringIncomeTextOnTopBox ──────────────────────────────────────────

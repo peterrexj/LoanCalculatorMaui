@@ -1,0 +1,544 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView
+    x:Class="LoanCalculatorMaui.Controls.InsightsTabView"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:chart="clr-namespace:Syncfusion.Maui.Charts;assembly=Syncfusion.Maui.Charts"
+    xmlns:expander="clr-namespace:Syncfusion.Maui.Expander;assembly=Syncfusion.Maui.Expander"
+    xmlns:customControls="clr-namespace:LoanCalculatorMaui.Controls"
+    xmlns:progressBar="clr-namespace:Syncfusion.Maui.ProgressBar;assembly=Syncfusion.Maui.ProgressBar"
+    xmlns:primaryModels="clr-namespace:LoanCalculator.Core.Models.ViewModels.PrimaryModels;assembly=LoanCalculator.Core">
+
+    <!--
+        The What If page's Insights tab, lifted verbatim out of WhatIfView.xaml.
+
+        It lives in its own ContentView so it is NOT built until the user actually opens the
+        Insights tab. SfTabItem.Content is a plain property rather than a DataTemplate, so every
+        tab's content is constructed the moment the page is — and because AppShell.xaml declares
+        the page as ContentTemplate="{DataTemplate localview:WhatIfView}", Shell builds the whole
+        page on the first tab tap. This subtree alone is 27 SfExpanders and 6 charts: 34 of the
+        page's 59 heavy Syncfusion controls, all of them for a tab the user has not asked for yet.
+        WhatIfView.RefreshInsights() now inflates this on first entry instead.
+
+        All nine panels are kept: an audit showed the four judged "redundant" were not — Budget's
+        income and expense figures are mutated by the ShowIncomeAfterExpense / ShowPropertyExpense
+        toggles, so these panels are the only place those totals appear unconditionally. Each also
+        carries explanatory copy that exists nowhere else.
+
+        BindingContext is LoanViewModel, not WhatIfViewModel (InsightsDetails lives on the former).
+        WhatIfView assigns it when it creates this view, exactly as it used to assign it onto the
+        InsightsRoot subtree.
+
+        No x:DataType on the root, deliberately. In WhatIfView.xaml this markup inherited
+        x:DataType="primaryModels:WhatIfViewModel" from the page root while its runtime
+        BindingContext was a LoanViewModel — a type mismatch, so these bindings have always
+        resolved by reflection rather than as compiled bindings. Leaving x:DataType off keeps that
+        behaviour identical instead of changing it in the same edit that moves the markup. Adding
+        x:DataType="primaryModels:LoanViewModel" here would be a real additional win — compiled
+        bindings for several hundred bindings — but it is its own change: it needs a build, because
+        any path that does not exist on LoanViewModel starts failing where it currently limps.
+    -->
+    <ScrollView x:Name="InsightsRoot">
+        <StackLayout Padding="12,0">
+            <customControls:DisclaimerBannerView
+                BannerType="Warning"
+                HeaderText="Disclaimer"
+                Text="{DynamicResource LoanAppDisclaimerBannerText}" />
+
+            <!--
+                Section picker, per export.html. The checkboxes are DISABLED
+                and pre-ticked on purpose: the export is still fixed-content,
+                so offering a live choice would be a control that silently
+                does nothing. They show what the report contains today, and
+                the note underneath says the choosing is still to come —
+                which is honest, where an enabled-but-inert checkbox is not.
+
+                Checkboxes rather than switches because this reads as a
+                multi-select list, not six independent on/off settings.
+            -->
+            <Label
+                Margin="4,10,4,4"
+                FontSize="{StaticResource FontSizeSmall}"
+                Opacity="0.45"
+                Text="INCLUDED IN THE REPORT"
+                TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+
+            <Border
+                Margin="0,0,0,6"
+                Padding="0"
+                Background="{DynamicResource BorderControlBackgroundGradientBrush}"
+                Stroke="{DynamicResource BorderControlGradientBrush}"
+                StrokeShape="RoundRectangle 12"
+                StrokeThickness="1">
+                <VerticalStackLayout
+                    x:Name="ExportSectionList"
+                    BindableLayout.ItemsSource="{Binding ExportSections}"
+                    Spacing="0">
+                    <BindableLayout.ItemTemplate>
+                        <DataTemplate x:DataType="primaryModels:ExportSectionOption">
+                            <Border
+                                Padding="16,12"
+                                BackgroundColor="Transparent"
+                                Stroke="{DynamicResource BorderControlGradientBrush}"
+                                StrokeThickness="1">
+                                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+                                    <!--
+                                        A tick glyph, not an SfCheckBox. A
+                                        disabled SfCheckBox rendered as a thin
+                                        vertical sliver here — it draws its box
+                                        into a graphics layer and its disabled
+                                        state has no colour in these themes, so
+                                        there was nothing to see. These rows are
+                                        not interactive anyway (see
+                                        ExportSectionOption), so a glyph is both
+                                        legible and honest: it states inclusion
+                                        rather than impersonating a control that
+                                        cannot be toggled.
+                                    -->
+                                    <Label
+                                        AutomationId="{Binding AutomationId}"
+                                        Grid.Column="0"
+                                        FontSize="{StaticResource FontSizeMedium}"
+                                        Opacity="0.85"
+                                        Text="&#x2713;"
+                                        TextColor="{DynamicResource LoanAppChartColor1}"
+                                        VerticalOptions="Center" />
+                                    <VerticalStackLayout
+                                        Grid.Column="1"
+                                        Spacing="2"
+                                        VerticalOptions="Center">
+                                        <Label
+                                            FontSize="{StaticResource FontSizeBody}"
+                                            Text="{Binding Title}"
+                                            TextColor="{DynamicResource LstForegroundColor}" />
+                                        <Label
+                                            FontSize="{StaticResource FontSizeSmall}"
+                                            Opacity="0.55"
+                                            Text="{Binding Detail}"
+                                            TextColor="{DynamicResource LstForegroundColor}" />
+                                    </VerticalStackLayout>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </BindableLayout.ItemTemplate>
+                </VerticalStackLayout>
+            </Border>
+
+            <Label
+                AutomationId="WhatIfExportSelectionNote"
+                Margin="4,0,4,0"
+                FontSize="{StaticResource FontSizeXS}"
+                Opacity="0.5"
+                Text="Every section above is included. Choosing which to export is coming in a later update."
+                TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+
+            <VerticalStackLayout Padding="20,10,20,10">
+                <Button
+                    AutomationId="LoanInsightsExportButton"
+                    Command="{Binding ExportInsightsReportCommand}"
+                    IsEnabled="{Binding IsActive}"
+                    Style="{DynamicResource ExportButtonStyle}"
+                    Text="Export Detailed Insights" />
+                <progressBar:SfLinearProgressBar
+                    AnimationEasing="{x:Static Easing.CubicOut}"
+                    IsVisible="{Binding IsGeneratingPdf}"
+                    Progress="{Binding PdfGenerator.Progress}"
+                    ProgressFill="{DynamicResource LoanAppProgressColor}"
+                    ProgressHeight="10"
+                    TrackFill="{DynamicResource LoanAppProgressTrackColor}"
+                    TrackHeight="10" />
+            </VerticalStackLayout>
+
+            <Border Style="{DynamicResource ExpanderCardStyle}">
+                <expander:SfExpander
+                    HeaderIconPosition="End"
+                    Style="{DynamicResource CommonExpanderStyle}">
+                    <expander:SfExpander.Header>
+                        <Grid Padding="0,2">
+                            <VerticalStackLayout Spacing="2">
+                                <Label Style="{DynamicResource ExpanderHeaderLabelStyle}" Text="Key Insights" />
+                                <Label Style="{DynamicResource ExpanderHeaderSubLabelStyle}" Text="Affordability, loan, deposit and repayments at a glance" />
+                            </VerticalStackLayout>
+                        </Grid>
+                    </expander:SfExpander.Header>
+                    <expander:SfExpander.Content>
+                        <StackLayout>
+                            <Border Style="{DynamicResource BorderInsightsHighlightBox}" VerticalOptions="FillAndExpand">
+                                <StackLayout Margin="0,0,0,5">
+                                    <customControls:InsightsItemView InsightItem="{Binding InsightsDetails.AffordabilityMonthly}" TextColor="{DynamicResource LoanAppInsightsFgColor}" ShowSeparator="False" />
+                                    <customControls:InsightsItemView InsightItem="{Binding InsightsDetails.AffordabilityYearly}" TextColor="{DynamicResource LoanAppInsightsFgColor}" />
+
+                                    <customControls:InsightsItemView InsightItem="{Binding InsightsDetails.LoanAmount}" TextColor="{DynamicResource LoanAppInsightsFgColor}" />
+                                    <customControls:InsightsItemView InsightItem="{Binding InsightsDetails.DepositAmount}" TextColor="{DynamicResource LoanAppInsightsFgColor}" />
+
+                                    <customControls:InsightsItemView InsightItem="{Binding InsightsDetails.RepaymentDetailMonthly}" TextColor="{DynamicResource LoanAppInsightsFgColor}" />
+                                    <customControls:InsightsItemView InsightItem="{Binding InsightsDetails.RepaymentDetailYearly}" TextColor="{DynamicResource LoanAppInsightsFgColor}" />
+
+                                    <customControls:InsightsItemView InsightItem="{Binding InsightsDetails.IncomeTotalMonthly}" TextColor="{DynamicResource LoanAppInsightsFgColor}" />
+                                    <customControls:InsightsItemView InsightItem="{Binding InsightsDetails.IncomeTotalYearly}" TextColor="{DynamicResource LoanAppInsightsFgColor}" />
+
+                                    <customControls:InsightsItemView InsightItem="{Binding InsightsDetails.ExpenseOverallTotalMonthly}" TextColor="{DynamicResource LoanAppInsightsFgColor}" />
+                                    <customControls:InsightsItemView InsightItem="{Binding InsightsDetails.ExpenseOverallTotalYearly}" TextColor="{DynamicResource LoanAppInsightsFgColor}" />
+                                </StackLayout>
+                            </Border>
+                        </StackLayout>
+                    </expander:SfExpander.Content>
+                </expander:SfExpander>
+            </Border>
+
+            <Border Style="{DynamicResource ExpanderCardStyle}">
+                <expander:SfExpander
+                    HeaderIconPosition="End"
+                    Style="{DynamicResource CommonExpanderStyle}">
+                    <expander:SfExpander.Header>
+                        <Grid Padding="0,2">
+                            <VerticalStackLayout Spacing="2">
+                                <Label Style="{DynamicResource ExpanderHeaderLabelStyle}" Text="Asset Insights" />
+                                <Label Style="{DynamicResource ExpanderHeaderSubLabelStyle}" Text="Purchase price, estimated upfront costs and the total" />
+                            </VerticalStackLayout>
+                        </Grid>
+                    </expander:SfExpander.Header>
+                    <expander:SfExpander.Content>
+                        <StackLayout>
+                            <Border Style="{DynamicResource BorderInsightsHighlightBox}">
+                                <Grid>
+                                    <StackLayout Margin="0,0,0,5">
+                                        <customControls:InsightsItemView InsightItem="{Binding InsightsDetails.PropertyAmount}" TextColor="{DynamicResource LoanAppInsightsFgColor}" ShowSeparator="False" />
+                                        <customControls:InsightsItemView InsightItem="{Binding InsightsDetails.PropertyEstimatedUpfront}" TextColor="{DynamicResource LoanAppInsightsFgColor}" />
+                                        <customControls:InsightsItemView
+                                            Margin="0,0,0,20"
+                                            InsightItem="{Binding InsightsDetails.PropertyTotalAmount}"
+                                            TextColor="{DynamicResource LoanAppInsightsFgColor}" />
+                                    </StackLayout>
+                                </Grid>
+                            </Border>
+                        </StackLayout>
+                    </expander:SfExpander.Content>
+                </expander:SfExpander>
+            </Border>
+
+            <Border Style="{DynamicResource ExpanderCardStyle}">
+                <expander:SfExpander
+                    HeaderIconPosition="End"
+                    Style="{DynamicResource CommonExpanderStyle}">
+                    <expander:SfExpander.Header>
+                        <Grid Padding="0,2">
+                            <VerticalStackLayout Spacing="2">
+                                <Label Style="{DynamicResource ExpanderHeaderLabelStyle}" Text="Loan Insights" />
+                                <Label Style="{DynamicResource ExpanderHeaderSubLabelStyle}" Text="Loan, deposit, and what the bank is repaid in total" />
+                            </VerticalStackLayout>
+                        </Grid>
+                    </expander:SfExpander.Header>
+                    <expander:SfExpander.Content>
+                        <StackLayout>
+                            <Border Style="{DynamicResource BorderInsightsHighlightBox}">
+                                <Grid>
+                                    <StackLayout Margin="0,0,0,5">
+                                        <customControls:InsightsItemView InsightItem="{Binding InsightsDetails.LoanAmount}" TextColor="{DynamicResource LoanAppInsightsFgColor}" ShowSeparator="False" />
+                                        <customControls:InsightsItemView InsightItem="{Binding InsightsDetails.DepositAmount}" TextColor="{DynamicResource LoanAppInsightsFgColor}" />
+                                        <customControls:InsightsItemView InsightItem="{Binding InsightsDetails.TotalRepaymentToBank}" TextColor="{DynamicResource LoanAppInsightsFgColor}" />
+                                        <customControls:InsightsItemView InsightItem="{Binding InsightsDetails.TotalInterestToBank}" TextColor="{DynamicResource LoanAppInsightsFgColor}" />
+                                        <chart:SfCartesianChart
+                                            AutomationId="LoanInsightsChart"
+                                            x:Name="insightsChart"
+                                            Margin="10,0,20,0"
+                                            BackgroundColor="Transparent"
+                                            HeightRequest="150"
+                                            HorizontalOptions="FillAndExpand"
+                                            IsTransposed="True"
+                                            PaletteBrushes="{Binding CustomChartColors}"
+                                            VerticalOptions="FillAndExpand">
+                                            <!--<chart:SfCartesianChart.Margin>
+                <OnPlatform x:TypeArguments="Thickness">
+                    <On Platform="Windows" Value="10,0,20,0" />
+                    <On Platform="Android" Value="10,0,20,0" />
+                    <On Platform="iOS" Value="0,10,20,0" />
+                </OnPlatform>
+            </chart:SfCartesianChart.Margin>-->
+                                            <chart:SfCartesianChart.Legend>
+                                                <chart:ChartLegend Placement="{OnIdiom Phone=Bottom, Tablet=Left, Desktop=Left, TV=Left, Default=Bottom}" ToggleSeriesVisibility="True">
+                                                    <chart:ChartLegend.LabelStyle>
+                                                        <!--
+                                                            LoanAppInsightsFgColor, not LoanAppChartLegendTextColor. This chart
+                                                            is BackgroundColor="Transparent" inside BorderInsightsHighlightBox,
+                                                            so its legend sits on the insights card, not on a chart card. The
+                                                            chart legend colour is tuned for the light chart-card fill and in
+                                                            Dark it is #27374D — the exact insights card colour, i.e. invisible.
+                                                        -->
+                                                        <chart:ChartLegendLabelStyle
+                                                            FontAttributes="Bold"
+                                                            FontFamily="{DynamicResource DefaultFontFamily}"
+                                                            TextColor="{DynamicResource LoanAppInsightsFgColor}" />
+                                                    </chart:ChartLegend.LabelStyle>
+                                                </chart:ChartLegend>
+                                            </chart:SfCartesianChart.Legend>
+                                            <chart:SfCartesianChart.XAxes>
+                                                <chart:CategoryAxis IsVisible="False" ShowMajorGridLines="False" />
+                                            </chart:SfCartesianChart.XAxes>
+                                            <chart:SfCartesianChart.YAxes>
+                                                <chart:NumericalAxis IsVisible="False" ShowMajorGridLines="False" />
+                                            </chart:SfCartesianChart.YAxes>
+                                            <chart:SfCartesianChart.Series>
+                                                <chart:StackingColumn100Series
+                                                    EnableAnimation="True"
+                                                    IsVisibleOnLegend="True"
+                                                    ItemsSource="{Binding InsightChartLoanDepositAxis}"
+                                                    Label="Deposit"
+                                                    LabelContext="YValue"
+                                                    LegendIcon="Rectangle"
+                                                    ShowDataLabels="True"
+                                                    Stroke="{DynamicResource LoanAppChartColor1}"
+                                                    XBindingPath="Name"
+                                                    YBindingPath="Value">
+                                                    <chart:StackingColumn100Series.DataLabelSettings>
+                                                        <chart:CartesianDataLabelSettings LabelPlacement="Inner">
+                                                            <chart:CartesianDataLabelSettings.LabelStyle>
+                                                                <chart:ChartDataLabelStyle
+                                                                    FontAttributes="Bold"
+                                                                    FontFamily="{DynamicResource DefaultFontFamily}"
+                                                                    FontSize="{StaticResource FontSizeXS}"
+                                                                    LabelFormat="c"
+                                                                    TextColor="{DynamicResource LoanAppChartDataMarkerTextColor1}" />
+                                                            </chart:CartesianDataLabelSettings.LabelStyle>
+                                                        </chart:CartesianDataLabelSettings>
+                                                    </chart:StackingColumn100Series.DataLabelSettings>
+                                                </chart:StackingColumn100Series>
+                                                <chart:StackingColumn100Series
+                                                    EnableAnimation="True"
+                                                    ItemsSource="{Binding InsightChartLoanAmountAxis}"
+                                                    Label="Loan"
+                                                    LabelContext="YValue"
+                                                    LegendIcon="Rectangle"
+                                                    ShowDataLabels="True"
+                                                    Stroke="{DynamicResource LoanAppChartColor2}"
+                                                    XBindingPath="Name"
+                                                    YBindingPath="Value">
+                                                    <chart:StackingColumn100Series.DataLabelSettings>
+                                                        <chart:CartesianDataLabelSettings LabelPlacement="Inner">
+                                                            <chart:CartesianDataLabelSettings.LabelStyle>
+                                                                <chart:ChartDataLabelStyle
+                                                                    FontAttributes="Bold"
+                                                                    FontFamily="{DynamicResource DefaultFontFamily}"
+                                                                    FontSize="{StaticResource FontSizeXS}"
+                                                                    LabelFormat="c"
+                                                                    TextColor="{DynamicResource LoanAppChartDataMarkerTextColor2}" />
+                                                            </chart:CartesianDataLabelSettings.LabelStyle>
+                                                        </chart:CartesianDataLabelSettings>
+                                                    </chart:StackingColumn100Series.DataLabelSettings>
+                                                </chart:StackingColumn100Series>
+                                                <chart:StackingColumn100Series
+                                                    EnableAnimation="True"
+                                                    ItemsSource="{Binding InsightChartLoanInterestAxis}"
+                                                    Label="{Binding ChartInterestCategoryLabel}"
+                                                    LabelContext="YValue"
+                                                    LegendIcon="Rectangle"
+                                                    ShowDataLabels="True"
+                                                    Stroke="{DynamicResource LoanAppChartColor3}"
+                                                    XBindingPath="Name"
+                                                    YBindingPath="Value">
+                                                    <chart:StackingColumn100Series.DataLabelSettings>
+                                                        <chart:CartesianDataLabelSettings LabelPlacement="Inner">
+                                                            <chart:CartesianDataLabelSettings.LabelStyle>
+                                                                <chart:ChartDataLabelStyle
+                                                                    FontAttributes="Bold"
+                                                                    FontFamily="{DynamicResource DefaultFontFamily}"
+                                                                    FontSize="{StaticResource FontSizeXS}"
+                                                                    LabelFormat="c"
+                                                                    TextColor="{DynamicResource LoanAppChartDataMarkerTextColor3}" />
+                                                            </chart:CartesianDataLabelSettings.LabelStyle>
+                                                        </chart:CartesianDataLabelSettings>
+                                                    </chart:StackingColumn100Series.DataLabelSettings>
+                                                </chart:StackingColumn100Series>
+                                            </chart:SfCartesianChart.Series>
+                                        </chart:SfCartesianChart>
+                                        <Label
+                                            Margin="0,4,0,8"
+                                            FontFamily="{DynamicResource DefaultFontFamily}"
+                                            FontSize="{StaticResource FontSizeXS}"
+                                            HorizontalOptions="Center"
+                                            HorizontalTextAlignment="Center"
+                                            Opacity="0.5"
+                                            Text="{Binding ChartInsightSubtitle}"
+                                            TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+
+                                        <customControls:InsightsItemView InsightItem="{Binding InsightsDetails.LoanTerm}" TextColor="{DynamicResource LoanAppInsightsFgColor}" ShowSeparator="False" />
+                                        <customControls:InsightsItemView InsightItem="{Binding InsightsDetails.InterestRate}" TextColor="{DynamicResource LoanAppInsightsFgColor}" />
+                                        <customControls:InsightsItemView InsightItem="{Binding InsightsDetails.RepaymentFrequency}" TextColor="{DynamicResource LoanAppInsightsFgColor}" />
+                                        <customControls:InsightsItemView InsightItem="{Binding InsightsDetails.RepaymentDetailSelectedFrequency}" TextColor="{DynamicResource LoanAppInsightsFgColor}" />
+                                        <customControls:InsightsItemView
+                                            Margin="0,0,0,20"
+                                            InsightItem="{Binding InsightsDetails.RepaymentDetailYearly}"
+                                            TextColor="{DynamicResource LoanAppInsightsFgColor}" />
+                                    </StackLayout>
+                                </Grid>
+                            </Border>
+                        </StackLayout>
+                    </expander:SfExpander.Content>
+                </expander:SfExpander>
+            </Border>
+
+            <Border Style="{DynamicResource ExpanderCardStyle}">
+                <expander:SfExpander
+                    HeaderIconPosition="End"
+                    Style="{DynamicResource CommonExpanderStyle}">
+                    <expander:SfExpander.Header>
+                        <Grid Padding="0,2">
+                            <VerticalStackLayout Spacing="2">
+                                <Label Style="{DynamicResource ExpanderHeaderLabelStyle}" Text="Expenses on cost of new asset ownership" />
+                                <Label Style="{DynamicResource ExpanderHeaderSubLabelStyle}" Text="Monthly and yearly cost of owning the asset" />
+                            </VerticalStackLayout>
+                        </Grid>
+                    </expander:SfExpander.Header>
+                    <expander:SfExpander.Content>
+                        <StackLayout>
+                            <Border Style="{DynamicResource BorderInsightsHighlightBox}">
+                                <Grid>
+                                    <StackLayout Margin="0,0,0,5">
+                                        <customControls:InsightsItemView InsightItem="{Binding InsightsDetails.ExpenseCostOfNewPropertyOwnershipMonthly}" TextColor="{DynamicResource LoanAppInsightsFgColor}" ShowSeparator="False" />
+                                        <customControls:InsightsItemView InsightItem="{Binding InsightsDetails.ExpenseCostOfNewPropertyOwnershipYearly}" TextColor="{DynamicResource LoanAppInsightsFgColor}" />
+                                    </StackLayout>
+                                </Grid>
+                            </Border>
+                        </StackLayout>
+                    </expander:SfExpander.Content>
+                </expander:SfExpander>
+            </Border>
+
+            <Border Style="{DynamicResource ExpanderCardStyle}">
+                <expander:SfExpander
+                    HeaderIconPosition="End"
+                    Style="{DynamicResource CommonExpanderStyle}">
+                    <expander:SfExpander.Header>
+                        <Grid Padding="0,2">
+                            <VerticalStackLayout Spacing="2">
+                                <Label Style="{DynamicResource ExpanderHeaderLabelStyle}" Text="Expenses on Loan financial commitments" />
+                                <Label Style="{DynamicResource ExpanderHeaderSubLabelStyle}" Text="Monthly and yearly cost of servicing the loan" />
+                            </VerticalStackLayout>
+                        </Grid>
+                    </expander:SfExpander.Header>
+                    <expander:SfExpander.Content>
+                        <StackLayout>
+                            <Border Style="{DynamicResource BorderInsightsHighlightBox}">
+                                <Grid>
+                                    <StackLayout Margin="0,0,0,5">
+                                        <customControls:InsightsItemView InsightItem="{Binding InsightsDetails.ExpenseLoanFinancialCommitmentsMonthly}" TextColor="{DynamicResource LoanAppInsightsFgColor}" ShowSeparator="False" />
+                                        <customControls:InsightsItemView InsightItem="{Binding InsightsDetails.ExpenseLoanFinancialCommitmentsYearly}" TextColor="{DynamicResource LoanAppInsightsFgColor}" />
+                                    </StackLayout>
+                                </Grid>
+                            </Border>
+                        </StackLayout>
+                    </expander:SfExpander.Content>
+                </expander:SfExpander>
+            </Border>
+
+            <Border Style="{DynamicResource ExpanderCardStyle}">
+                <expander:SfExpander
+                    HeaderIconPosition="End"
+                    Style="{DynamicResource CommonExpanderStyle}">
+                    <expander:SfExpander.Header>
+                        <Grid Padding="0,2">
+                            <VerticalStackLayout Spacing="2">
+                                <Label Style="{DynamicResource ExpanderHeaderLabelStyle}" Text="Expenses on current financial outflows" />
+                                <Label Style="{DynamicResource ExpanderHeaderSubLabelStyle}" Text="Monthly and yearly total of your recorded expenses" />
+                            </VerticalStackLayout>
+                        </Grid>
+                    </expander:SfExpander.Header>
+                    <expander:SfExpander.Content>
+                        <StackLayout>
+                            <Border Style="{DynamicResource BorderInsightsHighlightBox}">
+                                <Grid>
+                                    <StackLayout Margin="0,0,0,5">
+                                        <customControls:InsightsItemView InsightItem="{Binding InsightsDetails.ExpenseCurrentFinancialOutflowsMonthly}" TextColor="{DynamicResource LoanAppInsightsFgColor}" ShowSeparator="False" />
+                                        <customControls:InsightsItemView InsightItem="{Binding InsightsDetails.ExpenseCurrentFinancialOutflowsYearly}" TextColor="{DynamicResource LoanAppInsightsFgColor}" />
+                                    </StackLayout>
+                                </Grid>
+                            </Border>
+                        </StackLayout>
+                    </expander:SfExpander.Content>
+                </expander:SfExpander>
+            </Border>
+
+            <Border Style="{DynamicResource ExpanderCardStyle}">
+                <expander:SfExpander
+                    HeaderIconPosition="End"
+                    Style="{DynamicResource CommonExpanderStyle}">
+                    <expander:SfExpander.Header>
+                        <Grid Padding="0,2">
+                            <VerticalStackLayout Spacing="2">
+                                <Label Style="{DynamicResource ExpanderHeaderLabelStyle}" Text="Income" />
+                                <Label Style="{DynamicResource ExpanderHeaderSubLabelStyle}" Text="Your recorded income, monthly and yearly" />
+                            </VerticalStackLayout>
+                        </Grid>
+                    </expander:SfExpander.Header>
+                    <expander:SfExpander.Content>
+                        <StackLayout>
+                            <Border Style="{DynamicResource BorderInsightsHighlightBox}">
+                                <Grid>
+                                    <StackLayout Margin="0,0,0,5">
+                                        <customControls:InsightsItemView InsightItem="{Binding InsightsDetails.IncomeTotalMonthly}" TextColor="{DynamicResource LoanAppInsightsFgColor}" ShowSeparator="False" />
+                                        <customControls:InsightsItemView InsightItem="{Binding InsightsDetails.IncomeTotalYearly}" TextColor="{DynamicResource LoanAppInsightsFgColor}" />
+                                    </StackLayout>
+                                </Grid>
+                            </Border>
+                        </StackLayout>
+                    </expander:SfExpander.Content>
+                </expander:SfExpander>
+            </Border>
+
+            <Border Style="{DynamicResource ExpanderCardStyle}">
+                <expander:SfExpander
+                    HeaderIconPosition="End"
+                    Style="{DynamicResource CommonExpanderStyle}">
+                    <expander:SfExpander.Header>
+                        <Grid Padding="0,2">
+                            <VerticalStackLayout Spacing="2">
+                                <Label Style="{DynamicResource ExpanderHeaderLabelStyle}" Text="Income after expense" />
+                                <Label Style="{DynamicResource ExpanderHeaderSubLabelStyle}" Text="What is left once your expenses are taken out" />
+                            </VerticalStackLayout>
+                        </Grid>
+                    </expander:SfExpander.Header>
+                    <expander:SfExpander.Content>
+                        <StackLayout>
+                            <Border Style="{DynamicResource BorderInsightsHighlightBox}">
+                                <Grid>
+                                    <StackLayout Margin="0,0,0,5">
+                                        <customControls:InsightsItemView InsightItem="{Binding InsightsDetails.IncomeAfterExpenseMonthly}" TextColor="{DynamicResource LoanAppInsightsFgColor}" ShowSeparator="False" />
+                                        <customControls:InsightsItemView InsightItem="{Binding InsightsDetails.IncomeAfterExpenseYearly}" TextColor="{DynamicResource LoanAppInsightsFgColor}" />
+                                    </StackLayout>
+                                </Grid>
+                            </Border>
+                        </StackLayout>
+                    </expander:SfExpander.Content>
+                </expander:SfExpander>
+            </Border>
+
+            <Border Style="{DynamicResource ExpanderCardStyle}">
+                <expander:SfExpander
+                    HeaderIconPosition="End"
+                    Style="{DynamicResource CommonExpanderStyle}">
+                    <expander:SfExpander.Header>
+                        <Grid Padding="0,2">
+                            <VerticalStackLayout Spacing="2">
+                                <Label Style="{DynamicResource ExpanderHeaderLabelStyle}" Text="Income after all expenses" />
+                                <Label Style="{DynamicResource ExpanderHeaderSubLabelStyle}" Text="What is left after expenses and loan repayments" />
+                            </VerticalStackLayout>
+                        </Grid>
+                    </expander:SfExpander.Header>
+                    <expander:SfExpander.Content>
+                        <StackLayout>
+                            <Border Style="{DynamicResource BorderInsightsHighlightBox}">
+                                <Grid>
+                                    <StackLayout Margin="0,0,0,5">
+                                        <customControls:InsightsItemView InsightItem="{Binding InsightsDetails.IncomeAfterExpenseWithLoanMonthly}" TextColor="{DynamicResource LoanAppInsightsFgColor}" ShowSeparator="False" />
+                                        <customControls:InsightsItemView InsightItem="{Binding InsightsDetails.IncomeAfterExpenseWithLoanYearly}" TextColor="{DynamicResource LoanAppInsightsFgColor}" />
+                                    </StackLayout>
+                                </Grid>
+                            </Border>
+                        </StackLayout>
+                    </expander:SfExpander.Content>
+                </expander:SfExpander>
+            </Border>
+        </StackLayout>
+    </ScrollView>
+
+</ContentView>

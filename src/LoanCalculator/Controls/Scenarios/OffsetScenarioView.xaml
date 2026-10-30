@@ -40,9 +40,17 @@
                     StrokeThickness="0">
                     <HorizontalStackLayout Spacing="2" VerticalOptions="Center">
                         <Label FontSize="{StaticResource FontSizeSmall}" Margin="6,0,0,0" Opacity="0.7" Text="Balance:" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" VerticalOptions="Center" />
-                        <Button BackgroundColor="Transparent" Padding="0" Clicked="OnOffsetDecrease" FontAttributes="Bold" FontSize="{StaticResource FontSizeXL}" TextColor="{DynamicResource LoanAppChartColor1}" WidthRequest="36" Text="−" />
+                                                <Button
+                            Text="−"
+                            Clicked="OnOffsetDecrease"
+                            TextColor="{DynamicResource LoanAppChartColor1}"
+                            Style="{DynamicResource ScenarioStepperButtonStyle}" />
                         <Label FontAttributes="Bold" FontSize="{StaticResource FontSizeLarge}" HorizontalTextAlignment="Center" MinimumWidthRequest="96" Text="{Binding OffsetBalance, StringFormat='{0:N0}'}" TextColor="{DynamicResource LoanAppChartColor1}" VerticalOptions="Center" />
-                        <Button BackgroundColor="Transparent" Padding="0" Clicked="OnOffsetIncrease" FontAttributes="Bold" FontSize="{StaticResource FontSizeXL}" TextColor="{DynamicResource LoanAppChartColor1}" WidthRequest="36" Text="+" />
+                                                <Button
+                            Text="+"
+                            Clicked="OnOffsetIncrease"
+                            TextColor="{DynamicResource LoanAppChartColor1}"
+                            Style="{DynamicResource ScenarioStepperButtonStyle}" />
                     </HorizontalStackLayout>
                 </Border>
 
@@ -55,9 +63,17 @@
                     StrokeThickness="0">
                     <HorizontalStackLayout Spacing="2" VerticalOptions="Center">
                         <Label FontSize="{StaticResource FontSizeSmall}" Margin="6,0,0,0" Opacity="0.7" Text="Rate:" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" VerticalOptions="Center" />
-                        <Button BackgroundColor="Transparent" Padding="0" Clicked="OnOffsetRateDecrease" FontAttributes="Bold" FontSize="{StaticResource FontSizeXL}" TextColor="{DynamicResource LoanAppChartColor1}" WidthRequest="36" Text="−" />
+                                                <Button
+                            Text="−"
+                            Clicked="OnOffsetRateDecrease"
+                            TextColor="{DynamicResource LoanAppChartColor1}"
+                            Style="{DynamicResource ScenarioStepperButtonStyle}" />
                         <Label FontAttributes="Bold" FontSize="{StaticResource FontSizeLarge}" HorizontalTextAlignment="Center" MinimumWidthRequest="72" Text="{Binding OffsetRate, StringFormat='{0:0.00}%'}" TextColor="{DynamicResource LoanAppChartColor1}" VerticalOptions="Center" />
-                        <Button BackgroundColor="Transparent" Padding="0" Clicked="OnOffsetRateIncrease" FontAttributes="Bold" FontSize="{StaticResource FontSizeXL}" TextColor="{DynamicResource LoanAppChartColor1}" WidthRequest="36" Text="+" />
+                                                <Button
+                            Text="+"
+                            Clicked="OnOffsetRateIncrease"
+                            TextColor="{DynamicResource LoanAppChartColor1}"
+                            Style="{DynamicResource ScenarioStepperButtonStyle}" />
                     </HorizontalStackLayout>
                 </Border>
 

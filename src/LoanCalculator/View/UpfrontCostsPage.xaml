@@ -112,6 +112,7 @@
                                         Placeholder="0"
                                         PlaceholderColor="{DynamicResource LoanAppInputTextWhenUnFocusedColor}"
                                         TextChanged="OnUpfrontEntryTextChanged"
+                                        Unfocused="OnUpfrontEntryUnfocused"
                                         TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
                                 </Border>
                                 <Label
@@ -136,6 +137,7 @@
                                             Placeholder="0"
                                             PlaceholderColor="{DynamicResource LoanAppInputTextWhenUnFocusedColor}"
                                             TextChanged="OnUpfrontEntryTextChanged"
+                                            Unfocused="OnUpfrontEntryUnfocused"
                                             TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
                                     </Border>
                                     <Label
@@ -157,6 +159,7 @@
                                             Placeholder="0"
                                             PlaceholderColor="{DynamicResource LoanAppInputTextWhenUnFocusedColor}"
                                             TextChanged="OnUpfrontEntryTextChanged"
+                                            Unfocused="OnUpfrontEntryUnfocused"
                                             TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
                                     </Border>
                                     <Label
@@ -182,6 +185,7 @@
                                             Placeholder="0"
                                             PlaceholderColor="{DynamicResource LoanAppInputTextWhenUnFocusedColor}"
                                             TextChanged="OnUpfrontEntryTextChanged"
+                                            Unfocused="OnUpfrontEntryUnfocused"
                                             TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
                                     </Border>
                                     <Label
@@ -203,6 +207,7 @@
                                             Placeholder="0"
                                             PlaceholderColor="{DynamicResource LoanAppInputTextWhenUnFocusedColor}"
                                             TextChanged="OnUpfrontEntryTextChanged"
+                                            Unfocused="OnUpfrontEntryUnfocused"
                                             TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
                                     </Border>
                                     <Label
@@ -227,6 +232,7 @@
                                         Placeholder="0"
                                         PlaceholderColor="{DynamicResource LoanAppInputTextWhenUnFocusedColor}"
                                         TextChanged="OnUpfrontEntryTextChanged"
+                                        Unfocused="OnUpfrontEntryUnfocused"
                                         TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
                                 </Border>
                                 <Label

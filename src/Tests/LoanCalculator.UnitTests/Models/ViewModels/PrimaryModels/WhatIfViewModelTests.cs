@@ -97,8 +97,8 @@ namespace LoanCalculator.UnitTests.Models.ViewModels.PrimaryModels
         }
 
         [Test]
-        public void RateChangeMonthlyRepayment_AfterSetup_EndsWithMoSuffix()
-            => Assert.That(_vm.RateChangeMonthlyRepayment, Does.EndWith("/mo"));
+        public void RateChangeMonthlyRepayment_AfterSetup_HasNoAbbreviatedSuffix()
+            => Assert.That(_vm.RateChangeMonthlyRepayment, Does.Not.Contain("/mo").And.StartWith("$"));
 
         [Test]
         public void RateChangeMonthlyDiff_PositiveDelta_StartsWithPlus()
@@ -223,7 +223,7 @@ namespace LoanCalculator.UnitTests.Models.ViewModels.PrimaryModels
             {
                 Assert.That(_vm.TermComparisonMonthlyDiff, Does.StartWith("+"),
                     "A shorter term must cost more per month, so the delta should read as an increase.");
-                Assert.That(_vm.TermComparisonMonthlyDiff, Does.EndWith("/mo"));
+                Assert.That(_vm.TermComparisonMonthlyDiff, Does.EndWith(" monthly"));
             });
         }
 
@@ -281,7 +281,7 @@ namespace LoanCalculator.UnitTests.Models.ViewModels.PrimaryModels
             {
                 Assert.That(_vm.DepositScenariosMonthlyDiff, Does.StartWith("-"),
                     "A bigger deposit borrows less, so the delta should read as a saving.");
-                Assert.That(_vm.DepositScenariosMonthlyDiff, Does.EndWith("/mo"));
+                Assert.That(_vm.DepositScenariosMonthlyDiff, Does.EndWith(" monthly"));
             });
         }
 
@@ -298,8 +298,8 @@ namespace LoanCalculator.UnitTests.Models.ViewModels.PrimaryModels
         }
 
         [Test]
-        public void DepositColBMonthly_AfterSetup_EndsWithMoSuffix()
-            => Assert.That(_vm.DepositColBMonthly, Does.EndWith("/mo"));
+        public void DepositColBMonthly_AfterSetup_StatesTheMonthlyPeriod()
+            => Assert.That(_vm.DepositColBMonthly, Does.EndWith(" monthly"));
 
         [Test]
         public void DepositScenarios_HigherDeposit_LowerLoanAmount()
@@ -313,7 +313,7 @@ namespace LoanCalculator.UnitTests.Models.ViewModels.PrimaryModels
         [Test]
         public void DepositScenarios_HigherDeposit_LowerMonthlyPayment()
         {
-            double ParseCurrency(string s) => double.Parse(s.Replace("$", "").Replace(",", "").Replace("/mo", ""));
+            double ParseCurrency(string s) => double.Parse(s.Replace("$", "").Replace(",", "").Replace(" monthly", ""));
             double monthlyA = ParseCurrency(_vm.DepositColAMonthly);
             double monthlyC = ParseCurrency(_vm.DepositColCMonthly);
             Assert.That(monthlyC, Is.LessThan(monthlyA));
@@ -408,16 +408,16 @@ namespace LoanCalculator.UnitTests.Models.ViewModels.PrimaryModels
         }
 
         [Test]
-        public void FreqMonthlyPayment_EndsWithMoSuffix()
-            => Assert.That(_vm.FreqMonthlyPayment, Does.EndWith("/mo"));
+        public void FreqMonthlyPayment_HasNoAbbreviatedSuffix()
+            => Assert.That(_vm.FreqMonthlyPayment, Does.Not.Contain("/mo").And.StartWith("$"));
 
         [Test]
-        public void FreqFortPayment_EndsWithFnSuffix()
-            => Assert.That(_vm.FreqFortPayment, Does.EndWith("/fn"));
+        public void FreqFortPayment_HasNoAbbreviatedSuffix()
+            => Assert.That(_vm.FreqFortPayment, Does.Not.Contain("/fn").And.StartWith("$"));
 
         [Test]
-        public void FreqWeeklyPayment_EndsWithWkSuffix()
-            => Assert.That(_vm.FreqWeeklyPayment, Does.EndWith("/wk"));
+        public void FreqWeeklyPayment_HasNoAbbreviatedSuffix()
+            => Assert.That(_vm.FreqWeeklyPayment, Does.Not.Contain("/wk").And.StartWith("$"));
 
         [Test]
         public void FreqMonthlyTimeSaved_IsZeroYr()
@@ -452,7 +452,7 @@ namespace LoanCalculator.UnitTests.Models.ViewModels.PrimaryModels
         [Test]
         public void FreqFortnightly_PaymentIsHalfMonthly()
         {
-            double ParseCurrency(string s) => double.Parse(s.Replace("$", "").Replace(",", "").Replace("/mo", "").Replace("/fn", "").Replace("/wk", ""));
+            double ParseCurrency(string s) => double.Parse(s.Replace("$", "").Replace(",", "").Replace(" monthly", "").Replace(" fortnightly", "").Replace(" weekly", ""));
             double mo = ParseCurrency(_vm.FreqMonthlyPayment);
             double fn = ParseCurrency(_vm.FreqFortPayment);
             Assert.That(fn, Is.EqualTo(mo / 2.0).Within(1.0));
@@ -461,7 +461,7 @@ namespace LoanCalculator.UnitTests.Models.ViewModels.PrimaryModels
         [Test]
         public void FreqWeekly_PaymentIsQuarterMonthly()
         {
-            double ParseCurrency(string s) => double.Parse(s.Replace("$", "").Replace(",", "").Replace("/mo", "").Replace("/fn", "").Replace("/wk", ""));
+            double ParseCurrency(string s) => double.Parse(s.Replace("$", "").Replace(",", "").Replace(" monthly", "").Replace(" fortnightly", "").Replace(" weekly", ""));
             double mo = ParseCurrency(_vm.FreqMonthlyPayment);
             double wk = ParseCurrency(_vm.FreqWeeklyPayment);
             Assert.That(wk, Is.EqualTo(mo / 4.0).Within(1.0));
@@ -515,8 +515,8 @@ namespace LoanCalculator.UnitTests.Models.ViewModels.PrimaryModels
             => Assert.That(_vm.OffsetMonthlySaving, Is.Not.EqualTo("--"));
 
         [Test]
-        public void OffsetMonthlySaving_EndsWithMoSuffix()
-            => Assert.That(_vm.OffsetMonthlySaving, Does.EndWith("/mo"));
+        public void OffsetMonthlySaving_HasNoAbbreviatedSuffix()
+            => Assert.That(_vm.OffsetMonthlySaving, Does.Not.Contain("/mo").And.StartWith("$"));
 
         [Test]
         public void OffsetInterestSaved_AfterSetup_IsNotDash()
@@ -558,7 +558,7 @@ namespace LoanCalculator.UnitTests.Models.ViewModels.PrimaryModels
         {
             // Offset $50k on a 5% loan: $50,000 × (5/100/12) ≈ $208/mo
             _vm.OffsetBalance = 50_000;
-            double ParseCurrency(string s) => double.Parse(s.Replace("$", "").Replace(",", "").Replace("/mo", ""));
+            double ParseCurrency(string s) => double.Parse(s.Replace("$", "").Replace(",", "").Replace(" monthly", ""));
             Assert.That(ParseCurrency(_vm.OffsetMonthlySaving), Is.EqualTo(208).Within(2));
         }
 
@@ -586,7 +586,7 @@ namespace LoanCalculator.UnitTests.Models.ViewModels.PrimaryModels
         [Test]
         public void Recalculate_HigherRate_ProducesHigherMonthlyRepayment()
         {
-            double ParseCurrency(string s) => double.Parse(s.Replace("$", "").Replace(",", "").Replace("/mo", ""));
+            double ParseCurrency(string s) => double.Parse(s.Replace("$", "").Replace(",", "").Replace(" monthly", ""));
             _vm.SetLoanViewModel(BuildLoanVm(interestRate: 3.0));
             double low = ParseCurrency(_vm.RateChangeMonthlyRepayment);
             _vm.SetLoanViewModel(BuildLoanVm(interestRate: 7.0));

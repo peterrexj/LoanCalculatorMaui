@@ -1,3 +1,4 @@
+using LoanCalculator.Core.Constants;
 ﻿using LoanCalculator.Core.Exts;
 using LoanCalculator.Core.Helper;
 using LoanCalculator.Core.Models.Charts;
@@ -49,6 +50,47 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
             // which is false during load, so they would silently drop every value.
             _homeLoanInfo = source._homeLoanInfo;
             TransactionRecords = source.TransactionRecords;
+
+            SanitiseLoadedLoan();
+        }
+
+        /// <summary>
+        /// Brings a loan loaded from disk inside the app's hard limits.
+        /// </summary>
+        /// <remarks>
+        /// <para>Needed precisely BECAUSE the assignment above bypasses the property setters: every
+        /// bound the app enforces lives in a setter or a click handler, so a term or rate in
+        /// <c>homeloandata.json</c> was previously restored verbatim and never checked. A file
+        /// written by an older build with different limits, hand-edited, or carried over from a
+        /// device backup could hold anything, and the +/- controls would then only stop the user
+        /// making it worse.</para>
+        ///
+        /// <para>Written against the model rather than the properties for the same reason the copy
+        /// above is: the setters would drop the writes while <c>HasInitialized</c> is false.</para>
+        ///
+        /// <para>Silent, deliberately. This runs during startup load, and a value this far out of
+        /// range is a corrupt-file symptom rather than something the user chose — telling them
+        /// their loan term has been adjusted, at a point where they have not asked for anything,
+        /// explains nothing useful. It is the same self-heal stance CLAUDE.md records for a
+        /// corrupted <c>namevaluedata.json</c>.</para>
+        /// </remarks>
+        private void SanitiseLoadedLoan()
+        {
+            var request = _homeLoanInfo?.HomeLoanRepaymentRequest;
+            if (request == null) return;
+
+            request.LoanTermInYears = Math.Clamp(
+                request.LoanTermInYears,
+                SharedServiceCore.MinLoanTermYears,
+                SharedServiceCore.GetMaxLoanTermYears());
+
+            // The adjacent field with the identical hole. An unbounded rate is as wrong as an
+            // unbounded term and the guard is the same shape, so fixing one and not the other
+            // would leave this method lying about what it does.
+            request.InterestRate = Math.Clamp(
+                request.InterestRate,
+                SharedServiceCore.MinInterestRate,
+                SharedServiceCore.MaxInterestRate);
         }
 
         protected override void OnCurrencyChanged()
@@ -361,6 +403,55 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
             //AustraliaStateSelectedIndex = null;
         }
 
+        /// <summary>
+        /// Returns the live loan to exactly the state a first launch produces. Called when the user
+        /// deletes their loan data in Settings.
+        /// </summary>
+        /// <remarks>
+        /// <para><b>Why this exists.</b> Deleting loan data used to clear only
+        /// <c>homeloandata.json</c>, on the reasoning that blanking the form mid-session would wipe
+        /// inputs the user could still see. The effect was worse than that cure: Settings reported
+        /// the data deleted while the Loan, What If and Budget tabs carried on showing and
+        /// calculating from it, and a restart then produced different figures again — the same app
+        /// giving two answers either side of a relaunch.</para>
+        ///
+        /// <para><b>Why it discards the objects instead of zeroing fields.</b> Nulling the model and
+        /// re-running <see cref="InitializeViewData"/> is the actual first-launch path, so every
+        /// field lands at its fresh value — including ones no screen exposes. A hand-written list of
+        /// fields to zero would silently miss whatever the model gains next; the four upfront-cost
+        /// groups summed by <c>OtherExpenseTotalAmount</c> already hold more fields than the six the
+        /// Upfront Costs page shows.</para>
+        ///
+        /// <para><b>Order is load-bearing.</b> The new model carries no split point, which is what
+        /// lets <see cref="AddDefaultValues"/>'s <c>DepositPercentage = 10</c> take effect:
+        /// <c>HomeLoanInformation.LoanAmount</c> consults <c>LoanAmountDirectInput</c> and
+        /// <c>DepositAmountDirectInput</c> <i>before</i> any percentage, so resetting the percentage
+        /// while a stale direct input survived would be silently ignored.</para>
+        ///
+        /// <para>Income and expenses are deliberately untouched — they are the Budget tab's data and
+        /// have their own delete actions, so <c>HasIncomeExpensesRecorded</c> must keep its value.</para>
+        /// </remarks>
+        public void ResetToDefaults()
+        {
+            // null! then InitializeViewData(): its `??=` only rebuilds what is missing, and it is
+            // the one place that also wires HomeLoanRepaymentRequest and the 12-payments-a-year
+            // fallback. Constructing them here instead would duplicate that and drift from it.
+            HomeLoanInfo = null!;
+            TransactionRecords = null;
+
+            InitializeViewData();
+            AddDefaultToExpenses();
+            AddDefaultValues();
+
+            AustraliaStateSelectedIndex = null;
+            RepaymentFrequencySelectedIndex = 0;
+
+            TransactionRecords?.SumUpData();
+
+            EventsTriggerPriceUpdate();
+            TriggerPropertyChangedOnPropertyTab();
+        }
+
         public void AddDefaultToExpenses()
         {
             TransactionRecords ??= new Incomes
@@ -397,17 +488,34 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
             }
         }
 
+        /// <summary>
+        /// The loan term. Clamped to the configured maximum on the way in.
+        /// </summary>
+        /// <remarks>
+        /// The clamp is here, not only in the +/- handlers that call this. Those bound what a user
+        /// can step up to; they do nothing for a term arriving from a restored file, a settings
+        /// change that lowered the maximum underneath an existing loan, or any future caller. See
+        /// <see cref="SharedServiceCore.AbsoluteMaxLoanTermYears"/>.
+        ///
+        /// Note the clamp is applied BEFORE the unchanged-value check, so a caller passing an
+        /// out-of-range value that clamps to the current term is correctly treated as a no-op
+        /// rather than writing and re-notifying.
+        /// </remarks>
         public int LoanTermInYears
         {
             get => HomeLoanInfo?.HomeLoanRepaymentRequest?.LoanTermInYears ?? SharedServiceCore.GetDefaultLoanTermYears();
             set
             {
                 if (isUpdating || !HasInitialized) return;
-                if (HomeLoanInfo.HomeLoanRepaymentRequest.LoanTermInYears == value) return;
+
+                var clamped = Math.Clamp(
+                    value, SharedServiceCore.MinLoanTermYears, SharedServiceCore.GetMaxLoanTermYears());
+
+                if (HomeLoanInfo.HomeLoanRepaymentRequest.LoanTermInYears == clamped) return;
 
                 isUpdating = true;
 
-                HomeLoanInfo.HomeLoanRepaymentRequest.LoanTermInYears = value;
+                HomeLoanInfo.HomeLoanRepaymentRequest.LoanTermInYears = clamped;
 
                 TriggerPropertyChangedOnPropertyTab();
 
@@ -437,6 +545,36 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
         public string LoanAmount => $"{CurrencySymbol}{HomeLoanInfo?.LoanAmount ?? 0:N0}";
 
         [JsonIgnore] public string PropertyTotalAmount => $"{CurrencySymbol}{HomeLoanInfo?.PropertyTotalAmount ?? 0:N0}";
+
+        /// <summary>
+        /// True only once there is an upfront cost to explain.
+        /// </summary>
+        /// <remarks>
+        /// Without the gate this would read "$650,000 asset + $0 upfront costs" as soon as any
+        /// asset value exists — true, but noise, because the total and the asset value are then the
+        /// same number and there is nothing to account for.
+        /// </remarks>
+        [JsonIgnore]
+        public bool ShowAssetTotalBreakdown => (HomeLoanInfo?.OtherExpenseTotalAmount ?? 0) > 0;
+
+        /// <summary>
+        /// Accounts for the gap between "Asset Value" and "Total asset amount" on the Asset tab.
+        /// </summary>
+        /// <remarks>
+        /// The two boxes sit side by side showing different figures with nothing to explain the
+        /// difference — an asset of 125,789 next to a total of 129,689 and no sign of where the
+        /// 3,900 came from. It is the upfront costs: <c>PropertyTotalAmount</c> is
+        /// <c>PropertyAmount + OtherExpenseTotalAmount</c>, and those costs are folded into the
+        /// loan rather than paid separately (see "Cost increases grow the loan" in CLAUDE.md), so
+        /// they also move the deposit/loan split below.
+        ///
+        /// Same sentence shape as <c>WizardViewModel.WizardAssetBreakdownLabel</c>, which already
+        /// solved this for the data-entry page — the two screens should not explain the same
+        /// arithmetic in two different ways.
+        /// </remarks>
+        [JsonIgnore]
+        public string AssetTotalBreakdown =>
+            $"{CurrencySymbol}{HomeLoanInfo?.PropertyAmount ?? 0:N0} asset + {CurrencySymbol}{HomeLoanInfo?.OtherExpenseTotalAmount ?? 0:N0} upfront costs";
 
         [JsonIgnore]
         private bool _isDepositPercentageSliderEnabled;
@@ -1492,6 +1630,75 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
         }
 
         /// <summary>
+        /// The explanation card for the three figures beside the verdict, with this user's own
+        /// numbers written into it.
+        /// </summary>
+        /// <remarks>
+        /// <para>Built here rather than being static copy because the point is the figures: a
+        /// reader asking what "of income" means is far better served by "your repayment of $3,812
+        /// against the $17,810 a month you entered" than by a definition. The wording around them
+        /// comes from <see cref="AnswerPanelExplanations"/> so the meaning of each figure is still
+        /// stated in one place and unit-tested.</para>
+        ///
+        /// <para>Reuses the same <c>ScenarioExplanation</c> shape as the nine What If scenario
+        /// cards, so the Answer tab gets the identical card rather than a second kind of
+        /// explanation.</para>
+        /// </remarks>
+        [JsonIgnore]
+        public ScenarioExplanation AnswerPanelsExplanation
+        {
+            get
+            {
+                var sym = CurrencySymbol;
+                var income = MonthlyIncomeRaw;
+                var expenses = MonthlyExpenseRaw;
+                var monthlyRepayment = HomeLoanInfo?.PaymentSummary?.Payment?.TermPaymentMonthly ?? 0;
+
+                var repayment = AnswerPanelExplanations.For(AnswerPanel.Repayment);
+                var netIncome = AnswerPanelExplanations.For(AnswerPanel.NetIncome);
+                var share = AnswerPanelExplanations.For(AnswerPanel.ShareOfIncome);
+
+                var hasBudget = IsAffordabilityAvailable && income > 0;
+
+                var terms = new List<ExplanationTerm>
+                {
+                    new($"{repayment.Caption} — {AnswerRepaymentDisplay}",
+                        repayment.Meaning
+                        + (monthlyRepayment > 0
+                            ? $"\n\nFor comparison, that works out at {sym}{monthlyRepayment:N0} a month."
+                            : string.Empty)),
+
+                    new($"{netIncome.Caption} — {AnswerNetIncomeDisplay}",
+                        netIncome.Meaning
+                        + (hasBudget
+                            ? $"\n\nYours comes from the {sym}{income:N0} a month you entered as income, "
+                              + $"less the {sym}{expenses:N0} a month of expenses you recorded."
+                            : "\n\nYou have not recorded income and expenses yet, so there is nothing "
+                              + "to work this out from.")),
+
+                    new($"{share.Caption} — {AnswerRepaymentShareOfIncome}",
+                        share.Meaning
+                        + (hasBudget && monthlyRepayment > 0
+                            ? $"\n\nYours is the {sym}{monthlyRepayment:N0} monthly repayment measured "
+                              + $"against the {sym}{income:N0} a month coming in."
+                            : string.Empty)),
+                };
+
+                return new ScenarioExplanation(
+                    Title: "Understanding these numbers",
+                    Purpose:
+                        "The big figure at the top is the headline answer: what you would have left "
+                        + "over each month, or be short by, once this loan and everything else is "
+                        + "paid for. The three smaller boxes underneath show where it came from.",
+                    ReadingTheNumbers: terms,
+                    WatchFor:
+                        "All of these are worked out from the figures you have entered, so they are "
+                        + "only as good as those. They are estimates to help you think it through, "
+                        + "not financial advice.");
+            }
+        }
+
+        /// <summary>
         /// Highest payment-to-income ratio shown as a figure; above it the box reads "&gt;999%".
         /// </summary>
         /// <remarks>
@@ -1530,12 +1737,90 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
 
         #endregion
 
+        private int _liveEditDepth;
+        private bool _liveEditPassPending;
+
+        /// <summary>
+        /// True while a data-entry page is taking keystrokes and the broad notification pass is
+        /// being coalesced.
+        /// </summary>
+        [JsonIgnore]
+        public bool IsLiveEditing => _liveEditDepth > 0;
+
+        /// <summary>
+        /// Tells this view model that a modal data-entry page is about to take keystrokes, so the
+        /// broad notification pass can be coalesced into one pass when editing ends.
+        /// </summary>
+        /// <remarks>
+        /// <b>Why this exists.</b> Typing in the loan wizard or the upfront-costs page was
+        /// sluggish, one character at a time. The arithmetic was never the problem — measured at
+        /// 0.005 ms per change, because the payment schedule is no longer rebuilt on this path.
+        /// The cost is <see cref="TriggerPropertyChangedOnPropertyTab"/> raising <b>48</b>
+        /// PropertyChanged events across 47 properties for every keystroke. Each one makes MAUI
+        /// re-evaluate every binding subscribed to it, on every page still alive — and both of
+        /// these pages are modal, so the Loan page, the What If Answer tab and (once visited) the
+        /// nine Insights panels are all sitting behind them, invisible, re-resolving their
+        /// bindings per character.
+        ///
+        /// Notifying a page nobody can see, seven times while someone types "1234567", is the
+        /// whole of the waste. So while live editing is in progress only the handful of properties
+        /// the open page itself needs are raised, and the full pass is deferred to
+        /// <see cref="EndLiveEdit"/>.
+        ///
+        /// Callers must pair this with <see cref="EndLiveEdit"/>. Balance it with a page-local
+        /// flag rather than relying on appear/disappear being symmetric: an unmatched Begin leaves
+        /// the app permanently coalescing, which presents as figures that never update anywhere.
+        /// </remarks>
+        public void BeginLiveEdit() => _liveEditDepth++;
+
+        /// <summary>
+        /// Ends a <see cref="BeginLiveEdit"/> scope and runs the deferred notification pass, if
+        /// anything asked for one while it was open.
+        /// </summary>
+        public void EndLiveEdit()
+        {
+            if (_liveEditDepth > 0) _liveEditDepth--;
+
+            // Still nested, so the outermost scope owns the flush.
+            if (_liveEditDepth > 0) return;
+
+            if (!_liveEditPassPending) return;
+
+            _liveEditPassPending = false;
+            TriggerPropertyChangedOnPropertyTab();
+        }
+
         public void TriggerPropertyChangedOnPropertyTab()
         {
             if (PageHelper.IsFormLoading) return;
             if (SharedServiceCore.LoadSafe) return;
 
+            // Deliberately BEFORE the live-edit check: the recalculation is what makes the derived
+            // figures the open page displays correct, and it is effectively free. It is the
+            // notification fan-out below that is expensive, not this.
             EventsTriggerPriceUpdate();
+
+            if (_liveEditDepth > 0)
+            {
+                _liveEditPassPending = true;
+
+                // The only properties either data-entry page consults while it is open:
+                //  · LoanDetailsPage listens for these three in OnLoanViewModelPropertyChanged, to
+                //    mirror the two figures the model re-derived back into its own entries;
+                //  · UpfrontCostsPage binds OtherExpenseTotalAmount as its running total.
+                // Adding a binding to one of these pages means adding the property here too, or it
+                // will update only once the page closes.
+                OnPropertyChanged(nameof(DepositAmountDirectInput));
+                OnPropertyChanged(nameof(LoanAmountDirectInput));
+                OnPropertyChanged(nameof(LoanAmountStrFormatted));
+                OnPropertyChanged(nameof(OtherExpenseTotalAmount));
+
+                // Saving is NOT deferred. It is already debounced, so it costs nothing per
+                // keystroke, and deferring it would mean a dismissal route that somehow skipped
+                // EndLiveEdit could lose what the user typed.
+                ScheduleSave(() => SharedServiceCore.SaveData(this));
+                return;
+            }
 
             // Always notify — these drive the Asset tab which is always visible
             OnPropertyChanged(nameof(PropertyAmount));
@@ -1550,6 +1835,8 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
             OnPropertyChanged(nameof(DepositPercentage));
             OnPropertyChanged(nameof(LoanAmount));
             OnPropertyChanged(nameof(PropertyTotalAmount));
+            OnPropertyChanged(nameof(ShowAssetTotalBreakdown));
+            OnPropertyChanged(nameof(AssetTotalBreakdown));
             OnPropertyChanged(nameof(InterestRateFormatted));
             OnPropertyChanged(nameof(DepositAmountStrFormatted));
             OnPropertyChanged(nameof(OtherExpenseTotalAmount));
@@ -1571,6 +1858,19 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
             OnPropertyChanged(nameof(Affordability));
             OnPropertyChanged(nameof(IsAffordabilityNegative));
             OnPropertyChanged(nameof(AffordabilityTextDescription));
+
+            // The What If Answer tab's figures. None of these were notified anywhere, so they held
+            // whatever they evaluated to when the page's BindingContext was first set — correct on
+            // arrival, stale if the loan then changed. The explanation card quotes the same figures,
+            // so it is raised alongside them or it would describe numbers no longer on screen.
+            OnPropertyChanged(nameof(AnswerVerdictCaption));
+            OnPropertyChanged(nameof(AnswerSpareSuffix));
+            OnPropertyChanged(nameof(AnswerSpareBasis));
+            OnPropertyChanged(nameof(AnswerRepaymentDisplay));
+            OnPropertyChanged(nameof(AnswerNetIncomeDisplay));
+            OnPropertyChanged(nameof(AnswerNetIncomeIsNegative));
+            OnPropertyChanged(nameof(AnswerRepaymentShareOfIncome));
+            OnPropertyChanged(nameof(AnswerPanelsExplanation));
 
             if (IsAmortizationTabActive)
             {
@@ -1713,6 +2013,17 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
             if (PageHelper.IsFormLoading || HomeLoanInfo == null) return;
 
             if (SharedServiceCore.LoadSafe) return;
+
+            // Skipped while a modal data-entry page is taking keystrokes, where it is pure waste.
+            // The sole consumer of this collection is a chart on LoanView (ItemsSource), and that
+            // page is behind the modal. Handing a chart a brand-new ObservableCollection makes it
+            // tear down and rebuild its series, which makes this the most expensive single item on
+            // the per-keystroke path — for a result nobody can currently see.
+            //
+            // Not lost, just deferred: EndLiveEdit runs the flush pass, which reaches here again
+            // through EventsTriggerPriceUpdate with coalescing off, so the chart is rebuilt exactly
+            // once when the page closes.
+            if (_liveEditDepth > 0) return;
 
             if (HomeLoanInfo.PropertyTotalAmount > 0 && HomeLoanInfo.PaymentSummary.Payment.TotalPaymentRounded > 0)
             {

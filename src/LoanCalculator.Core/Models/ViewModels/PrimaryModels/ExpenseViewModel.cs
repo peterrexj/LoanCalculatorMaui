@@ -97,7 +97,7 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
         [JsonIgnore] public bool WizardExpenseHasValue => (TransactionRecords?.IncomeExpenseSummary?.TotalMonthly ?? 0) > 0;
         [JsonIgnore] public bool WizardExpenseEditable => !WizardExpenseHasValue;
         [JsonIgnore] public string WizardExpenseSummary =>
-            $"Recorded: {CurrencySymbol}{TransactionRecords?.IncomeExpenseSummary?.TotalMonthly ?? 0:N0}/mo";
+            $"Recorded: {CurrencySymbol}{TransactionRecords?.IncomeExpenseSummary?.TotalMonthly ?? 0:N0} monthly";
 
         #region Income after Expense
 
@@ -217,7 +217,7 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
         //public int FontOnExpenseToxBox => ShowPropertyExpense ? 14 : 18;
 
         [JsonIgnore]
-        public string StringMonthlyExpenseOnTopBox => ShowPropertyExpense ? "Monthly and Property loan & expense" : "Monthly expenses";
+        public string StringMonthlyExpenseOnTopBox => ShowPropertyExpense ? "Monthly, plus the loan & asset costs" : "Monthly expenses";
 
         [JsonIgnore]
         public string TotalMonthlySumExpenseWithComma
@@ -294,8 +294,13 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
             }
         }
 
+        // Note the second argument: on THIS tab the property deduction only takes effect inside the
+        // after-expenses branch of TotalIncomeMonthlyValue, so ShowPropertyExpense alone subtracts
+        // nothing and must not be announced. The Income tab applies the two independently and
+        // passes its toggles directly — the captions are shared, the arithmetic is not.
         [JsonIgnore]
-        public string StringIncomeTextOnTopBox => ShowIncomeAfterExpense ? "Monthly Income (after expenses)" : "Monthly Income";
+        public string StringIncomeTextOnTopBox =>
+            DeductionCaption("Monthly Income", ShowIncomeAfterExpense, ShowIncomeAfterExpense && ShowPropertyExpense);
 
         #endregion
 
@@ -545,31 +550,49 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
             OnPropertyChanged(nameof(IsExpenseDataFormReadyToSubmit));
         }
 
+        private readonly object _projectionLock = new();
+
+        /// <remarks>
+        /// Serialised. Two paths recompute this and they overlap: the IncludeExpenses /
+        /// IncludePropertyExpenses setters each fire <c>_ = UpdateProjectionDataAsync()</c>, which
+        /// runs this on a thread-pool thread, while the What If page separately calls
+        /// RefreshProjection on the UI thread after setting the very same flag. Both call
+        /// <c>SumUpData()</c> on the shared TransactionRecords and then read the summary it
+        /// mutates, so without the lock one pass could read a half-updated total and publish a
+        /// projection computed from it.
+        ///
+        /// Surfaced by a unit test that toggled a switch and read the total back: it passed alone
+        /// and failed about one run in four in the suite. The lock is safe to hold here — the body
+        /// has no awaits and builds at most a few dozen rows.
+        /// </remarks>
         public void UpdateProjectionData()
         {
-            if (PageHelper.IsFormLoading) return;
-
-            if (SharedServiceCore.LoadSafe || TransactionRecords == null) return;
-
-            double propertyExpenses = 0;
-
-            if (IncludePropertyExpenses)
+            lock (_projectionLock)
             {
-                if (PropertyExpenseSummary != null)
+                if (PageHelper.IsFormLoading) return;
+
+                if (SharedServiceCore.LoadSafe || TransactionRecords == null) return;
+
+                double propertyExpenses = 0;
+
+                if (IncludePropertyExpenses)
                 {
-                    propertyExpenses += PropertyExpenseSummary?.TotalYearly ?? 0;
+                    if (PropertyExpenseSummary != null)
+                    {
+                        propertyExpenses += PropertyExpenseSummary?.TotalYearly ?? 0;
+                    }
+                    if (PropertyPayment != null)
+                    {
+                        propertyExpenses += PropertyPayment?.TermPaymentYearly ?? 0;
+                    }
                 }
-                if (PropertyPayment != null)
-                {
-                    propertyExpenses += PropertyPayment?.TermPaymentYearly ?? 0;
-                }
+
+                TransactionRecords.SumUpData();
+
+                HomeLoanCalculator.UpdateExpenseProjectionDataByYear(TransactionRecords.IncomeExpenseSummary,
+                    additionalExpensesFromNewProperty: propertyExpenses
+                    );
             }
-
-            TransactionRecords.SumUpData();
-
-            HomeLoanCalculator.UpdateExpenseProjectionDataByYear(TransactionRecords.IncomeExpenseSummary,
-                additionalExpensesFromNewProperty: propertyExpenses
-                );
         }
 
         public void TriggerPropertyChangedOnProjectionTab()

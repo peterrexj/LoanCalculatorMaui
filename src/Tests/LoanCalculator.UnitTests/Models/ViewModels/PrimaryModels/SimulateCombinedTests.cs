@@ -12,7 +12,7 @@ namespace LoanCalculator.UnitTests.Models.ViewModels.PrimaryModels
         private const int    Term     = 30;
 
         private static double ParseCurrency(string s)
-            => double.Parse(s.Replace("$", "").Replace(",", "").Replace("/mo","").Replace("/fn","").Replace("/wk","").Trim());
+            => double.Parse(s.Replace("$", "").Replace(",", "").Replace(" monthly","").Replace(" fortnightly","").Replace(" weekly","").Trim());
 
         // ── Zero-lever baseline ───────────────────────────────────────────────
 

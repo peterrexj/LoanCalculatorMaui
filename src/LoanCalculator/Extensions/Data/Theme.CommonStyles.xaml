@@ -600,6 +600,37 @@
         <Setter Property="TextColor" Value="{DynamicResource LoanAppDefaultForegroundColor}" />
     </Style>
 
+    <!--
+        The − / + buttons inside a What If scenario's stepper pill.
+
+        One style because there are eighteen of these across the five scenario views, each
+        previously carrying the same six attributes by hand — and they had already drifted: the four
+        pills in CombinedScenarioView used WidthRequest 34 while every other scenario used 36.
+
+        HeightRequest is the point of it. None of the eighteen set one, so each pill's height came
+        from the platform Button's implicit sizing and from the font metrics of whatever sat beside
+        it in the row — which is why the offset-rate pill, the only one with an extra "Rate:" label
+        in it, came out a different height from its neighbours. An explicit, shared height makes
+        the pills deterministic instead of a product of their contents.
+
+        Square (36x36) on purpose: these are icon-sized tap targets, and a glyph that is 36 wide
+        and some other height reads as misaligned next to the value between them.
+
+        Geometry and font only — deliberately NO TextColor. Each scenario tints its stepper with
+        its own accent (LoanAppChartColor1, LoanAppChartColor2 and LoanAppChartColorSeries3 are all
+        in use), so TextColor stays inline on each button. A Setter for it here would silently
+        repaint three scenarios to a fourth one's colour.
+    -->
+    <Style x:Key="ScenarioStepperButtonStyle" TargetType="Button">
+        <Setter Property="BackgroundColor" Value="Transparent" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="FontAttributes" Value="Bold" />
+        <Setter Property="FontSize" Value="{StaticResource FontSizeXL}" />
+        <Setter Property="WidthRequest" Value="36" />
+        <Setter Property="HeightRequest" Value="36" />
+        <Setter Property="VerticalOptions" Value="Center" />
+    </Style>
+
     <Style x:Key="ExportButtonStyle" TargetType="Button">
         <Setter Property="CornerRadius" Value="5" />
         <Setter Property="Margin" Value="10,4,10,4" />

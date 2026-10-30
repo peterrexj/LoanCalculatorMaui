@@ -179,6 +179,21 @@
                                                 Text="{Binding PropertyTotalAmount}"
                                                 TextColor="{DynamicResource LoanAppHighlightFgColor}" />
 
+                                            <!--
+                                                Accounts for the gap between this box and "Asset
+                                                Value" beside it. Hidden until there is an upfront
+                                                cost, because until then the two boxes show the
+                                                same figure and there is nothing to explain.
+                                            -->
+                                            <Label
+                                                AutomationId="LoanAssetTotalBreakdown"
+                                                FontSize="{StaticResource FontSizeXS}"
+                                                HorizontalTextAlignment="Center"
+                                                IsVisible="{Binding ShowAssetTotalBreakdown}"
+                                                Opacity="0.75"
+                                                Text="{Binding AssetTotalBreakdown}"
+                                                TextColor="{DynamicResource LoanAppHighlightFgColor}" />
+
                                         </StackLayout>
                                     </Border>
                                 </Grid>
@@ -278,7 +293,7 @@
                                                             FontAttributes="Bold"
                                                             FontSize="{StaticResource FontSizeFigure}"
                                                             Text="{Binding LoanAmountStrFormatted, StringFormat='{0}  ✎'}"
-                                                            TextColor="{DynamicResource LoanAppTabIndicatorStrokeColor}"
+                                                            TextColor="{DynamicResource LoanAppInputTextFgColor}"
                                                             VerticalOptions="Center">
                                                             <Label.GestureRecognizers>
                                                                 <TapGestureRecognizer Tapped="OnAssetValueTapped" />
@@ -529,12 +544,23 @@
                                                     HorizontalOptions="Center"
                                                     Spacing="1"
                                                     VerticalOptions="Center">
+                                                    <!--
+                                                        "TO REPAY", not "REPAID". This is a
+                                                        projection of what the loan will cost over
+                                                        its whole term — the user has not paid any
+                                                        of it yet, and the past tense read as a
+                                                        statement about money already handed over.
+                                                        The legend and the caption below the chart
+                                                        both say "over N yrs", which is
+                                                        future-facing; this label was the only one
+                                                        out of step.
+                                                    -->
                                                     <Label
                                                         FontFamily="{DynamicResource DefaultFontFamily}"
                                                         FontSize="{StaticResource FontSizeXS}"
                                                         HorizontalTextAlignment="Center"
                                                         Opacity="0.6"
-                                                        Text="TOTAL REPAID"
+                                                        Text="TOTAL TO REPAY"
                                                         TextColor="{DynamicResource LoanAppChartDataMarkerTextColor}" />
                                                     <Label HorizontalTextAlignment="Center">
                                                         <Label.FormattedText>

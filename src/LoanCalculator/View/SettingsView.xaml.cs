@@ -31,17 +31,25 @@ public partial class SettingsView : ContentPage
             loanViewModel.IsAustralianModeEnabled = _viewModel.IsAustralianModeEnabled;
     }
 
-    protected override async void OnAppearing()
+    protected override void OnAppearing()
     {
         try
         {
             PageHelper.PageIsLoading();
 
-        base.OnAppearing();
+            base.OnAppearing();
 
-            await Task.Delay(100); // Delay to allow UI to load
-
-            await LoadDataSet();
+            // No Task.Delay here any more. It was "Delay to allow UI to load", which made sense
+            // while LoadDataSet went to disk — it let the busy flag render before the read. That
+            // read was dead code (see LoadDataSet), so the delay was 100 ms of latency added to
+            // every single visit to guard work that no longer happens.
+            //
+            // It could not have helped the symptom it looked like it was for either: this page is
+            // declared in AppShell.xaml as ContentTemplate="{DataTemplate localview:SettingsView}",
+            // so Shell constructs the whole page on the first tab tap and OnAppearing does not run
+            // until that construction is already finished. Anything slow about the first visit has
+            // happened before the first line here executes.
+            LoadDataSet();
 
 #if IOS || MACCATALYST
             // Syncfusion 33.2.6 stacks a touch-enabled drawing layer over expander headers on
@@ -62,26 +70,24 @@ public partial class SettingsView : ContentPage
         }
     }
 
-    private async Task LoadDataSet()
+    private void LoadDataSet()
     {
         try
         {
-            //placeholder for the data to be loaded
-            var viewModelInitializeTask = Task.Run(async () =>
+            // This used to read settingsdata.json via SharedServiceCore.LoadDataFile<SettingsViewModel>()
+            // on every appearance and then DISCARD the result — the local was never used, under a
+            // comment reading "placeholder for the data to be loaded". LoadDataFile has no side
+            // effect beyond LocalStorage.Initialize(), so it was a file read plus a full
+            // deserialisation of this view model bought for nothing. SettingsViewModel is a DI
+            // singleton already populated by the time the page is reachable.
+            //
+            // With that gone nothing here touches disk, so the two Task.Runs and the Task.WhenAll
+            // went with it: scheduling thread-pool work to assign one string costs more than the
+            // assignment.
+            if (_viewModel.SelectedTheme == null)
             {
-                var data = await SharedServiceCore.LoadDataFile<SettingsViewModel>();
-            });
-
-            var themeHandlerTask = Task.Run(async () =>
-            {
-                var theme = _viewModel.SelectedTheme;
-                if (theme == null)
-                {
-                    _viewModel.SelectedTheme = _viewModel.Themes.First(f => f == SharedServiceCore.DefaultAppTheme.ToString());
-                }
-            });
-
-            await Task.WhenAll(viewModelInitializeTask, themeHandlerTask);
+                _viewModel.SelectedTheme = _viewModel.Themes.First(f => f == SharedServiceCore.DefaultAppTheme.ToString());
+            }
 
             _viewModel.RefreshProperties();
 
@@ -100,7 +106,7 @@ public partial class SettingsView : ContentPage
     private void OnDefaultLoanTermDecrement(object? sender, EventArgs e)
     {
         var v = _viewModel.DefaultLoanTermYears - 1;
-        if (v >= 1) _viewModel.DefaultLoanTermYears = v;
+        if (v >= SharedServiceCore.MinLoanTermYears) _viewModel.DefaultLoanTermYears = v;
     }
 
     private void OnDefaultLoanTermIncrement(object? sender, EventArgs e)
@@ -112,13 +118,13 @@ public partial class SettingsView : ContentPage
     private void OnMaxLoanTermDecrement(object? sender, EventArgs e)
     {
         var v = _viewModel.MaxLoanTermYears - 1;
-        if (v >= 10) _viewModel.MaxLoanTermYears = v;
+        if (v >= SharedServiceCore.MinConfigurableMaxLoanTermYears) _viewModel.MaxLoanTermYears = v;
     }
 
     private void OnMaxLoanTermIncrement(object? sender, EventArgs e)
     {
         var v = _viewModel.MaxLoanTermYears + 1;
-        if (v <= 50) _viewModel.MaxLoanTermYears = v;
+        if (v <= SharedServiceCore.AbsoluteMaxLoanTermYears) _viewModel.MaxLoanTermYears = v;
     }
 
     private void OnDefaultProjectionYearsDecrement(object? sender, EventArgs e)

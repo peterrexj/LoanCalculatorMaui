@@ -132,6 +132,29 @@ public class BudgetTests : UITestBase
 
     private void EnsureSomeBudgetData() => TestData.EnsureBudget(Tabs, Budget);
 
+    /// <summary>
+    /// Every switch row on the Budget tabs must render its label and its ⓘ explanation.
+    /// </summary>
+    /// <remarks>
+    /// The Income tab's first switch shipped with no label, no sub-line and no explanation at all:
+    /// the row takes its copy from a <c>BudgetToggle</c> BindableProperty, the first row's value is
+    /// the same as that property's default, and MAUI does not raise <c>propertyChanged</c> when a
+    /// value does not change — so the callback that fills in the copy never ran for that one row.
+    ///
+    /// No unit test could have caught it. The copy lives in Core and was complete and tested
+    /// throughout; what failed was the control not applying it. This asserts on the rendered text
+    /// for exactly that reason.
+    /// </remarks>
+    [Test]
+    public void EachBudgetSwitchExplainsItselfWhenAsked()
+    {
+        var detail = Budget.ExpandIncomeAfterExpenseExplanation();
+
+        Assert.That(detail, Does.Match("(?i)spending|expenses"),
+            "The first Income switch's ⓘ opened but revealed nothing about what the switch does, "
+            + "so the row is rendering without its copy.");
+    }
+
     private static string UniqueName(string stem) => TestData.UniqueName(stem);
 
     private static decimal Digits(string text)

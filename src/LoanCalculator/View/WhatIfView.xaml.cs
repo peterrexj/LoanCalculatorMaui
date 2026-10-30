@@ -1,7 +1,13 @@
+using System.ComponentModel;
+using System.Globalization;
+using LoanCalculator.Core.Constants;
 using LoanCalculator.Core.Models.Enums;
 using LoanCalculator.Core.Models.ViewModels.PrimaryModels;
+using LoanCalculator.Core.Pdf;
 using LoanCalculator.Core.Services;
 using LoanCalculator.Core.Themes;
+using LoanCalculatorMaui.Controls;
+using LoanCalculatorMaui.Converters;
 using LoanCalculatorMaui.Extensions;
 using Syncfusion.Maui.Charts;
 using Syncfusion.Maui.TabView;
@@ -70,21 +76,27 @@ public partial class WhatIfView : ContentPage
         AnswerRoot.BindingContext = _loanViewModel;
         ProjectionRoot.BindingContext = _budgetViewModel;
 
-        // Insights was lifted wholesale from LoanView, so every binding in it — all nine panels'
-        // figures, the export button and its progress bar — is a LoanViewModel path. Without this
-        // the sub-tree inherited the page's WhatIfViewModel and every one of those bindings
-        // silently resolved to nothing.
-        //
-        // The visible symptom was not blank figures but a progress bar that never went away:
-        // IsVisible="{Binding IsGeneratingPdf}" failed to resolve, and a failed binding leaves
-        // IsVisible at its default of true. A missing BindingContext can therefore show MORE than
-        // intended, not less — which is why it read as a styling bug rather than a binding one.
-        InsightsRoot.BindingContext = _loanViewModel;
+        // The pinned totals row sits OUTSIDE ProjectionRoot now, so it no longer inherits the
+        // sub-tree BindingContext set above — without this it would fall back to the page's
+        // WhatIfViewModel and any binding in it would quietly resolve to nothing.
+        ProjectionPinnedHeader.BindingContext = _budgetViewModel;
+
+        // Insights is NOT given its BindingContext here any more, because it does not exist here
+        // any more: its content is inflated into InsightsHost on first entry. RefreshInsights()
+        // assigns the same _loanViewModel at that point. Do not be tempted to reinstate a line
+        // here — the host is an empty ContentView, so setting its BindingContext would be
+        // harmless but pointless, and it would quietly read as if the tab were eager again.
     }
 
     protected override async void OnAppearing()
     {
         base.OnAppearing();
+
+        // -= before += : OnAppearing can run again without an intervening OnDisappearing, and a
+        // second subscription would raise the scrim twice and, worse, leave one subscription
+        // behind when OnDisappearing removes "the" handler.
+        _loanViewModel.PropertyChanged -= OnLoanViewModelPropertyChanged;
+        _loanViewModel.PropertyChanged += OnLoanViewModelPropertyChanged;
 
         // Everything below is slow enough to read as a hang: a cross-tab summary refresh, a
         // disk read, then a theme/chart pass over up to eleven charts. The page is already on
@@ -110,6 +122,26 @@ public partial class WhatIfView : ContentPage
             await _loanViewModel.RefreshIncomeExpenseSummariesAsync(_incomeViewModel, _expenseViewModel);
 
         _viewModel.SetLoanViewModel(_loanViewModel);
+
+        // Before EnterTab, which is what runs RefreshProjection. The Projection tab's two "take
+        // off the loan and its running costs" switches deduct PropertyExpenseSummary and
+        // PropertyPayment, and those are null until something assigns them — previously only the
+        // Budget tab did, so arriving here without having visited Budget made both switches
+        // deduct zero. They redrew everything and changed nothing. See WireLoanFiguresAsync.
+        try
+        {
+            // Load income/expense first if nothing has yet. This page used to depend on the Budget
+            // tab having been visited: Budget's OnAppearing is the only other caller, so arriving
+            // here first left both sub-view-models empty and every projection figure derived from
+            // zero. A no-op once they are loaded, and SplashPage pre-warms it anyway.
+            await _budgetViewModel.EnsureSubVmsLoadedAsync();
+
+            await _budgetViewModel.WireLoanFiguresAsync();
+        }
+        catch (Exception ex)
+        {
+            _errorHandlingService.HandleException(ex);
+        }
 
         // Honour a requested sub-tab, then clear it. Read before the heavy work below so the
         // right tab is showing as early as possible rather than after a visible switch.
@@ -263,6 +295,8 @@ public partial class WhatIfView : ContentPage
     {
         try
         {
+            EnsureInsightsContentBuilt();
+
             _loanViewModel.IsInsightsTabActive = true;
             _loanViewModel.RefreshInsightsTabPropertyChanged();
             _loanViewModel.ForceUpdateInsightCharts();
@@ -272,6 +306,80 @@ public partial class WhatIfView : ContentPage
             _errorHandlingService.HandleException(ex);
         }
     }
+
+    /// <summary>
+    /// Inflates the Insights tab's content the first time that tab is entered.
+    /// </summary>
+    /// <remarks>
+    /// Insights is 27 SfExpanders and 6 charts — 34 of this page's 59 heavy Syncfusion controls,
+    /// for a tab that may never be opened. SfTabItem.Content is a plain property, not a
+    /// DataTemplate, so leaving the markup inline meant all of it was constructed as part of
+    /// constructing the page; and AppShell.xaml declares this page as
+    /// ContentTemplate="{DataTemplate localview:WhatIfView}", so Shell does that construction on
+    /// the first tap of the What If tab. That is what made the first tap slow, and no amount of
+    /// scrimming in OnAppearing could cover it, because OnAppearing does not run until the
+    /// construction it would be hiding has already finished.
+    ///
+    /// Idempotent, and it has to be: RefreshInsights runs on every entry to the tab, via both the
+    /// user path and the programmatic one.
+    /// </remarks>
+    private void EnsureInsightsContentBuilt()
+    {
+        if (InsightsHost.Content is not null) return;
+
+        var insights = new InsightsTabView
+        {
+            // Every binding in that markup is a LoanViewModel path — all nine panels' figures, the
+            // export button and its progress bar. This assignment replaces the one the constructor
+            // used to make onto InsightsRoot, and it is just as load-bearing: without it the
+            // content inherits the page's WhatIfViewModel and every one of those bindings resolves
+            // to nothing. The symptom is not blank figures but a progress bar that never goes away
+            // — IsVisible="{Binding IsGeneratingPdf}" fails to resolve and IsVisible defaults to
+            // true — so it reads as a styling bug rather than a binding one.
+            BindingContext = _loanViewModel,
+        };
+
+        InsightsHost.Content = insights;
+
+#if IOS || MACCATALYST
+        // Mandatory, and it fails silently if skipped. OnAppearing already ran
+        // ApplyToExpanders(this), but it ran before these 27 expanders existed, so they would
+        // never be covered — Syncfusion 33.2.6 lays a touch-enabled drawing layer over an expander
+        // header as the LAST sibling, which on iOS is topmost, and it accepts the tap and handles
+        // nothing. Every Insights panel would simply refuse to open, with no error anywhere. See
+        // CLAUDE.md: this defect class cost three failed diagnoses, and gesture-recognizer count is
+        // not a reliable test for it.
+        //
+        // Two passes, matching AmortisationPage: the content has not laid out yet on this tick, so
+        // the first pass only covers what already measured and the second catches the rest.
+        ApplyExpanderTouchFix();
+#endif
+    }
+
+#if IOS || MACCATALYST
+    private void ApplyExpanderTouchFix()
+    {
+        SyncfusionIosTouchFix.ApplyToExpanders(this);
+
+        // Second pass once the panels have actually laid out. Fire-and-forget: awaiting it would
+        // hold up entry to the tab for no benefit.
+        _ = Task.Run(async () =>
+        {
+            await Task.Delay(150);
+            MainThread.BeginInvokeOnMainThread(() =>
+            {
+                try
+                {
+                    SyncfusionIosTouchFix.ApplyToExpanders(this);
+                }
+                catch (Exception ex)
+                {
+                    _errorHandlingService.HandleException(ex);
+                }
+            });
+        });
+    }
+#endif
 
     /// <summary>
     /// Fills the Answer tab's "where the money goes" stacked column chart.
@@ -357,9 +465,19 @@ public partial class WhatIfView : ContentPage
     {
         try
         {
-            var page = ServiceLocator.GetService<AmortisationPage>();
-            await Navigation.PushModalAsync(page);
-            await page.Completion;
+            // The scrim covers construction and the push, and stops there. page.Completion waits
+            // for the USER to dismiss the modal, which is not loading — scrimming that would put
+            // an input-blocking overlay behind the modal for as long as it is open, and leave it
+            // up on return.
+            AmortisationPage? page = null;
+
+            await BusyOverlay.RunWithScrimAsync("Opening your repayment schedule…", async () =>
+            {
+                page = ServiceLocator.GetService<AmortisationPage>();
+                await Navigation.PushModalAsync(page);
+            });
+
+            if (page is not null) await page.Completion;
         }
         catch (Exception ex)
         {
@@ -395,7 +513,99 @@ public partial class WhatIfView : ContentPage
         // longer on screen. LoanView's tab strip used to clear it when Insights was deselected.
         _loanViewModel.IsInsightsTabActive = false;
 
+        _loanViewModel.PropertyChanged -= OnLoanViewModelPropertyChanged;
+        WatchPdfGenerator(null);
+
         BusyOverlay.Hide();
+    }
+
+    // ══ PDF export feedback ═════════════════════════════════════════════════
+
+    /// <summary>
+    /// The generator currently being watched for progress, so the handler can be detached.
+    /// </summary>
+    /// <remarks>
+    /// Held separately from <c>_loanViewModel.PdfGenerator</c> because that property is created
+    /// lazily on first export and could in principle be replaced; detaching from whatever we
+    /// actually attached to is what keeps this from leaking a handler onto a dead generator.
+    /// </remarks>
+    private PdfInsightsGenerator? _watchedPdfGenerator;
+
+    /// <summary>
+    /// Raises the busy scrim over the whole page while the insights PDF is being built.
+    /// </summary>
+    /// <remarks>
+    /// The export used to report itself with nothing but a 10px SfLinearProgressBar sitting under
+    /// the button, which is easy to miss entirely — the export then appears to do nothing until
+    /// SaveAndView hands off to the system PDF viewer, so it reads as "it just opened a PDF" with
+    /// no indication that several seconds of work happened in between.
+    ///
+    /// The progress bar stays — it is the fine-grained read — but the scrim is what makes it
+    /// obvious that the app is working, and it blocks input, which also stops a second tap
+    /// landing while the first export runs (the command guards that too, but silently).
+    /// </remarks>
+    private void OnLoanViewModelPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        // The generator is assigned lazily, inside the export, AFTER IsGeneratingPdf goes true.
+        // Watching for it separately is what lets the percentage appear at all.
+        if (e.PropertyName == nameof(LoanViewModel.PdfGenerator))
+        {
+            WatchPdfGenerator(_loanViewModel.PdfGenerator);
+            return;
+        }
+
+        if (e.PropertyName != nameof(LoanViewModel.IsGeneratingPdf)) return;
+
+        if (_loanViewModel.IsGeneratingPdf)
+        {
+            WatchPdfGenerator(_loanViewModel.PdfGenerator);
+            BusyOverlay.Show(ExportScrimMessage());
+        }
+        else
+        {
+            WatchPdfGenerator(null);
+            BusyOverlay.Hide();
+        }
+    }
+
+    private void WatchPdfGenerator(PdfInsightsGenerator? generator)
+    {
+        if (ReferenceEquals(_watchedPdfGenerator, generator)) return;
+
+        if (_watchedPdfGenerator is not null)
+            _watchedPdfGenerator.PropertyChanged -= OnPdfGeneratorPropertyChanged;
+
+        _watchedPdfGenerator = generator;
+
+        if (_watchedPdfGenerator is not null)
+            _watchedPdfGenerator.PropertyChanged += OnPdfGeneratorPropertyChanged;
+    }
+
+    /// <remarks>
+    /// Re-calling Show rather than only setting Message is deliberate: Show restarts the
+    /// overlay's own 8-second failsafe. Generation paces itself with a 400ms delay between seven
+    /// progress steps and does real work on top, so on a slow device the whole export can
+    /// outlast that ceiling — and the scrim would then vanish mid-export, which looks like a
+    /// failure. Each progress tick pushing the ceiling out means the scrim lasts exactly as long
+    /// as progress keeps arriving, and still disappears if the export genuinely wedges.
+    /// </remarks>
+    private void OnPdfGeneratorPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName != nameof(PdfInsightsGenerator.Progress)) return;
+        if (!_loanViewModel.IsGeneratingPdf) return;
+
+        BusyOverlay.Show(ExportScrimMessage());
+    }
+
+    private string ExportScrimMessage()
+    {
+        var progress = _watchedPdfGenerator?.Progress ?? 0;
+
+        // 0 covers both "not started" and the reset the generator does on the way out; a bare
+        // "0%" reads as stuck.
+        return progress <= 0
+            ? "Building your insights report…"
+            : $"Building your insights report… {progress}%";
     }
 
     // ══ Projection ══════════════════════════════════════════════════════════
@@ -405,30 +615,103 @@ public partial class WhatIfView : ContentPage
     // so the Projection tab's content root gets that as a sub-tree BindingContext (set in the
     // constructor) and every binding path in the moved XAML resolves unchanged.
 
+
+    /// <summary>
+    /// The colour a summary-box figure should be, given whether it is negative.
+    /// </summary>
+    /// <remarks>
+    /// Reuses NegativeToHighlightColorConverter's sibling rather than looking the keys up here, so
+    /// code-written tiles and bound tiles cannot disagree — including the fallback when a key is
+    /// missing, which is "looks unstyled" rather than "throws".
+    ///
+    /// LoanAppNegativeValueOnHighlightColor, not LoanAppNegativeValueColor: these figures sit on
+    /// the highlight card, which needs its own red to stay legible against that background. Both
+    /// keys are defined in all four themes.
+    /// </remarks>
+    private static readonly NegativeToThemeColorConverter TileFigureColourConverter =
+        new() { NegativeKey = "LoanAppNegativeValueOnHighlightColor" };
+
+    private static Color TileFigureColour(bool isNegative) =>
+        (Color)TileFigureColourConverter.Convert(
+            isNegative, typeof(Color), "LoanAppHighlightFgColor", CultureInfo.InvariantCulture);
+
     private void UpdateProjectionSummaryBar()
     {
         var sym = _budgetViewModel.CurrencySymbol ?? "$";
         var incomeTotal = _budgetViewModel.Income.TransactionRecords?.IncomeExpenseSummary?.ProjectTotalYearly ?? 0;
         var expenseTotal = _budgetViewModel.Expense.TransactionRecords?.IncomeExpenseSummary?.ProjectTotalYearly ?? 0;
 
-        ProjectionIncomeSpan.Text = $"{sym}{incomeTotal:N0}";
-        ProjectionExpenseSpan.Text = $"{sym}{expenseTotal:N0}";
+        // The line break is part of the text written here, rather than the separate
+        // `<Span Text="{Binding NewLine}" />` the other three-box summaries use. Those Spans sit
+        // inside a FormattedString assigned to a BindableProperty of a custom control, and on this
+        // tab the break did not appear — the figure ran straight into its caption. A Span is not a
+        // VisualElement and does not carry its own BindingContext, so whether that binding resolves
+        // depends on what the FormattedString inherited and when, which differs here because this
+        // tab's BindingContext is reassigned to the Budget view model at runtime rather than being
+        // the page's own.
+        //
+        // Writing the break alongside the figure removes the question. The amounts were already
+        // being set from code, so this costs nothing and cannot silently stop working.
+        ProjectionIncomeSpan.Text = $"{sym}{incomeTotal:N0}{Environment.NewLine}";
+        ProjectionExpenseSpan.Text = $"{sym}{expenseTotal:N0}{Environment.NewLine}";
+
+        // Projected income goes negative whenever the deductions outweigh the income, which the
+        // two "take off" switches make easy to do. Coloured here rather than by a binding because
+        // these Spans are written from code — and set on every refresh, which is also when a
+        // theme change would be picked up, so it stays correct without a DynamicResource.
+        //
+        // Same converter the Budget summary boxes bind, so the key resolution and its fallback are
+        // shared rather than reimplemented.
+        // The expense total cannot currently go below zero (it only ever has costs added to it),
+        // but it is passed through the same call rather than left alone: if that ever changes, it
+        // picks the colouring up on its own instead of being the one tile that quietly does not.
+        ProjectionIncomeSpan.TextColor = TileFigureColour(incomeTotal < 0);
+        ProjectionExpenseSpan.TextColor = TileFigureColour(expenseTotal < 0);
 
         // The horizon is stated in the intro sentence rather than in a summary box of its own —
         // see the note on LblProjectionIntro in the XAML.
+        //
+        // No longer says "at the rates below": the rates now live in a panel that is collapsed by
+        // default and sits under the chart, so "below" pointed at nothing visible. The settings
+        // summary line on that panel's header states them instead, which is where someone looking
+        // for them would now be. Shortened too, because this sentence is pinned and every line it
+        // takes is a line the chart does not get.
         var years = _budgetViewModel.ProjectionYears;
         LblProjectionIntro.Text =
-            $"Where your surplus goes over {years} year{(years == 1 ? "" : "s")}, "
-            + "assuming income and expenses change at the rates below.";
+            $"Where your money goes over the next {years} year{(years == 1 ? "" : "s")}.";
 
         LblProjectionYears.Text = years.ToString();
 
         // Sync slider switch states to VM values
         SwitchIncludeExpenses.IsOn = _budgetViewModel.Income.IncludeExpenses;
         SwitchIncludePropertyExpenses.IsOn = _budgetViewModel.Income.IncludePropertyExpenses;
-        SwitchExpensePropertyExpense.IsOn = _budgetViewModel.Expense.ShowPropertyExpense;
+        SwitchExpensePropertyExpense.IsOn = _budgetViewModel.Expense.IncludePropertyExpenses;
         LblIncomeGrowthRate.Text = $"{_budgetViewModel.Income.AnnualGrowthRate:0.##}%";
         LblExpenseGrowthRate.Text = $"{_budgetViewModel.Expense.AnnualGrowthRate:0.##}%";
+    }
+
+    /// <summary>
+    /// Opens or closes the Projection settings panel.
+    /// </summary>
+    /// <remarks>
+    /// Collapsed on arrival. The defaults are sensible, the results are what people come for, and
+    /// leaving the settings expanded is what pushed the chart and both tables out of sight in the
+    /// first place.
+    ///
+    /// The header's summary line keeps the closed state honest by naming every setting in force,
+    /// so this hides controls rather than information — see BudgetViewModel
+    /// .ProjectionSettingsSummary.
+    /// </remarks>
+    private void OnProjectionSettingsToggled(object? sender, TappedEventArgs e)
+    {
+        var show = !ProjectionSettingsPanel.IsVisible;
+
+        ProjectionSettingsPanel.IsVisible = show;
+
+        // ▾ invites a tap to open, ▴ to close. Plain glyphs rather than a rotation animation:
+        // CLAUDE.md records that a MAUI animation whose completion never arrives can park a task
+        // forever, and a disclosure chevron is not worth any of that risk.
+        ProjectionSettingsChevron.Text = show ? "▴" : "▾";
     }
 
     private void OnProjectionYearsSliderChanged(object sender, EventArgs e)
@@ -501,9 +784,21 @@ public partial class WhatIfView : ContentPage
         ScheduleProjectionRefresh();
     }
 
+    /// <remarks>
+    /// Sets IncludePropertyExpenses, NOT ShowPropertyExpense. This switch did nothing at all
+    /// before: it wrote ShowPropertyExpense while ExpenseViewModel.UpdateProjectionData reads
+    /// IncludePropertyExpenses, so the projection never saw the change — no movement in the
+    /// totals, the chart or the tables, and no error either.
+    ///
+    /// IncludePropertyExpenses is the projection flag (its backing field is literally
+    /// _includePropertyExpensesInProjection, and its setter kicks off a projection rebuild).
+    /// ShowPropertyExpense is the BUDGET Expenses tab's own display toggle — writing it from here
+    /// would also have silently changed that tab's headline totals, which is not this switch's
+    /// business.
+    /// </remarks>
     private void OnExpensePropertyExpenseChanged(object sender, Syncfusion.Maui.Buttons.SwitchStateChangedEventArgs e)
     {
-        _budgetViewModel.Expense.ShowPropertyExpense = e.NewValue == true;
+        _budgetViewModel.Expense.IncludePropertyExpenses = e.NewValue == true;
         ScheduleProjectionRefresh();
     }
 
@@ -566,8 +861,14 @@ public partial class WhatIfView : ContentPage
                 _budgetViewModel.Income.TotalYearsToProject = _budgetViewModel.ProjectionYears;
                 _budgetViewModel.Expense.TotalYearsToProject = _budgetViewModel.ProjectionYears;
 
-                _budgetViewModel.Income.UpdateProjectionData();
+                // Expense FIRST, then Income — the order matters and it used to be the other way
+                // round. "Take off my everyday spending" makes IncomeViewModel.UpdateProjectionData
+                // read ExpenseSummary.TransactionRecords.IncomeExpenseSummary.TotalYearly, and that
+                // total is only refreshed by the SumUpData() call inside the EXPENSE view model's
+                // own UpdateProjectionData. Running income first meant it deducted whatever the
+                // expense total happened to be from the previous pass.
                 _budgetViewModel.Expense.UpdateProjectionData();
+                _budgetViewModel.Income.UpdateProjectionData();
                 _budgetViewModel.Income.TriggerPropertyChangedOnProjectionTab();
                 _budgetViewModel.Expense.TriggerPropertyChangedOnProjectionTab();
                 _budgetViewModel.RecalculateProjection();
@@ -618,11 +919,24 @@ public partial class WhatIfView : ContentPage
 
         try
         {
-            var page = ServiceLocator.GetService<ScenarioPage>();
-            page.Configure(scenario);
+            // Scrim the build-and-push only, not page.Completion — see OnSeeScheduleTapped.
+            // Configure() is inside it because that is where the scenario's own view is created
+            // and where the explainer card is appended, which is the slow part on a first open.
+            ScenarioPage? page = null;
 
-            await Navigation.PushModalAsync(page);
-            await page.Completion;
+            // Titles are short nouns — "Rate change", "Offset account" — so they need the article
+            // and the word "scenario" around them to read as a sentence.
+            var scrimMessage = $"Opening the {ScenarioExplanations.For(scenario).Title.ToLowerInvariant()} scenario…";
+
+            await BusyOverlay.RunWithScrimAsync(scrimMessage, async () =>
+            {
+                page = ServiceLocator.GetService<ScenarioPage>();
+                page.Configure(scenario);
+
+                await Navigation.PushModalAsync(page);
+            });
+
+            if (page is not null) await page.Completion;
         }
         catch (Exception ex)
         {

@@ -189,21 +189,21 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
         public bool WizardRunningCostNeedsInput => !WizardRunningCostHasValue;
         public string WizardRunningCostSummary =>
             $"Total running costs: {CurrencySymbol}" +
-            $"{_loanVm.TransactionRecords?.IncomeExpenseSummary?.TotalMonthly ?? 0:N0}/mo";
+            $"{_loanVm.TransactionRecords?.IncomeExpenseSummary?.TotalMonthly ?? 0:N0} monthly";
 
         public bool WizardIncomeHasValue =>
             Income?.TransactionRecords?.IncomeExpenseEntries?.Any(e => e.Amount > 0) == true;
         public bool WizardIncomeNeedsInput => !WizardIncomeHasValue;
         public string WizardIncomeSummary =>
             $"Recorded: {CurrencySymbol}" +
-            $"{Income?.TransactionRecords?.IncomeExpenseSummary?.TotalMonthly ?? 0:N0}/mo";
+            $"{Income?.TransactionRecords?.IncomeExpenseSummary?.TotalMonthly ?? 0:N0} monthly";
 
         public bool WizardExpenseHasValue =>
             Expense?.TransactionRecords?.IncomeExpenseEntries?.Any(e => e.Amount > 0) == true;
         public bool WizardExpenseNeedsInput => !WizardExpenseHasValue;
         public string WizardExpenseSummary =>
             $"Recorded: {CurrencySymbol}" +
-            $"{Expense?.TransactionRecords?.IncomeExpenseSummary?.TotalMonthly ?? 0:N0}/mo";
+            $"{Expense?.TransactionRecords?.IncomeExpenseSummary?.TotalMonthly ?? 0:N0} monthly";
 
         /// <summary>
         /// True when at least one figure was picked up from elsewhere and its field is therefore

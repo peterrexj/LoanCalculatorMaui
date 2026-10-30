@@ -179,5 +179,6 @@ namespace LoanCalculator.UnitTests.Constants
             Assert.That(allProse, Does.Contain(fragment).IgnoreCase,
                 $"{scenario}: the migrated explanation no longer says \"{fragment}\"");
         }
+
     }
 }

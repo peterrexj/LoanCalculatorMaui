@@ -60,14 +60,12 @@
                             Text="Change:"
                             TextColor="{DynamicResource LoanAppDefaultForegroundColor}"
                             VerticalOptions="Center" />
-                        <Button
-                            BackgroundColor="Transparent"
+                                                <Button
                             AutomationId="WhatIfRateDeltaMinus"
+                            Text="−"
                             Clicked="OnRateDeltaDecrease"
-                            FontAttributes="Bold"
-                            FontSize="{StaticResource FontSizeXL}"
                             TextColor="{DynamicResource LoanAppChartColor1}"
-                            WidthRequest="36" Text="−" />
+                            Style="{DynamicResource ScenarioStepperButtonStyle}" />
                         <Label
                             FontAttributes="Bold"
                             FontSize="{StaticResource FontSizeLarge}"
@@ -77,14 +75,12 @@
                             Text="{Binding RateChangeDelta, StringFormat='{0:+0.00;-0.00;0.00}%'}"
                             TextColor="{DynamicResource LoanAppChartColor1}"
                             VerticalOptions="Center" />
-                        <Button
-                            BackgroundColor="Transparent"
+                                                <Button
                             AutomationId="WhatIfRateDeltaPlus"
+                            Text="+"
                             Clicked="OnRateDeltaIncrease"
-                            FontAttributes="Bold"
-                            FontSize="{StaticResource FontSizeXL}"
                             TextColor="{DynamicResource LoanAppChartColor1}"
-                            WidthRequest="36" Text="+" />
+                            Style="{DynamicResource ScenarioStepperButtonStyle}" />
                     </HorizontalStackLayout>
                 </Border>
 

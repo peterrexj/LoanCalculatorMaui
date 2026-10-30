@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView
+    x:Class="LoanCalculatorMaui.Controls.InfoHintView"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    x:Name="Root"
+    Margin="0,-9,0,-3">
+
+    <!--
+        An inline "ⓘ <prompt>" strip that expands to an explanation, for dropping in directly
+        beneath the thing it explains.
+
+        Why this shape rather than one explanation card per screen: a single card has to sit
+        somewhere, and wherever it sits it is away from most of what it describes. On a screen made
+        of several unrelated controls that means a wall of text at the bottom that most people
+        never scroll to. One of these per control puts each explanation where the question is
+        actually asked.
+
+        Why the prompt text and not a bare glyph: a lone ⓘ gives no reason to tap it. The prompt
+        says what you would get, and it also makes the tap target the width of a sentence instead of
+        the width of one character.
+
+        Not an SfExpander, deliberately. Expander headers are the Syncfusion control that swallows
+        taps on iOS unless the hosting page calls SyncfusionIosTouchFix.ApplyToExpanders, and it
+        fails silently when it is missed — see CLAUDE.md. A TapGestureRecognizer on a Label has none
+        of that fragility, which is also why SwitchWithInfoView and the Budget summary heading use
+        the same approach.
+    -->
+    <!--
+        The negative vertical margin on the root above is deliberate — please do not "tidy" it
+        away.
+
+        Every host places one of these inside a VerticalStackLayout with Spacing="12", so the hint
+        was being given 12pt above AND 12pt below on top of its own padding: about 40pt of air
+        around a single line of text, which left the ⓘ floating between the thing it explains and
+        the next control rather than belonging to either. The negative margin absorbs most of that
+        spacing without touching the parent's Spacing, which every other row on those screens
+        depends on.
+
+        Asymmetric on purpose (-9 top, -3 bottom): the hint explains the element ABOVE it, so it
+        should sit tight under that (about 3pt) and leave a clearer gap (about 9pt) before the next
+        control. Grouping it with its own subject is what makes it readable at a glance.
+
+        The padding on the Label below is NOT part of the gap problem and stays: it is the tap
+        target. Trimming it would make the line hard to hit, which is why the fix is a margin
+        rather than less padding.
+    -->
+    <VerticalStackLayout Spacing="0">
+
+        <!--
+            Padding is the tap target. The glyph and the prompt are one Label so the whole line is
+            tappable, rather than only the character.
+        -->
+        <Label
+            Padding="0,6"
+            AutomationId="{Binding InfoAutomationId, Source={x:Reference Root}}"
+            FontSize="{StaticResource FontSizeSmall}"
+            TextColor="{DynamicResource LoanAppTabIndicatorStrokeColor}">
+            <Label.FormattedText>
+                <FormattedString>
+                    <Span Text="ⓘ  " />
+                    <Span Text="{Binding Prompt, Source={x:Reference Root}}" />
+                </FormattedString>
+            </Label.FormattedText>
+            <Label.GestureRecognizers>
+                <TapGestureRecognizer Tapped="OnHintTapped" />
+            </Label.GestureRecognizers>
+        </Label>
+
+        <Label
+            x:Name="DetailLabel"
+            Margin="0,0,0,12"
+            AutomationId="{Binding DetailAutomationId, Source={x:Reference Root}}"
+            FontSize="{StaticResource FontSizeSmall}"
+            IsVisible="False"
+            Opacity="0.8"
+            Text="{Binding Detail, Source={x:Reference Root}}"
+            TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+
+        <!--
+            The same explanation in the reader's own numbers, when the host supplies one. Bold
+            rather than muted: the general text says what something means, this says what it means
+            for you, which is the part people actually want.
+        -->
+        <Label
+            x:Name="LiveExampleLabel"
+            Margin="0,0,0,14"
+            FontAttributes="Bold"
+            FontSize="{StaticResource FontSizeSmall}"
+            IsVisible="False"
+            Text="{Binding LiveExample, Source={x:Reference Root}}"
+            TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+
+    </VerticalStackLayout>
+
+</ContentView>

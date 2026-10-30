@@ -48,7 +48,7 @@ namespace LoanCalculator.Core.Constants
             WhatIfScenario.RateChange => new(
                 Title: "Rate change",
                 Purpose:
-                    "Your interest rate is the one number on a mortgage you do not control. This "
+                    "Your interest rate is the one number on a loan you do not control. This "
                     + "shows what a rise or a fall does to your repayment and to the total interest "
                     + "over the life of the loan, so a rate move becomes something you have already "
                     + "seen rather than something that surprises you.",
@@ -311,5 +311,6 @@ namespace LoanCalculator.Core.Constants
 
             _ => throw new ArgumentOutOfRangeException(nameof(scenario)),
         };
+
     }
 }

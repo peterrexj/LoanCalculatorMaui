@@ -169,13 +169,9 @@ public partial class BudgetView : ContentPage
     {
         try
         {
-            var loanData = await SharedServiceCore.GetLoanViewModelAsync();
-            _viewModel.Income.PropertyExpenseSummary = loanData.Item1;
-            _viewModel.Income.PropertyPayment = loanData.Item2;
-            _viewModel.Expense.PropertyExpenseSummary = loanData.Item1;
-            _viewModel.Expense.PropertyPayment = loanData.Item2;
-            // IncomeSummary wire is done in InitializeBudget; re-affirm here in case data changed
-            _viewModel.Expense.IncomeSummary = _viewModel.Income;
+            // Moved into BudgetViewModel so What If can do the same wiring — it needs these for
+            // the Projection switches and had no way to get them. See WireLoanFiguresAsync.
+            await _viewModel.WireLoanFiguresAsync();
         }
         catch (Exception ex)
         {
@@ -600,16 +596,41 @@ public partial class BudgetView : ContentPage
         TopExpensesList.ItemsSource = _viewModel.TopExpenses;
     }
 
+    /// <summary>
+    /// Per-tab arrival work, keyed on the tab's <c>AutomationId</c> rather than its index.
+    /// </summary>
+    /// <remarks>
+    /// This switched on <c>e.Index</c>, which made the tab ORDER load-bearing: moving a tab moved
+    /// its premium gate onto whichever tab inherited the number, with nothing to notice. It had
+    /// already drifted once when Projection left for What If, and a comment in the XAML existed
+    /// purely to warn whoever reordered them next. Keying on the id removes the coupling — the
+    /// Summary tab has since moved to last and nothing here needed changing.
+    /// </remarks>
+    /// <summary>
+    /// Shows or hides the explanation of the Summary tab's hero figure and its three tiles.
+    /// </summary>
+    /// <remarks>
+    /// A plain toggle on a Label rather than an expander, matching the ⓘ on this page's switch
+    /// rows — BudgetView does not apply the Syncfusion iOS expander touch fix, so an SfExpander
+    /// here would fail silently on iOS. See SwitchWithInfoView.
+    /// </remarks>
+    private void OnSummaryInfoTapped(object? sender, TappedEventArgs e)
+    {
+        SummaryExplanationLabel.IsVisible = !SummaryExplanationLabel.IsVisible;
+    }
+
     private void TabView_OnSelectionChanging(object? sender, SelectionChangingEventArgs e)
     {
         try
         {
-            switch (e.Index)
+            var tabId = (tabView.Items.ElementAtOrDefault(e.Index) as SfTabItem)?.AutomationId;
+
+            switch (tabId)
             {
-                case 0: // Income
+                case "BudgetTabIncome":
                     _viewModel.Income.RefreshIncomePropertyChanged();
                     break;
-                case 1: // Expenses
+                case "BudgetTabExpenses":
                     _viewModel.Expense.RefreshIncomePropertyChanged();
                     // The Expenses summary bar's third box now shows NET for the month rather
                     // than raw income (it is an expenses screen). Net lives on BudgetViewModel
@@ -617,7 +638,7 @@ public partial class BudgetView : ContentPage
                     // show whatever the net was when the page was last entered.
                     _viewModel.RecalculateSummary();
                     break;
-                case 2: // Summary — premium gated
+                case "BudgetTabSummary": // premium gated
                     if (SharedServiceCore.IsTrialUser)
                     {
                         PremiumWindow.ShowPremiumBuyWindow = true;
@@ -632,8 +653,7 @@ public partial class BudgetView : ContentPage
                     // re-runs the labels.
                     _ = RefreshAffordabilityThenSummaryAsync();
                     break;
-                // Projection moved to What If, so Asset costs shifted from index 4 to 3.
-                case 3: // Asset costs — premium gated (was Running Cost on LoanView)
+                case "BudgetTabAssetCosts": // premium gated (was Running Cost on LoanView)
                     if (SharedServiceCore.IsTrialUser)
                     {
                         PremiumWindow.ShowPremiumBuyWindow = true;

@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView
+    x:Class="LoanCalculatorMaui.Controls.SwitchWithInfoView"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:buttons="clr-namespace:Syncfusion.Maui.Buttons;assembly=Syncfusion.Maui.Buttons"
+    x:Name="Root">
+
+    <!--
+        One Budget switch row: the switch, its label and sub-line, a tappable ⓘ, and the detail the
+        ⓘ reveals.
+
+        Replaces four near-identical blocks in BudgetView.xaml. Each carried its own ~40-line
+        VisualStateManager copy of the same on/off switch theming, which is both the reason this
+        control exists and the reason the four rows had already drifted apart in wording.
+
+        ⓘ rather than an SfExpander, deliberately:
+          · the explanation belongs to ONE switch, so it sits on that switch rather than in a shared
+            card the reader has to map back onto two rows;
+          · it stays invisible until wanted, and the switches remain the content;
+          · BudgetView calls SyncfusionIosTouchFix.ApplyToTabView but NOT ApplyToExpanders, so an
+            expander here would need that fix adding and re-verifying on device — for a defect that
+            fails silently. A TapGestureRecognizer has none of that fragility. See CLAUDE.md.
+
+        The ⓘ is its own Label, not a Span inside a FormattedString as InsightsItemView does it: a
+        Span is not a VisualElement, so it can carry neither an AutomationId for the tests nor
+        padding, which left its tap target the size of the glyph.
+    -->
+    <VerticalStackLayout Spacing="0">
+
+        <Grid ColumnSpacing="10">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <buttons:SfSwitch
+                Grid.Column="0"
+                AutomationId="{Binding SwitchAutomationId, Source={x:Reference Root}}"
+                HorizontalOptions="Start"
+                IsOn="{Binding IsOn, Source={x:Reference Root}, Mode=TwoWay}"
+                VerticalOptions="Center">
+                <VisualStateManager.VisualStateGroups>
+                    <VisualStateGroup>
+                        <VisualState Name="On">
+                            <VisualState.Setters>
+                                <Setter Property="SwitchSettings">
+                                    <Setter.Value>
+                                        <buttons:SwitchSettings
+                                            ThumbBackground="{DynamicResource LoanAppSwitchThumbColorOn}"
+                                            ThumbStroke="{DynamicResource LoanAppSwitchThumbBorderColorOn}"
+                                            TrackBackground="{DynamicResource LoanAppSwitchTrackColorOn}"
+                                            TrackStroke="{DynamicResource LoanAppSwitchTrackBorderColorOn}" />
+                                    </Setter.Value>
+                                </Setter>
+                            </VisualState.Setters>
+                        </VisualState>
+                        <VisualState Name="Off">
+                            <VisualState.Setters>
+                                <Setter Property="SwitchSettings">
+                                    <Setter.Value>
+                                        <buttons:SwitchSettings
+                                            ThumbBackground="{DynamicResource LoanAppSwitchThumbColorOff}"
+                                            ThumbStroke="{DynamicResource LoanAppSwitchThumbBorderColorOff}"
+                                            TrackBackground="{DynamicResource LoanAppSwitchTrackColorOff}"
+                                            TrackStroke="{DynamicResource LoanAppSwitchTrackBorderColorOff}" />
+                                    </Setter.Value>
+                                </Setter>
+                            </VisualState.Setters>
+                        </VisualState>
+                    </VisualStateGroup>
+                </VisualStateManager.VisualStateGroups>
+            </buttons:SfSwitch>
+
+            <VerticalStackLayout Grid.Column="1" Spacing="1" VerticalOptions="Center">
+                <Label
+                    FontSize="{StaticResource FontSizeBody}"
+                    Text="{Binding Title, Source={x:Reference Root}}"
+                    TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                <Label
+                    FontSize="{StaticResource FontSizeSmall}"
+                    Opacity="0.7"
+                    Text="{Binding Subtitle, Source={x:Reference Root}}"
+                    TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+            </VerticalStackLayout>
+
+            <!--
+                Padding, not just a glyph: this is the whole tap target, and at FontSizeBody the
+                character alone is far under the 44pt minimum. The accent colour is what signals it
+                is tappable, matching the ⓘ on the Insights rows.
+            -->
+            <Label
+                Grid.Column="2"
+                Padding="12,10"
+                AutomationId="{Binding InfoAutomationId, Source={x:Reference Root}}"
+                FontSize="{StaticResource FontSizeMedium}"
+                Text="ⓘ"
+                TextColor="{DynamicResource LoanAppTabIndicatorStrokeColor}"
+                VerticalOptions="Center">
+                <Label.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnInfoTapped" />
+                </Label.GestureRecognizers>
+            </Label>
+        </Grid>
+
+        <!--  Hidden until the ⓘ is tapped. Indented to the label column so it reads as belonging
+              to this row rather than to the card.  -->
+        <Label
+            x:Name="DetailLabel"
+            Margin="0,2,12,0"
+            AutomationId="{Binding DetailAutomationId, Source={x:Reference Root}}"
+            FontSize="{StaticResource FontSizeSmall}"
+            IsVisible="False"
+            Opacity="0.75"
+            Text="{Binding Detail, Source={x:Reference Root}}"
+            TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+
+        <!--
+            The same explanation stated in the reader's own figures. Revealed with the detail above
+            and hidden with it, and bold rather than muted: a general explanation tells you what a
+            switch does, this tells you what it would do to YOUR numbers, which is the part people
+            actually asked for.
+        -->
+        <Label
+            x:Name="LiveExampleLabel"
+            Margin="0,8,12,10"
+            FontAttributes="Bold"
+            FontSize="{StaticResource FontSizeSmall}"
+            IsVisible="False"
+            Text="{Binding LiveExample, Source={x:Reference Root}}"
+            TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+
+    </VerticalStackLayout>
+
+</ContentView>

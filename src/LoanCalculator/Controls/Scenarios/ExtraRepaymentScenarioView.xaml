@@ -47,17 +47,14 @@
                             FontSize="{StaticResource FontSizeSmall}"
                             Margin="6,0,0,0"
                             Opacity="0.7"
-                            Text="Extra/mo:"
+                            Text="Extra monthly:"
                             TextColor="{DynamicResource LoanAppDefaultForegroundColor}"
                             VerticalOptions="Center" />
-                        <Button
-                            BackgroundColor="Transparent"
-                            Padding="0"
+                                                <Button
+                            Text="−"
                             Clicked="OnExtraRepaymentDecrease"
-                            FontAttributes="Bold"
-                            FontSize="{StaticResource FontSizeXL}"
                             TextColor="{DynamicResource LoanAppChartColor2}"
-                            WidthRequest="36" Text="−" />
+                            Style="{DynamicResource ScenarioStepperButtonStyle}" />
                         <Label
                             FontAttributes="Bold"
                             FontSize="{StaticResource FontSizeLarge}"
@@ -66,14 +63,11 @@
                             Text="{Binding ExtraRepaymentMonthly, StringFormat='{0:N0}'}"
                             TextColor="{DynamicResource LoanAppChartColor2}"
                             VerticalOptions="Center" />
-                        <Button
-                            BackgroundColor="Transparent"
-                            Padding="0"
+                                                <Button
+                            Text="+"
                             Clicked="OnExtraRepaymentIncrease"
-                            FontAttributes="Bold"
-                            FontSize="{StaticResource FontSizeXL}"
                             TextColor="{DynamicResource LoanAppChartColor2}"
-                            WidthRequest="36" Text="+" />
+                            Style="{DynamicResource ScenarioStepperButtonStyle}" />
                     </HorizontalStackLayout>
                 </Border>
 

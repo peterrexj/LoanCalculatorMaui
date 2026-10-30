@@ -53,17 +53,57 @@ namespace LoanCalculator.Core
 
             return paymentOutput;
         }
+        /// <summary>
+        /// Works out the repayment figures for a loan. Cheap: no per-payment schedule is built.
+        /// </summary>
+        /// <remarks>
+        /// <para>This used to build the full payment-by-payment schedule as well — one object per
+        /// payment across the whole term, so 360 for a monthly 30-year loan and <b>1,560 for a
+        /// weekly one</b>. It is called from <c>LoanViewModel.EventsTriggerPriceUpdate</c>, which
+        /// runs on every change to any loan figure: every keystroke in the asset field and every
+        /// pixel of the deposit slider. The schedule was then discarded unread in almost every
+        /// case, because its only consumer is the amortisation builder below, reached from the
+        /// Schedule page, the PDF export and two one-off syncs.</para>
+        ///
+        /// <para>Call <see cref="BuildPaymentSchedule"/> when the schedule is actually wanted; the
+        /// amortisation builders do it themselves, so existing callers need no change.</para>
+        /// </remarks>
         public static PaymentSummary? CalculateHomeLoanPayments(double principal, HomeLoanRepaymentInput repaymentInput)
         {
-            PaymentSummary? paymentSummary = new PaymentSummary();
-            paymentSummary.PaymentTerms = new List<PaymentPerTermOutput>();
+            PaymentSummary? paymentSummary = new PaymentSummary
+            {
+                PaymentTerms = new List<PaymentPerTermOutput>(),
+
+                // Kept so the schedule can be built later from the summary alone.
+                SchedulePrincipal = principal,
+                ScheduleTotalPayments = repaymentInput.TotalNumberOfPaymentsWithInTermPeriod,
+            };
 
             paymentSummary.Payment = CalculateHomeLoan(principal, repaymentInput);
 
+            return paymentSummary;
+        }
+
+        /// <summary>
+        /// Fills in <see cref="PaymentSummary.PaymentTerms"/> — one row per payment across the term.
+        /// </summary>
+        /// <remarks>
+        /// Idempotent: returns immediately if the schedule is already built, so the amortisation
+        /// builders can both call it and only the first pays for it. A fresh
+        /// <see cref="CalculateHomeLoanPayments"/> produces an empty list again, which is what makes
+        /// a changed loan rebuild rather than serve a stale schedule.
+        /// </remarks>
+        public static void BuildPaymentSchedule(PaymentSummary? paymentSummary)
+        {
+            if (paymentSummary?.Payment == null) return;
+
+            paymentSummary.PaymentTerms ??= new List<PaymentPerTermOutput>();
+            if (paymentSummary.PaymentTerms.Count > 0) return;
+
             // Calculate the breakdown of principal and interest for each payment
-            double remainingPrincipal = principal;
+            double remainingPrincipal = paymentSummary.SchedulePrincipal;
             double totalPaymentInTerm = 0;
-            for (int i = 1; i <= repaymentInput.TotalNumberOfPaymentsWithInTermPeriod; i++)
+            for (int i = 1; i <= paymentSummary.ScheduleTotalPayments; i++)
             {
                 PaymentPerTermOutput payment = new PaymentPerTermOutput();
                 payment.TermNumber = i;
@@ -85,11 +125,14 @@ namespace LoanCalculator.Core
 
                 paymentSummary.PaymentTerms.Add(payment);
             }
-            return paymentSummary;
         }
 
         public static void UpdateLoanPaymentAmortizationDataByYear(PaymentSummary? paymentSummary)
         {
+            // The schedule is no longer built by CalculateHomeLoanPayments — it is built here, on
+            // the path that actually needs it. Callers are unchanged.
+            BuildPaymentSchedule(paymentSummary);
+
             if (paymentSummary == null || paymentSummary.Payment == null || paymentSummary.PaymentTerms == null || paymentSummary.PaymentTerms.Count == 0) return;
 
             // CalculateHomeLoan returns an empty PaymentOutput when the principal is <= 0 — which
@@ -136,6 +179,8 @@ namespace LoanCalculator.Core
         }
         public static void UpdateLoanPaymentAmortizationDataByTerm(PaymentSummary? paymentSummary)
         {
+            BuildPaymentSchedule(paymentSummary);
+
             // Same zero-principal case as UpdateLoanPaymentAmortizationDataByYear. Here a
             // TotalNumberPaymentPerYear of 0 would divide by zero in the loop below.
             if (paymentSummary == null || paymentSummary.Payment == null || paymentSummary.Payment.TotalNumberPaymentPerYear <= 0) return;
@@ -229,11 +274,29 @@ namespace LoanCalculator.Core
             double additionalExpensesFromNewProperty
             )
         {
-            expenseSummary.ProjectionTerms = new List<IncomeExpenseProjectionOutput>();
+                        // Built into a LOCAL list and published in one assignment at the end.
+            //
+            // This used to assign `summary.ProjectionTerms = new List<...>()` first and then Add
+            // into it, which is not safe against being called twice at once — and it IS called
+            // twice at once. The projection switches set a view-model property whose setter fires
+            // `_ = UpdateProjectionDataAsync()` (fire-and-forget), while the page's own handler
+            // separately calls ScheduleProjectionRefresh, which recomputes synchronously. The two
+            // overlap: one call would replace the list with an empty one while the other sat
+            // between its Add and its `.Last()`, throwing "Sequence contains no elements" from
+            // inside a background task with no caller to report it.
+            //
+            // Found by a unit test that toggled a switch and read the total back. Same family as
+            // the un-coordinated fire-and-forget writes to namevaluedata.json in CLAUDE.md.
+            //
+            // Building locally means concurrent callers each build their own list and the last
+            // assignment wins. A reader therefore always sees a complete list, never a torn or
+            // empty one — which also removes the crash path in ProjectTotalYearly, where `.Last()`
+            // on an empty list throws rather than yielding null.
+            var terms = new List<IncomeExpenseProjectionOutput>();
 
             var incrementDate = new DateTime(DateTime.Now.Year, 01, 01);
 
-            expenseSummary.ProjectionTerms.Add(new IncomeExpenseProjectionOutput
+            terms.Add(new IncomeExpenseProjectionOutput
             {
                 TermNumber = 0,
                 DateTimeOfPayment = incrementDate,
@@ -246,7 +309,7 @@ namespace LoanCalculator.Core
                 TermEndAmount = expenseSummary.TotalYearly,
             });
 
-            expenseSummary.ProjectionTerms.Last().IncomeExpenseAmount = expenseSummary.ProjectionTerms.Sum(f => f.TermAdjustments);
+            terms.Last().IncomeExpenseAmount = terms.Sum(f => f.TermAdjustments);
 
             for (int year = 1; year < expenseSummary.NumberOfYearsProjection; year++)
             {
@@ -257,7 +320,7 @@ namespace LoanCalculator.Core
                     PaymentPeriod = incrementDate.AddYears(year + 1).Year.ToString(),
 
                     GrowthPercentage = expenseSummary.AnnualGrowthRatePercentage,
-                    TermStartAmount = expenseSummary.ProjectionTerms.Last().TermEndAmount,
+                    TermStartAmount = terms.Last().TermEndAmount,
                 };
 
                 if (amortizationOutput.GrowthPercentage != 0)
@@ -273,10 +336,12 @@ namespace LoanCalculator.Core
 
                 amortizationOutput.TermAdjustments = amortizationOutput.TermEndAmount + additionalExpensesFromNewProperty;
 
-                expenseSummary.ProjectionTerms.Add(amortizationOutput);
+                terms.Add(amortizationOutput);
 
-                expenseSummary.ProjectionTerms.Last().IncomeExpenseAmount = expenseSummary.ProjectionTerms.Sum(f => f.TermAdjustments);
+                terms.Last().IncomeExpenseAmount = terms.Sum(f => f.TermAdjustments);
             }
+
+            expenseSummary.ProjectionTerms = terms;
         }
 
         /// <summary>
@@ -290,11 +355,29 @@ namespace LoanCalculator.Core
             IncomeExpenseSummary incomeSummary,
             double personalExpense = 0)
         {
-            incomeSummary.ProjectionTerms = new List<IncomeExpenseProjectionOutput>();
+                        // Built into a LOCAL list and published in one assignment at the end.
+            //
+            // This used to assign `summary.ProjectionTerms = new List<...>()` first and then Add
+            // into it, which is not safe against being called twice at once — and it IS called
+            // twice at once. The projection switches set a view-model property whose setter fires
+            // `_ = UpdateProjectionDataAsync()` (fire-and-forget), while the page's own handler
+            // separately calls ScheduleProjectionRefresh, which recomputes synchronously. The two
+            // overlap: one call would replace the list with an empty one while the other sat
+            // between its Add and its `.Last()`, throwing "Sequence contains no elements" from
+            // inside a background task with no caller to report it.
+            //
+            // Found by a unit test that toggled a switch and read the total back. Same family as
+            // the un-coordinated fire-and-forget writes to namevaluedata.json in CLAUDE.md.
+            //
+            // Building locally means concurrent callers each build their own list and the last
+            // assignment wins. A reader therefore always sees a complete list, never a torn or
+            // empty one — which also removes the crash path in ProjectTotalYearly, where `.Last()`
+            // on an empty list throws rather than yielding null.
+            var terms = new List<IncomeExpenseProjectionOutput>();
 
             var incrementDate = new DateTime(DateTime.Now.Year, 01, 01);
 
-            incomeSummary.ProjectionTerms.Add(new IncomeExpenseProjectionOutput
+            terms.Add(new IncomeExpenseProjectionOutput
             {
                 TermNumber = 0,
                 DateTimeOfPayment = incrementDate,
@@ -307,7 +390,7 @@ namespace LoanCalculator.Core
                 TermEndAmount = incomeSummary.TotalYearly,
             });
 
-            incomeSummary.ProjectionTerms.Last().IncomeExpenseAmount = incomeSummary.ProjectionTerms.Sum(f => f.TermAdjustments);
+            terms.Last().IncomeExpenseAmount = terms.Sum(f => f.TermAdjustments);
 
             for (int year = 1; year < incomeSummary.NumberOfYearsProjection; year++)
             {
@@ -318,7 +401,7 @@ namespace LoanCalculator.Core
                     PaymentPeriod = incrementDate.AddYears(year + 1).Year.ToString(),
 
                     GrowthPercentage = incomeSummary.AnnualGrowthRatePercentage,
-                    TermStartAmount = incomeSummary.ProjectionTerms.Last().TermEndAmount,
+                    TermStartAmount = terms.Last().TermEndAmount,
                 };
 
                 if (amortizationOutput.GrowthPercentage != 0)
@@ -334,10 +417,12 @@ namespace LoanCalculator.Core
                 
                 amortizationOutput.TermAdjustments = amortizationOutput.TermEndAmount - personalExpense;
                 
-                incomeSummary.ProjectionTerms.Add(amortizationOutput);
+                terms.Add(amortizationOutput);
 
-                incomeSummary.ProjectionTerms.Last().IncomeExpenseAmount = incomeSummary.ProjectionTerms.Sum(f => f.TermAdjustments);
+                terms.Last().IncomeExpenseAmount = terms.Sum(f => f.TermAdjustments);
             }
+
+            incomeSummary.ProjectionTerms = terms;
         }
 
     }

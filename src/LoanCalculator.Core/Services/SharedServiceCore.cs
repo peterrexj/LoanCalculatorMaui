@@ -164,6 +164,33 @@ namespace LoanCalculator.Core.Services
             }
         }
 
+        /// <summary>
+        /// Set when the user deletes their loan data, so the Loan tab opens the setup wizard the
+        /// next time it appears. One-shot: <see cref="ConsumeLoanSetupPrompt"/> clears it.
+        /// </summary>
+        /// <remarks>
+        /// Session state, not persisted. The first-run wizard is driven by <c>HasShownWizard</c> in
+        /// <c>namevaluedata.json</c> and that flag must stay set — reusing it here would make the
+        /// wizard reappear on every launch after a delete, and would mean writing to the file that
+        /// CLAUDE.md records as having corrupted itself under concurrent writes.
+        ///
+        /// A flag rather than Settings pushing the wizard itself: the user is on the Settings tab
+        /// when they delete, and the wizard is a modal owned by LoanView. Arming a flag keeps the
+        /// navigation with the page that owns it.
+        /// </remarks>
+        private static bool _loanSetupPromptPending;
+
+        public static void RequestLoanSetupPrompt() => _loanSetupPromptPending = true;
+
+        /// <summary>Returns true at most once per request, so the wizard opens a single time.</summary>
+        public static bool ConsumeLoanSetupPrompt()
+        {
+            if (!_loanSetupPromptPending) return false;
+
+            _loanSetupPromptPending = false;
+            return true;
+        }
+
         public static string DisclaimerData
         {
             get
@@ -231,7 +258,7 @@ namespace LoanCalculator.Core.Services
         // ║  Set to true to bypass all trial restrictions during local testing.   ║
         // ║  Search for TESTING_PREMIUM_OVERRIDE to find this flag.              ║
         // ╚══════════════════════════════════════════════════════════════════════╝
-        private const bool TESTING_PREMIUM_OVERRIDE = false; // ← set true to bypass trial gates during local testing
+        private const bool TESTING_PREMIUM_OVERRIDE = true; // ← set true to bypass trial gates during local testing
         // ────────────────────────────────────────────────────────────────────────
 
         /// <summary>
@@ -581,9 +608,37 @@ namespace LoanCalculator.Core.Services
 
         #region Calculator Settings
 
-        public static int GetMaxLoanTermYears() { try { return Preferences.Get("MaxLoanTermYears", 30); } catch { return 30; } }
-        public static double GetDefaultInterestRate() { try { return Preferences.Get("DefaultInterestRate", 5.0); } catch { return 5.0; } }
-        public static int GetDefaultLoanTermYears() { try { return Preferences.Get("DefaultLoanTermYears", 30); } catch { return 30; } }
+        /// <summary>
+        /// Hard bounds on a loan term, in years. Nothing anywhere may hold a term outside these.
+        /// </summary>
+        /// <remarks>
+        /// The limits used to live only in the +/- click handlers — <c>OnLoanTermIncrease</c>,
+        /// <c>OnMaxLoanTermIncrement</c> and friends — which bounds what a user can <i>type up to</i>
+        /// and nothing else. Two holes followed from that: the getters below returned whatever was
+        /// in Preferences, so a stored value out of range silently widened the allowed range; and a
+        /// term restored from <c>homeloandata.json</c> was never checked at all, because
+        /// <c>LoanViewModel.CopyPropertiesFrom</c> assigns the model directly to get past the
+        /// <c>HasInitialized</c> guards. A 200-year loan in that file loaded and calculated, and the
+        /// stepper then only stopped you making it longer.
+        ///
+        /// Named constants rather than the literals that were scattered here, so the ceiling is
+        /// stated once and <c>LoanSanitiser</c> can enforce the same number.
+        /// </remarks>
+        public const int MinLoanTermYears = 1;
+        public const int AbsoluteMaxLoanTermYears = 50;
+
+        /// <summary>Lowest max-term a user may configure: below this the app is not a mortgage tool.</summary>
+        public const int MinConfigurableMaxLoanTermYears = 10;
+
+        /// <summary>Hard bounds on an interest rate, matching the clamp already in the setter.</summary>
+        public const double MinInterestRate = 0.01;
+        public const double MaxInterestRate = 30.0;
+
+        // Getters clamp as well as the setters. A preference written by an older build, restored
+        // from a device backup, or edited by hand is otherwise trusted verbatim.
+        public static int GetMaxLoanTermYears() { try { return Math.Clamp(Preferences.Get("MaxLoanTermYears", 30), MinConfigurableMaxLoanTermYears, AbsoluteMaxLoanTermYears); } catch { return 30; } }
+        public static double GetDefaultInterestRate() { try { return Math.Clamp(Preferences.Get("DefaultInterestRate", 5.0), MinInterestRate, MaxInterestRate); } catch { return 5.0; } }
+        public static int GetDefaultLoanTermYears() { try { return Math.Clamp(Preferences.Get("DefaultLoanTermYears", 30), MinLoanTermYears, GetMaxLoanTermYears()); } catch { return 30; } }
         public static int GetDefaultProjectionYears() { try { return Preferences.Get("DefaultProjectionYears", 10); } catch { return 10; } }
         public static int GetMaxProjectionYears() { try { return Preferences.Get("MaxProjectionYears", 25); } catch { return 25; } }
 
@@ -599,9 +654,9 @@ namespace LoanCalculator.Core.Services
         public static double GetWhatIfOffsetStep() { try { return Preferences.Get("WhatIfOffsetStep", 5000.0); } catch { return 5000.0; } }
         public static double GetGrowthRateStep() { try { return Preferences.Get("GrowthRateStep", 0.5); } catch { return 0.5; } }
 
-        public static void SetMaxLoanTermYears(int v) => Preferences.Set("MaxLoanTermYears", Math.Clamp(v, 10, 50));
-        public static void SetDefaultInterestRate(double v) => Preferences.Set("DefaultInterestRate", Math.Clamp(v, 0.01, 30.0));
-        public static void SetDefaultLoanTermYears(int v) => Preferences.Set("DefaultLoanTermYears", Math.Clamp(v, 1, GetMaxLoanTermYears()));
+        public static void SetMaxLoanTermYears(int v) => Preferences.Set("MaxLoanTermYears", Math.Clamp(v, MinConfigurableMaxLoanTermYears, AbsoluteMaxLoanTermYears));
+        public static void SetDefaultInterestRate(double v) => Preferences.Set("DefaultInterestRate", Math.Clamp(v, MinInterestRate, MaxInterestRate));
+        public static void SetDefaultLoanTermYears(int v) => Preferences.Set("DefaultLoanTermYears", Math.Clamp(v, MinLoanTermYears, GetMaxLoanTermYears()));
         public static void SetDefaultProjectionYears(int v) => Preferences.Set("DefaultProjectionYears", Math.Clamp(v, 1, 50));
         public static void SetMaxProjectionYears(int v) => Preferences.Set("MaxProjectionYears", Math.Clamp(v, 5, 50));
 

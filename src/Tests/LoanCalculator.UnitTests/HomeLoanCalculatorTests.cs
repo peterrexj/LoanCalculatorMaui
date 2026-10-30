@@ -136,13 +136,63 @@ namespace LoanCalculator.UnitTests
             Assert.That(result.TermInterestRate, Is.EqualTo(0.06 / 12).Within(0.000001));
         }
 
-        // ── CalculateHomeLoanPayments ────────────────────────────────────────
+        // ── CalculateHomeLoanPayments / BuildPaymentSchedule ─────────────────
+        //
+        // The per-payment schedule is no longer produced by CalculateHomeLoanPayments. It was
+        // building one object per payment across the whole term — 1,560 of them for a weekly
+        // 30-year loan — on a path that runs for every keystroke and every pixel of the deposit
+        // slider, and then discarding them unread. These tests ask for it explicitly, which is
+        // exactly what the amortisation builders now do.
+
+        /// <summary>Building the figures must NOT build the schedule — that is the whole point.</summary>
+        [Test]
+        public void CalculateHomeLoanPayments_DoesNotBuildTheSchedule()
+        {
+            var summary = HomeLoanCalculator.CalculateHomeLoanPayments(300000, MakeInput(5, 30, 52));
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(summary.PaymentTerms, Is.Empty,
+                    "the schedule was built on a path that discards it 99% of the time");
+                Assert.That(summary.Payment!.TermPayment, Is.GreaterThan(0),
+                    "the figures a caller actually wanted must still be there");
+                Assert.That(summary.ScheduleTotalPayments, Is.EqualTo(30 * 52),
+                    "the inputs needed to build the schedule later must be kept");
+            });
+        }
+
+        [Test]
+        public void BuildPaymentSchedule_IsIdempotent()
+        {
+            var summary = HomeLoanCalculator.CalculateHomeLoanPayments(300000, MakeInput(5, 25, 12));
+
+            HomeLoanCalculator.BuildPaymentSchedule(summary);
+            var afterFirst = summary.PaymentTerms!.Count;
+            HomeLoanCalculator.BuildPaymentSchedule(summary);
+
+            Assert.That(summary.PaymentTerms!.Count, Is.EqualTo(afterFirst),
+                "a second call must not append a second schedule");
+        }
+
+        /// <summary>The amortisation builder is the real consumer, and builds it itself.</summary>
+        [Test]
+        public void UpdateLoanPaymentAmortizationDataByYear_BuildsTheScheduleItself()
+        {
+            var summary = HomeLoanCalculator.CalculateHomeLoanPayments(300000, MakeInput(5, 25, 12));
+            Assume.That(summary.PaymentTerms, Is.Empty);
+
+            HomeLoanCalculator.UpdateLoanPaymentAmortizationDataByYear(summary);
+
+            Assert.That(summary.PaymentTerms, Is.Not.Empty,
+                "callers pass only a summary, so the builder has to produce the schedule it needs");
+        }
 
         [Test]
         public void CalculateHomeLoanPayments_TermCountMatchesLoanTerm()
         {
             var input = MakeInput(5, 25, 12);
             var summary = HomeLoanCalculator.CalculateHomeLoanPayments(300000, input);
+            HomeLoanCalculator.BuildPaymentSchedule(summary);
 
             Assert.That(summary.PaymentTerms.Count, Is.EqualTo(25 * 12));
         }
@@ -151,6 +201,7 @@ namespace LoanCalculator.UnitTests
         public void CalculateHomeLoanPayments_FirstPayment_HasCorrectStructure()
         {
             var summary = HomeLoanCalculator.CalculateHomeLoanPayments(300000, MakeInput(6, 30, 12));
+            HomeLoanCalculator.BuildPaymentSchedule(summary);
 
             var first = summary.PaymentTerms[0];
             Assert.That(first.TermNumber, Is.EqualTo(1));
@@ -164,6 +215,7 @@ namespace LoanCalculator.UnitTests
         public void CalculateHomeLoanPayments_InterestDecreasesPrincipalIncreasesOverTime()
         {
             var summary = HomeLoanCalculator.CalculateHomeLoanPayments(400000, MakeInput(5, 30, 12));
+            HomeLoanCalculator.BuildPaymentSchedule(summary);
 
             var first = summary.PaymentTerms[0];
             var last = summary.PaymentTerms[^1];
@@ -176,6 +228,7 @@ namespace LoanCalculator.UnitTests
         public void CalculateHomeLoanPayments_AllPaymentAmountsAreEqual()
         {
             var summary = HomeLoanCalculator.CalculateHomeLoanPayments(300000, MakeInput(5, 20, 12));
+            HomeLoanCalculator.BuildPaymentSchedule(summary);
             var firstPayment = summary.PaymentTerms[0].PaymentAmount;
 
             Assert.That(summary.PaymentTerms.All(t => Math.Abs(t.PaymentAmount - firstPayment) < 0.01), Is.True);
@@ -185,7 +238,11 @@ namespace LoanCalculator.UnitTests
         public void CalculateHomeLoanPayments_ZeroInterest_AllPrincipalNoInterest()
         {
             var summary = HomeLoanCalculator.CalculateHomeLoanPayments(120000, MakeInput(0, 10, 12));
+            HomeLoanCalculator.BuildPaymentSchedule(summary);
 
+            // Not.Empty first: All() on an empty list is vacuously true, so without this these two
+            // assertions would pass against a schedule that was never built.
+            Assert.That(summary.PaymentTerms, Is.Not.Empty);
             Assert.That(summary.PaymentTerms.All(t => t.InterestAmount == 0), Is.True);
             Assert.That(summary.PaymentTerms.All(t => t.PrincipalAmount > 0), Is.True);
         }

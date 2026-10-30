@@ -195,7 +195,7 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
         }
 
         [JsonIgnore]
-        public string StringMonthlyExpenseOnTopBox => ShowIncomeAfterPropertyExpense ? "Monthly and Property loan & expense" : "Monthly expenses";
+        public string StringMonthlyExpenseOnTopBox => ShowIncomeAfterPropertyExpense ? "Monthly, plus the loan & asset costs" : "Monthly expenses";
 
         [JsonIgnore]
         public string TotalMonthlySumExpenseWithComma
@@ -278,18 +278,21 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
             }
         }
 
+        // Both toggles are passed, because TotalMonthlyExpense applies them independently — the
+        // property deduction takes effect here whether or not the expenses one is on. Reading only
+        // the first left the caption claiming gross income over a figure that had already had the
+        // loan repayment taken off.
         [JsonIgnore]
         public string StringMonthlyTextOnTopBox =>
-            ShowIncomeAfterExpense ? "Monthly Income (after expenses)" : "Monthly Income";
+            DeductionCaption("Monthly Income", ShowIncomeAfterExpense, ShowIncomeAfterPropertyExpense);
 
         [JsonIgnore]
         public string StringYearlyTextOnTopBox =>
-            ShowIncomeAfterExpense ? "Yearly Income (after expenses)" : "Yearly Income";
+            DeductionCaption("Yearly Income", ShowIncomeAfterExpense, ShowIncomeAfterPropertyExpense);
 
         [JsonIgnore]
-        public string StringChartTitleText => ShowIncomeAfterExpense
-            ? "Income Growth Projection (after expense)"
-            : "Income Growth Projection";
+        public string StringChartTitleText =>
+            DeductionCaption("Income Growth Projection", ShowIncomeAfterExpense, ShowIncomeAfterPropertyExpense);
 
         [JsonIgnore] public string StringProjectionInfoText => ShowIncomeAfterExpense ? " after expense" : "";
 
@@ -323,6 +326,26 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
         [JsonIgnore]
         public string TotalYearlyIncomeWithComma =>
             TransactionRecords?.IncomeExpenseSummary == null ? "" : $"{TotalYearlyIncomeValue:N0}";
+
+        /// <summary>
+        /// True when the figure above is below zero, so the summary box can colour it.
+        /// </summary>
+        /// <remarks>
+        /// Both of these go negative routinely — they are income AFTER whatever the two switches
+        /// deduct, so anyone whose spending and loan repayment exceed their income sees a minus
+        /// here. They were rendering in the ordinary highlight colour, while the Summary tab's
+        /// equivalent figure was already coloured, so the same condition looked like a problem on
+        /// one tab and like a normal reading on another.
+        ///
+        /// The colouring belongs in the markup rather than here: a view model should not know
+        /// about colours, and the existing NegativeToHighlightColorConverter already resolves the
+        /// right per-theme key. All this has to provide is the condition.
+        /// </remarks>
+        [JsonIgnore]
+        public bool IsTotalMonthlyIncomeNegative => TotalMonthlyIncomeValue < 0;
+
+        [JsonIgnore]
+        public bool IsTotalYearlyIncomeNegative => TotalYearlyIncomeValue < 0;
 
         [JsonIgnore]
         public string TotalProjectedYearlyIncomeWithComma => TransactionRecords?.IncomeExpenseSummary.ProjectTotalYearlyWithComma ?? "";
@@ -503,6 +526,9 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
             OnPropertyChanged(nameof(IsExpenseDataFormReadyToSubmit));
             OnPropertyChanged(nameof(TotalMonthlyIncomeWithComma));
             OnPropertyChanged(nameof(TotalYearlyIncomeWithComma));
+            // The colour follows the sign, so it has to be raised with the figures themselves.
+            OnPropertyChanged(nameof(IsTotalMonthlyIncomeNegative));
+            OnPropertyChanged(nameof(IsTotalYearlyIncomeNegative));
             OnPropertyChanged(nameof(IncomeExpenseFrequencySelectedIndex));
             OnPropertyChanged(nameof(Transactions));
             OnPropertyChanged(nameof(FilteredTransactions));
@@ -517,34 +543,52 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
             ScheduleSave(() => SharedServiceCore.SaveData(this));
         }
 
+        private readonly object _projectionLock = new();
+
+        /// <remarks>
+        /// Serialised. Two paths recompute this and they overlap: the IncludeExpenses /
+        /// IncludePropertyExpenses setters each fire <c>_ = UpdateProjectionDataAsync()</c>, which
+        /// runs this on a thread-pool thread, while the What If page separately calls
+        /// RefreshProjection on the UI thread after setting the very same flag. Both call
+        /// <c>SumUpData()</c> on the shared TransactionRecords and then read the summary it
+        /// mutates, so without the lock one pass could read a half-updated total and publish a
+        /// projection computed from it.
+        ///
+        /// Surfaced by a unit test that toggled a switch and read the total back: it passed alone
+        /// and failed about one run in four in the suite. The lock is safe to hold here — the body
+        /// has no awaits and builds at most a few dozen rows.
+        /// </remarks>
         public void UpdateProjectionData()
         {
-            if (PageHelper.IsFormLoading) return;
-
-            if (SharedServiceCore.LoadSafe || TransactionRecords == null) return;
-
-            double expenses = 0;
-            if (IncludeExpenses && ExpenseSummary != null)
+            lock (_projectionLock)
             {
-                expenses = ExpenseSummary?.TransactionRecords?.IncomeExpenseSummary?.TotalYearly ?? 0;
-            }
+                if (PageHelper.IsFormLoading) return;
 
-            if (IncludePropertyExpenses)
-            {
-                if (PropertyExpenseSummary != null)
+                if (SharedServiceCore.LoadSafe || TransactionRecords == null) return;
+
+                double expenses = 0;
+                if (IncludeExpenses && ExpenseSummary != null)
                 {
-                    expenses += PropertyExpenseSummary?.TotalYearly ?? 0;
-                }
-                if (PropertyPayment != null)
-                {
-                    expenses += PropertyPayment?.TermPaymentYearly ?? 0;
+                    expenses = ExpenseSummary?.TransactionRecords?.IncomeExpenseSummary?.TotalYearly ?? 0;
                 }
 
-            }
+                if (IncludePropertyExpenses)
+                {
+                    if (PropertyExpenseSummary != null)
+                    {
+                        expenses += PropertyExpenseSummary?.TotalYearly ?? 0;
+                    }
+                    if (PropertyPayment != null)
+                    {
+                        expenses += PropertyPayment?.TermPaymentYearly ?? 0;
+                    }
 
-            TransactionRecords.SumUpData();
-            HomeLoanCalculator.UpdateIncomeExpenseProjectionDataByYear(TransactionRecords.IncomeExpenseSummary,
-                personalExpense: expenses);
+                }
+
+                TransactionRecords.SumUpData();
+                HomeLoanCalculator.UpdateIncomeExpenseProjectionDataByYear(TransactionRecords.IncomeExpenseSummary,
+                    personalExpense: expenses);
+            }
         }
 
         public void TriggerPropertyChangedOnProjectionTab()

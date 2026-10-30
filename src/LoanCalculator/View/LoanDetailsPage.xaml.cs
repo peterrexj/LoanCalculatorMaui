@@ -56,6 +56,37 @@ public partial class LoanDetailsPage : ContentPage
         PopulateAll();
 
         _loanViewModel.PropertyChanged += OnLoanViewModelPropertyChanged;
+
+        BeginLiveEdit();
+    }
+
+    /// <summary>
+    /// Balances <see cref="LoanViewModel.BeginLiveEdit"/> against
+    /// <see cref="LoanViewModel.EndLiveEdit"/> from this page.
+    /// </summary>
+    /// <remarks>
+    /// A page-local flag rather than trusting OnAppearing and OnDisappearing to arrive in strict
+    /// alternation. The depth counter in the view model is shared, so one unmatched Begin would
+    /// leave the whole app coalescing its loan notifications for the rest of the session — which
+    /// presents as figures that silently never update on any screen, a far worse bug than the
+    /// typing lag this is here to fix.
+    /// </remarks>
+    private bool _liveEditActive;
+
+    private void BeginLiveEdit()
+    {
+        if (_liveEditActive) return;
+
+        _liveEditActive = true;
+        _loanViewModel.BeginLiveEdit();
+    }
+
+    private void EndLiveEdit()
+    {
+        if (!_liveEditActive) return;
+
+        _liveEditActive = false;
+        _loanViewModel.EndLiveEdit();
     }
 
     protected override void OnDisappearing()
@@ -63,6 +94,11 @@ public partial class LoanDetailsPage : ContentPage
         base.OnDisappearing();
 
         _loanViewModel.PropertyChanged -= OnLoanViewModelPropertyChanged;
+
+        // After unsubscribing: this flushes the single coalesced notification pass covering
+        // everything typed while the page was open, and this page is on its way out so it does not
+        // want to hear about it. The pages behind it do.
+        EndLiveEdit();
 
         // Fallback for dismissal routes this page does not drive — the iPad/MacCatalyst sheet
         // swipe, or an exception between push and pop. TrySetResult means a real outcome wins.

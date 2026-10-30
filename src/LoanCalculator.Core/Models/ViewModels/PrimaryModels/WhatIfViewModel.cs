@@ -72,8 +72,8 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
             var newTotal = newMonthly * BaseTerm * 12;
             var diff = newMonthly - BaseMonthlyRepayment;
             RateChangeDiffIsPositive = diff > 0;
-            RateChangeMonthlyRepayment = $"{CurrencySymbol}{newMonthly:N0}/mo";
-            RateChangeMonthlyDiff = $"{diff.ToSignedCurrencyRounded()}/mo";
+            RateChangeMonthlyRepayment = $"{CurrencySymbol}{newMonthly:N0}";
+            RateChangeMonthlyDiff = $"{diff.ToSignedCurrencyRounded()}";
             RateChangeTotalInterest = $"{CurrencySymbol}{(newTotal - BaseLoanAmount):N0}";
 
             if (HasAffordabilityData && BaseMonthlySurplus != 0)
@@ -82,17 +82,17 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
                 RateChangeShowHeadroom = true;
                 if (newSurplus < 0)
                 {
-                    RateChangeHeadroom = $"Estimate: likely unaffordable — about {CurrencySymbol}{Math.Abs(newSurplus):N0}/mo over the budget you entered";
+                    RateChangeHeadroom = $"Estimate: likely unaffordable — about {CurrencySymbol}{Math.Abs(newSurplus):N0} monthly over the budget you entered";
                     RateChangeHeadroomStatus = 1;
                 }
                 else if (newSurplus < BaseMonthlySurplus * 0.25)
                 {
-                    RateChangeHeadroom = $"Estimate: tight — only about {CurrencySymbol}{newSurplus:N0}/mo headroom";
+                    RateChangeHeadroom = $"Estimate: tight — only about {CurrencySymbol}{newSurplus:N0} monthly headroom";
                     RateChangeHeadroomStatus = 0;
                 }
                 else
                 {
-                    RateChangeHeadroom = $"Estimate: about {CurrencySymbol}{newSurplus:N0}/mo headroom remaining";
+                    RateChangeHeadroom = $"Estimate: about {CurrencySymbol}{newSurplus:N0} monthly headroom remaining";
                     RateChangeHeadroomStatus = -1;
                 }
             }
@@ -245,7 +245,7 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
             {
                 var currentMonthly = HomeLoanCalculatorHelper.CalculateMonthlyRepayment(BaseLoanAmount, BaseRate, clamped);
                 var shorterMonthly = HomeLoanCalculatorHelper.CalculateMonthlyRepayment(BaseLoanAmount, BaseRate, shorter);
-                TermComparisonMonthlyDiff = $"{(shorterMonthly - currentMonthly).ToSignedCurrencyRounded()}/mo";
+                TermComparisonMonthlyDiff = $"{(shorterMonthly - currentMonthly).ToSignedCurrencyRounded()} monthly";
             }
             else
             {
@@ -348,7 +348,7 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
                     BasePropertyAmount * (1 - exactPct / 100.0), BaseRate, BaseTerm);
                 var higherMonthly = HomeLoanCalculatorHelper.CalculateMonthlyRepayment(
                     BasePropertyAmount * (1 - highPct / 100.0), BaseRate, BaseTerm);
-                DepositScenariosMonthlyDiff = $"{(higherMonthly - currentMonthly).ToSignedCurrencyRounded()}/mo";
+                DepositScenariosMonthlyDiff = $"{(higherMonthly - currentMonthly).ToSignedCurrencyRounded()} monthly";
             }
             else
             {
@@ -377,7 +377,7 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
         {
             var loan    = BasePropertyAmount * (1 - pct);
             var monthly = HomeLoanCalculatorHelper.CalculateMonthlyRepayment(loan, BaseRate, BaseTerm);
-            return ($"{pct * 100:0}%", $"{CurrencySymbol}{loan:N0}", $"{CurrencySymbol}{monthly:N0}/mo");
+            return ($"{pct * 100:0}%", $"{CurrencySymbol}{loan:N0}", $"{CurrencySymbol}{monthly:N0} monthly");
         }
 
         private (string label, string loan, string monthly) BuildDepositColumnExact(double pct)
@@ -386,7 +386,7 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
             var monthly = HomeLoanCalculatorHelper.CalculateMonthlyRepayment(loan, BaseRate, BaseTerm);
             var pctDisplay = pct * 100;
             var label = pctDisplay % 1 == 0 ? $"{pctDisplay:0}%" : $"{pctDisplay:0.#}%";
-            return (label, $"{CurrencySymbol}{loan:N0}", $"{CurrencySymbol}{monthly:N0}/mo");
+            return (label, $"{CurrencySymbol}{loan:N0}", $"{CurrencySymbol}{monthly:N0} monthly");
         }
 
         // ── Scenario 5: Lump Sum Payment ─────────────────────────────────
@@ -462,21 +462,21 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
             var monthly = HomeLoanCalculatorHelper.CalculateMonthlyRepayment(BaseLoanAmount, BaseRate, BaseTerm);
 
             // Monthly baseline — always 0 savings (it is the reference)
-            FreqMonthlyPayment   = $"{CurrencySymbol}{monthly:N0}/mo";
+            FreqMonthlyPayment   = $"{CurrencySymbol}{monthly:N0}";
             FreqMonthlyTimeSaved = "0yr";
             FreqMonthlyIntSaved  = $"{CurrencySymbol}0";
 
             // Fortnightly: half monthly × 26 = 13 months/yr (real-world fortnightly saving)
             var fort = monthly / 2.0;
             var (fortMonths, fortInt) = HomeLoanCalculatorHelper.SimulateFrequency(BaseLoanAmount, BaseRate, BaseTerm, fort, 26);
-            FreqFortPayment   = $"{CurrencySymbol}{fort:N0}/fn";
+            FreqFortPayment   = $"{CurrencySymbol}{fort:N0}";
             FreqFortTimeSaved = fortMonths % 12 > 0 ? $"{fortMonths / 12}yr {fortMonths % 12}mo" : $"{fortMonths / 12}yr";
             FreqFortIntSaved  = $"{CurrencySymbol}{fortInt:N0}";
 
             // Weekly: quarter monthly × 52 = 13 months/yr
             var week = monthly / 4.0;
             var (weekMonths, weekInt) = HomeLoanCalculatorHelper.SimulateFrequency(BaseLoanAmount, BaseRate, BaseTerm, week, 52);
-            FreqWeeklyPayment   = $"{CurrencySymbol}{week:N0}/wk";
+            FreqWeeklyPayment   = $"{CurrencySymbol}{week:N0}";
             FreqWeeklyTimeSaved = weekMonths % 12 > 0 ? $"{weekMonths / 12}yr {weekMonths % 12}mo" : $"{weekMonths / 12}yr";
             FreqWeeklyIntSaved  = $"{CurrencySymbol}{weekInt:N0}";
 
@@ -538,7 +538,7 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
 
             // Monthly interest saving = offset × monthly rate
             var monthlySaving = effectiveBalance * r;
-            OffsetMonthlySaving = $"{CurrencySymbol}{monthlySaving:N0}/mo";
+            OffsetMonthlySaving = $"{CurrencySymbol}{monthlySaving:N0}";
 
             // Simulate payoff: apply normal payment to reduced effective balance
             var (monthsSaved, interestSaved) = HomeLoanCalculatorHelper.SimulateOffset(BaseLoanAmount, effectiveRate, BaseTerm, effectiveBalance);
@@ -610,7 +610,7 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
             StressTestRateBuffer = rateBuffer > 0
                 ? $"+{rateBuffer:0.##}% buffer (est.)"
                 : $"{rateBuffer:0.##}% over est. limit";
-            StressTestCurrentSurplus = $"{CurrencySymbol}{BaseMonthlySurplus:N0}/mo";
+            StressTestCurrentSurplus = $"{CurrencySymbol}{BaseMonthlySurplus:N0}";
 
             StressTestRisk = rateBuffer >= 2.0 ? -1 : rateBuffer >= 1.0 ? 0 : 1;
 
@@ -729,7 +729,7 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
             CombinedFrequencyPayment = $"{CurrencySymbol}{periodicPayment:N0}/{freqLabel}";
 
             // Formatted display values with currency symbol
-            CombinedExtraDisplay  = $"{CurrencySymbol}{_combinedExtraMonthly:N0}/mo";
+            CombinedExtraDisplay  = $"{CurrencySymbol}{_combinedExtraMonthly:N0} monthly";
             CombinedLumpDisplay   = $"{CurrencySymbol}{_combinedLumpSum:N0}";
             CombinedOffsetDisplay = $"{CurrencySymbol}{_combinedOffset:N0}";
 
@@ -858,15 +858,14 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
         public string TermComparisonInYourCase =>
             !HasLoanData || !HasFigure(TermComparisonMonthlyDiff)
                 ? NoFigureYet
-                : $"Across the terms shown, the repayment differs by {TermComparisonMonthlyDiff} a "
-                  + "month — that is what the extra years buy you, and cost you.";
+                : $"Across the terms shown, the repayment differs by {TermComparisonMonthlyDiff} — "
+                  + "that is what the extra years buy you, and cost you.";
 
         [JsonIgnore]
         public string DepositScenariosInYourCase =>
             !HasLoanData || !HasFigure(DepositScenariosMonthlyDiff)
                 ? NoFigureYet
-                : $"Across the deposits shown, the repayment differs by {DepositScenariosMonthlyDiff} "
-                  + "a month.";
+                : $"Across the deposits shown, the repayment differs by {DepositScenariosMonthlyDiff}.";
 
         [JsonIgnore]
         public string LumpSumInYourCase =>

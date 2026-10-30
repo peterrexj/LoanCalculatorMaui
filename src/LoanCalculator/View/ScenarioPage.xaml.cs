@@ -70,7 +70,16 @@ public partial class ScenarioPage : ContentPage
 
         ScenarioHost.Children.Clear();
         ScenarioHost.Children.Add(ViewFor(scenario));
-        ScenarioHost.Children.Add(new ScenarioExplainerView { Explanation = explanation });
+        var explainer = new ScenarioExplainerView { Explanation = explanation };
+
+        // PersonalLine is a property on the card now rather than a binding inside it, so the card
+        // can be reused on pages bound to a different view model. Bound rather than assigned so it
+        // keeps up as the user works the scenario's controls.
+        explainer.SetBinding(
+            ScenarioExplainerView.PersonalLineProperty,
+            static (WhatIfViewModel vm) => vm.ScenarioExplainLine);
+
+        ScenarioHost.Children.Add(explainer);
     }
 
     // ContentView rather than View: this file's own namespace is LoanCalculatorMaui.View, which

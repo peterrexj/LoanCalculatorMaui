@@ -60,6 +60,205 @@
              Phone="22" Tablet="34" Desktop="34" TV="34" Watch="18" Default="22" />
 
     <!--
+        ═══════════════════════════════════════════════════════
+        Semantic text-size roles — Stage 1 of a font-size settings feature.
+        ═══════════════════════════════════════════════════════
+
+        WHY THESE EXIST, SEPARATELY FROM THE RAMP ABOVE. The eight FontSizeXxx tokens above are a
+        generic magnitude ramp — "the eleventh size", "the eighteenth size" — with no meaning
+        attached to WHICH size a given kind of text should use. Nothing stops two visually
+        equivalent elements picking different rungs of that ramp, and in practice several already
+        have: see the divergences called out below.
+
+        "LoanApp" PREFIX, DELIBERATELY. ThemeHandler.ClearAllResources/UpdateResources sweep any
+        resource key starting with "LoanApp" by STRING PREFIX ONLY — it does not check the value's
+        type, so the same mechanism that live-rebuilds every colour on a theme change can later
+        rebuild these on a font-SCALE change, without new plumbing. That is the entire point of
+        naming them this way now, a stage ahead of actually doing it.
+
+        WHAT STAGE 1 DOES, AND DELIBERATELY DOES NOT DO:
+          · Defines these five tokens, each given the value of whichever EXISTING, CENTRALLY-
+            DEFINED named style already represents that role most widely across the app — so
+            defining them changes nothing on screen yet.
+          · Repoints that small number of central styles (SpanThreeBoxAmountStyle,
+            SpanThreeBoxTextStyle, LabelThreeBoxTextStyle here; LabelHeaderDataGridCell and
+            LabelInsideDataGridCell in Theme.CommonDataGridStyles.xaml) at these tokens via
+            DynamicResource instead of their own literal OnIdiom. Safe and zero-visual-change
+            because the chosen canonical values are copied FROM those exact styles' current
+            numbers — this is indirection, not a redesign.
+          · At the time this was written, did NOT touch any of the ~540 places across ~20 view
+            files that wrote FontSize="{StaticResource FontSizeXxx}" directly on an element, nor
+            the ~13 scattered inline ChartAxisLabelStyle/ChartLegendLabelStyle instances — those
+            were Stage 2, done afterwards one pattern-group at a time (Tiles, Information sections,
+            Charts & tables each surfaced real divergences that needed a human decision, not a
+            script — see the per-group tokens below). Once every group's divergences were found
+            and resolved, the remaining ~530 ALREADY-CORRECT literal sites were converted from
+            StaticResource to DynamicResource in one mechanical pass — same token, same value,
+            just reactive — since nothing further to decide was left in them by that point.
+          · Does NOT add the Settings control or make anything move at runtime. That is Stage 3,
+            and depends on every consumer having been migrated off the raw ramp first — a slider
+            that only moves the handful of things repointed so far would move some tiles and not
+            others, which is worse than not having the feature.
+
+        THE FIVE ROLES, AND WHERE EACH PATTERN GROUP FROM THE PLAN USES THEM:
+          Caption — Tiles' figure captions, (eventually) info-section micro-labels, forms
+          Body    — info-section explanatory copy, (eventually) general reading text
+          Value   — the big bold number in a tile
+          Label   — a data-grid column header / chart legend entry
+          Cell    — a data-grid cell value / chart axis tick label
+
+        DIVERGENCES FOUND DURING THIS AUDIT, NOT YET RESOLVED — read before migrating anything
+        onto these tokens in Stage 2:
+          · LoanView's "Asset Value" / "Total asset amount" highlight cards use literal
+            FontSizeBody (caption) / FontSizeLarge (value) — a DIFFERENT pair of numbers from the
+            SpanThreeBox family chosen as canonical below, for what is visually the same kind of
+            tile elsewhere in the app. Tablet: caption 18 vs 20 here, value 22 vs 32 here — the
+            value gap is not small. Deciding which one wins is a Stage 2 question, not this one.
+          · Syncfusion chart legends are FontSizeXS everywhere EXCEPT ExpenseView.xaml, which uses
+            FontSizeBody for the same ChartLegendLabelStyle — on an unreachable page (its
+            ShellContent is commented out, see "Navigation & Shell" in CLAUDE.md), but worth fixing
+            whenever that file is next touched regardless of this feature.
+          · ⓘ hints (InfoHintView) render their prompt, detail AND live-example line all at the
+            same FontSizeSmall — i.e. they currently have no Caption/Body distinction at all, unlike
+            ScenarioExplainerView's cards, which do (PopupFieldLabelStyle micro-labels at
+            FontSizeSmall, body copy at FontSizeBody). Worth a product decision in Stage 2, not an
+            assumption that one pattern was simply wrong.
+    -->
+
+    <!--  Caption — SpanThreeBoxTextStyle / LabelThreeBoxTextStyle's number, the tile-caption
+          pattern shared by every summary box in the app (Budget, Loan, What If).  -->
+    <OnIdiom x:Key="LoanAppTextCaption"
+             x:TypeArguments="x:Double"
+             Phone="12" Tablet="20" Desktop="16" TV="16" Watch="10" Default="12" />
+
+    <!--  Body — identical to FontSizeBody today; this token exists so Stage 2 can repoint
+          ScenarioExplainerView's body copy at it with a provably zero-value change.  -->
+    <OnIdiom x:Key="LoanAppTextBody"
+             x:TypeArguments="x:Double"
+             Phone="12" Tablet="18" Desktop="18" TV="18" Watch="10" Default="12" />
+
+    <!--
+        Caption, information-sections flavour — ⓘ hints, expander sub-labels, switch
+        micro-labels. Deliberately its OWN token rather than reusing LoanAppTextCaption above:
+        that one was chosen from the Tiles pattern group's SpanThreeBoxTextStyle (12/20/16/16/10/
+        12), while every information-section caption already uses FontSizeSmall
+        (11/16/16/16/9/11) — a small but real difference, especially on tablet (16 vs 20). Decided
+        explicitly: keep the two separate rather than force information sections onto the tiles
+        number, so nothing here moves today. Both still move TOGETHER once a scale control exists,
+        they simply do not have to be numerically identical to do that.
+    -->
+    <OnIdiom x:Key="LoanAppTextCaptionCompact"
+             x:TypeArguments="x:Double"
+             Phone="11" Tablet="16" Desktop="16" TV="16" Watch="9" Default="11" />
+
+    <!--
+        ═══════════════════════════════════════════════════════
+        Charts & tables — Stage 2, continued. LoanAppTextLabel/LoanAppTextCell further above
+        already cover the data-grid header/cell pair (repointed in Stage 1). These three cover
+        Syncfusion chart text, which is set on inline ChartAxisLabelStyle/ChartLegendLabelStyle
+        objects rather than a shared MAUI Style — so there was never one central definition to
+        repoint, only a dominant pattern across ~18 scattered sites to identify and anchor to.
+
+        Each kept as its OWN token rather than folded into LoanAppTextLabel/LoanAppTextCell,
+        following the same "keep separate when the numbers genuinely differ" call already made for
+        Information sections' captions: axis labels (12/18/18/18/10/12) are close to but not
+        identical to LoanAppTextCell (11/18/18/18/9/11); legend labels (10/15/15/15/8/10) are a
+        third distinct number again.
+    -->
+
+    <!--  Axis tick labels. FontSizeBody was the dominant pattern (9 of 11 sites found); the other
+          2 are What If ▸ Answer's small embedded chart, which keeps its own smaller FontSizeXS
+          untouched — plausibly a deliberate choice for a compact chart inside a tile, not drift,
+          so left alone rather than folded in here.  -->
+    <OnIdiom x:Key="LoanAppTextChartAxis"
+             x:TypeArguments="x:Double"
+             Phone="12" Tablet="18" Desktop="18" TV="18" Watch="10" Default="12" />
+
+    <!--  Legend entries. FontSizeXS was the dominant pattern (6 of 7 sites); the 7th
+          (ExpenseView's chart) used FontSizeBody instead, for no apparent reason — and ExpenseView
+          is unreachable (its ShellContent is commented out in AppShell.xaml, see "Navigation &amp;
+          Shell" in CLAUDE.md), so correcting it to match here carries zero live visual risk.  -->
+    <OnIdiom x:Key="LoanAppTextChartLegend"
+             x:TypeArguments="x:Double"
+             Phone="10" Tablet="15" Desktop="15" TV="15" Watch="8" Default="10" />
+
+    <!--  The small "YOUR DEPOSIT" / "YOUR TERM" / "MAX DEPOSIT" / "YOUR FREQUENCY" markers overlaid
+          on a scenario's chart to point at the user's own position. All 8 sites across 3 scenario
+          views used the identical bare literal FontSize="9" with no OnIdiom at all — one number,
+          not several to reconcile, so unlike the four hero figures this did not need a decision:
+          same fix, phone kept at 9, tablet given the scaling it never had.  -->
+    <OnIdiom x:Key="LoanAppTextChartMarker"
+             x:TypeArguments="x:Double"
+             Phone="9" Tablet="16" Desktop="16" TV="16" Watch="7" Default="9" />
+
+    <!--  Value — SpanThreeBoxAmountStyle's number, the big bold tile figure on every summary box
+          in the app. NOT FontSizeLarge/FontSizeXL — see the LoanView divergence noted above.  -->
+    <OnIdiom x:Key="LoanAppTextValue"
+             x:TypeArguments="x:Double"
+             Phone="18" Tablet="32" Desktop="32" TV="32" Watch="14" Default="18" />
+
+    <!--  Label — LabelHeaderDataGridCell's number, the data-grid column-header size. Defined here
+          with the other four roles, not in Theme.CommonDataGridStyles.xaml where that style
+          lives — one place for every size token, same as the original eight above. Both files are
+          merged into Application.Current.Resources, so the Setter there resolves this by key
+          regardless of which file defines it.  -->
+    <OnIdiom x:Key="LoanAppTextLabel"
+             x:TypeArguments="x:Double"
+             Phone="11" Tablet="20" Desktop="20" TV="20" Watch="9" Default="11" />
+
+    <!--  Cell — LabelInsideDataGridCell's number, the data-grid cell-value size.  -->
+    <OnIdiom x:Key="LoanAppTextCell"
+             x:TypeArguments="x:Double"
+             Phone="11" Tablet="18" Desktop="18" TV="18" Watch="9" Default="11" />
+
+    <!--
+        ═══════════════════════════════════════════════════════
+        One-off hero figures — Stage 2 of the Tiles pattern group, NOT shared roles.
+        ═══════════════════════════════════════════════════════
+
+        Four headline numbers were found as bare numeric literals — FontSize="32" with no OnIdiom
+        at all, not even a token — so each rendered at the SAME pixel size on a phone and on a
+        tablet, while every other sized element in the app scales up. None of the three "big
+        figure" numbers (32/28/30) matched each other either, so they could not simply be pointed
+        at the shared LoanAppTextValue role from the Tiles tokens above without shrinking every one
+        of them on a phone (the dominant device) before any scale control exists to justify that.
+
+        Decision made explicitly for these four (not inferred): keep each one's current phone size
+        exactly as it renders today, and give each the OnIdiom scaling it was missing, using
+        roughly the same ~1.78x phone-to-tablet ratio LoanAppTextValue above already uses, so the
+        new tablet numbers sit in the same family rather than being invented from nothing. Each
+        stays its OWN token — not merged into LoanAppTextValue — because unlike that token's
+        three-box pattern, these four numbers never matched each other and have no reason to.
+
+        NOT part of the five semantic roles further up this file. These are named for what they
+        are (a specific hero figure) rather than a reusable role, because unlike Caption/Body/
+        Value/Label/Cell, nothing else in the app is meant to share these sizes. Still "LoanApp"-
+        prefixed, so a future scale control can still find and rebuild them the same way.
+    -->
+
+    <!--  Budget ▸ Summary's "NET EVERY MONTH" hero figure.  -->
+    <OnIdiom x:Key="LoanAppTextHeroNet"
+             x:TypeArguments="x:Double"
+             Phone="32" Tablet="56" Desktop="56" TV="56" Watch="25" Default="32" />
+
+    <!--  Budget ▸ Asset costs' "LOAN AFFORDABILITY" verdict figure.  -->
+    <OnIdiom x:Key="LoanAppTextHeroVerdict"
+             x:TypeArguments="x:Double"
+             Phone="28" Tablet="50" Desktop="50" TV="50" Watch="22" Default="28" />
+
+    <!--  What If ▸ Answer's big "$X,XXX" headline figure.  -->
+    <OnIdiom x:Key="LoanAppTextHeroAnswer"
+             x:TypeArguments="x:Double"
+             Phone="30" Tablet="53" Desktop="53" TV="53" Watch="23" Default="30" />
+
+    <!--  What If ▸ Answer's "/mo spare" tail, sat next to the figure above — its own token
+          because it was never meant to equal any of the other three, only to sit beside this
+          specific one at a smaller weight.  -->
+    <OnIdiom x:Key="LoanAppTextHeroAnswerTail"
+             x:TypeArguments="x:Double"
+             Phone="15" Tablet="27" Desktop="27" TV="27" Watch="12" Default="15" />
+
+    <!--
         Tracking for uppercase labels, converted from app.css's em values at their own font size:
         `.section` is .08em on 11px ≈ 0.9, and `.fig .k` is .06em on 11px ≈ 0.7. MAUI
         CharacterSpacing is in device-independent units, not em, so these cannot be copied across
@@ -264,7 +463,11 @@
         <Setter Property="TextColor" Value="{DynamicResource LoanAppExpanderHeaderTextColor}" />
         <Setter Property="VerticalOptions" Value="Center" />
         <Setter Property="VerticalTextAlignment" Value="Center" />
-        <Setter Property="FontSize" Value="{StaticResource FontSizeBody}" />
+        <!--  Stage 2 of the font-size feature (Information sections group): routed through the
+              Body role token. This is an expander HEADER title, closer to a heading than reading
+              copy — but it is numerically identical to FontSizeBody today, so sharing that token
+              costs nothing and is simpler than inventing a role for one style.  -->
+        <Setter Property="FontSize" Value="{DynamicResource LoanAppTextBody}" />
         <Setter Property="FontFamily" Value="{DynamicResource DefaultFontFamily}" />
     </Style>
 
@@ -278,7 +481,8 @@
     -->
     <Style x:Key="ExpanderHeaderSubLabelStyle" TargetType="Label">
         <Setter Property="Margin" Value="15,0,0,4" />
-        <Setter Property="FontSize" Value="{StaticResource FontSizeSmall}" />
+        <!--  Stage 2 (Information sections group): routed through the compact Caption role.  -->
+        <Setter Property="FontSize" Value="{DynamicResource LoanAppTextCaptionCompact}" />
         <Setter Property="FontFamily" Value="{DynamicResource DefaultFontFamily}" />
         <Setter Property="Opacity" Value="0.75" />
         <Setter Property="TextColor" Value="{DynamicResource LoanAppExpanderHeaderTextColor}" />
@@ -300,7 +504,7 @@
     <!--  Tab Item  -->
     <Style TargetType="tabView:SfTabItem">
         <Setter Property="FontFamily" Value="{DynamicResource DefaultFontFamily}" />
-        <Setter Property="FontSize" Value="{StaticResource FontSizeXS}" />
+        <Setter Property="FontSize" Value="{DynamicResource FontSizeXS}" />
 
         <Setter Property="VisualStateManager.VisualStateGroups">
             <VisualStateGroupList>
@@ -335,7 +539,7 @@
             <Setter.Value>
                 <core:LabelStyle
                     FontFamily="{DynamicResource DefaultFontFamily}"
-                    FontSize="{StaticResource FontSizeLarge}"
+                    FontSize="{DynamicResource FontSizeLarge}"
                     TextColor="{DynamicResource LoanAppInputTextFgColor}" />
             </Setter.Value>
         </Setter>
@@ -430,7 +634,7 @@
     <Style x:Key="InsightsChartDataLabelStyle" TargetType="chart:ChartDataLabelStyle">
         <Setter Property="FontAttributes" Value="Bold" />
         <Setter Property="FontFamily" Value="{DynamicResource DefaultFontFamily}" />
-        <Setter Property="FontSize" Value="{StaticResource FontSizeXS}" />
+        <Setter Property="FontSize" Value="{DynamicResource FontSizeXS}" />
         <Setter Property="LabelFormat" Value="c" />
         <Setter Property="TextColor" Value="{DynamicResource LoanAppChartDataMarkerTextColor}" />
     </Style>
@@ -466,7 +670,8 @@
         in the Text itself, not a TextTransform, so it stays visible in the markup.
     -->
     <Style x:Key="PopupFieldLabelStyle" TargetType="Label">
-        <Setter Property="FontSize" Value="{StaticResource FontSizeSmall}" />
+        <!--  Stage 2 (Information sections group): routed through the compact Caption role.  -->
+        <Setter Property="FontSize" Value="{DynamicResource LoanAppTextCaptionCompact}" />
         <Setter Property="CharacterSpacing" Value="0.7" />
         <Setter Property="Opacity" Value="0.45" />
         <Setter Property="TextColor" Value="{DynamicResource LoanAppDefaultForegroundColor}" />
@@ -518,13 +723,13 @@
     <!--  `.card-foot .lead` — the figure the foot exists to state.  -->
     <Style x:Key="FormCardFootLeadStyle" TargetType="Label">
         <Setter Property="FontAttributes" Value="Bold" />
-        <Setter Property="FontSize" Value="{StaticResource FontSizeLarge}" />
+        <Setter Property="FontSize" Value="{DynamicResource FontSizeLarge}" />
         <Setter Property="TextColor" Value="{DynamicResource LoanAppDefaultForegroundColor}" />
     </Style>
 
     <!--  `.card-foot .sub` — the secondary framing or breakdown beside it.  -->
     <Style x:Key="FormCardFootSubStyle" TargetType="Label">
-        <Setter Property="FontSize" Value="{StaticResource FontSizeSmall}" />
+        <Setter Property="FontSize" Value="{DynamicResource FontSizeSmall}" />
         <Setter Property="Opacity" Value="0.55" />
         <Setter Property="TextColor" Value="{DynamicResource LoanAppDefaultForegroundColor}" />
     </Style>
@@ -534,7 +739,7 @@
           the form as a whole, which belong in the foot.  -->
     <Style x:Key="PopupFieldHintStyle" TargetType="Label">
         <Setter Property="Margin" Value="0,4,0,0" />
-        <Setter Property="FontSize" Value="{StaticResource FontSizeSmall}" />
+        <Setter Property="FontSize" Value="{DynamicResource FontSizeSmall}" />
         <Setter Property="Opacity" Value="0.45" />
         <Setter Property="TextColor" Value="{DynamicResource LoanAppDefaultForegroundColor}" />
     </Style>
@@ -555,7 +760,7 @@
         <Setter Property="HeightRequest" Value="48" />
         <Setter Property="CornerRadius" Value="12" />
         <Setter Property="FontAttributes" Value="Bold" />
-        <Setter Property="FontSize" Value="{StaticResource FontSizeLarge}" />
+        <Setter Property="FontSize" Value="{DynamicResource FontSizeLarge}" />
         <Setter Property="FontFamily" Value="{DynamicResource DefaultFontFamily}" />
         <Setter Property="BackgroundColor" Value="{DynamicResource LoanAppNavigationButtonBackgroundColor}" />
         <Setter Property="TextColor" Value="{DynamicResource LoanAppNavigationButtonIconColor}" />
@@ -566,7 +771,7 @@
         <Setter Property="BackgroundColor" Value="Transparent" />
         <Setter Property="CornerRadius" Value="12" />
         <Setter Property="HeightRequest" Value="48" />
-        <Setter Property="FontSize" Value="{StaticResource FontSizeBody}" />
+        <Setter Property="FontSize" Value="{DynamicResource FontSizeBody}" />
         <Setter Property="FontFamily" Value="{DynamicResource DefaultFontFamily}" />
         <Setter Property="TextColor" Value="{DynamicResource LoanAppDefaultForegroundColor}" />
     </Style>
@@ -575,7 +780,7 @@
     <Style x:Key="PopupDismissButtonStyle" TargetType="Button">
         <Setter Property="Text" Value="✕" />
         <Setter Property="BackgroundColor" Value="Transparent" />
-        <Setter Property="FontSize" Value="{StaticResource FontSizeXL}" />
+        <Setter Property="FontSize" Value="{DynamicResource FontSizeXL}" />
         <Setter Property="HeightRequest" Value="36" />
         <Setter Property="WidthRequest" Value="44" />
         <Setter Property="Padding" Value="0" />
@@ -587,7 +792,7 @@
     <!--  Inline validation error shown under a bordered input.  -->
     <Style x:Key="PopupErrorLabelStyle" TargetType="Label">
         <Setter Property="FontAttributes" Value="Italic" />
-        <Setter Property="FontSize" Value="{StaticResource FontSizeSmall}" />
+        <Setter Property="FontSize" Value="{DynamicResource FontSizeSmall}" />
         <Setter Property="Opacity" Value="0.8" />
         <Setter Property="TextColor" Value="{DynamicResource LoanAppInputErrorTextFgColor}" />
     </Style>
@@ -595,7 +800,7 @@
     <!--  Popup title (left side of the header row).  -->
     <Style x:Key="PopupTitleLabelStyle" TargetType="Label">
         <Setter Property="FontAttributes" Value="Bold" />
-        <Setter Property="FontSize" Value="{StaticResource FontSizeXL}" />
+        <Setter Property="FontSize" Value="{DynamicResource FontSizeXL}" />
         <Setter Property="VerticalOptions" Value="Center" />
         <Setter Property="TextColor" Value="{DynamicResource LoanAppDefaultForegroundColor}" />
     </Style>
@@ -625,7 +830,7 @@
         <Setter Property="BackgroundColor" Value="Transparent" />
         <Setter Property="Padding" Value="0" />
         <Setter Property="FontAttributes" Value="Bold" />
-        <Setter Property="FontSize" Value="{StaticResource FontSizeXL}" />
+        <Setter Property="FontSize" Value="{DynamicResource FontSizeXL}" />
         <Setter Property="WidthRequest" Value="36" />
         <Setter Property="HeightRequest" Value="36" />
         <Setter Property="VerticalOptions" Value="Center" />
@@ -688,7 +893,7 @@
         <Setter Property="TextHighlightMode" Value="MultipleOccurrence" />
         <Setter Property="TextSearchMode" Value="Contains" />
         <Setter Property="FontSize" Value="{OnIdiom Phone=14, Tablet=20, Desktop=20, TV=20, Watch=12, Default=14}" />
-        <Setter Property="DropDownItemFontSize" Value="{StaticResource FontSizeMedium}" />
+        <Setter Property="DropDownItemFontSize" Value="{DynamicResource FontSizeMedium}" />
         <Setter Property="NoResultsFoundTemplate">
             <Setter.Value>
                 <DataTemplate>
@@ -697,7 +902,7 @@
                             Margin="16,10"
                             FontAttributes="Italic"
                             FontFamily="{DynamicResource DefaultFontFamily}"
-                            FontSize="{StaticResource FontSizeBody}"
+                            FontSize="{DynamicResource FontSizeBody}"
                             Text="No matches found"
                             TextColor="{DynamicResource LoanAppAutoCompleteDropdownTextColor}" />
                     </Grid>
@@ -709,14 +914,14 @@
     <!--  Schedule decade rows. Plain labels now the schedule is expanders rather than an SfDataGrid.  -->
     <Style x:Key="LabelScheduleColumnHeader" TargetType="Label">
         <Setter Property="FontFamily" Value="{DynamicResource DefaultFontFamily}" />
-        <Setter Property="FontSize" Value="{StaticResource FontSizeXS}" />
+        <Setter Property="FontSize" Value="{DynamicResource FontSizeXS}" />
         <Setter Property="Opacity" Value="0.45" />
         <Setter Property="TextColor" Value="{DynamicResource LoanAppDefaultForegroundColor}" />
     </Style>
 
     <Style x:Key="LabelScheduleCell" TargetType="Label">
         <Setter Property="FontFamily" Value="{DynamicResource DefaultFontFamily}" />
-        <Setter Property="FontSize" Value="{StaticResource FontSizeSmall}" />
+        <Setter Property="FontSize" Value="{DynamicResource FontSizeSmall}" />
         <Setter Property="TextColor" Value="{DynamicResource LoanAppDefaultForegroundColor}" />
     </Style>
 
@@ -734,7 +939,7 @@
         BasedOn="{StaticResource SfAutocompleteStyle}"
         TargetType="editors:SfAutocomplete">
         <Setter Property="Margin" Value="0" />
-        <Setter Property="FontSize" Value="{StaticResource FontSizeBody}" />
+        <Setter Property="FontSize" Value="{DynamicResource FontSizeBody}" />
         <Setter Property="MinimumPrefixCharacters" Value="1" />
         <Setter Property="VerticalTextAlignment" Value="Center" />
     </Style>
@@ -745,8 +950,14 @@
         <Setter Property="DropDownItemFontFamily" Value="{DynamicResource DefaultFontFamily}" />
         <Setter Property="DropDownItemTextColor" Value="{DynamicResource LoanAppComboDropDownTextColor}" />
         <Setter Property="FontFamily" Value="{DynamicResource DefaultFontFamily}" />
-        <Setter Property="FontSize" Value="{OnIdiom Phone=14, Tablet=20, Desktop=20, TV=20, Watch=12, Default=14}" />
-        <Setter Property="DropDownItemFontSize" Value="{OnIdiom Phone=14, Tablet=20, Desktop=20, TV=20, Watch=12, Default=14}" />
+        <!--  Was a literal OnIdiom (14/20/20/20/12/14), not a token — so the combo's own text
+              (both the closed box and the dropdown rows) never moved with the Settings ▸ Text
+              size scale, only the row LABELS beside each combo did. Byte-identical to
+              FontSizeMedium, so pointing at it is zero visual change today and closes the gap
+              for all four combos on this page (Theme, Font, Currency, Text size's own labels
+              where still used elsewhere) at once.  -->
+        <Setter Property="FontSize" Value="{DynamicResource FontSizeMedium}" />
+        <Setter Property="DropDownItemFontSize" Value="{DynamicResource FontSizeMedium}" />
         <Setter Property="HighlightedTextColor" Value="{DynamicResource LoanAppComboHighlightedTextColor}" />
         <Setter Property="IsClearButtonVisible" Value="False" />
         <Setter Property="IsFilteringEnabled" Value="False" />
@@ -765,12 +976,17 @@
     <Style x:Key="SpanThreeBoxAmountStyle" TargetType="Span">
         <Setter Property="CharacterSpacing" Value="{OnIdiom Phone=-1, Tablet=0.5, Desktop=1, TV=1, Default=-1}" />
         <Setter Property="FontAttributes" Value="Bold" />
-        <Setter Property="FontSize" Value="{OnIdiom Phone=18, Tablet=32, Desktop=32, TV=32, Watch=14, Default=18}" />
+        <!--  Stage 1 of the font-size feature: routed through the Value role token instead of a
+              literal, so the number only has one place to live. Same number as before — see
+              LoanAppTextValue in the "Responsive size tokens" block above for why this specific
+              value was chosen as the canonical one.  -->
+        <Setter Property="FontSize" Value="{DynamicResource LoanAppTextValue}" />
     </Style>
     <Style x:Key="SpanThreeBoxTextStyle" TargetType="Span">
         <Setter Property="CharacterSpacing" Value="{OnIdiom Phone=-0.2, Tablet=0, Desktop=1, TV=1, Default=-0.2}" />
         <Setter Property="FontAttributes" Value="None" />
-        <Setter Property="FontSize" Value="{OnIdiom Phone=12, Tablet=20, Desktop=16, TV=16, Watch=10, Default=12}" />
+        <!--  Stage 1: routed through the Caption role token — see LoanAppTextCaption above.  -->
+        <Setter Property="FontSize" Value="{DynamicResource LoanAppTextCaption}" />
         <!--
             app.css `.boxes .lbl` is opacity 0.85 and this style has no equivalent, deliberately:
             Span is not a VisualElement, so it has no Opacity property at all. Matching it would
@@ -791,12 +1007,15 @@
     <Style x:Key="LabelThreeBoxAmountStyle" TargetType="Label">
         <Setter Property="CharacterSpacing" Value="{OnIdiom Phone=-1, Tablet=0.5, Desktop=1, TV=1, Default=-1}" />
         <Setter Property="FontAttributes" Value="Bold" />
-        <Setter Property="FontSize" Value="{OnIdiom Phone=18, Tablet=32, Desktop=32, TV=32, Watch=14, Default=18}" />
+        <!--  Kept in step with SpanThreeBoxAmountStyle's own Stage 1 change above — both now
+              point at the same LoanAppTextValue token rather than each carrying their own copy
+              of the number, which is the drift this comment already warns about.  -->
+        <Setter Property="FontSize" Value="{DynamicResource LoanAppTextValue}" />
         <Setter Property="TextColor" Value="{DynamicResource LoanAppHighlightFgColor}" />
     </Style>
     <Style x:Key="LabelThreeBoxTextStyle" TargetType="Label">
         <Setter Property="CharacterSpacing" Value="{OnIdiom Phone=-0.2, Tablet=0, Desktop=1, TV=1, Default=-0.2}" />
-        <Setter Property="FontSize" Value="{OnIdiom Phone=12, Tablet=20, Desktop=16, TV=16, Watch=10, Default=12}" />
+        <Setter Property="FontSize" Value="{DynamicResource LoanAppTextCaption}" />
         <Setter Property="Opacity" Value="0.85" />
         <Setter Property="TextColor" Value="{DynamicResource LoanAppHighlightFgColor}" />
     </Style>

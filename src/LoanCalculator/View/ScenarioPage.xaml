@@ -31,7 +31,7 @@
                     Padding="0"
                     BackgroundColor="Transparent"
                     Clicked="OnBack"
-                    FontSize="{StaticResource FontSizeXL}"
+                    FontSize="{DynamicResource FontSizeXL}"
                     HeightRequest="44"
                     Text="&#x2039;"
                     TextColor="{DynamicResource LoanAppDefaultForegroundColor}"

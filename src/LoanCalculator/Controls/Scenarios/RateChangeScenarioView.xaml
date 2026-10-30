@@ -35,12 +35,12 @@
                 <!--  Header  -->
                 <Label
                     FontAttributes="Bold"
-                    FontSize="{StaticResource FontSizeMedium}"
+                    FontSize="{DynamicResource FontSizeMedium}"
                     Text="Rate Change Impact"
                     TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
                 <Label
                     Margin="0,-6,0,0"
-                    FontSize="{StaticResource FontSizeSmall}"
+                    FontSize="{DynamicResource FontSizeSmall}"
                     Opacity="0.6"
                     Text="What happens if rates move?"
                     TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
@@ -54,7 +54,7 @@
                     StrokeThickness="0">
                     <HorizontalStackLayout Spacing="2" VerticalOptions="Center">
                         <Label
-                            FontSize="{StaticResource FontSizeSmall}"
+                            FontSize="{DynamicResource FontSizeSmall}"
                             Margin="6,0,0,0"
                             Opacity="0.7"
                             Text="Change:"
@@ -68,7 +68,7 @@
                             Style="{DynamicResource ScenarioStepperButtonStyle}" />
                         <Label
                             FontAttributes="Bold"
-                            FontSize="{StaticResource FontSizeLarge}"
+                            FontSize="{DynamicResource FontSizeLarge}"
                             HorizontalTextAlignment="Center"
                             MinimumWidthRequest="72"
                             AutomationId="WhatIfRateDeltaValue"
@@ -95,8 +95,8 @@
                     <!--  New Rate  -->
                     <Border Grid.Column="0" Padding="10,8" BackgroundColor="{DynamicResource LoanAppDefaultBackgroundColor}" StrokeShape="RoundRectangle 8" StrokeThickness="0">
                         <VerticalStackLayout Spacing="2">
-                            <Label FontSize="{StaticResource FontSizeSmall}" Opacity="0.6" Text="NEW RATE" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
-                            <Label AutomationId="WhatIfRateNewRate" FontAttributes="Bold" FontSize="{StaticResource FontSizeLarge}" Text="{Binding RateChangeNewRate}" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                            <Label FontSize="{DynamicResource FontSizeSmall}" Opacity="0.6" Text="NEW RATE" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                            <Label AutomationId="WhatIfRateNewRate" FontAttributes="Bold" FontSize="{DynamicResource FontSizeLarge}" Text="{Binding RateChangeNewRate}" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
                         </VerticalStackLayout>
                     </Border>
                     <!--  Monthly change — tinted amber (increase) or teal (saving)  -->
@@ -107,14 +107,14 @@
                             </DataTrigger>
                         </Border.Triggers>
                         <VerticalStackLayout Spacing="2">
-                            <Label FontSize="{StaticResource FontSizeSmall}" Opacity="0.85" Text="MONTHLY CHANGE" TextColor="{DynamicResource LoanAppChartDataMarkerTextColor2}">
+                            <Label FontSize="{DynamicResource FontSizeSmall}" Opacity="0.85" Text="MONTHLY CHANGE" TextColor="{DynamicResource LoanAppChartDataMarkerTextColor2}">
                                 <Label.Triggers>
                                     <DataTrigger Binding="{Binding RateChangeDiffIsPositive}" TargetType="Label" Value="False">
                                         <Setter Property="TextColor" Value="{DynamicResource LoanAppChartDataMarkerTextColor1}" />
                                     </DataTrigger>
                                 </Label.Triggers>
                             </Label>
-                            <Label FontAttributes="Bold" FontSize="{StaticResource FontSizeLarge}" Text="{Binding RateChangeMonthlyDiff}" TextColor="{DynamicResource LoanAppChartDataMarkerTextColor2}">
+                            <Label FontAttributes="Bold" FontSize="{DynamicResource FontSizeLarge}" Text="{Binding RateChangeMonthlyDiff}" TextColor="{DynamicResource LoanAppChartDataMarkerTextColor2}">
                                 <Label.Triggers>
                                     <DataTrigger Binding="{Binding RateChangeDiffIsPositive}" TargetType="Label" Value="False">
                                         <Setter Property="TextColor" Value="{DynamicResource LoanAppChartDataMarkerTextColor1}" />
@@ -132,14 +132,14 @@
                     </Grid.ColumnDefinitions>
                     <Border Grid.Column="0" Padding="10,8" BackgroundColor="{DynamicResource LoanAppDefaultBackgroundColor}" StrokeShape="RoundRectangle 8" StrokeThickness="0">
                         <VerticalStackLayout Spacing="2">
-                            <Label FontSize="{StaticResource FontSizeSmall}" Opacity="0.6" Text="NEW MONTHLY" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
-                            <Label AutomationId="WhatIfRateNewMonthly" FontAttributes="Bold" FontSize="{StaticResource FontSizeMedium}" Text="{Binding RateChangeMonthlyRepayment}" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                            <Label FontSize="{DynamicResource FontSizeSmall}" Opacity="0.6" Text="NEW MONTHLY" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                            <Label AutomationId="WhatIfRateNewMonthly" FontAttributes="Bold" FontSize="{DynamicResource FontSizeMedium}" Text="{Binding RateChangeMonthlyRepayment}" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
                         </VerticalStackLayout>
                     </Border>
                     <Border Grid.Column="1" Padding="10,8" BackgroundColor="{DynamicResource LoanAppDefaultBackgroundColor}" StrokeShape="RoundRectangle 8" StrokeThickness="0">
                         <VerticalStackLayout Spacing="2">
-                            <Label FontSize="{StaticResource FontSizeSmall}" Opacity="0.6" Text="TOTAL INTEREST" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
-                            <Label FontAttributes="Bold" FontSize="{StaticResource FontSizeMedium}" Text="{Binding RateChangeTotalInterest}" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                            <Label FontSize="{DynamicResource FontSizeSmall}" Opacity="0.6" Text="TOTAL INTEREST" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                            <Label FontAttributes="Bold" FontSize="{DynamicResource FontSizeMedium}" Text="{Binding RateChangeTotalInterest}" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
                         </VerticalStackLayout>
                     </Border>
                 </Grid>
@@ -157,8 +157,8 @@
                             <RowDefinition Height="220"/>
                         </Grid.RowDefinitions>
                         <Grid Grid.Row="0" Margin="0,0,0,4">
-                            <Label Text="Annual Repayment" HorizontalOptions="Start" FontSize="{StaticResource FontSizeXS}" TextColor="{DynamicResource LoanAppChartAxisTextColor}" Opacity="0.7"/>
-                            <Label Text="Remaining Balance" HorizontalOptions="End" FontSize="{StaticResource FontSizeXS}" TextColor="{DynamicResource LoanAppChartAxisTextColor}" Opacity="0.7"/>
+                            <Label Text="Annual Repayment" HorizontalOptions="Start" FontSize="{DynamicResource FontSizeXS}" TextColor="{DynamicResource LoanAppChartAxisTextColor}" Opacity="0.7"/>
+                            <Label Text="Remaining Balance" HorizontalOptions="End" FontSize="{DynamicResource FontSizeXS}" TextColor="{DynamicResource LoanAppChartAxisTextColor}" Opacity="0.7"/>
                         </Grid>
                         <chart:SfCartesianChart Grid.Row="1">
                             <chart:SfCartesianChart.Legend>
@@ -195,7 +195,7 @@
                     </Border.Triggers>
                     <Label
                         FontAttributes="Bold"
-                        FontSize="{StaticResource FontSizeSmall}"
+                        FontSize="{DynamicResource FontSizeSmall}"
                         Text="{Binding RateChangeHeadroom}"
                         TextColor="{DynamicResource LoanAppChartDataMarkerTextColor1}">
                         <Label.Triggers>

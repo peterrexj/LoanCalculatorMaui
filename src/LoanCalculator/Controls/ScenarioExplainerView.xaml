@@ -54,7 +54,7 @@
                     <Label
                         Margin="0,4,0,0"
                         AutomationId="ScenarioExplainerBody"
-                        FontSize="{StaticResource FontSizeBody}"
+                        FontSize="{DynamicResource LoanAppTextBody}"
                         Text="{Binding Explanation.Purpose, Source={x:Reference ExplainerRoot}}"
                         TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
 
@@ -68,7 +68,7 @@
                         <Label Style="{DynamicResource PopupFieldLabelStyle}" Text="FOR EXAMPLE" />
                         <Label
                             FontAttributes="Italic"
-                            FontSize="{StaticResource FontSizeBody}"
+                            FontSize="{DynamicResource LoanAppTextBody}"
                             Opacity="0.85"
                             Text="{Binding Explanation.Example, Source={x:Reference ExplainerRoot}}"
                             TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
@@ -93,11 +93,11 @@
                                 <VerticalStackLayout Spacing="1">
                                     <Label
                                         FontAttributes="Bold"
-                                        FontSize="{StaticResource FontSizeBody}"
+                                        FontSize="{DynamicResource LoanAppTextBody}"
                                         Text="{Binding Term}"
                                         TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
                                     <Label
-                                        FontSize="{StaticResource FontSizeBody}"
+                                        FontSize="{DynamicResource LoanAppTextBody}"
                                         Opacity="0.75"
                                         Text="{Binding Meaning}"
                                         TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
@@ -110,7 +110,7 @@
                     <Label Margin="0,16,0,0" Style="{DynamicResource PopupFieldLabelStyle}" Text="WHAT TO WATCH FOR" />
                     <Label
                         Margin="0,4,0,0"
-                        FontSize="{StaticResource FontSizeBody}"
+                        FontSize="{DynamicResource LoanAppTextBody}"
                         Opacity="0.85"
                         Text="{Binding Explanation.WatchFor, Source={x:Reference ExplainerRoot}}"
                         TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
@@ -141,7 +141,7 @@
                         x:Name="PersonalLineLabel"
                         AutomationId="ScenarioExplainerPersonalLine"
                         FontAttributes="Bold"
-                        FontSize="{StaticResource FontSizeBody}"
+                        FontSize="{DynamicResource LoanAppTextBody}"
                         Text="{Binding ScenarioExplainLine}"
                         TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
 

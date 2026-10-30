@@ -172,6 +172,110 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
             });
         }
 
+        /// <summary>
+        /// Translates <see cref="AppTextSize"/> to/from the plain display strings
+        /// <see cref="SelectedTextSize"/> exposes ("Extra Large", not "ExtraLarge") and that the
+        /// four tap chips on Settings compare against via DataTrigger.
+        /// </summary>
+        /// <remarks>
+        /// The Settings UI used to be a combo box bound to an <c>ObservableCollection&lt;string&gt;</c>
+        /// here (matching <c>Themes</c> above), but SfComboBoxStyle's shared search/highlight
+        /// behaviour matched "Large" as a substring of "Extra Large" and painted part of that row
+        /// in the selected colour — see the chip markup's own comment in SettingsView.xaml for the
+        /// full story. Moving to tap chips removed that collection; <see cref="SelectedTextSize"/>
+        /// itself, and these two translation methods, are unchanged by that.
+        /// </remarks>
+        private static string ToDisplay(AppTextSize size) => size switch
+        {
+            AppTextSize.Small => "Small",
+            AppTextSize.Default => "Default",
+            AppTextSize.Large => "Large",
+            AppTextSize.ExtraLarge => "Extra Large",
+            _ => size.ToString(),
+        };
+
+        private static AppTextSize FromDisplay(string? display) => display switch
+        {
+            "Small" => AppTextSize.Small,
+            "Large" => AppTextSize.Large,
+            "Extra Large" => AppTextSize.ExtraLarge,
+            _ => AppTextSize.Default,
+        };
+
+        [JsonIgnore] private string? _selectedTextSize;
+        [JsonIgnore]
+        public string? SelectedTextSize
+        {
+            get
+            {
+                if (_selectedTextSize == null)
+                {
+                    SharedServiceCore.GetAppTextSizeAsync().ContinueWith(task =>
+                    {
+                        if (task.IsFaulted || task.IsCanceled) return;
+                        _selectedTextSize = ToDisplay(task.Result);
+                        MainThread.BeginInvokeOnMainThread(() => OnPropertyChanged(nameof(SelectedTextSize)));
+                    });
+                    return ToDisplay(AppTextSize.Default);
+                }
+                return _selectedTextSize;
+            }
+            set
+            {
+                if (value == null || isUpdating || _selectedTextSize == value) return;
+                _selectedTextSize = value;
+                var size = FromDisplay(value);
+                MainThread.BeginInvokeOnMainThread(async () =>
+                {
+                    IsUpdating = true;
+
+                    // Blocks the page while FontScaleHandler.ApplyTextSize runs: that call writes
+                    // all 21 scalable font-size keys onto Application.Current.Resources, and every
+                    // DynamicResource consumer across the WHOLE app re-measures in response — not
+                    // just this page, every page already constructed this session. That is
+                    // noticeably slow once several tabs have been visited, and with nothing shown
+                    // meanwhile a tap on another chip mid-apply could race the first one.
+                    IsPageBusy = true;
+
+                    // A pause before the heavy call, not after setting IsPageBusy and going
+                    // straight into it: setting a bound IsVisible only QUEUES a render, so without
+                    // this the UI thread could run straight into ApplyTextSize before the overlay
+                    // has actually been composited and presented — the exact lesson
+                    // BusyOverlayView.RunWithScrimAsync already applied on What If's scrims.
+                    //
+                    // 50ms, not 1ms. 1ms is shorter than a single frame interval (≈16ms at 60fps),
+                    // and Task.Delay carries no guarantee of lining up with the display's own
+                    // render/composite cycle — so a 1ms pause could resume before the platform has
+                    // actually painted the overlay at all, which would explain the flicker still
+                    // being reported after ApplyTextSize itself was changed to yield internally:
+                    // yielding mid-loop cannot show a spinner that was never shown in the first
+                    // place. 50ms safely clears a frame or two regardless of device refresh rate,
+                    // matching the established pattern elsewhere in this app (Budget's OnAppearing
+                    // uses 100ms for the same reason; font family's own busy state uses 300ms).
+                    await Task.Delay(50);
+
+                    try
+                    {
+                        await SharedServiceCore.SetAppTextSizeAsync(size);
+                        await FontScaleHandler.ApplyTextSize(size);
+                        OnPropertyChanged(nameof(SelectedTextSize));
+
+                        // Symmetric with the pause before ApplyTextSize. ApplyTextSize's own loop
+                        // yields after each of the 21 writes, but a yield only guarantees the
+                        // message loop gets a turn — not that every cascading re-layout triggered
+                        // by the LAST write has actually finished painting by the time the loop
+                        // returns. Hiding the overlay immediately after could reveal the page
+                        // mid-reflow, which is the same "blank screen" symptom this whole busy
+                        // state exists to hide, just at the other end of the operation instead of
+                        // the start.
+                        await Task.Delay(50);
+                    }
+                    catch (Exception ex) { _errorHandlingService.HandleException(ex); }
+                    finally { IsUpdating = false; IsPageBusy = false; }
+                });
+            }
+        }
+
         #endregion
 
 

@@ -690,30 +690,6 @@ public partial class WhatIfView : ContentPage
         LblExpenseGrowthRate.Text = $"{_budgetViewModel.Expense.AnnualGrowthRate:0.##}%";
     }
 
-    /// <summary>
-    /// Opens or closes the Projection settings panel.
-    /// </summary>
-    /// <remarks>
-    /// Collapsed on arrival. The defaults are sensible, the results are what people come for, and
-    /// leaving the settings expanded is what pushed the chart and both tables out of sight in the
-    /// first place.
-    ///
-    /// The header's summary line keeps the closed state honest by naming every setting in force,
-    /// so this hides controls rather than information — see BudgetViewModel
-    /// .ProjectionSettingsSummary.
-    /// </remarks>
-    private void OnProjectionSettingsToggled(object? sender, TappedEventArgs e)
-    {
-        var show = !ProjectionSettingsPanel.IsVisible;
-
-        ProjectionSettingsPanel.IsVisible = show;
-
-        // ▾ invites a tap to open, ▴ to close. Plain glyphs rather than a rotation animation:
-        // CLAUDE.md records that a MAUI animation whose completion never arrives can park a task
-        // forever, and a disclosure chevron is not worth any of that risk.
-        ProjectionSettingsChevron.Text = show ? "▴" : "▾";
-    }
-
     private void OnProjectionYearsSliderChanged(object sender, EventArgs e)
     {
         if (sender is not Syncfusion.Maui.Sliders.SfSlider slider) return;

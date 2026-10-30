@@ -28,8 +28,8 @@
             <BoxView Grid.Column="0" BackgroundColor="{DynamicResource LoanAppChartColor1}" CornerRadius="12,0,12,0" />
             <VerticalStackLayout Grid.Column="1" Padding="14,14,14,16" Spacing="10">
 
-                <Label FontAttributes="Bold" FontSize="{StaticResource FontSizeMedium}" Text="Offset Account" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
-                <Label Margin="0,-6,0,0" FontSize="{StaticResource FontSizeSmall}" Opacity="0.6" Text="How much does your savings offset reduce your interest?" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                <Label FontAttributes="Bold" FontSize="{DynamicResource FontSizeMedium}" Text="Offset Account" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                <Label Margin="0,-6,0,0" FontSize="{DynamicResource FontSizeSmall}" Opacity="0.6" Text="How much does your savings offset reduce your interest?" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
 
                 <!--  Stepper pill  -->
                 <Border
@@ -39,13 +39,13 @@
                     StrokeShape="RoundRectangle 24"
                     StrokeThickness="0">
                     <HorizontalStackLayout Spacing="2" VerticalOptions="Center">
-                        <Label FontSize="{StaticResource FontSizeSmall}" Margin="6,0,0,0" Opacity="0.7" Text="Balance:" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" VerticalOptions="Center" />
+                        <Label FontSize="{DynamicResource FontSizeSmall}" Margin="6,0,0,0" Opacity="0.7" Text="Balance:" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" VerticalOptions="Center" />
                                                 <Button
                             Text="−"
                             Clicked="OnOffsetDecrease"
                             TextColor="{DynamicResource LoanAppChartColor1}"
                             Style="{DynamicResource ScenarioStepperButtonStyle}" />
-                        <Label FontAttributes="Bold" FontSize="{StaticResource FontSizeLarge}" HorizontalTextAlignment="Center" MinimumWidthRequest="96" Text="{Binding OffsetBalance, StringFormat='{0:N0}'}" TextColor="{DynamicResource LoanAppChartColor1}" VerticalOptions="Center" />
+                        <Label FontAttributes="Bold" FontSize="{DynamicResource FontSizeLarge}" HorizontalTextAlignment="Center" MinimumWidthRequest="96" Text="{Binding OffsetBalance, StringFormat='{0:N0}'}" TextColor="{DynamicResource LoanAppChartColor1}" VerticalOptions="Center" />
                                                 <Button
                             Text="+"
                             Clicked="OnOffsetIncrease"
@@ -62,13 +62,13 @@
                     StrokeShape="RoundRectangle 24"
                     StrokeThickness="0">
                     <HorizontalStackLayout Spacing="2" VerticalOptions="Center">
-                        <Label FontSize="{StaticResource FontSizeSmall}" Margin="6,0,0,0" Opacity="0.7" Text="Rate:" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" VerticalOptions="Center" />
+                        <Label FontSize="{DynamicResource FontSizeSmall}" Margin="6,0,0,0" Opacity="0.7" Text="Rate:" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" VerticalOptions="Center" />
                                                 <Button
                             Text="−"
                             Clicked="OnOffsetRateDecrease"
                             TextColor="{DynamicResource LoanAppChartColor1}"
                             Style="{DynamicResource ScenarioStepperButtonStyle}" />
-                        <Label FontAttributes="Bold" FontSize="{StaticResource FontSizeLarge}" HorizontalTextAlignment="Center" MinimumWidthRequest="72" Text="{Binding OffsetRate, StringFormat='{0:0.00}%'}" TextColor="{DynamicResource LoanAppChartColor1}" VerticalOptions="Center" />
+                        <Label FontAttributes="Bold" FontSize="{DynamicResource FontSizeLarge}" HorizontalTextAlignment="Center" MinimumWidthRequest="72" Text="{Binding OffsetRate, StringFormat='{0:0.00}%'}" TextColor="{DynamicResource LoanAppChartColor1}" VerticalOptions="Center" />
                                                 <Button
                             Text="+"
                             Clicked="OnOffsetRateIncrease"
@@ -86,23 +86,23 @@
                     </Grid.ColumnDefinitions>
                     <Border Grid.Column="0" Padding="10,10" BackgroundColor="{DynamicResource LoanAppChartColor1}" StrokeShape="RoundRectangle 8" StrokeThickness="0">
                         <VerticalStackLayout Spacing="2">
-                            <Label FontSize="{StaticResource FontSizeSmall}" Opacity="0.85" Text="TIME SAVED" TextColor="{DynamicResource LoanAppChartDataMarkerTextColor1}" />
-                            <Label FontAttributes="Bold" FontSize="{StaticResource FontSizeXL}" Text="{Binding OffsetTimeSaved}" TextColor="{DynamicResource LoanAppChartDataMarkerTextColor1}" />
+                            <Label FontSize="{DynamicResource FontSizeSmall}" Opacity="0.85" Text="TIME SAVED" TextColor="{DynamicResource LoanAppChartDataMarkerTextColor1}" />
+                            <Label FontAttributes="Bold" FontSize="{DynamicResource FontSizeXL}" Text="{Binding OffsetTimeSaved}" TextColor="{DynamicResource LoanAppChartDataMarkerTextColor1}" />
                         </VerticalStackLayout>
                     </Border>
                     <Border Grid.Column="1" Padding="10,10" BackgroundColor="{DynamicResource LoanAppChartColor1}" StrokeShape="RoundRectangle 8" StrokeThickness="0">
                         <VerticalStackLayout Spacing="2">
-                            <Label FontSize="{StaticResource FontSizeSmall}" Opacity="0.85" Text="INTEREST SAVED" TextColor="{DynamicResource LoanAppChartDataMarkerTextColor1}" />
-                            <Label FontAttributes="Bold" FontSize="{StaticResource FontSizeXL}" Text="{Binding OffsetInterestSaved}" TextColor="{DynamicResource LoanAppChartDataMarkerTextColor1}" />
+                            <Label FontSize="{DynamicResource FontSizeSmall}" Opacity="0.85" Text="INTEREST SAVED" TextColor="{DynamicResource LoanAppChartDataMarkerTextColor1}" />
+                            <Label FontAttributes="Bold" FontSize="{DynamicResource FontSizeXL}" Text="{Binding OffsetInterestSaved}" TextColor="{DynamicResource LoanAppChartDataMarkerTextColor1}" />
                         </VerticalStackLayout>
                     </Border>
                 </Grid>
 
                 <Border Padding="10,8" BackgroundColor="{DynamicResource LoanAppDefaultBackgroundColor}" StrokeShape="RoundRectangle 8" StrokeThickness="0">
                     <VerticalStackLayout Spacing="2">
-                        <Label FontSize="{StaticResource FontSizeSmall}" Opacity="0.6" Text="MONTHLY INTEREST SAVING" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
-                        <Label FontAttributes="Bold" FontSize="{StaticResource FontSizeMedium}" Text="{Binding OffsetMonthlySaving}" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
-                        <Label FontSize="{StaticResource FontSizeSmall}" Opacity="0.5" Text="{Binding OffsetRateNote}" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                        <Label FontSize="{DynamicResource FontSizeSmall}" Opacity="0.6" Text="MONTHLY INTEREST SAVING" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                        <Label FontAttributes="Bold" FontSize="{DynamicResource FontSizeMedium}" Text="{Binding OffsetMonthlySaving}" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                        <Label FontSize="{DynamicResource FontSizeSmall}" Opacity="0.5" Text="{Binding OffsetRateNote}" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
                     </VerticalStackLayout>
                 </Border>
 
@@ -118,7 +118,7 @@
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="200"/>
                         </Grid.RowDefinitions>
-                        <Label Grid.Row="0" Text="Loan Balance Over Time" FontSize="{StaticResource FontSizeXS}" TextColor="{DynamicResource LoanAppChartAxisTextColor}" Opacity="0.7" Margin="0,0,0,2"/>
+                        <Label Grid.Row="0" Text="Loan Balance Over Time" FontSize="{DynamicResource FontSizeXS}" TextColor="{DynamicResource LoanAppChartAxisTextColor}" Opacity="0.7" Margin="0,0,0,2"/>
                         <chart:SfCartesianChart Grid.Row="1">
                             <chart:SfCartesianChart.Legend>
                                 <chart:ChartLegend Placement="Bottom" LabelStyle="{chart:ChartLegendLabelStyle TextColor={DynamicResource LoanAppChartLegendTextColor}, FontSize=10}"/>

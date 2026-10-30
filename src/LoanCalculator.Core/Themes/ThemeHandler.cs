@@ -95,6 +95,7 @@ namespace LoanCalculator.Core.Themes
                 UpdateResources("LoanApp");
 
                 _ = LoadSavedFontFamilyAsync();
+                _ = LoadSavedTextSizeAsync();
             }
             catch (Exception e)
             {
@@ -158,6 +159,29 @@ namespace LoanCalculator.Core.Themes
                     if (Application.Current?.Resources != null)
                         Application.Current.Resources["DefaultFontFamily"] = fontFamily;
                 });
+            }
+            catch { }
+        }
+
+        /// <summary>
+        /// Re-applies the saved text-size scale every time this method runs — which is to say,
+        /// every theme load, not only at app startup.
+        /// </summary>
+        /// <remarks>
+        /// Has to run here, not just once: <c>LoadDefaultStyle</c> calls
+        /// <c>ClearAllResources("LoanApp")</c> on every theme switch, which strips any scaled
+        /// value this had previously written onto the 13 "LoanApp"-prefixed font-size keys — their
+        /// un-scaled default comes straight back the moment the freshly re-added
+        /// Theme.CommonStyles.xaml dictionary is merged in, a few lines above this call. Re-running
+        /// the scale afterwards is what makes a theme change not also silently reset text size.
+        /// See FontScaleHandler's own remarks for the full mechanism.
+        /// </remarks>
+        private async Task LoadSavedTextSizeAsync()
+        {
+            try
+            {
+                var size = await SharedServiceCore.GetAppTextSizeAsync();
+                await MainThread.InvokeOnMainThreadAsync(() => FontScaleHandler.ApplyTextSize(size));
             }
             catch { }
         }

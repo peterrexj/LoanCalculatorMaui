@@ -33,11 +33,11 @@
                 <Label
                     AutomationId="WhatIfPageTitle"
                     FontAttributes="Bold"
-                    FontSize="{StaticResource FontSizeHeading}"
+                    FontSize="{DynamicResource FontSizeHeading}"
                     Text="What If?"
                     TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
                 <Label
-                    FontSize="{StaticResource FontSizeSmall}"
+                    FontSize="{DynamicResource FontSizeSmall}"
                     Opacity="0.55"
                     Text="Explore scenarios based on your current loan"
                     TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
@@ -74,7 +74,7 @@
                             <VerticalStackLayout Spacing="4">
                                 <Label
                                     AutomationId="WhatIfAnswerVerdict"
-                                    FontSize="{StaticResource FontSizeBody}"
+                                    FontSize="{DynamicResource FontSizeBody}"
                                     Opacity="0.8"
                                     Text="{Binding AnswerVerdictCaption}"
                                     TextColor="{DynamicResource LoanAppHighlightFgColor}" />
@@ -105,16 +105,16 @@
                                             <Span
                                                 FontAttributes="Bold"
                                                 FontFamily="{DynamicResource DefaultFontFamily}"
-                                                FontSize="30"
+                                                FontSize="{DynamicResource LoanAppTextHeroAnswer}"
                                                 Text="{Binding AffordabilityCurrencySymbol}" />
                                             <Span
                                                 FontAttributes="Bold"
                                                 FontFamily="{DynamicResource DefaultFontFamily}"
-                                                FontSize="30"
+                                                FontSize="{DynamicResource LoanAppTextHeroAnswer}"
                                                 Text="{Binding Affordability}" />
                                             <Span
                                                 FontFamily="{DynamicResource DefaultFontFamily}"
-                                                FontSize="15"
+                                                FontSize="{DynamicResource LoanAppTextHeroAnswerTail}"
                                                 Text="{Binding AnswerSpareSuffix}" />
                                         </FormattedString>
                                     </Label.FormattedText>
@@ -128,14 +128,14 @@
                                 -->
                                 <Label
                                     AutomationId="WhatIfAnswerBasis"
-                                    FontSize="{StaticResource FontSizeSmall}"
+                                    FontSize="{DynamicResource FontSizeSmall}"
                                     Opacity="0.75"
                                     Text="{Binding AnswerSpareBasis}"
                                     TextColor="{DynamicResource LoanAppHighlightFgColor}" />
                             </VerticalStackLayout>
                         </Border>
                                 <Label
-                                    FontSize="{StaticResource FontSizeSmall}"
+                                    FontSize="{DynamicResource FontSizeSmall}"
                                     Margin="4,4,4,12"
                                     Opacity="0.5"
                                     Text="{DynamicResource LoanAppEstimateMicrocopy}"
@@ -211,7 +211,7 @@
                                 <!--  SCENARIOS  -->
                                 <Label
                                     Margin="4,4,4,6"
-                                    FontSize="{StaticResource FontSizeSmall}"
+                                    FontSize="{DynamicResource FontSizeSmall}"
                                     Opacity="0.45"
                                     Text="SCENARIOS"
                                     TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
@@ -235,10 +235,10 @@
                                     </Border.GestureRecognizers>
                                     <Grid ColumnDefinitions="*,Auto">
                                         <VerticalStackLayout Grid.Column="0" Spacing="2">
-                                            <Label FontAttributes="Bold" FontSize="{StaticResource FontSizeBody}" Text="See all 9 scenarios" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
-                                            <Label FontSize="{StaticResource FontSizeSmall}" Opacity="0.55" Text="Rate changes, extra repayments, stress tests and more" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                                            <Label FontAttributes="Bold" FontSize="{DynamicResource FontSizeBody}" Text="See all 9 scenarios" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                                            <Label FontSize="{DynamicResource FontSizeSmall}" Opacity="0.55" Text="Rate changes, extra repayments, stress tests and more" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
                                         </VerticalStackLayout>
-                                        <Label Grid.Column="1" FontSize="{StaticResource FontSizeXL}" Text="›" TextColor="{DynamicResource LoanAppTabIndicatorStrokeColor}" VerticalOptions="Center" />
+                                        <Label Grid.Column="1" FontSize="{DynamicResource FontSizeXL}" Text="›" TextColor="{DynamicResource LoanAppTabIndicatorStrokeColor}" VerticalOptions="Center" />
                                     </Grid>
                                 </Border>
 
@@ -263,7 +263,7 @@
                                 <Label
                                     x:Name="AnswerChartHeader"
                                     Margin="4,10,4,6"
-                                    FontSize="{StaticResource FontSizeSmall}"
+                                    FontSize="{DynamicResource FontSizeSmall}"
                                     IsVisible="False"
                                     Opacity="0.45"
                                     Text="WHERE THE MONEY GOES"
@@ -282,7 +282,7 @@
                                                     <chart:ChartLegend.LabelStyle>
                                                         <chart:ChartLegendLabelStyle
                                                             FontFamily="{DynamicResource DefaultFontFamily}"
-                                                            FontSize="{StaticResource FontSizeXS}"
+                                                            FontSize="{DynamicResource LoanAppTextChartLegend}"
                                                             TextColor="{DynamicResource LoanAppChartLegendTextColor}" />
                                                     </chart:ChartLegend.LabelStyle>
                                                 </chart:ChartLegend>
@@ -298,7 +298,7 @@
                                                     <chart:CategoryAxis.LabelStyle>
                                                         <chart:ChartAxisLabelStyle
                                                             FontFamily="{DynamicResource DefaultFontFamily}"
-                                                            FontSize="{StaticResource FontSizeXS}"
+                                                            FontSize="{DynamicResource FontSizeXS}"
                                                             TextColor="{DynamicResource LoanAppChartAxisTextColor}" />
                                                     </chart:CategoryAxis.LabelStyle>
                                                 </chart:CategoryAxis>
@@ -308,7 +308,7 @@
                                                     <chart:NumericalAxis.LabelStyle>
                                                         <chart:ChartAxisLabelStyle
                                                             FontFamily="{DynamicResource DefaultFontFamily}"
-                                                            FontSize="{StaticResource FontSizeXS}"
+                                                            FontSize="{DynamicResource FontSizeXS}"
                                                             TextColor="{DynamicResource LoanAppChartAxisTextColor}" />
                                                     </chart:NumericalAxis.LabelStyle>
                                                 </chart:NumericalAxis>
@@ -351,10 +351,10 @@
                                     </Border.GestureRecognizers>
                                     <Grid ColumnDefinitions="*,Auto">
                                         <VerticalStackLayout Grid.Column="0" Spacing="2">
-                                            <Label FontAttributes="Bold" FontSize="{StaticResource FontSizeBody}" Text="See the full schedule" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
-                                            <Label FontSize="{StaticResource FontSizeSmall}" Opacity="0.55" Text="Year-by-year principal and interest, now under Loan" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                                            <Label FontAttributes="Bold" FontSize="{DynamicResource FontSizeBody}" Text="See the full schedule" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                                            <Label FontSize="{DynamicResource FontSizeSmall}" Opacity="0.55" Text="Year-by-year principal and interest, now under Loan" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
                                         </VerticalStackLayout>
-                                        <Label Grid.Column="1" FontSize="{StaticResource FontSizeXL}" Text="›" TextColor="{DynamicResource LoanAppTabIndicatorStrokeColor}" VerticalOptions="Center" />
+                                        <Label Grid.Column="1" FontSize="{DynamicResource FontSizeXL}" Text="›" TextColor="{DynamicResource LoanAppTabIndicatorStrokeColor}" VerticalOptions="Center" />
                                     </Grid>
                                 </Border>
 
@@ -371,10 +371,10 @@
                                     </Border.GestureRecognizers>
                                     <Grid ColumnDefinitions="*,Auto">
                                         <VerticalStackLayout Grid.Column="0" Spacing="2">
-                                            <Label FontSize="{StaticResource FontSizeSmall}" Opacity="0.55" Text="EXPORT A PDF REPORT" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
-                                            <Label FontSize="{StaticResource FontSizeSmall}" Opacity="0.4" Text="Everything here, as a document" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                                            <Label FontSize="{DynamicResource FontSizeSmall}" Opacity="0.55" Text="EXPORT A PDF REPORT" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                                            <Label FontSize="{DynamicResource FontSizeSmall}" Opacity="0.4" Text="Everything here, as a document" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
                                         </VerticalStackLayout>
-                                        <Label Grid.Column="1" FontSize="{StaticResource FontSizeXL}" Text="›" TextColor="{DynamicResource LoanAppTabIndicatorStrokeColor}" VerticalOptions="Center" />
+                                        <Label Grid.Column="1" FontSize="{DynamicResource FontSizeXL}" Text="›" TextColor="{DynamicResource LoanAppTabIndicatorStrokeColor}" VerticalOptions="Center" />
                                     </Grid>
                                 </Border>
 
@@ -391,7 +391,7 @@
                             <Label
                                 IsVisible="{Binding HasLoanData}"
                                 Margin="0,0,0,18"
-                                FontSize="{StaticResource FontSizeSmall}"
+                                FontSize="{DynamicResource FontSizeSmall}"
                                 Opacity="0.5"
                                 Text="{DynamicResource LoanAppEstimateMicrocopy}"
                                 TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
@@ -406,12 +406,12 @@
                                 StrokeThickness="0">
                                 <VerticalStackLayout HorizontalOptions="Center" Spacing="8">
                                     <Label
-                                        FontSize="{StaticResource FontSizeLarge}"
+                                        FontSize="{DynamicResource FontSizeLarge}"
                                         HorizontalTextAlignment="Center"
                                         Text="No loan data yet"
                                         TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
                                     <Label
-                                        FontSize="{StaticResource FontSizeBody}"
+                                        FontSize="{DynamicResource FontSizeBody}"
                                         HorizontalTextAlignment="Center"
                                         Opacity="0.6"
                                         Text="Enter your asset value and loan details on the Loan tab first."
@@ -428,7 +428,7 @@
                                         Clicked="OnGoToLoanTapped"
                                         CornerRadius="10"
                                         FontAttributes="Bold"
-                                        FontSize="{StaticResource FontSizeBody}"
+                                        FontSize="{DynamicResource FontSizeBody}"
                                         HeightRequest="44"
                                         HorizontalOptions="Center"
                                         Padding="20,0"
@@ -466,11 +466,11 @@
                                         <VerticalStackLayout Grid.Column="0" Spacing="2">
                                             <Label
                                                 FontAttributes="Bold"
-                                                FontSize="{StaticResource FontSizeMedium}"
+                                                FontSize="{DynamicResource FontSizeMedium}"
                                                 Text="Rate change"
                                                 TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
                                             <Label
-                                                FontSize="{StaticResource FontSizeSmall}"
+                                                FontSize="{DynamicResource FontSizeSmall}"
                                                 Opacity="0.6"
                                                 Text="If rates move up or down"
                                                 TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
@@ -499,7 +499,7 @@
                                             Grid.Column="1"
                                             AutomationId="WhatIfScenarioRateChangeDelta"
                                             FontAttributes="Bold"
-                                            FontSize="{StaticResource FontSizeSmall}"
+                                            FontSize="{DynamicResource FontSizeSmall}"
                                             Text="{Binding RateChangeMonthlyDiff}"
                                             TextColor="{DynamicResource LoanAppChartColor2}"
                                             VerticalOptions="Center">
@@ -511,7 +511,7 @@
                                         </Label>
                                         <Label
                                             Grid.Column="2"
-                                            FontSize="{StaticResource FontSizeMedium}"
+                                            FontSize="{DynamicResource FontSizeMedium}"
                                             Opacity="0.4"
                                             Text="&#x203A;"
                                             TextColor="{DynamicResource LoanAppDefaultForegroundColor}"
@@ -535,11 +535,11 @@
                                         <VerticalStackLayout Grid.Column="0" Spacing="2">
                                             <Label
                                                 FontAttributes="Bold"
-                                                FontSize="{StaticResource FontSizeMedium}"
+                                                FontSize="{DynamicResource FontSizeMedium}"
                                                 Text="Extra repayment"
                                                 TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
                                             <Label
-                                                FontSize="{StaticResource FontSizeSmall}"
+                                                FontSize="{DynamicResource FontSizeSmall}"
                                                 Opacity="0.6"
                                                 Text="Pay more each month"
                                                 TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
@@ -548,13 +548,13 @@
                                             Grid.Column="1"
                                             AutomationId="WhatIfScenarioExtraRepaymentDelta"
                                             FontAttributes="Bold"
-                                            FontSize="{StaticResource FontSizeSmall}"
+                                            FontSize="{DynamicResource FontSizeSmall}"
                                             Text="{Binding ExtraRepaymentTimeSaved, StringFormat='-{0}'}"
                                             TextColor="{DynamicResource LoanAppChartColor1}"
                                             VerticalOptions="Center" />
                                         <Label
                                             Grid.Column="2"
-                                            FontSize="{StaticResource FontSizeMedium}"
+                                            FontSize="{DynamicResource FontSizeMedium}"
                                             Opacity="0.4"
                                             Text="&#x203A;"
                                             TextColor="{DynamicResource LoanAppDefaultForegroundColor}"
@@ -578,11 +578,11 @@
                                         <VerticalStackLayout Grid.Column="0" Spacing="2">
                                             <Label
                                                 FontAttributes="Bold"
-                                                FontSize="{StaticResource FontSizeMedium}"
+                                                FontSize="{DynamicResource FontSizeMedium}"
                                                 Text="Loan term"
                                                 TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
                                             <Label
-                                                FontSize="{StaticResource FontSizeSmall}"
+                                                FontSize="{DynamicResource FontSizeSmall}"
                                                 Opacity="0.6"
                                                 Text="Shorter term, higher payment"
                                                 TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
@@ -591,13 +591,13 @@
                                             Grid.Column="1"
                                             AutomationId="WhatIfScenarioTermComparisonDelta"
                                             FontAttributes="Bold"
-                                            FontSize="{StaticResource FontSizeSmall}"
+                                            FontSize="{DynamicResource FontSizeSmall}"
                                             Text="{Binding TermComparisonMonthlyDiff}"
                                             TextColor="{DynamicResource LoanAppChartColor2}"
                                             VerticalOptions="Center" />
                                         <Label
                                             Grid.Column="2"
-                                            FontSize="{StaticResource FontSizeMedium}"
+                                            FontSize="{DynamicResource FontSizeMedium}"
                                             Opacity="0.4"
                                             Text="&#x203A;"
                                             TextColor="{DynamicResource LoanAppDefaultForegroundColor}"
@@ -621,11 +621,11 @@
                                         <VerticalStackLayout Grid.Column="0" Spacing="2">
                                             <Label
                                                 FontAttributes="Bold"
-                                                FontSize="{StaticResource FontSizeMedium}"
+                                                FontSize="{DynamicResource FontSizeMedium}"
                                                 Text="Deposit"
                                                 TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
                                             <Label
-                                                FontSize="{StaticResource FontSizeSmall}"
+                                                FontSize="{DynamicResource FontSizeSmall}"
                                                 Opacity="0.6"
                                                 Text="What a bigger deposit changes"
                                                 TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
@@ -634,13 +634,13 @@
                                             Grid.Column="1"
                                             AutomationId="WhatIfScenarioDepositScenariosDelta"
                                             FontAttributes="Bold"
-                                            FontSize="{StaticResource FontSizeSmall}"
+                                            FontSize="{DynamicResource FontSizeSmall}"
                                             Text="{Binding DepositScenariosMonthlyDiff}"
                                             TextColor="{DynamicResource LoanAppChartColor1}"
                                             VerticalOptions="Center" />
                                         <Label
                                             Grid.Column="2"
-                                            FontSize="{StaticResource FontSizeMedium}"
+                                            FontSize="{DynamicResource FontSizeMedium}"
                                             Opacity="0.4"
                                             Text="&#x203A;"
                                             TextColor="{DynamicResource LoanAppDefaultForegroundColor}"
@@ -664,11 +664,11 @@
                                         <VerticalStackLayout Grid.Column="0" Spacing="2">
                                             <Label
                                                 FontAttributes="Bold"
-                                                FontSize="{StaticResource FontSizeMedium}"
+                                                FontSize="{DynamicResource FontSizeMedium}"
                                                 Text="Lump sum"
                                                 TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
                                             <Label
-                                                FontSize="{StaticResource FontSizeSmall}"
+                                                FontSize="{DynamicResource FontSizeSmall}"
                                                 Opacity="0.6"
                                                 Text="A one-off payment off the balance"
                                                 TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
@@ -677,13 +677,13 @@
                                             Grid.Column="1"
                                             AutomationId="WhatIfScenarioLumpSumDelta"
                                             FontAttributes="Bold"
-                                            FontSize="{StaticResource FontSizeSmall}"
+                                            FontSize="{DynamicResource FontSizeSmall}"
                                             Text="{Binding LumpSumTimeSaved, StringFormat='-{0}'}"
                                             TextColor="{DynamicResource LoanAppChartColor1}"
                                             VerticalOptions="Center" />
                                         <Label
                                             Grid.Column="2"
-                                            FontSize="{StaticResource FontSizeMedium}"
+                                            FontSize="{DynamicResource FontSizeMedium}"
                                             Opacity="0.4"
                                             Text="&#x203A;"
                                             TextColor="{DynamicResource LoanAppDefaultForegroundColor}"
@@ -707,11 +707,11 @@
                                         <VerticalStackLayout Grid.Column="0" Spacing="2">
                                             <Label
                                                 FontAttributes="Bold"
-                                                FontSize="{StaticResource FontSizeMedium}"
+                                                FontSize="{DynamicResource FontSizeMedium}"
                                                 Text="Repayment frequency"
                                                 TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
                                             <Label
-                                                FontSize="{StaticResource FontSizeSmall}"
+                                                FontSize="{DynamicResource FontSizeSmall}"
                                                 Opacity="0.6"
                                                 Text="Weekly and fortnightly vs monthly"
                                                 TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
@@ -720,13 +720,13 @@
                                             Grid.Column="1"
                                             AutomationId="WhatIfScenarioRepaymentFrequencyDelta"
                                             FontAttributes="Bold"
-                                            FontSize="{StaticResource FontSizeSmall}"
+                                            FontSize="{DynamicResource FontSizeSmall}"
                                             Text="{Binding FreqWeeklyIntSaved, StringFormat='-{0}'}"
                                             TextColor="{DynamicResource LoanAppChartColor1}"
                                             VerticalOptions="Center" />
                                         <Label
                                             Grid.Column="2"
-                                            FontSize="{StaticResource FontSizeMedium}"
+                                            FontSize="{DynamicResource FontSizeMedium}"
                                             Opacity="0.4"
                                             Text="&#x203A;"
                                             TextColor="{DynamicResource LoanAppDefaultForegroundColor}"
@@ -750,11 +750,11 @@
                                         <VerticalStackLayout Grid.Column="0" Spacing="2">
                                             <Label
                                                 FontAttributes="Bold"
-                                                FontSize="{StaticResource FontSizeMedium}"
+                                                FontSize="{DynamicResource FontSizeMedium}"
                                                 Text="Offset account"
                                                 TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
                                             <Label
-                                                FontSize="{StaticResource FontSizeSmall}"
+                                                FontSize="{DynamicResource FontSizeSmall}"
                                                 Opacity="0.6"
                                                 Text="Savings offset against the balance"
                                                 TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
@@ -763,13 +763,13 @@
                                             Grid.Column="1"
                                             AutomationId="WhatIfScenarioOffsetDelta"
                                             FontAttributes="Bold"
-                                            FontSize="{StaticResource FontSizeSmall}"
+                                            FontSize="{DynamicResource FontSizeSmall}"
                                             Text="{Binding OffsetInterestSaved, StringFormat='-{0}'}"
                                             TextColor="{DynamicResource LoanAppChartColor1}"
                                             VerticalOptions="Center" />
                                         <Label
                                             Grid.Column="2"
-                                            FontSize="{StaticResource FontSizeMedium}"
+                                            FontSize="{DynamicResource FontSizeMedium}"
                                             Opacity="0.4"
                                             Text="&#x203A;"
                                             TextColor="{DynamicResource LoanAppDefaultForegroundColor}"
@@ -793,11 +793,11 @@
                                         <VerticalStackLayout Grid.Column="0" Spacing="2">
                                             <Label
                                                 FontAttributes="Bold"
-                                                FontSize="{StaticResource FontSizeMedium}"
+                                                FontSize="{DynamicResource FontSizeMedium}"
                                                 Text="Stress test"
                                                 TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
                                             <Label
-                                                FontSize="{StaticResource FontSizeSmall}"
+                                                FontSize="{DynamicResource FontSizeSmall}"
                                                 Opacity="0.6"
                                                 Text="When does this become unaffordable?"
                                                 TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
@@ -814,7 +814,7 @@
                                             Grid.Column="1"
                                             AutomationId="WhatIfScenarioStressTestDelta"
                                             FontAttributes="Bold"
-                                            FontSize="{StaticResource FontSizeSmall}"
+                                            FontSize="{DynamicResource FontSizeSmall}"
                                             Text="{Binding StressTestRateBuffer}"
                                             TextColor="{DynamicResource LoanAppChartColor1}"
                                             VerticalOptions="Center">
@@ -826,7 +826,7 @@
                                         </Label>
                                         <Label
                                             Grid.Column="2"
-                                            FontSize="{StaticResource FontSizeMedium}"
+                                            FontSize="{DynamicResource FontSizeMedium}"
                                             Opacity="0.4"
                                             Text="&#x203A;"
                                             TextColor="{DynamicResource LoanAppDefaultForegroundColor}"
@@ -850,11 +850,11 @@
                                         <VerticalStackLayout Grid.Column="0" Spacing="2">
                                             <Label
                                                 FontAttributes="Bold"
-                                                FontSize="{StaticResource FontSizeMedium}"
+                                                FontSize="{DynamicResource FontSizeMedium}"
                                                 Text="Combined strategy"
                                                 TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
                                             <Label
-                                                FontSize="{StaticResource FontSizeSmall}"
+                                                FontSize="{DynamicResource FontSizeSmall}"
                                                 Opacity="0.6"
                                                 Text="Everything at once"
                                                 TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
@@ -863,13 +863,13 @@
                                             Grid.Column="1"
                                             AutomationId="WhatIfScenarioCombinedDelta"
                                             FontAttributes="Bold"
-                                            FontSize="{StaticResource FontSizeSmall}"
+                                            FontSize="{DynamicResource FontSizeSmall}"
                                             Text="{Binding CombinedTimeSaved, StringFormat='-{0}'}"
                                             TextColor="{DynamicResource LoanAppChartColor1}"
                                             VerticalOptions="Center" />
                                         <Label
                                             Grid.Column="2"
-                                            FontSize="{StaticResource FontSizeMedium}"
+                                            FontSize="{DynamicResource FontSizeMedium}"
                                             Opacity="0.4"
                                             Text="&#x203A;"
                                             TextColor="{DynamicResource LoanAppDefaultForegroundColor}"
@@ -920,7 +920,7 @@
                                     <Label
                                         AutomationId="WhatIfProjectionIntro"
                                         x:Name="LblProjectionIntro"
-                                        FontSize="{StaticResource FontSizeSmall}"
+                                        FontSize="{DynamicResource FontSizeSmall}"
                                         Opacity="0.6"
                                         TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
 
@@ -960,7 +960,7 @@
                                         <HorizontalStackLayout Margin="20,16,20,4" Spacing="8">
                                             <Label
                                                 FontAttributes="Bold"
-                                                FontSize="{StaticResource FontSizeSmall}"
+                                                FontSize="{DynamicResource FontSizeSmall}"
                                                 Opacity="0.7"
                                                 Text="INCOME &amp; EXPENSE PROJECTION"
                                                 TextColor="{DynamicResource LoanAppDefaultForegroundColor}"
@@ -974,7 +974,7 @@
                                                 IsVisible="{Binding IsProjectionRefreshing}"
                                                 VerticalOptions="Center" />
                                             <Label
-                                                FontSize="{StaticResource FontSizeSmall}"
+                                                FontSize="{DynamicResource FontSizeSmall}"
                                                 IsVisible="{Binding IsProjectionRefreshing}"
                                                 Opacity="0.7"
                                                 Text="Updating…"
@@ -1016,7 +1016,7 @@
                                                                 <chart:ChartAxisLabelStyle
                                                                     FontAttributes="Bold"
                                                                     FontFamily="{DynamicResource DefaultFontFamily}"
-                                                                    FontSize="{StaticResource FontSizeBody}"
+                                                                    FontSize="{DynamicResource LoanAppTextChartAxis}"
                                                                     TextColor="{DynamicResource LoanAppChartAxisTextColor}" />
                                                             </chart:CategoryAxis.LabelStyle>
                                                             <chart:CategoryAxis.MajorTickStyle>
@@ -1030,7 +1030,7 @@
                                                                 <chart:ChartAxisLabelStyle
                                                                     FontAttributes="Bold"
                                                                     FontFamily="{DynamicResource DefaultFontFamily}"
-                                                                    FontSize="{StaticResource FontSizeBody}"
+                                                                    FontSize="{DynamicResource LoanAppTextChartAxis}"
                                                                     TextColor="{DynamicResource LoanAppChartAxisTextColor}" />
                                                             </chart:NumericalAxis.LabelStyle>
                                                             <chart:NumericalAxis.AxisLineStyle>
@@ -1046,7 +1046,7 @@
                                                             <chart:ChartLegend.LabelStyle>
                                                                 <chart:ChartLegendLabelStyle
                                                                     FontFamily="{DynamicResource DefaultFontFamily}"
-                                                                    FontSize="{StaticResource FontSizeXS}"
+                                                                    FontSize="{DynamicResource LoanAppTextChartLegend}"
                                                                     TextColor="{DynamicResource LoanAppChartLegendTextColor}" />
                                                             </chart:ChartLegend.LabelStyle>
                                                         </chart:ChartLegend>
@@ -1086,59 +1086,53 @@
                                             before or after the loan would be worse than the original
                                             problem.
 
-                                            A tappable Label rather than an SfExpander: expander
-                                            headers are the Syncfusion control that silently swallows
-                                            taps on iOS, and this page already owns enough of that risk
-                                            (see SyncfusionIosTouchFix in CLAUDE.md). The ⓘ hints on
-                                            this same tab use the same approach.
-                                        -->
-                                        <Grid
-                                            Margin="0,10,0,0"
-                                            ColumnDefinitions="*,Auto"
-                                            ColumnSpacing="8">
-                                            <VerticalStackLayout Grid.Column="0" Spacing="2">
-                                                <Label
-                                                    AutomationId="WhatIfProjectionSettingsHeader"
-                                                    FontAttributes="Bold"
-                                                    FontSize="{StaticResource FontSizeSmall}"
-                                                    Opacity="0.7"
-                                                    Text="ADJUST THE SETTINGS"
-                                                    TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
-                                                <!--  What is in force right now, so collapsing hides nothing that matters.  -->
-                                                <Label
-                                                    AutomationId="WhatIfProjectionSettingsSummary"
-                                                    FontSize="{StaticResource FontSizeXS}"
-                                                    Opacity="0.7"
-                                                    Text="{Binding ProjectionSettingsSummary}"
-                                                    TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
-                                            </VerticalStackLayout>
-                                            <Label
-                                                x:Name="ProjectionSettingsChevron"
-                                                Grid.Column="1"
-                                                Padding="12,8"
-                                                FontSize="{StaticResource FontSizeMedium}"
-                                                Text="▾"
-                                                TextColor="{DynamicResource LoanAppTabIndicatorStrokeColor}"
-                                                VerticalOptions="Center" />
-                                            <Grid.GestureRecognizers>
-                                                <TapGestureRecognizer Tapped="OnProjectionSettingsToggled" />
-                                            </Grid.GestureRecognizers>
-                                        </Grid>
+                                            A REAL SfExpander now, matching every other disclosure in
+                                            the app (Settings, the ⓘ hints' sibling pattern, the
+                                            scenario explainer cards) — a hand-rolled tappable Label
+                                            with a text-glyph chevron read as unfinished next to
+                                            those, and its hit target was smaller than Syncfusion's
+                                            own header chrome.
 
-                                        <Border
-                                            x:Name="ProjectionSettingsPanel"
-                                            Margin="0,4,0,0"
-                                            Padding="16"
-                                            BackgroundColor="{DynamicResource LoanAppAppShellBgColor}"
-                                            IsVisible="False"
-                                            StrokeShape="RoundRectangle 12"
-                                            StrokeThickness="0">
-                                            <VerticalStackLayout Spacing="12">
+                                            Safe here specifically because OnAppearing already calls
+                                            SyncfusionIosTouchFix.ApplyToExpanders(this) for this
+                                            page's OTHER expanders (see below), and this one is
+                                            static markup present from construction — unlike
+                                            Insights, which needed its own extra call because its
+                                            content does not exist yet when OnAppearing runs. See
+                                            CLAUDE.md: the defect is silent, so if a new expander is
+                                            added anywhere that is built AFTER OnAppearing already
+                                            ran, it needs that second call too.
+                                        -->
+                                        <Border Margin="0,10,0,0" Style="{DynamicResource ExpanderCardStyle}">
+                                            <expander:SfExpander
+                                                HeaderIconPosition="End"
+                                                IsExpanded="False"
+                                                Style="{DynamicResource CommonExpanderStyle}">
+
+                                                <expander:SfExpander.Header>
+                                                    <Grid Padding="0,2">
+                                                        <VerticalStackLayout Spacing="2">
+                                                            <Label
+                                                                AutomationId="WhatIfProjectionSettingsHeader"
+                                                                FontSize="{DynamicResource FontSizeBody}"
+                                                                Style="{DynamicResource ExpanderHeaderLabelStyle}"
+                                                                Text="ADJUST THE SETTINGS" />
+                                                            <!--  What is in force right now, so collapsing hides nothing that matters.  -->
+                                                            <Label
+                                                                AutomationId="WhatIfProjectionSettingsSummary"
+                                                                Style="{DynamicResource ExpanderHeaderSubLabelStyle}"
+                                                                Text="{Binding ProjectionSettingsSummary}" />
+                                                        </VerticalStackLayout>
+                                                    </Grid>
+                                                </expander:SfExpander.Header>
+
+                                                <expander:SfExpander.Content>
+                                                    <VerticalStackLayout Padding="16" Spacing="12">
 
                                                 <!--  INCOME PROJECTION  -->
                                                 <Label
                                                     FontAttributes="Bold"
-                                                    FontSize="{StaticResource FontSizeSmall}"
+                                                    FontSize="{DynamicResource FontSizeSmall}"
                                                     Opacity="0.7"
                                                     Text="INCOME PROJECTION"
                                                     TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
@@ -1154,7 +1148,7 @@
                                                     </Grid.ColumnDefinitions>
                                                     <Label
                                                         Grid.Column="0"
-                                                        FontSize="{StaticResource FontSizeSmall}"
+                                                        FontSize="{DynamicResource FontSizeSmall}"
                                                         Opacity="0.7"
                                                         Text="Annual growth %"
                                                         TextColor="{DynamicResource LoanAppDefaultForegroundColor}"
@@ -1164,14 +1158,14 @@
                                                         BackgroundColor="Transparent"
                                                         Clicked="OnIncomeGrowthRateDecrease"
                                                         FontAttributes="Bold"
-                                                        FontSize="{StaticResource FontSizeHeading}"
+                                                        FontSize="{DynamicResource FontSizeHeading}"
                                                         Text="−"
                                                         TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
                                                     <Label
                                                         x:Name="LblIncomeGrowthRate"
                                                         Grid.Column="2"
                                                         FontAttributes="Bold"
-                                                        FontSize="{StaticResource FontSizeHeading}"
+                                                        FontSize="{DynamicResource FontSizeHeading}"
                                                         HorizontalOptions="Center"
                                                         HorizontalTextAlignment="Center"
                                                         MinimumWidthRequest="48"
@@ -1182,7 +1176,7 @@
                                                         BackgroundColor="Transparent"
                                                         Clicked="OnIncomeGrowthRateIncrease"
                                                         FontAttributes="Bold"
-                                                        FontSize="{StaticResource FontSizeHeading}"
+                                                        FontSize="{DynamicResource FontSizeHeading}"
                                                         Text="+"
                                                         TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
                                                 </Grid>
@@ -1241,11 +1235,11 @@
                                                         Spacing="1"
                                                         VerticalOptions="Center">
                                                         <Label
-                                                            FontSize="{StaticResource FontSizeBody}"
+                                                            FontSize="{DynamicResource FontSizeBody}"
                                                             Text="Take off my everyday spending"
                                                             TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
                                                         <Label
-                                                            FontSize="{StaticResource FontSizeSmall}"
+                                                            FontSize="{DynamicResource FontSizeSmall}"
                                                             Opacity="0.7"
                                                             Text="Project what is left, not the full income"
                                                             TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
@@ -1306,11 +1300,11 @@
                                                         Spacing="1"
                                                         VerticalOptions="Center">
                                                         <Label
-                                                            FontSize="{StaticResource FontSizeBody}"
+                                                            FontSize="{DynamicResource FontSizeBody}"
                                                             Text="Take off the loan and its running costs"
                                                             TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
                                                         <Label
-                                                            FontSize="{StaticResource FontSizeSmall}"
+                                                            FontSize="{DynamicResource FontSizeSmall}"
                                                             Opacity="0.7"
                                                             Text="Also count the repayment and the upkeep"
                                                             TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
@@ -1327,7 +1321,7 @@
                                                 <!--  EXPENSE PROJECTION  -->
                                                 <Label
                                                     FontAttributes="Bold"
-                                                    FontSize="{StaticResource FontSizeSmall}"
+                                                    FontSize="{DynamicResource FontSizeSmall}"
                                                     Opacity="0.7"
                                                     Text="EXPENSE PROJECTION"
                                                     TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
@@ -1343,7 +1337,7 @@
                                                     </Grid.ColumnDefinitions>
                                                     <Label
                                                         Grid.Column="0"
-                                                        FontSize="{StaticResource FontSizeSmall}"
+                                                        FontSize="{DynamicResource FontSizeSmall}"
                                                         Opacity="0.7"
                                                         Text="Annual growth %"
                                                         TextColor="{DynamicResource LoanAppDefaultForegroundColor}"
@@ -1353,14 +1347,14 @@
                                                         BackgroundColor="Transparent"
                                                         Clicked="OnExpenseGrowthRateDecrease"
                                                         FontAttributes="Bold"
-                                                        FontSize="{StaticResource FontSizeHeading}"
+                                                        FontSize="{DynamicResource FontSizeHeading}"
                                                         Text="−"
                                                         TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
                                                     <Label
                                                         x:Name="LblExpenseGrowthRate"
                                                         Grid.Column="2"
                                                         FontAttributes="Bold"
-                                                        FontSize="{StaticResource FontSizeHeading}"
+                                                        FontSize="{DynamicResource FontSizeHeading}"
                                                         HorizontalOptions="Center"
                                                         HorizontalTextAlignment="Center"
                                                         MinimumWidthRequest="48"
@@ -1371,7 +1365,7 @@
                                                         BackgroundColor="Transparent"
                                                         Clicked="OnExpenseGrowthRateIncrease"
                                                         FontAttributes="Bold"
-                                                        FontSize="{StaticResource FontSizeHeading}"
+                                                        FontSize="{DynamicResource FontSizeHeading}"
                                                         Text="+"
                                                         TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
                                                 </Grid>
@@ -1430,11 +1424,11 @@
                                                         Spacing="1"
                                                         VerticalOptions="Center">
                                                         <Label
-                                                            FontSize="{StaticResource FontSizeBody}"
+                                                            FontSize="{DynamicResource FontSizeBody}"
                                                             Text="Take off the loan and its running costs"
                                                             TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
                                                         <Label
-                                                            FontSize="{StaticResource FontSizeSmall}"
+                                                            FontSize="{DynamicResource FontSizeSmall}"
                                                             Opacity="0.7"
                                                             Text="Also count the repayment and the upkeep"
                                                             TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
@@ -1456,7 +1450,7 @@
                                                     </Grid.ColumnDefinitions>
                                                     <Label
                                                         Grid.Column="0"
-                                                        FontSize="{StaticResource FontSizeBody}"
+                                                        FontSize="{DynamicResource FontSizeBody}"
                                                         Text="Years to project"
                                                         TextColor="{DynamicResource LoanAppDefaultForegroundColor}"
                                                         VerticalOptions="Center" />
@@ -1465,7 +1459,7 @@
                                                         x:Name="LblProjectionYears"
                                                         Grid.Column="1"
                                                         FontAttributes="Bold"
-                                                        FontSize="{StaticResource FontSizeMedium}"
+                                                        FontSize="{DynamicResource FontSizeMedium}"
                                                         TextColor="{DynamicResource LoanAppHighlightFgColor}"
                                                         VerticalOptions="Center" />
                                                 </Grid>
@@ -1498,10 +1492,10 @@
                                                     <range:SfSlider.LabelStyle>
                                                         <range:SliderLabelStyle
                                                             ActiveFontFamily="{DynamicResource DefaultFontFamily}"
-                                                            ActiveFontSize="{StaticResource FontSizeBody}"
+                                                            ActiveFontSize="{DynamicResource FontSizeBody}"
                                                             ActiveTextColor="{DynamicResource LoanAppRangeSliderLabelTextColor}"
                                                             InactiveFontFamily="{DynamicResource DefaultFontFamily}"
-                                                            InactiveFontSize="{StaticResource FontSizeBody}"
+                                                            InactiveFontSize="{DynamicResource FontSizeBody}"
                                                             InactiveTextColor="{DynamicResource LoanAppRangeSliderLabelTextColor}" />
                                                     </range:SfSlider.LabelStyle>
                                                     <range:SfSlider.TrackStyle>
@@ -1513,12 +1507,15 @@
                                                     </range:SfSlider.TrackStyle>
                                                 </range:SfSlider>
 
-                                            </VerticalStackLayout>
+                                                    </VerticalStackLayout>
+                                                </expander:SfExpander.Content>
+
+                                            </expander:SfExpander>
                                         </Border>
                                         <Label
                                             Margin="0,4,0,12"
                                             FontFamily="{DynamicResource DefaultFontFamily}"
-                                            FontSize="{StaticResource FontSizeXS}"
+                                            FontSize="{DynamicResource FontSizeXS}"
                                             HorizontalOptions="Center"
                                             HorizontalTextAlignment="Center"
                                             Opacity="0.5"
@@ -1529,7 +1526,7 @@
                                         <Label
                                             Margin="20,16,20,4"
                                             FontAttributes="Bold"
-                                            FontSize="{StaticResource FontSizeSmall}"
+                                            FontSize="{DynamicResource FontSizeSmall}"
                                             Opacity="0.7"
                                             Text="INCOME YEAR-BY-YEAR"
                                             TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
@@ -1550,7 +1547,7 @@
                                                 Margin="{OnIdiom Phone='0,3,0,3',
                                                                  Tablet='0,3,0,14',
                                                                  Default='0,3,0,3'}"
-                                                ButtonFontSize="{StaticResource FontSizeSmall}"
+                                                ButtonFontSize="{DynamicResource FontSizeSmall}"
                                                 ButtonShape="Circle"
                                                 HorizontalOptions="Center"
                                                 NumericButtonsGenerateMode="Auto"
@@ -1670,7 +1667,7 @@
                                         <Label
                                             Margin="20,16,20,4"
                                             FontAttributes="Bold"
-                                            FontSize="{StaticResource FontSizeSmall}"
+                                            FontSize="{DynamicResource FontSizeSmall}"
                                             Opacity="0.7"
                                             Text="EXPENSE YEAR-BY-YEAR"
                                             TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
@@ -1691,7 +1688,7 @@
                                                 Margin="{OnIdiom Phone='0,3,0,3',
                                                                  Tablet='0,3,0,14',
                                                                  Default='0,3,0,3'}"
-                                                ButtonFontSize="{StaticResource FontSizeSmall}"
+                                                ButtonFontSize="{DynamicResource FontSizeSmall}"
                                                 ButtonShape="Circle"
                                                 HorizontalOptions="Center"
                                                 NumericButtonsGenerateMode="Auto"

@@ -25,6 +25,13 @@
         fails silently when it is missed — see CLAUDE.md. A TapGestureRecognizer on a Label has none
         of that fragility, which is also why SwitchWithInfoView and the Budget summary heading use
         the same approach.
+
+        All three lines — prompt, detail, live example — deliberately share ONE size
+        (LoanAppTextCaptionCompact), not a Caption/Body split the way ScenarioExplainerView
+        distinguishes its micro-labels from its body copy. Considered and decided against: this is
+        a compact one-liner under a control, not a full explanation card, and a bigger body tier
+        here would widen every hint on every screen that has one. Revisit only if that reads as
+        too small once seen on a device, not as an assumed oversight.
     -->
     <!--
         The negative vertical margin on the root above is deliberate — please do not "tidy" it
@@ -54,7 +61,7 @@
         <Label
             Padding="0,6"
             AutomationId="{Binding InfoAutomationId, Source={x:Reference Root}}"
-            FontSize="{StaticResource FontSizeSmall}"
+            FontSize="{DynamicResource LoanAppTextCaptionCompact}"
             TextColor="{DynamicResource LoanAppTabIndicatorStrokeColor}">
             <Label.FormattedText>
                 <FormattedString>
@@ -71,7 +78,7 @@
             x:Name="DetailLabel"
             Margin="0,0,0,12"
             AutomationId="{Binding DetailAutomationId, Source={x:Reference Root}}"
-            FontSize="{StaticResource FontSizeSmall}"
+            FontSize="{DynamicResource LoanAppTextCaptionCompact}"
             IsVisible="False"
             Opacity="0.8"
             Text="{Binding Detail, Source={x:Reference Root}}"
@@ -86,7 +93,7 @@
             x:Name="LiveExampleLabel"
             Margin="0,0,0,14"
             FontAttributes="Bold"
-            FontSize="{StaticResource FontSizeSmall}"
+            FontSize="{DynamicResource LoanAppTextCaptionCompact}"
             IsVisible="False"
             Text="{Binding LiveExample, Source={x:Reference Root}}"
             TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />

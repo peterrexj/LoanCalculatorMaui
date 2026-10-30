@@ -58,7 +58,7 @@
             -->
             <Label
                 Margin="4,10,4,4"
-                FontSize="{StaticResource FontSizeSmall}"
+                FontSize="{DynamicResource FontSizeSmall}"
                 Opacity="0.45"
                 Text="INCLUDED IN THE REPORT"
                 TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
@@ -98,7 +98,7 @@
                                     <Label
                                         AutomationId="{Binding AutomationId}"
                                         Grid.Column="0"
-                                        FontSize="{StaticResource FontSizeMedium}"
+                                        FontSize="{DynamicResource FontSizeMedium}"
                                         Opacity="0.85"
                                         Text="&#x2713;"
                                         TextColor="{DynamicResource LoanAppChartColor1}"
@@ -108,11 +108,11 @@
                                         Spacing="2"
                                         VerticalOptions="Center">
                                         <Label
-                                            FontSize="{StaticResource FontSizeBody}"
+                                            FontSize="{DynamicResource FontSizeBody}"
                                             Text="{Binding Title}"
                                             TextColor="{DynamicResource LstForegroundColor}" />
                                         <Label
-                                            FontSize="{StaticResource FontSizeSmall}"
+                                            FontSize="{DynamicResource FontSizeSmall}"
                                             Opacity="0.55"
                                             Text="{Binding Detail}"
                                             TextColor="{DynamicResource LstForegroundColor}" />
@@ -127,7 +127,7 @@
             <Label
                 AutomationId="WhatIfExportSelectionNote"
                 Margin="4,0,4,0"
-                FontSize="{StaticResource FontSizeXS}"
+                FontSize="{DynamicResource FontSizeXS}"
                 Opacity="0.5"
                 Text="Every section above is included. Choosing which to export is coming in a later update."
                 TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
@@ -296,7 +296,7 @@
                                                                 <chart:ChartDataLabelStyle
                                                                     FontAttributes="Bold"
                                                                     FontFamily="{DynamicResource DefaultFontFamily}"
-                                                                    FontSize="{StaticResource FontSizeXS}"
+                                                                    FontSize="{DynamicResource FontSizeXS}"
                                                                     LabelFormat="c"
                                                                     TextColor="{DynamicResource LoanAppChartDataMarkerTextColor1}" />
                                                             </chart:CartesianDataLabelSettings.LabelStyle>
@@ -319,7 +319,7 @@
                                                                 <chart:ChartDataLabelStyle
                                                                     FontAttributes="Bold"
                                                                     FontFamily="{DynamicResource DefaultFontFamily}"
-                                                                    FontSize="{StaticResource FontSizeXS}"
+                                                                    FontSize="{DynamicResource FontSizeXS}"
                                                                     LabelFormat="c"
                                                                     TextColor="{DynamicResource LoanAppChartDataMarkerTextColor2}" />
                                                             </chart:CartesianDataLabelSettings.LabelStyle>
@@ -342,7 +342,7 @@
                                                                 <chart:ChartDataLabelStyle
                                                                     FontAttributes="Bold"
                                                                     FontFamily="{DynamicResource DefaultFontFamily}"
-                                                                    FontSize="{StaticResource FontSizeXS}"
+                                                                    FontSize="{DynamicResource FontSizeXS}"
                                                                     LabelFormat="c"
                                                                     TextColor="{DynamicResource LoanAppChartDataMarkerTextColor3}" />
                                                             </chart:CartesianDataLabelSettings.LabelStyle>
@@ -354,7 +354,7 @@
                                         <Label
                                             Margin="0,4,0,8"
                                             FontFamily="{DynamicResource DefaultFontFamily}"
-                                            FontSize="{StaticResource FontSizeXS}"
+                                            FontSize="{DynamicResource FontSizeXS}"
                                             HorizontalOptions="Center"
                                             HorizontalTextAlignment="Center"
                                             Opacity="0.5"

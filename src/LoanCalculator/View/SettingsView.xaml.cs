@@ -103,6 +103,20 @@ public partial class SettingsView : ContentPage
         }
     }
 
+    // ── Text size chips ──────────────────────────────────────────────────────
+    //
+    // Four plain taps rather than one combo-box selection. SelectedTextSize's setter already
+    // guards against redundant writes (isUpdating / unchanged-value checks — see
+    // SettingsViewModel), so tapping the chip that is already selected is a harmless no-op.
+
+    private void OnTextSizeSmallTapped(object? sender, TappedEventArgs e) => _viewModel.SelectedTextSize = "Small";
+
+    private void OnTextSizeDefaultTapped(object? sender, TappedEventArgs e) => _viewModel.SelectedTextSize = "Default";
+
+    private void OnTextSizeLargeTapped(object? sender, TappedEventArgs e) => _viewModel.SelectedTextSize = "Large";
+
+    private void OnTextSizeExtraLargeTapped(object? sender, TappedEventArgs e) => _viewModel.SelectedTextSize = "Extra Large";
+
     private void OnDefaultLoanTermDecrement(object? sender, EventArgs e)
     {
         var v = _viewModel.DefaultLoanTermYears - 1;

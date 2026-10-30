@@ -28,8 +28,8 @@
             <BoxView Grid.Column="0" BackgroundColor="{DynamicResource LoanAppChartColorSeries3}" CornerRadius="12,0,12,0" />
             <VerticalStackLayout Grid.Column="1" Padding="14,14,14,16" Spacing="10">
 
-                <Label FontAttributes="Bold" FontSize="{StaticResource FontSizeMedium}" Text="Combined Strategy" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
-                <Label Margin="0,-6,0,0" FontSize="{StaticResource FontSizeSmall}" Opacity="0.6" Text="Combine multiple strategies and see the full impact" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                <Label FontAttributes="Bold" FontSize="{DynamicResource FontSizeMedium}" Text="Combined Strategy" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                <Label Margin="0,-6,0,0" FontSize="{DynamicResource FontSizeSmall}" Opacity="0.6" Text="Combine multiple strategies and see the full impact" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
 
                 <BoxView Style="{DynamicResource LoanAppSeparatorStyle}" />
 
@@ -37,7 +37,7 @@
                 <Grid ColumnDefinitions="Auto,*" ColumnSpacing="8">
                     <CheckBox Grid.Column="0" IsChecked="{Binding CombinedUseFrequency}" Color="{DynamicResource LoanAppChartColorSeries3}" VerticalOptions="Center" />
                     <VerticalStackLayout Grid.Column="1" Spacing="6">
-                        <Label Text="Repayment Frequency" FontSize="{StaticResource FontSizeSmall}" Opacity="0.8" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" VerticalOptions="Center" />
+                        <Label Text="Repayment Frequency" FontSize="{DynamicResource FontSizeSmall}" Opacity="0.8" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" VerticalOptions="Center" />
                         <HorizontalStackLayout Spacing="6">
                             <Border Padding="10,5" StrokeShape="RoundRectangle 8" StrokeThickness="1" Stroke="{DynamicResource LoanAppChartColorSeries3}" BackgroundColor="Transparent">
                                 <Border.GestureRecognizers><TapGestureRecognizer Tapped="OnCombinedFreqMonthly"/></Border.GestureRecognizers>
@@ -46,7 +46,7 @@
                                         <Setter Property="BackgroundColor" Value="{DynamicResource LoanAppChartColorSeries3}"/>
                                     </DataTrigger>
                                 </Border.Triggers>
-                                <Label Text="Monthly" FontSize="{StaticResource FontSizeSmall}" TextColor="{DynamicResource LoanAppDefaultForegroundColor}">
+                                <Label Text="Monthly" FontSize="{DynamicResource FontSizeSmall}" TextColor="{DynamicResource LoanAppDefaultForegroundColor}">
                                     <Label.Triggers>
                                         <DataTrigger Binding="{Binding CombinedFrequencyIndex}" TargetType="Label" Value="0">
                                             <Setter Property="TextColor" Value="White"/>
@@ -61,7 +61,7 @@
                                         <Setter Property="BackgroundColor" Value="{DynamicResource LoanAppChartColorSeries3}"/>
                                     </DataTrigger>
                                 </Border.Triggers>
-                                <Label Text="Fortnightly" FontSize="{StaticResource FontSizeSmall}" TextColor="{DynamicResource LoanAppDefaultForegroundColor}">
+                                <Label Text="Fortnightly" FontSize="{DynamicResource FontSizeSmall}" TextColor="{DynamicResource LoanAppDefaultForegroundColor}">
                                     <Label.Triggers>
                                         <DataTrigger Binding="{Binding CombinedFrequencyIndex}" TargetType="Label" Value="1">
                                             <Setter Property="TextColor" Value="White"/>
@@ -76,7 +76,7 @@
                                         <Setter Property="BackgroundColor" Value="{DynamicResource LoanAppChartColorSeries3}"/>
                                     </DataTrigger>
                                 </Border.Triggers>
-                                <Label Text="Weekly" FontSize="{StaticResource FontSizeSmall}" TextColor="{DynamicResource LoanAppDefaultForegroundColor}">
+                                <Label Text="Weekly" FontSize="{DynamicResource FontSizeSmall}" TextColor="{DynamicResource LoanAppDefaultForegroundColor}">
                                     <Label.Triggers>
                                         <DataTrigger Binding="{Binding CombinedFrequencyIndex}" TargetType="Label" Value="2">
                                             <Setter Property="TextColor" Value="White"/>
@@ -85,14 +85,14 @@
                                 </Label>
                             </Border>
                         </HorizontalStackLayout>
-                        <Label Text="{Binding CombinedFrequencyPayment}" FontSize="{StaticResource FontSizeSmall}" FontAttributes="Bold" TextColor="{DynamicResource LoanAppChartColorSeries3}" />
+                        <Label Text="{Binding CombinedFrequencyPayment}" FontSize="{DynamicResource FontSizeSmall}" FontAttributes="Bold" TextColor="{DynamicResource LoanAppChartColorSeries3}" />
                     </VerticalStackLayout>
                 </Grid>
 
                 <!--  Extra repayment row  -->
                 <Grid ColumnDefinitions="Auto,80,*" ColumnSpacing="8" VerticalOptions="Center">
                     <CheckBox Grid.Column="0" IsChecked="{Binding CombinedUseExtra}" Color="{DynamicResource LoanAppChartColorSeries3}" VerticalOptions="Center" />
-                    <Label Grid.Column="1" Text="Extra repay" FontSize="{StaticResource FontSizeSmall}" Opacity="0.8" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" VerticalOptions="Center" />
+                    <Label Grid.Column="1" Text="Extra repay" FontSize="{DynamicResource FontSizeSmall}" Opacity="0.8" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" VerticalOptions="Center" />
                     <Border Grid.Column="2" Padding="2,1" BackgroundColor="{DynamicResource LoanAppDefaultBackgroundColor}" StrokeShape="RoundRectangle 20" StrokeThickness="0" HorizontalOptions="Start">
                         <HorizontalStackLayout Spacing="2" VerticalOptions="Center">
                                                         <Button
@@ -100,7 +100,7 @@
                                 Clicked="OnCombinedExtraDecrease"
                                 TextColor="{DynamicResource LoanAppChartColorSeries3}"
                                 Style="{DynamicResource ScenarioStepperButtonStyle}" />
-                            <Label Text="{Binding CombinedExtraDisplay}" FontAttributes="Bold" FontSize="{StaticResource FontSizeSmall}" MinimumWidthRequest="80" HorizontalTextAlignment="Center" TextColor="{DynamicResource LoanAppChartColorSeries3}" VerticalOptions="Center" />
+                            <Label Text="{Binding CombinedExtraDisplay}" FontAttributes="Bold" FontSize="{DynamicResource FontSizeSmall}" MinimumWidthRequest="80" HorizontalTextAlignment="Center" TextColor="{DynamicResource LoanAppChartColorSeries3}" VerticalOptions="Center" />
                                                         <Button
                                 Text="+"
                                 Clicked="OnCombinedExtraIncrease"
@@ -113,7 +113,7 @@
                 <!--  Lump sum row  -->
                 <Grid ColumnDefinitions="Auto,80,*" ColumnSpacing="8" VerticalOptions="Center">
                     <CheckBox Grid.Column="0" IsChecked="{Binding CombinedUseLumpSum}" Color="{DynamicResource LoanAppChartColorSeries3}" VerticalOptions="Center" />
-                    <Label Grid.Column="1" Text="Lump sum" FontSize="{StaticResource FontSizeSmall}" Opacity="0.8" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" VerticalOptions="Center" />
+                    <Label Grid.Column="1" Text="Lump sum" FontSize="{DynamicResource FontSizeSmall}" Opacity="0.8" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" VerticalOptions="Center" />
                     <Border Grid.Column="2" Padding="2,1" BackgroundColor="{DynamicResource LoanAppDefaultBackgroundColor}" StrokeShape="RoundRectangle 20" StrokeThickness="0" HorizontalOptions="Start">
                         <HorizontalStackLayout Spacing="2" VerticalOptions="Center">
                                                         <Button
@@ -121,7 +121,7 @@
                                 Clicked="OnCombinedLumpDecrease"
                                 TextColor="{DynamicResource LoanAppChartColorSeries3}"
                                 Style="{DynamicResource ScenarioStepperButtonStyle}" />
-                            <Label Text="{Binding CombinedLumpDisplay}" FontAttributes="Bold" FontSize="{StaticResource FontSizeSmall}" MinimumWidthRequest="80" HorizontalTextAlignment="Center" TextColor="{DynamicResource LoanAppChartColorSeries3}" VerticalOptions="Center" />
+                            <Label Text="{Binding CombinedLumpDisplay}" FontAttributes="Bold" FontSize="{DynamicResource FontSizeSmall}" MinimumWidthRequest="80" HorizontalTextAlignment="Center" TextColor="{DynamicResource LoanAppChartColorSeries3}" VerticalOptions="Center" />
                                                         <Button
                                 Text="+"
                                 Clicked="OnCombinedLumpIncrease"
@@ -134,7 +134,7 @@
                 <!--  Offset row  -->
                 <Grid ColumnDefinitions="Auto,80,*" ColumnSpacing="8" VerticalOptions="Center">
                     <CheckBox Grid.Column="0" IsChecked="{Binding CombinedUseOffset}" Color="{DynamicResource LoanAppChartColorSeries3}" VerticalOptions="Center" />
-                    <Label Grid.Column="1" Text="Offset" FontSize="{StaticResource FontSizeSmall}" Opacity="0.8" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" VerticalOptions="Center" />
+                    <Label Grid.Column="1" Text="Offset" FontSize="{DynamicResource FontSizeSmall}" Opacity="0.8" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" VerticalOptions="Center" />
                     <VerticalStackLayout Grid.Column="2" Spacing="4">
                         <Border Padding="2,1" BackgroundColor="{DynamicResource LoanAppDefaultBackgroundColor}" StrokeShape="RoundRectangle 20" StrokeThickness="0" HorizontalOptions="Start">
                             <HorizontalStackLayout Spacing="2" VerticalOptions="Center">
@@ -143,7 +143,7 @@
                                     Clicked="OnCombinedOffsetDecrease"
                                     TextColor="{DynamicResource LoanAppChartColorSeries3}"
                                     Style="{DynamicResource ScenarioStepperButtonStyle}" />
-                                <Label Text="{Binding CombinedOffsetDisplay}" FontAttributes="Bold" FontSize="{StaticResource FontSizeSmall}" MinimumWidthRequest="80" HorizontalTextAlignment="Center" TextColor="{DynamicResource LoanAppChartColorSeries3}" VerticalOptions="Center" />
+                                <Label Text="{Binding CombinedOffsetDisplay}" FontAttributes="Bold" FontSize="{DynamicResource FontSizeSmall}" MinimumWidthRequest="80" HorizontalTextAlignment="Center" TextColor="{DynamicResource LoanAppChartColorSeries3}" VerticalOptions="Center" />
                                                                 <Button
                                     Text="+"
                                     Clicked="OnCombinedOffsetIncrease"
@@ -154,13 +154,13 @@
                         <!--  Offset interest rate stepper  -->
                         <Border Padding="2,1" BackgroundColor="{DynamicResource LoanAppDefaultBackgroundColor}" StrokeShape="RoundRectangle 20" StrokeThickness="0" HorizontalOptions="Start">
                             <HorizontalStackLayout Spacing="2" VerticalOptions="Center">
-                                <Label Text="Rate:" FontSize="{StaticResource FontSizeXS}" Opacity="0.6" Margin="6,0,0,0" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" VerticalOptions="Center" />
+                                <Label Text="Rate:" FontSize="{DynamicResource FontSizeXS}" Opacity="0.6" Margin="6,0,0,0" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" VerticalOptions="Center" />
                                                                 <Button
                                     Text="−"
                                     Clicked="OnCombinedOffsetRateDecrease"
                                     TextColor="{DynamicResource LoanAppChartColorSeries3}"
                                     Style="{DynamicResource ScenarioStepperButtonStyle}" />
-                                <Label Text="{Binding CombinedOffsetRate, StringFormat='{0:0.00}%'}" FontAttributes="Bold" FontSize="{StaticResource FontSizeSmall}" MinimumWidthRequest="60" HorizontalTextAlignment="Center" TextColor="{DynamicResource LoanAppChartColorSeries3}" VerticalOptions="Center" />
+                                <Label Text="{Binding CombinedOffsetRate, StringFormat='{0:0.00}%'}" FontAttributes="Bold" FontSize="{DynamicResource FontSizeSmall}" MinimumWidthRequest="60" HorizontalTextAlignment="Center" TextColor="{DynamicResource LoanAppChartColorSeries3}" VerticalOptions="Center" />
                                                                 <Button
                                     Text="+"
                                     Clicked="OnCombinedOffsetRateIncrease"
@@ -182,20 +182,20 @@
                     </Grid.ColumnDefinitions>
                     <Border Grid.Column="0" Padding="10,8" BackgroundColor="{DynamicResource LoanAppChartColorSeries3}" StrokeShape="RoundRectangle 8" StrokeThickness="0">
                         <VerticalStackLayout Spacing="2">
-                            <Label FontSize="{StaticResource FontSizeXS}" Opacity="0.85" Text="TIME SAVED" TextColor="White" />
-                            <Label FontAttributes="Bold" FontSize="{StaticResource FontSizeLarge}" Text="{Binding CombinedTimeSaved}" TextColor="White" />
+                            <Label FontSize="{DynamicResource FontSizeXS}" Opacity="0.85" Text="TIME SAVED" TextColor="White" />
+                            <Label FontAttributes="Bold" FontSize="{DynamicResource FontSizeLarge}" Text="{Binding CombinedTimeSaved}" TextColor="White" />
                         </VerticalStackLayout>
                     </Border>
                     <Border Grid.Column="1" Padding="10,8" BackgroundColor="{DynamicResource LoanAppChartColorSeries3}" StrokeShape="RoundRectangle 8" StrokeThickness="0">
                         <VerticalStackLayout Spacing="2">
-                            <Label FontSize="{StaticResource FontSizeXS}" Opacity="0.85" Text="INT. SAVED" TextColor="White" />
-                            <Label FontAttributes="Bold" FontSize="{StaticResource FontSizeLarge}" Text="{Binding CombinedInterestSaved}" TextColor="White" />
+                            <Label FontSize="{DynamicResource FontSizeXS}" Opacity="0.85" Text="INT. SAVED" TextColor="White" />
+                            <Label FontAttributes="Bold" FontSize="{DynamicResource FontSizeLarge}" Text="{Binding CombinedInterestSaved}" TextColor="White" />
                         </VerticalStackLayout>
                     </Border>
                     <Border Grid.Column="2" Padding="10,8" BackgroundColor="{DynamicResource LoanAppDefaultBackgroundColor}" StrokeShape="RoundRectangle 8" StrokeThickness="0">
                         <VerticalStackLayout Spacing="2">
-                            <Label FontSize="{StaticResource FontSizeXS}" Opacity="0.6" Text="PAID OFF IN" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
-                            <Label FontAttributes="Bold" FontSize="{StaticResource FontSizeLarge}" Text="{Binding CombinedNewTerm}" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                            <Label FontSize="{DynamicResource FontSizeXS}" Opacity="0.6" Text="PAID OFF IN" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                            <Label FontAttributes="Bold" FontSize="{DynamicResource FontSizeLarge}" Text="{Binding CombinedNewTerm}" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
                         </VerticalStackLayout>
                     </Border>
                 </Grid>
@@ -212,7 +212,7 @@
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="220"/>
                         </Grid.RowDefinitions>
-                        <Label Grid.Row="0" Text="Loan Balance Over Time" FontSize="{StaticResource FontSizeXS}" TextColor="{DynamicResource LoanAppChartAxisTextColor}" Opacity="0.7" Margin="0,0,0,2"/>
+                        <Label Grid.Row="0" Text="Loan Balance Over Time" FontSize="{DynamicResource FontSizeXS}" TextColor="{DynamicResource LoanAppChartAxisTextColor}" Opacity="0.7" Margin="0,0,0,2"/>
                         <chart:SfCartesianChart Grid.Row="1">
                             <chart:SfCartesianChart.Legend>
                                 <chart:ChartLegend Placement="Bottom" LabelStyle="{chart:ChartLegendLabelStyle TextColor={DynamicResource LoanAppChartLegendTextColor}, FontSize=10}"/>

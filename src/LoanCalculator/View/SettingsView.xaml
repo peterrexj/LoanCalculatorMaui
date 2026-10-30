@@ -51,16 +51,38 @@
             StaysOpen="True">
             <sfPopup:SfPopup.HeaderTemplate>
                 <DataTemplate>
-                    <!--  Top padding clears the iOS status bar / notch (full-screen popup).  -->
+                    <!--
+                        Top padding clears the iOS status bar / notch (full-screen popup).
+
+                        THE ACTUAL CAUSE, found by comparison rather than guessing a third time:
+                        this SfPopup set AutoSizeMode="Height". PopupDisclaimerView.xaml — the
+                        first-launch disclaimer, confirmed working per CLAUDE.md, with the exact
+                        same unbounded-ScrollView content shape as this one — does NOT set it at
+                        all. AutoSizeMode="Height" is only needed when an SfComboBox lives inside
+                        the popup (see CLAUDE.md's note on that), which is not the case here; it
+                        was never load-bearing for this popup's actual content.
+
+                        Two earlier attempts targeted the wrong thing and are recorded here so they
+                        are not re-tried: a MinimumHeightRequest + WordWrap fix (theory: not enough
+                        room) had no effect, and reverting FontSize to a fixed literal (theory: a
+                        live DynamicResource change wasn't being picked up by an already-realized
+                        template) ALSO had no effect — which, in hindsight, was the real tell: if
+                        a non-reactive, fixed-at-construction value still failed to show, the fault
+                        could never have been about reactivity at all. FontSize is back to
+                        {DynamicResource FontSizeXL} now that AutoSizeMode is gone; there is no
+                        more reason to exclude this title from the Text size feature.
+                    -->
                     <Grid
-                        Padding="{OnPlatform iOS='0,50,0,8', MacCatalyst='0,50,0,8', Default='0,8,0,8'}"
+                        Padding="{OnPlatform iOS='0,50,0,20', MacCatalyst='0,50,0,20', Default='0,20,0,20'}"
+                        MinimumHeightRequest="{OnPlatform iOS=110, MacCatalyst=110, Default=80}"
                         BackgroundColor="{DynamicResource LoanAppPopupBg}">
                         <Label
                             BackgroundColor="Transparent"
                             FontAttributes="Bold"
                             FontFamily="{DynamicResource DefaultFontFamily}"
-                            FontSize="{StaticResource FontSizeXL}"
+                            FontSize="{DynamicResource FontSizeXL}"
                             HorizontalTextAlignment="Center"
+                            LineBreakMode="WordWrap"
                             Text="Disclaimer"
                             TextColor="{DynamicResource LoanAppPopupFg}"
                             VerticalTextAlignment="Center" />
@@ -76,7 +98,7 @@
                             Command="{Binding PopupCloseCommand}"
                             FontAttributes="Bold"
                             FontFamily="{DynamicResource DefaultFontFamily}"
-                            FontSize="{StaticResource FontSizeLarge}"
+                            FontSize="{DynamicResource FontSizeLarge}"
                             IsVisible="{Binding IsActive}"
                             Text="Close"
                             TextColor="{DynamicResource LoanAppPopupFg}" />
@@ -129,7 +151,7 @@
         <!--  Privacy Policy Popup  -->
         <sfPopup:SfPopup
             x:Name="PopupPrivacyPolicy"
-            Padding="10,25,10,20"
+            Padding="10,0,10,20"
             AnimationMode="Zoom"
             AppearanceMode="OneButton"
             BackgroundColor="{DynamicResource LoanAppPopupBg}"
@@ -141,16 +163,38 @@
             StaysOpen="True">
             <sfPopup:SfPopup.HeaderTemplate>
                 <DataTemplate>
-                    <!--  Top padding clears the iOS status bar / notch (full-screen popup).  -->
+                    <!--
+                        Top padding clears the iOS status bar / notch (full-screen popup).
+
+                        THE ACTUAL CAUSE, found by comparison rather than guessing a third time:
+                        this SfPopup set AutoSizeMode="Height". PopupDisclaimerView.xaml — the
+                        first-launch disclaimer, confirmed working per CLAUDE.md, with the exact
+                        same unbounded-ScrollView content shape as this one — does NOT set it at
+                        all. AutoSizeMode="Height" is only needed when an SfComboBox lives inside
+                        the popup (see CLAUDE.md's note on that), which is not the case here; it
+                        was never load-bearing for this popup's actual content.
+
+                        Two earlier attempts targeted the wrong thing and are recorded here so they
+                        are not re-tried: a MinimumHeightRequest + WordWrap fix (theory: not enough
+                        room) had no effect, and reverting FontSize to a fixed literal (theory: a
+                        live DynamicResource change wasn't being picked up by an already-realized
+                        template) ALSO had no effect — which, in hindsight, was the real tell: if
+                        a non-reactive, fixed-at-construction value still failed to show, the fault
+                        could never have been about reactivity at all. FontSize is back to
+                        {DynamicResource FontSizeXL} now that AutoSizeMode is gone; there is no
+                        more reason to exclude this title from the Text size feature.
+                    -->
                     <Grid
-                        Padding="{OnPlatform iOS='0,50,0,8', MacCatalyst='0,50,0,8', Default='0,8,0,8'}"
+                        Padding="{OnPlatform iOS='0,50,0,20', MacCatalyst='0,50,0,20', Default='0,20,0,20'}"
+                        MinimumHeightRequest="{OnPlatform iOS=110, MacCatalyst=110, Default=80}"
                         BackgroundColor="{DynamicResource LoanAppPopupBg}">
                         <Label
                             BackgroundColor="Transparent"
                             FontAttributes="Bold"
                             FontFamily="{DynamicResource DefaultFontFamily}"
-                            FontSize="{StaticResource FontSizeXL}"
+                            FontSize="{DynamicResource FontSizeXL}"
                             HorizontalTextAlignment="Center"
+                            LineBreakMode="WordWrap"
                             Text="Privacy Policy"
                             TextColor="{DynamicResource LoanAppPopupFg}"
                             VerticalTextAlignment="Center" />
@@ -166,7 +210,7 @@
                             Command="{Binding PrivacyPolicyCloseCommand}"
                             FontAttributes="Bold"
                             FontFamily="{DynamicResource DefaultFontFamily}"
-                            FontSize="{StaticResource FontSizeLarge}"
+                            FontSize="{DynamicResource FontSizeLarge}"
                             IsVisible="{Binding IsActive}"
                             Text="Close"
                             TextColor="{DynamicResource LoanAppPopupFg}" />
@@ -215,7 +259,7 @@
                                         Margin="0,16,0,0"
                                         FontAttributes="Bold"
                                         FontFamily="{DynamicResource DefaultFontFamily}"
-                                        FontSize="{StaticResource FontSizeBody}"
+                                        FontSize="{DynamicResource FontSizeBody}"
                                         Text="View the online privacy policy ›"
                                         TextColor="{DynamicResource LoanAppPopupFg}">
                                         <Label.GestureRecognizers>
@@ -266,12 +310,12 @@
                         VerticalOptions="Center">
                         <Label
                             FontAttributes="Bold"
-                            FontSize="{StaticResource FontSizeHeading}"
+                            FontSize="{DynamicResource FontSizeHeading}"
                             AutomationId="SettingsPageTitle"
                             Text="Settings"
                             TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
                         <Label
-                            FontSize="{StaticResource FontSizeSmall}"
+                            FontSize="{DynamicResource FontSizeSmall}"
                             Opacity="0.55"
                             Text="Manage your preferences"
                             TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
@@ -282,7 +326,7 @@
                 <Label
                     CharacterSpacing="{StaticResource TrackingSectionHeader}"
                     Margin="4,20,4,8"
-                    FontSize="{StaticResource FontSizeSmall}"
+                    FontSize="{DynamicResource FontSizeSmall}"
                     Opacity="0.45"
                     Text="APPEARANCE"
                     TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
@@ -299,7 +343,7 @@
                         <!--  Theme  -->
                         <VerticalStackLayout Spacing="6">
                             <Label
-                                FontSize="{StaticResource FontSizeBody}"
+                                FontSize="{DynamicResource FontSizeBody}"
                                 Text="Theme"
                                 TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
                             <editors:SfComboBox
@@ -349,7 +393,7 @@
                                             <Label
                                                 Grid.Column="1"
                                                 FontFamily="{DynamicResource DefaultFontFamily}"
-                                                FontSize="{StaticResource FontSizeMedium}"
+                                                FontSize="{DynamicResource FontSizeMedium}"
                                                 Text="{Binding .}"
                                                 TextColor="{DynamicResource LoanAppComboDropDownTextColor}"
                                                 VerticalOptions="Center"
@@ -363,7 +407,7 @@
                         <!--  Font  -->
                         <VerticalStackLayout Spacing="6">
                             <Label
-                                FontSize="{StaticResource FontSizeBody}"
+                                FontSize="{DynamicResource FontSizeBody}"
                                 Text="Font"
                                 TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
                             <editors:SfComboBox
@@ -382,7 +426,7 @@
                                             <Label
                                                 Padding="12,0"
                                                 FontFamily="{Binding .}"
-                                                FontSize="{StaticResource FontSizeMedium}"
+                                                FontSize="{DynamicResource FontSizeMedium}"
                                                 Text="{Binding .}"
                                                 TextColor="{DynamicResource LoanAppComboDropDownTextColor}"
                                                 VerticalOptions="Center"
@@ -396,7 +440,7 @@
                         <!--  Currency  -->
                         <VerticalStackLayout Spacing="6">
                             <Label
-                                FontSize="{StaticResource FontSizeBody}"
+                                FontSize="{DynamicResource FontSizeBody}"
                                 Text="Currency"
                                 TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
                             <editors:SfComboBox
@@ -409,6 +453,228 @@
                                 Style="{DynamicResource SfComboBoxStyle}" />
                         </VerticalStackLayout>
 
+                        <!--
+                            Text size — Stage 3 of the font-size feature. One shared scale, four
+                            steps (Small/Default/Large/Extra Large), applied to every scalable size
+                            in the app at once by FontScaleHandler.ApplyTextSize — see that class
+                            for the full mechanism. Not independent per-section controls: that was
+                            considered and explicitly decided against when this feature was
+                            planned, in favour of one predictable control doing the whole app.
+
+                            A row of four tappable chips, NOT a combo box like Theme/Font/Currency
+                            above — two reasons, found in this order:
+
+                            1. SfComboBoxStyle sets TextHighlightMode="MultipleOccurrence" and
+                               TextSearchMode="Contains" (a search/autocomplete feature, shared by
+                               every combo on this page). With "Large" selected, the combo's Text
+                               became "Large", and that highlighting then matched every OCCURRENCE
+                               of "Large" across every dropdown row — including the one inside
+                               "Extra Large", which is why that row rendered half in the selected
+                               colour. Theme/Font/Currency never hit this because none of their
+                               option lists happen to contain one entry as a literal substring of
+                               another; Text size's four names do, and always will in English
+                               ("Extra Large" contains "Large" by construction), so there is no
+                               naming fix — the combo's shared search behaviour is the actual cause.
+                            2. A chip row is also what was separately asked for here instead of a
+                               dropdown, which happens to remove the bug at the root rather than
+                               patch around it: a Border with a TapGestureRecognizer has none of a
+                               combo's text-search machinery to misfire in the first place.
+
+                            Four Borders rather than an SfSegmentedControl, matching the Combined
+                            Strategy scenario's own frequency chips (CombinedScenarioView.xaml) —
+                            SfSegmentedControl needs SyncfusionIosTouchFix.ApplyToSegmentedControl
+                            wired per instance or it silently refuses taps on iOS (see CLAUDE.md),
+                            and SettingsView does not currently carry that wiring for any control.
+                            A TapGestureRecognizer on a plain Border has none of that risk — the
+                            same reasoning already applied to the ⓘ hints and the Projection
+                            settings disclosure earlier in this feature.
+
+                            DataTrigger against the existing SelectedTextSize string property
+                            (unchanged by this — Stage 3's VM/persistence/FontScaleHandler plumbing
+                            is agnostic to how the UI presents the choice) rather than switching to
+                            an index, so this is a markup-only change.
+
+                            The selected chip INVERTS the page's own foreground/background —
+                            BackgroundColor becomes LoanAppDefaultForegroundColor, and the label's
+                            TextColor becomes LoanAppDefaultBackgroundColor — rather than any
+                            accent colour. Three designs were tried before this one; the first two
+                            are recorded here so they are not re-tried:
+
+                            1. LoanAppTabIndicatorStrokeColor (fill) / LoanAppNavigationButtonIconColor
+                               (text) — looked fine in Forest and Warm, never checked against Dark
+                               or Light, where it computed to 1.74:1 and 1.34:1: those two tokens
+                               were never an established fill/text pair, just two tokens that both
+                               happen to have "button" in the name. Found from a screenshot of the
+                               Default chip rendering as barely-legible dark-on-dark.
+                            2. LoanAppButtonBgColor / LoanAppButtonFgColor — a REAL established
+                               pair (what ButtonStyle/ButtonLabelStyle already use), but Warm only
+                               clears 3.66:1 with it, and that is only an acceptable floor for text
+                               at SC 1.4.3's 14pt-bold large-text threshold or above. Two of these
+                               four chips are smaller than that even when bold ("Small" 11pt,
+                               "Default" 12pt), so 4.5:1 is the floor that actually applies to
+                               them, and this pairing does not clear it.
+                            3. Border StrokeThickness 1→2 with no fill change at all — contrast-safe
+                               by construction (the text colour never changed), but too subtle on a
+                               small chip to read as "selected" on an actual device; reported back
+                               as "the current selection is not highlighted".
+
+                            The inverted pair is guaranteed to clear whatever floor applies, for a
+                            reason worth stating plainly: contrast is symmetric — contrast(A, B)
+                            always equals contrast(B, A) — and LoanAppDefaultForegroundColor on
+                            LoanAppDefaultBackgroundColor is the FIRST pair ThemeContrastTests
+                            already guards ("ordinary body text"), passing comfortably in every
+                            theme. Swapping which one is foreground and which is background cannot
+                            change that number. No new contrast case needed adding for this; the
+                            existing one already proves it.
+
+                            Each chip Label also sets VerticalTextAlignment/VerticalOptions="Center"
+                            explicitly. HorizontalStackLayout stretches every child Border to match
+                            its tallest sibling, and MAUI's default VerticalTextAlignment is Start,
+                            not Center — without this, a shorter chip's text sits at the TOP of its
+                            now-taller box rather than centred in it, rather than at the top of its
+                            OWN natural size.
+
+                            Reported specifically "at Extra Large" rather than at every scale: the
+                            four chips use four different font sizes (Small/Body/Medium/Large) by
+                            design, so "Small" and the selected "XL" chip already differ in natural
+                            height at the Default scale — the one global multiplier applied by
+                            FontScaleHandler widens that SAME proportional gap into a bigger
+                            absolute pixel difference the larger the scale gets, which is what made
+                            a pre-existing, always-present misalignment finally noticeable.
+                        -->
+                        <VerticalStackLayout Spacing="6">
+                            <Label
+                                FontSize="{DynamicResource FontSizeBody}"
+                                Text="Text size"
+                                TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                            <HorizontalStackLayout Spacing="8">
+                                <Border
+                                    Padding="14,7"
+                                    AutomationId="SettingsTextSizeSmall"
+                                    BackgroundColor="Transparent"
+                                    Stroke="{DynamicResource LoanAppTabIndicatorStrokeColor}"
+                                    StrokeShape="RoundRectangle 16"
+                                    StrokeThickness="1">
+                                    <Border.GestureRecognizers>
+                                        <TapGestureRecognizer Tapped="OnTextSizeSmallTapped" />
+                                    </Border.GestureRecognizers>
+                                    <Border.Triggers>
+                                        <DataTrigger Binding="{Binding SelectedTextSize}" TargetType="Border" Value="Small">
+                                            <Setter Property="StrokeThickness" Value="2" />
+                                            <Setter Property="BackgroundColor" Value="{DynamicResource LoanAppDefaultForegroundColor}" />
+                                        </DataTrigger>
+                                    </Border.Triggers>
+                                    <Label
+                                        FontSize="{DynamicResource FontSizeSmall}"
+                                        HorizontalTextAlignment="Center"
+                                        Text="Small"
+                                        TextColor="{DynamicResource LoanAppDefaultForegroundColor}"
+                                        VerticalOptions="Center"
+                                        VerticalTextAlignment="Center">
+                                        <Label.Triggers>
+                                            <DataTrigger Binding="{Binding SelectedTextSize}" TargetType="Label" Value="Small">
+                                                <Setter Property="FontAttributes" Value="Bold" />
+                                                <Setter Property="TextColor" Value="{DynamicResource LoanAppDefaultBackgroundColor}" />
+                                            </DataTrigger>
+                                        </Label.Triggers>
+                                    </Label>
+                                </Border>
+                                <Border
+                                    Padding="14,7"
+                                    AutomationId="SettingsTextSizeDefault"
+                                    BackgroundColor="Transparent"
+                                    Stroke="{DynamicResource LoanAppTabIndicatorStrokeColor}"
+                                    StrokeShape="RoundRectangle 16"
+                                    StrokeThickness="1">
+                                    <Border.GestureRecognizers>
+                                        <TapGestureRecognizer Tapped="OnTextSizeDefaultTapped" />
+                                    </Border.GestureRecognizers>
+                                    <Border.Triggers>
+                                        <DataTrigger Binding="{Binding SelectedTextSize}" TargetType="Border" Value="Default">
+                                            <Setter Property="StrokeThickness" Value="2" />
+                                            <Setter Property="BackgroundColor" Value="{DynamicResource LoanAppDefaultForegroundColor}" />
+                                        </DataTrigger>
+                                    </Border.Triggers>
+                                    <Label
+                                        FontSize="{DynamicResource FontSizeBody}"
+                                        HorizontalTextAlignment="Center"
+                                        Text="Default"
+                                        TextColor="{DynamicResource LoanAppDefaultForegroundColor}"
+                                        VerticalOptions="Center"
+                                        VerticalTextAlignment="Center">
+                                        <Label.Triggers>
+                                            <DataTrigger Binding="{Binding SelectedTextSize}" TargetType="Label" Value="Default">
+                                                <Setter Property="FontAttributes" Value="Bold" />
+                                                <Setter Property="TextColor" Value="{DynamicResource LoanAppDefaultBackgroundColor}" />
+                                            </DataTrigger>
+                                        </Label.Triggers>
+                                    </Label>
+                                </Border>
+                                <Border
+                                    Padding="14,7"
+                                    AutomationId="SettingsTextSizeLarge"
+                                    BackgroundColor="Transparent"
+                                    Stroke="{DynamicResource LoanAppTabIndicatorStrokeColor}"
+                                    StrokeShape="RoundRectangle 16"
+                                    StrokeThickness="1">
+                                    <Border.GestureRecognizers>
+                                        <TapGestureRecognizer Tapped="OnTextSizeLargeTapped" />
+                                    </Border.GestureRecognizers>
+                                    <Border.Triggers>
+                                        <DataTrigger Binding="{Binding SelectedTextSize}" TargetType="Border" Value="Large">
+                                            <Setter Property="StrokeThickness" Value="2" />
+                                            <Setter Property="BackgroundColor" Value="{DynamicResource LoanAppDefaultForegroundColor}" />
+                                        </DataTrigger>
+                                    </Border.Triggers>
+                                    <Label
+                                        FontSize="{DynamicResource FontSizeMedium}"
+                                        HorizontalTextAlignment="Center"
+                                        Text="Large"
+                                        TextColor="{DynamicResource LoanAppDefaultForegroundColor}"
+                                        VerticalOptions="Center"
+                                        VerticalTextAlignment="Center">
+                                        <Label.Triggers>
+                                            <DataTrigger Binding="{Binding SelectedTextSize}" TargetType="Label" Value="Large">
+                                                <Setter Property="FontAttributes" Value="Bold" />
+                                                <Setter Property="TextColor" Value="{DynamicResource LoanAppDefaultBackgroundColor}" />
+                                            </DataTrigger>
+                                        </Label.Triggers>
+                                    </Label>
+                                </Border>
+                                <Border
+                                    Padding="14,7"
+                                    AutomationId="SettingsTextSizeExtraLarge"
+                                    BackgroundColor="Transparent"
+                                    Stroke="{DynamicResource LoanAppTabIndicatorStrokeColor}"
+                                    StrokeShape="RoundRectangle 16"
+                                    StrokeThickness="1">
+                                    <Border.GestureRecognizers>
+                                        <TapGestureRecognizer Tapped="OnTextSizeExtraLargeTapped" />
+                                    </Border.GestureRecognizers>
+                                    <Border.Triggers>
+                                        <DataTrigger Binding="{Binding SelectedTextSize}" TargetType="Border" Value="Extra Large">
+                                            <Setter Property="StrokeThickness" Value="2" />
+                                            <Setter Property="BackgroundColor" Value="{DynamicResource LoanAppDefaultForegroundColor}" />
+                                        </DataTrigger>
+                                    </Border.Triggers>
+                                    <Label
+                                        FontSize="{DynamicResource FontSizeLarge}"
+                                        HorizontalTextAlignment="Center"
+                                        Text="XL"
+                                        TextColor="{DynamicResource LoanAppDefaultForegroundColor}"
+                                        VerticalOptions="Center"
+                                        VerticalTextAlignment="Center">
+                                        <Label.Triggers>
+                                            <DataTrigger Binding="{Binding SelectedTextSize}" TargetType="Label" Value="Extra Large">
+                                                <Setter Property="FontAttributes" Value="Bold" />
+                                                <Setter Property="TextColor" Value="{DynamicResource LoanAppDefaultBackgroundColor}" />
+                                            </DataTrigger>
+                                        </Label.Triggers>
+                                    </Label>
+                                </Border>
+                            </HorizontalStackLayout>
+                        </VerticalStackLayout>
+
                     </VerticalStackLayout>
                 </Border>
 
@@ -416,7 +682,7 @@
                 <Label
                     Margin="4,24,4,8"
                     FontAttributes="Bold"
-                    FontSize="{StaticResource FontSizeSmall}"
+                    FontSize="{DynamicResource FontSizeSmall}"
                     Opacity="0.55"
                     Text="STEP SIZES"
                     TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
@@ -431,7 +697,7 @@
                         <expander:SfExpander.Header>
                             <Grid Padding="0,2">
                                 <VerticalStackLayout Spacing="2">
-                                    <Label FontSize="{StaticResource FontSizeBody}" Style="{DynamicResource ExpanderHeaderLabelStyle}" Text="How much each +/− press changes a value" />
+                                    <Label FontSize="{DynamicResource FontSizeBody}" Style="{DynamicResource ExpanderHeaderLabelStyle}" Text="How much each +/− press changes a value" />
                                     <Label Style="{DynamicResource ExpanderHeaderSubLabelStyle}" Text="How much each +/− press changes a value" />
                                 </VerticalStackLayout>
                             </Grid>
@@ -444,14 +710,14 @@
                                         <ColumnDefinition Width="*" />
                                         <ColumnDefinition Width="Auto" />
                                     </Grid.ColumnDefinitions>
-                                    <Label Grid.Column="0" FontSize="{StaticResource FontSizeBody}" Text="Loan interest rate" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" VerticalOptions="Center" />
+                                    <Label Grid.Column="0" FontSize="{DynamicResource FontSizeBody}" Text="Loan interest rate" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" VerticalOptions="Center" />
                                     <Grid Grid.Column="1" ColumnSpacing="4" VerticalOptions="Center">
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="70" />
                                             <ColumnDefinition Width="Auto" />
                                         </Grid.ColumnDefinitions>
-                                        <Entry Grid.Column="0" BackgroundColor="{DynamicResource LoanAppAppShellBgColor}" FontSize="{StaticResource FontSizeBody}" HorizontalTextAlignment="Center" Keyboard="Numeric" Text="{Binding LoanRateStepText, Mode=TwoWay}" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
-                                        <Label Grid.Column="1" FontSize="{StaticResource FontSizeBody}" Text="%" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" VerticalOptions="Center" />
+                                        <Entry Grid.Column="0" BackgroundColor="{DynamicResource LoanAppAppShellBgColor}" FontSize="{DynamicResource FontSizeBody}" HorizontalTextAlignment="Center" Keyboard="Numeric" Text="{Binding LoanRateStepText, Mode=TwoWay}" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                                        <Label Grid.Column="1" FontSize="{DynamicResource FontSizeBody}" Text="%" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" VerticalOptions="Center" />
                                     </Grid>
                                 </Grid>
 
@@ -462,14 +728,14 @@
                                         <ColumnDefinition Width="*" />
                                         <ColumnDefinition Width="Auto" />
                                     </Grid.ColumnDefinitions>
-                                    <Label Grid.Column="0" FontSize="{StaticResource FontSizeBody}" Text="What-If rate" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" VerticalOptions="Center" />
+                                    <Label Grid.Column="0" FontSize="{DynamicResource FontSizeBody}" Text="What-If rate" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" VerticalOptions="Center" />
                                     <Grid Grid.Column="1" ColumnSpacing="4" VerticalOptions="Center">
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="70" />
                                             <ColumnDefinition Width="Auto" />
                                         </Grid.ColumnDefinitions>
-                                        <Entry Grid.Column="0" BackgroundColor="{DynamicResource LoanAppAppShellBgColor}" FontSize="{StaticResource FontSizeBody}" HorizontalTextAlignment="Center" Keyboard="Numeric" Text="{Binding WhatIfRateStepText, Mode=TwoWay}" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
-                                        <Label Grid.Column="1" FontSize="{StaticResource FontSizeBody}" Text="%" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" VerticalOptions="Center" />
+                                        <Entry Grid.Column="0" BackgroundColor="{DynamicResource LoanAppAppShellBgColor}" FontSize="{DynamicResource FontSizeBody}" HorizontalTextAlignment="Center" Keyboard="Numeric" Text="{Binding WhatIfRateStepText, Mode=TwoWay}" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                                        <Label Grid.Column="1" FontSize="{DynamicResource FontSizeBody}" Text="%" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" VerticalOptions="Center" />
                                     </Grid>
                                 </Grid>
 
@@ -480,8 +746,8 @@
                                         <ColumnDefinition Width="*" />
                                         <ColumnDefinition Width="90" />
                                     </Grid.ColumnDefinitions>
-                                    <Label Grid.Column="0" FontSize="{StaticResource FontSizeBody}" Text="Monthly repayment" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" VerticalOptions="Center" />
-                                    <Entry Grid.Column="1" BackgroundColor="{DynamicResource LoanAppAppShellBgColor}" FontSize="{StaticResource FontSizeBody}" HorizontalTextAlignment="Center" Keyboard="Numeric" Text="{Binding WhatIfMonthlyStepText, Mode=TwoWay}" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                                    <Label Grid.Column="0" FontSize="{DynamicResource FontSizeBody}" Text="Monthly repayment" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" VerticalOptions="Center" />
+                                    <Entry Grid.Column="1" BackgroundColor="{DynamicResource LoanAppAppShellBgColor}" FontSize="{DynamicResource FontSizeBody}" HorizontalTextAlignment="Center" Keyboard="Numeric" Text="{Binding WhatIfMonthlyStepText, Mode=TwoWay}" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
                                 </Grid>
 
                                 <BoxView Style="{DynamicResource LoanAppSeparatorInsetStyle}" />
@@ -491,8 +757,8 @@
                                         <ColumnDefinition Width="*" />
                                         <ColumnDefinition Width="90" />
                                     </Grid.ColumnDefinitions>
-                                    <Label Grid.Column="0" FontSize="{StaticResource FontSizeBody}" Text="Lump sum" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" VerticalOptions="Center" />
-                                    <Entry Grid.Column="1" BackgroundColor="{DynamicResource LoanAppAppShellBgColor}" FontSize="{StaticResource FontSizeBody}" HorizontalTextAlignment="Center" Keyboard="Numeric" Text="{Binding WhatIfLumpSumStepText, Mode=TwoWay}" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                                    <Label Grid.Column="0" FontSize="{DynamicResource FontSizeBody}" Text="Lump sum" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" VerticalOptions="Center" />
+                                    <Entry Grid.Column="1" BackgroundColor="{DynamicResource LoanAppAppShellBgColor}" FontSize="{DynamicResource FontSizeBody}" HorizontalTextAlignment="Center" Keyboard="Numeric" Text="{Binding WhatIfLumpSumStepText, Mode=TwoWay}" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
                                 </Grid>
 
                                 <BoxView Style="{DynamicResource LoanAppSeparatorInsetStyle}" />
@@ -502,8 +768,8 @@
                                         <ColumnDefinition Width="*" />
                                         <ColumnDefinition Width="90" />
                                     </Grid.ColumnDefinitions>
-                                    <Label Grid.Column="0" FontSize="{StaticResource FontSizeBody}" Text="Offset balance" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" VerticalOptions="Center" />
-                                    <Entry Grid.Column="1" BackgroundColor="{DynamicResource LoanAppAppShellBgColor}" FontSize="{StaticResource FontSizeBody}" HorizontalTextAlignment="Center" Keyboard="Numeric" Text="{Binding WhatIfOffsetStepText, Mode=TwoWay}" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                                    <Label Grid.Column="0" FontSize="{DynamicResource FontSizeBody}" Text="Offset balance" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" VerticalOptions="Center" />
+                                    <Entry Grid.Column="1" BackgroundColor="{DynamicResource LoanAppAppShellBgColor}" FontSize="{DynamicResource FontSizeBody}" HorizontalTextAlignment="Center" Keyboard="Numeric" Text="{Binding WhatIfOffsetStepText, Mode=TwoWay}" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
                                 </Grid>
 
                                 <BoxView Style="{DynamicResource LoanAppSeparatorInsetStyle}" />
@@ -513,14 +779,14 @@
                                         <ColumnDefinition Width="*" />
                                         <ColumnDefinition Width="Auto" />
                                     </Grid.ColumnDefinitions>
-                                    <Label Grid.Column="0" FontSize="{StaticResource FontSizeBody}" Text="Growth rate" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" VerticalOptions="Center" />
+                                    <Label Grid.Column="0" FontSize="{DynamicResource FontSizeBody}" Text="Growth rate" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" VerticalOptions="Center" />
                                     <Grid Grid.Column="1" ColumnSpacing="4" VerticalOptions="Center">
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="70" />
                                             <ColumnDefinition Width="Auto" />
                                         </Grid.ColumnDefinitions>
-                                        <Entry Grid.Column="0" BackgroundColor="{DynamicResource LoanAppAppShellBgColor}" FontSize="{StaticResource FontSizeBody}" HorizontalTextAlignment="Center" Keyboard="Numeric" Text="{Binding GrowthRateStepText, Mode=TwoWay}" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
-                                        <Label Grid.Column="1" FontSize="{StaticResource FontSizeBody}" Text="%" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" VerticalOptions="Center" />
+                                        <Entry Grid.Column="0" BackgroundColor="{DynamicResource LoanAppAppShellBgColor}" FontSize="{DynamicResource FontSizeBody}" HorizontalTextAlignment="Center" Keyboard="Numeric" Text="{Binding GrowthRateStepText, Mode=TwoWay}" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                                        <Label Grid.Column="1" FontSize="{DynamicResource FontSizeBody}" Text="%" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" VerticalOptions="Center" />
                                     </Grid>
                                 </Grid>
 
@@ -533,7 +799,7 @@
                 <Label
                     Margin="4,24,4,8"
                     FontAttributes="Bold"
-                    FontSize="{StaticResource FontSizeSmall}"
+                    FontSize="{DynamicResource FontSizeSmall}"
                     Opacity="0.55"
                     Text="WHAT-IF DEFAULTS"
                     TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
@@ -548,7 +814,7 @@
                         <expander:SfExpander.Header>
                             <Grid Padding="0,2">
                                 <VerticalStackLayout Spacing="2">
-                                    <Label FontSize="{StaticResource FontSizeBody}" Style="{DynamicResource ExpanderHeaderLabelStyle}" Text="What What If opens with" />
+                                    <Label FontSize="{DynamicResource FontSizeBody}" Style="{DynamicResource ExpanderHeaderLabelStyle}" Text="What What If opens with" />
                                     <Label Style="{DynamicResource ExpanderHeaderSubLabelStyle}" Text="Initial values shown when What-If page loads" />
                                 </VerticalStackLayout>
                             </Grid>
@@ -561,14 +827,14 @@
                                         <ColumnDefinition Width="*" />
                                         <ColumnDefinition Width="Auto" />
                                     </Grid.ColumnDefinitions>
-                                    <Label Grid.Column="0" FontSize="{StaticResource FontSizeBody}" Text="Rate change delta" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" VerticalOptions="Center" />
+                                    <Label Grid.Column="0" FontSize="{DynamicResource FontSizeBody}" Text="Rate change delta" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" VerticalOptions="Center" />
                                     <Grid Grid.Column="1" ColumnSpacing="4" VerticalOptions="Center">
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="70" />
                                             <ColumnDefinition Width="Auto" />
                                         </Grid.ColumnDefinitions>
-                                        <Entry Grid.Column="0" BackgroundColor="{DynamicResource LoanAppAppShellBgColor}" FontSize="{StaticResource FontSizeBody}" HorizontalTextAlignment="Center" Keyboard="Numeric" Text="{Binding WhatIfRateDeltaText, Mode=TwoWay}" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
-                                        <Label Grid.Column="1" FontSize="{StaticResource FontSizeBody}" Text="%" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" VerticalOptions="Center" />
+                                        <Entry Grid.Column="0" BackgroundColor="{DynamicResource LoanAppAppShellBgColor}" FontSize="{DynamicResource FontSizeBody}" HorizontalTextAlignment="Center" Keyboard="Numeric" Text="{Binding WhatIfRateDeltaText, Mode=TwoWay}" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                                        <Label Grid.Column="1" FontSize="{DynamicResource FontSizeBody}" Text="%" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" VerticalOptions="Center" />
                                     </Grid>
                                 </Grid>
 
@@ -579,8 +845,8 @@
                                         <ColumnDefinition Width="*" />
                                         <ColumnDefinition Width="90" />
                                     </Grid.ColumnDefinitions>
-                                    <Label Grid.Column="0" FontSize="{StaticResource FontSizeBody}" Text="Extra repayment" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" VerticalOptions="Center" />
-                                    <Entry Grid.Column="1" BackgroundColor="{DynamicResource LoanAppAppShellBgColor}" FontSize="{StaticResource FontSizeBody}" HorizontalTextAlignment="Center" Keyboard="Numeric" Text="{Binding WhatIfExtraRepaymentText, Mode=TwoWay}" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                                    <Label Grid.Column="0" FontSize="{DynamicResource FontSizeBody}" Text="Extra repayment" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" VerticalOptions="Center" />
+                                    <Entry Grid.Column="1" BackgroundColor="{DynamicResource LoanAppAppShellBgColor}" FontSize="{DynamicResource FontSizeBody}" HorizontalTextAlignment="Center" Keyboard="Numeric" Text="{Binding WhatIfExtraRepaymentText, Mode=TwoWay}" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
                                 </Grid>
 
                                 <BoxView Style="{DynamicResource LoanAppSeparatorInsetStyle}" />
@@ -590,8 +856,8 @@
                                         <ColumnDefinition Width="*" />
                                         <ColumnDefinition Width="90" />
                                     </Grid.ColumnDefinitions>
-                                    <Label Grid.Column="0" FontSize="{StaticResource FontSizeBody}" Text="Lump sum" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" VerticalOptions="Center" />
-                                    <Entry Grid.Column="1" BackgroundColor="{DynamicResource LoanAppAppShellBgColor}" FontSize="{StaticResource FontSizeBody}" HorizontalTextAlignment="Center" Keyboard="Numeric" Text="{Binding WhatIfLumpSumText, Mode=TwoWay}" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                                    <Label Grid.Column="0" FontSize="{DynamicResource FontSizeBody}" Text="Lump sum" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" VerticalOptions="Center" />
+                                    <Entry Grid.Column="1" BackgroundColor="{DynamicResource LoanAppAppShellBgColor}" FontSize="{DynamicResource FontSizeBody}" HorizontalTextAlignment="Center" Keyboard="Numeric" Text="{Binding WhatIfLumpSumText, Mode=TwoWay}" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
                                 </Grid>
 
                                 <BoxView Style="{DynamicResource LoanAppSeparatorInsetStyle}" />
@@ -601,8 +867,8 @@
                                         <ColumnDefinition Width="*" />
                                         <ColumnDefinition Width="90" />
                                     </Grid.ColumnDefinitions>
-                                    <Label Grid.Column="0" FontSize="{StaticResource FontSizeBody}" Text="Offset balance" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" VerticalOptions="Center" />
-                                    <Entry Grid.Column="1" BackgroundColor="{DynamicResource LoanAppAppShellBgColor}" FontSize="{StaticResource FontSizeBody}" HorizontalTextAlignment="Center" Keyboard="Numeric" Text="{Binding WhatIfOffsetBalanceText, Mode=TwoWay}" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                                    <Label Grid.Column="0" FontSize="{DynamicResource FontSizeBody}" Text="Offset balance" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" VerticalOptions="Center" />
+                                    <Entry Grid.Column="1" BackgroundColor="{DynamicResource LoanAppAppShellBgColor}" FontSize="{DynamicResource FontSizeBody}" HorizontalTextAlignment="Center" Keyboard="Numeric" Text="{Binding WhatIfOffsetBalanceText, Mode=TwoWay}" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
                                 </Grid>
 
                             </VerticalStackLayout>
@@ -614,7 +880,7 @@
                 <Label
                     Margin="4,24,4,8"
                     FontAttributes="Bold"
-                    FontSize="{StaticResource FontSizeSmall}"
+                    FontSize="{DynamicResource FontSizeSmall}"
                     Opacity="0.55"
                     Text="CALCULATOR DEFAULTS"
                     TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
@@ -629,7 +895,7 @@
                         <expander:SfExpander.Header>
                             <Grid Padding="0,2">
                                 <VerticalStackLayout Spacing="2">
-                                    <Label FontSize="{StaticResource FontSizeBody}" Style="{DynamicResource ExpanderHeaderLabelStyle}" Text="Pre-filled values and limits" />
+                                    <Label FontSize="{DynamicResource FontSizeBody}" Style="{DynamicResource ExpanderHeaderLabelStyle}" Text="Pre-filled values and limits" />
                                     <Label Style="{DynamicResource ExpanderHeaderSubLabelStyle}" Text="Pre-filled values and limits for the calculator" />
                                 </VerticalStackLayout>
                             </Grid>
@@ -680,8 +946,8 @@
                                         </VisualStateManager.VisualStateGroups>
                                     </buttons:SfSwitch>
                                     <VerticalStackLayout Grid.Column="1" Spacing="1" VerticalOptions="Center">
-                                        <Label FontSize="{StaticResource FontSizeBody}" Text="Australian property mode" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
-                                        <Label FontSize="{StaticResource FontSizeSmall}" Opacity="0.55" Text="Enables stamp duty calculator by state on the Loan tab" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                                        <Label FontSize="{DynamicResource FontSizeBody}" Text="Australian property mode" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                                        <Label FontSize="{DynamicResource FontSizeSmall}" Opacity="0.55" Text="Enables stamp duty calculator by state on the Loan tab" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
                                     </VerticalStackLayout>
                                 </Grid>
 
@@ -731,9 +997,9 @@
                                         </VisualStateManager.VisualStateGroups>
                                     </buttons:SfSwitch>
                                     <VerticalStackLayout Grid.Column="1" Spacing="1" VerticalOptions="Center">
-                                        <Label FontSize="{StaticResource FontSizeBody}" Text="Show Stamp Duty" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
-                                        <Label FontSize="{StaticResource FontSizeSmall}" Opacity="0.55" Text="Show stamp duty field in upfront costs" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
-                                        <Label FontSize="{StaticResource FontSizeSmall}" IsVisible="{Binding IsAustralianModeEnabled}" Opacity="0.45" Text="Always on — required when Australian mode is active" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                                        <Label FontSize="{DynamicResource FontSizeBody}" Text="Show Stamp Duty" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                                        <Label FontSize="{DynamicResource FontSizeSmall}" Opacity="0.55" Text="Show stamp duty field in upfront costs" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                                        <Label FontSize="{DynamicResource FontSizeSmall}" IsVisible="{Binding IsAustralianModeEnabled}" Opacity="0.45" Text="Always on — required when Australian mode is active" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
                                     </VerticalStackLayout>
                                 </Grid>
 
@@ -746,16 +1012,16 @@
                                         <ColumnDefinition Width="Auto" />
                                     </Grid.ColumnDefinitions>
                                     <VerticalStackLayout Grid.Column="0" Spacing="1" VerticalOptions="Center">
-                                        <Label FontSize="{StaticResource FontSizeBody}" Text="Default interest rate" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
-                                        <Label FontSize="{StaticResource FontSizeSmall}" Opacity="0.55" Text="Pre-filled rate when starting fresh" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                                        <Label FontSize="{DynamicResource FontSizeBody}" Text="Default interest rate" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                                        <Label FontSize="{DynamicResource FontSizeSmall}" Opacity="0.55" Text="Pre-filled rate when starting fresh" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
                                     </VerticalStackLayout>
                                     <Grid Grid.Column="1" ColumnSpacing="4" VerticalOptions="Center">
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="70" />
                                             <ColumnDefinition Width="Auto" />
                                         </Grid.ColumnDefinitions>
-                                        <Entry Grid.Column="0" BackgroundColor="{DynamicResource LoanAppAppShellBgColor}" FontSize="{StaticResource FontSizeBody}" HorizontalTextAlignment="Center" Keyboard="Numeric" Text="{Binding DefaultInterestRateText, Mode=TwoWay}" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
-                                        <Label Grid.Column="1" FontSize="{StaticResource FontSizeBody}" Text="%" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" VerticalOptions="Center" />
+                                        <Entry Grid.Column="0" BackgroundColor="{DynamicResource LoanAppAppShellBgColor}" FontSize="{DynamicResource FontSizeBody}" HorizontalTextAlignment="Center" Keyboard="Numeric" Text="{Binding DefaultInterestRateText, Mode=TwoWay}" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                                        <Label Grid.Column="1" FontSize="{DynamicResource FontSizeBody}" Text="%" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" VerticalOptions="Center" />
                                     </Grid>
                                 </Grid>
 
@@ -768,8 +1034,8 @@
                                         <ColumnDefinition Width="Auto" />
                                     </Grid.ColumnDefinitions>
                                     <VerticalStackLayout Grid.Column="0" Spacing="1" VerticalOptions="Center">
-                                        <Label FontSize="{StaticResource FontSizeBody}" Text="Default loan term" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
-                                        <Label FontSize="{StaticResource FontSizeSmall}" Opacity="0.55" Text="Pre-filled years when starting fresh" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                                        <Label FontSize="{DynamicResource FontSizeBody}" Text="Default loan term" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                                        <Label FontSize="{DynamicResource FontSizeSmall}" Opacity="0.55" Text="Pre-filled years when starting fresh" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
                                     </VerticalStackLayout>
                                     <Border Grid.Column="1" BackgroundColor="{DynamicResource LoanAppAppShellBgColor}" Stroke="{DynamicResource BorderControlGradientBrush}" StrokeShape="RoundRectangle 8" StrokeThickness="1" VerticalOptions="Center">
                                         <Grid ColumnSpacing="0">
@@ -778,9 +1044,9 @@
                                                 <ColumnDefinition Width="50" />
                                                 <ColumnDefinition Width="44" />
                                             </Grid.ColumnDefinitions>
-                                            <Button Grid.Column="0" BackgroundColor="Transparent" Padding="0" Clicked="OnDefaultLoanTermDecrement" FontSize="{StaticResource FontSizeMedium}" Text="−" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
-                                            <Label Grid.Column="1" FontSize="{StaticResource FontSizeBody}" HorizontalTextAlignment="Center" Text="{Binding DefaultLoanTermYears}" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" VerticalOptions="Center" />
-                                            <Button Grid.Column="2" BackgroundColor="Transparent" Padding="0" Clicked="OnDefaultLoanTermIncrement" FontSize="{StaticResource FontSizeMedium}" Text="+" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                                            <Button Grid.Column="0" BackgroundColor="Transparent" Padding="0" Clicked="OnDefaultLoanTermDecrement" FontSize="{DynamicResource FontSizeMedium}" Text="−" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                                            <Label Grid.Column="1" FontSize="{DynamicResource FontSizeBody}" HorizontalTextAlignment="Center" Text="{Binding DefaultLoanTermYears}" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" VerticalOptions="Center" />
+                                            <Button Grid.Column="2" BackgroundColor="Transparent" Padding="0" Clicked="OnDefaultLoanTermIncrement" FontSize="{DynamicResource FontSizeMedium}" Text="+" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
                                         </Grid>
                                     </Border>
                                 </Grid>
@@ -794,8 +1060,8 @@
                                         <ColumnDefinition Width="Auto" />
                                     </Grid.ColumnDefinitions>
                                     <VerticalStackLayout Grid.Column="0" Spacing="1" VerticalOptions="Center">
-                                        <Label FontSize="{StaticResource FontSizeBody}" Text="Max loan term" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
-                                        <Label FontSize="{StaticResource FontSizeSmall}" Opacity="0.55" Text="Upper limit for term inputs (10–50 yrs)" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                                        <Label FontSize="{DynamicResource FontSizeBody}" Text="Max loan term" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                                        <Label FontSize="{DynamicResource FontSizeSmall}" Opacity="0.55" Text="Upper limit for term inputs (10–50 yrs)" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
                                     </VerticalStackLayout>
                                     <Border Grid.Column="1" BackgroundColor="{DynamicResource LoanAppAppShellBgColor}" Stroke="{DynamicResource BorderControlGradientBrush}" StrokeShape="RoundRectangle 8" StrokeThickness="1" VerticalOptions="Center">
                                         <Grid ColumnSpacing="0">
@@ -804,9 +1070,9 @@
                                                 <ColumnDefinition Width="50" />
                                                 <ColumnDefinition Width="44" />
                                             </Grid.ColumnDefinitions>
-                                            <Button Grid.Column="0" BackgroundColor="Transparent" Padding="0" Clicked="OnMaxLoanTermDecrement" FontSize="{StaticResource FontSizeMedium}" Text="−" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
-                                            <Label Grid.Column="1" FontSize="{StaticResource FontSizeBody}" HorizontalTextAlignment="Center" Text="{Binding MaxLoanTermYears}" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" VerticalOptions="Center" />
-                                            <Button Grid.Column="2" BackgroundColor="Transparent" Padding="0" Clicked="OnMaxLoanTermIncrement" FontSize="{StaticResource FontSizeMedium}" Text="+" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                                            <Button Grid.Column="0" BackgroundColor="Transparent" Padding="0" Clicked="OnMaxLoanTermDecrement" FontSize="{DynamicResource FontSizeMedium}" Text="−" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                                            <Label Grid.Column="1" FontSize="{DynamicResource FontSizeBody}" HorizontalTextAlignment="Center" Text="{Binding MaxLoanTermYears}" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" VerticalOptions="Center" />
+                                            <Button Grid.Column="2" BackgroundColor="Transparent" Padding="0" Clicked="OnMaxLoanTermIncrement" FontSize="{DynamicResource FontSizeMedium}" Text="+" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
                                         </Grid>
                                     </Border>
                                 </Grid>
@@ -820,8 +1086,8 @@
                                         <ColumnDefinition Width="Auto" />
                                     </Grid.ColumnDefinitions>
                                     <VerticalStackLayout Grid.Column="0" Spacing="1" VerticalOptions="Center">
-                                        <Label FontSize="{StaticResource FontSizeBody}" Text="Default projection years" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
-                                        <Label FontSize="{StaticResource FontSizeSmall}" Opacity="0.55" Text="Starting value for projection sliders" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                                        <Label FontSize="{DynamicResource FontSizeBody}" Text="Default projection years" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                                        <Label FontSize="{DynamicResource FontSizeSmall}" Opacity="0.55" Text="Starting value for projection sliders" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
                                     </VerticalStackLayout>
                                     <Border Grid.Column="1" BackgroundColor="{DynamicResource LoanAppAppShellBgColor}" Stroke="{DynamicResource BorderControlGradientBrush}" StrokeShape="RoundRectangle 8" StrokeThickness="1" VerticalOptions="Center">
                                         <Grid ColumnSpacing="0">
@@ -830,9 +1096,9 @@
                                                 <ColumnDefinition Width="50" />
                                                 <ColumnDefinition Width="44" />
                                             </Grid.ColumnDefinitions>
-                                            <Button Grid.Column="0" BackgroundColor="Transparent" Padding="0" Clicked="OnDefaultProjectionYearsDecrement" FontSize="{StaticResource FontSizeMedium}" Text="−" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
-                                            <Label Grid.Column="1" FontSize="{StaticResource FontSizeBody}" HorizontalTextAlignment="Center" Text="{Binding DefaultProjectionYears}" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" VerticalOptions="Center" />
-                                            <Button Grid.Column="2" BackgroundColor="Transparent" Padding="0" Clicked="OnDefaultProjectionYearsIncrement" FontSize="{StaticResource FontSizeMedium}" Text="+" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                                            <Button Grid.Column="0" BackgroundColor="Transparent" Padding="0" Clicked="OnDefaultProjectionYearsDecrement" FontSize="{DynamicResource FontSizeMedium}" Text="−" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                                            <Label Grid.Column="1" FontSize="{DynamicResource FontSizeBody}" HorizontalTextAlignment="Center" Text="{Binding DefaultProjectionYears}" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" VerticalOptions="Center" />
+                                            <Button Grid.Column="2" BackgroundColor="Transparent" Padding="0" Clicked="OnDefaultProjectionYearsIncrement" FontSize="{DynamicResource FontSizeMedium}" Text="+" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
                                         </Grid>
                                     </Border>
                                 </Grid>
@@ -846,8 +1112,8 @@
                                         <ColumnDefinition Width="Auto" />
                                     </Grid.ColumnDefinitions>
                                     <VerticalStackLayout Grid.Column="0" Spacing="1" VerticalOptions="Center">
-                                        <Label FontSize="{StaticResource FontSizeBody}" Text="Max projection years" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
-                                        <Label FontSize="{StaticResource FontSizeSmall}" Opacity="0.55" Text="Upper limit for projection sliders (5–50)" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                                        <Label FontSize="{DynamicResource FontSizeBody}" Text="Max projection years" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                                        <Label FontSize="{DynamicResource FontSizeSmall}" Opacity="0.55" Text="Upper limit for projection sliders (5–50)" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
                                     </VerticalStackLayout>
                                     <Border Grid.Column="1" BackgroundColor="{DynamicResource LoanAppAppShellBgColor}" Stroke="{DynamicResource BorderControlGradientBrush}" StrokeShape="RoundRectangle 8" StrokeThickness="1" VerticalOptions="Center">
                                         <Grid ColumnSpacing="0">
@@ -856,9 +1122,9 @@
                                                 <ColumnDefinition Width="50" />
                                                 <ColumnDefinition Width="44" />
                                             </Grid.ColumnDefinitions>
-                                            <Button Grid.Column="0" BackgroundColor="Transparent" Padding="0" Clicked="OnMaxProjectionYearsDecrement" FontSize="{StaticResource FontSizeMedium}" Text="−" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
-                                            <Label Grid.Column="1" FontSize="{StaticResource FontSizeBody}" HorizontalTextAlignment="Center" Text="{Binding MaxProjectionYears}" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" VerticalOptions="Center" />
-                                            <Button Grid.Column="2" BackgroundColor="Transparent" Padding="0" Clicked="OnMaxProjectionYearsIncrement" FontSize="{StaticResource FontSizeMedium}" Text="+" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                                            <Button Grid.Column="0" BackgroundColor="Transparent" Padding="0" Clicked="OnMaxProjectionYearsDecrement" FontSize="{DynamicResource FontSizeMedium}" Text="−" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                                            <Label Grid.Column="1" FontSize="{DynamicResource FontSizeBody}" HorizontalTextAlignment="Center" Text="{Binding MaxProjectionYears}" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" VerticalOptions="Center" />
+                                            <Button Grid.Column="2" BackgroundColor="Transparent" Padding="0" Clicked="OnMaxProjectionYearsIncrement" FontSize="{DynamicResource FontSizeMedium}" Text="+" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
                                         </Grid>
                                     </Border>
                                 </Grid>
@@ -872,7 +1138,7 @@
                 <Label
                     Margin="4,24,4,8"
                     FontAttributes="Bold"
-                    FontSize="{StaticResource FontSizeSmall}"
+                    FontSize="{DynamicResource FontSizeSmall}"
                     Opacity="0.55"
                     Text="SUPPORT"
                     TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
@@ -896,11 +1162,11 @@
                             </Grid.GestureRecognizers>
                             <VerticalStackLayout Grid.Column="0" Spacing="2">
                                 <Label
-                                    FontSize="{StaticResource FontSizeBody}"
+                                    FontSize="{DynamicResource FontSizeBody}"
                                     Text="Disclaimer"
                                     TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
                                 <Label
-                                    FontSize="{StaticResource FontSizeSmall}"
+                                    FontSize="{DynamicResource FontSizeSmall}"
                                     Opacity="0.55"
                                     Text="Legal information and terms"
                                     TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
@@ -908,7 +1174,7 @@
                             <Label
                                 Grid.Column="1"
                                 FontFamily="{DynamicResource DefaultFontFamily}"
-                                FontSize="{StaticResource FontSizeMedium}"
+                                FontSize="{DynamicResource FontSizeMedium}"
                                 Opacity="0.4"
                                 Text="›"
                                 TextColor="{DynamicResource LoanAppDefaultForegroundColor}"
@@ -928,11 +1194,11 @@
                             </Grid.GestureRecognizers>
                             <VerticalStackLayout Grid.Column="0" Spacing="2">
                                 <Label
-                                    FontSize="{StaticResource FontSizeBody}"
+                                    FontSize="{DynamicResource FontSizeBody}"
                                     Text="Privacy Policy"
                                     TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
                                 <Label
-                                    FontSize="{StaticResource FontSizeSmall}"
+                                    FontSize="{DynamicResource FontSizeSmall}"
                                     Opacity="0.55"
                                     Text="How your data is handled"
                                     TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
@@ -940,7 +1206,7 @@
                             <Label
                                 Grid.Column="1"
                                 FontFamily="{DynamicResource DefaultFontFamily}"
-                                FontSize="{StaticResource FontSizeMedium}"
+                                FontSize="{DynamicResource FontSizeMedium}"
                                 Opacity="0.4"
                                 Text="›"
                                 TextColor="{DynamicResource LoanAppDefaultForegroundColor}"
@@ -960,18 +1226,18 @@
                             </Grid.GestureRecognizers>
                             <VerticalStackLayout Grid.Column="0" Spacing="2">
                                 <Label
-                                    FontSize="{StaticResource FontSizeBody}"
+                                    FontSize="{DynamicResource FontSizeBody}"
                                     Text="Share the app"
                                     TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
                                 <Label
-                                    FontSize="{StaticResource FontSizeSmall}"
+                                    FontSize="{DynamicResource FontSizeSmall}"
                                     Opacity="0.55"
                                     Text="Recommend to friends and family"
                                     TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
                             </VerticalStackLayout>
                             <Label
                                 Grid.Column="1"
-                                FontSize="{StaticResource FontSizeMedium}"
+                                FontSize="{DynamicResource FontSizeMedium}"
                                 Opacity="0.4"
                                 Text="›"
                                 TextColor="{DynamicResource LoanAppDefaultForegroundColor}"
@@ -991,18 +1257,18 @@
                             </Grid.GestureRecognizers>
                             <VerticalStackLayout Grid.Column="0" Spacing="2">
                                 <Label
-                                    FontSize="{StaticResource FontSizeBody}"
+                                    FontSize="{DynamicResource FontSizeBody}"
                                     Text="Send feedback"
                                     TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
                                 <Label
-                                    FontSize="{StaticResource FontSizeSmall}"
+                                    FontSize="{DynamicResource FontSizeSmall}"
                                     Opacity="0.55"
                                     Text="Rate us or report an issue"
                                     TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
                             </VerticalStackLayout>
                             <Label
                                 Grid.Column="1"
-                                FontSize="{StaticResource FontSizeMedium}"
+                                FontSize="{DynamicResource FontSizeMedium}"
                                 Opacity="0.4"
                                 Text="›"
                                 TextColor="{DynamicResource LoanAppDefaultForegroundColor}"
@@ -1016,7 +1282,7 @@
                 <Label
                     Margin="4,24,4,8"
                     FontAttributes="Bold"
-                    FontSize="{StaticResource FontSizeSmall}"
+                    FontSize="{DynamicResource FontSizeSmall}"
                     Opacity="0.55"
                     Text="PURCHASES"
                     TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
@@ -1037,18 +1303,18 @@
                         </Grid.GestureRecognizers>
                         <VerticalStackLayout Grid.Column="0" Spacing="2">
                             <Label
-                                FontSize="{StaticResource FontSizeBody}"
+                                FontSize="{DynamicResource FontSizeBody}"
                                 Text="Restore purchase"
                                 TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
                             <Label
-                                FontSize="{StaticResource FontSizeSmall}"
+                                FontSize="{DynamicResource FontSizeSmall}"
                                 Opacity="0.55"
                                 Text="Already bought premium? Restore here"
                                 TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
                         </VerticalStackLayout>
                         <Label
                             Grid.Column="1"
-                            FontSize="{StaticResource FontSizeMedium}"
+                            FontSize="{DynamicResource FontSizeMedium}"
                             Opacity="0.4"
                             Text="›"
                             TextColor="{DynamicResource LoanAppDefaultForegroundColor}"
@@ -1060,7 +1326,7 @@
                 <Label
                     Margin="4,24,4,8"
                     FontAttributes="Bold"
-                    FontSize="{StaticResource FontSizeSmall}"
+                    FontSize="{DynamicResource FontSizeSmall}"
                     Opacity="0.55"
                     Text="DATA"
                     TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
@@ -1081,7 +1347,7 @@
                                 </Grid.ColumnDefinitions>
                                 <VerticalStackLayout Spacing="2">
                                     <Label
-                                        FontSize="{StaticResource FontSizeBody}"
+                                        FontSize="{DynamicResource FontSizeBody}"
                                         Style="{DynamicResource ExpanderHeaderLabelStyle}"
                                         AutomationId="SettingsDeleteDataHeader"
                                         Text="Delete your data" />
@@ -1145,7 +1411,7 @@
                 <Label
                     AutomationId="SettingsVersionLabel"
                     Margin="4,16,4,0"
-                    FontSize="{StaticResource FontSizeSmall}"
+                    FontSize="{DynamicResource FontSizeSmall}"
                     HorizontalTextAlignment="Center"
                     Opacity="0.5"
                     Text="{Binding AppVersionDisplay}"
@@ -1154,12 +1420,25 @@
             </VerticalStackLayout>
         </ScrollView>
 
-        <!--  Loading overlay  -->
+        <!--
+            Loading overlay.
+
+            Fully opaque (Opacity 1), not the 0.85 this started as. At 0.85 the page behind it was
+            still faintly visible — fine for the font-FAMILY change this overlay was built for
+            (one resource, one quick re-render), but the text-SIZE change behind
+            FontScaleHandler.ApplyTextSize cascades through every DynamicResource consumer in the
+            app across up to 21 writes. Letting the page show through a translucent overlay during
+            that meant a glimpse of each intermediate, half-updated layout — which is what read as
+            "flickering with blank and appearing". Paired with ApplyTextSize now yielding between
+            each write (see that method's remarks) rather than freezing the main thread solid for
+            all 21 at once: this hides what is still happening underneath, that fixes how long it
+            takes and whether the spinner itself can still animate while it does.
+        -->
         <Grid
             BackgroundColor="{DynamicResource LoanAppDefaultBackgroundColor}"
             InputTransparent="False"
             IsVisible="{Binding IsPageBusy}"
-            Opacity="0.85">
+            Opacity="1">
             <VerticalStackLayout
                 HorizontalOptions="Center"
                 Spacing="12"
@@ -1169,7 +1448,7 @@
                     IsRunning="{Binding IsPageBusy}"
                     Color="{DynamicResource LoanAppAppShellFgColor}" />
                 <Label
-                    FontSize="{StaticResource FontSizeMedium}"
+                    FontSize="{DynamicResource FontSizeMedium}"
                     HorizontalOptions="Center"
                     Text="Loading..."
                     TextColor="{DynamicResource LoanAppPrimaryTextColor}" />

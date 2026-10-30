@@ -75,7 +75,7 @@
                                         <Span Style="{DynamicResource SpanThreeBoxAmountStyle}" Text="{Binding Income.CurrencySymbol}" />
                                         <Span Style="{DynamicResource SpanThreeBoxAmountStyle}" Text="{Binding Income.TotalMonthlySumExpenseWithComma}" />
                                         <Span
-                                            FontSize="{StaticResource FontSizeXS}"
+                                            FontSize="{DynamicResource FontSizeXS}"
                                             Style="{DynamicResource SpanThreeBoxAmountStyle}"
                                             Text="{Binding Income.TotalMonthlyExpenseBreakdownWithComma}" />
                                         <Span Text="{Binding Income.NewLine}" />
@@ -136,7 +136,7 @@
                                     </Grid.ColumnDefinitions>
                                     <Label
                                         Grid.Column="0"
-                                        FontSize="{StaticResource FontSizeBody}"
+                                        FontSize="{DynamicResource FontSizeBody}"
                                         Opacity="0.45"
                                         Text="🔍"
                                         VerticalOptions="Center" />
@@ -159,7 +159,7 @@
                                 Grid.Row="1"
                                 AutomationId="BudgetIncomeSectionHeader"
                                 Margin="4,10,4,2"
-                                FontSize="{StaticResource FontSizeSmall}"
+                                FontSize="{DynamicResource FontSizeSmall}"
                                 Opacity="0.45"
                                 Text="SOURCES"
                                 TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
@@ -214,12 +214,12 @@
                                                         Spacing="2"
                                                         VerticalOptions="Center">
                                                         <Label
-                                                            FontSize="{StaticResource FontSizeBody}"
+                                                            FontSize="{DynamicResource FontSizeBody}"
                                                             LineBreakMode="TailTruncation"
                                                             Text="{Binding Name}"
                                                             TextColor="{DynamicResource LstForegroundColor}" />
                                                         <Label
-                                                            FontSize="{StaticResource FontSizeSmall}"
+                                                            FontSize="{DynamicResource FontSizeSmall}"
                                                             Opacity="0.55"
                                                             Text="{Binding Frequency}"
                                                             TextColor="{DynamicResource LstForegroundColor}" />
@@ -227,13 +227,13 @@
                                                     <Label
                                                         Grid.Column="1"
                                                         FontAttributes="Bold"
-                                                        FontSize="{StaticResource FontSizeBody}"
+                                                        FontSize="{DynamicResource FontSizeBody}"
                                                         Text="{Binding AmountString}"
                                                         TextColor="{DynamicResource LstForegroundColor}"
                                                         VerticalOptions="Center" />
                                                     <Label
                                                         Grid.Column="2"
-                                                        FontSize="{StaticResource FontSizeMedium}"
+                                                        FontSize="{DynamicResource FontSizeMedium}"
                                                         Opacity="0.4"
                                                         Text="&#x203A;"
                                                         TextColor="{DynamicResource LstForegroundColor}"
@@ -260,13 +260,13 @@
                                 <VerticalStackLayout HorizontalOptions="Center" Spacing="8">
                                     <Label
                                         FontAttributes="Bold"
-                                        FontSize="{StaticResource FontSizeMedium}"
+                                        FontSize="{DynamicResource FontSizeMedium}"
                                         HorizontalOptions="Center"
                                         HorizontalTextAlignment="Center"
                                         Text="No income yet"
                                         TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
                                     <Label
-                                        FontSize="{StaticResource FontSizeBody}"
+                                        FontSize="{DynamicResource FontSizeBody}"
                                         HorizontalOptions="Center"
                                         HorizontalTextAlignment="Center"
                                         Opacity="0.7"
@@ -283,7 +283,7 @@
                                 Clicked="OnAddIncomeFab_Clicked"
                                 CornerRadius="28"
                                 FontAttributes="Bold"
-                                FontSize="{StaticResource FontSizeHeading}"
+                                FontSize="{DynamicResource FontSizeHeading}"
                                 HeightRequest="56"
                                 HorizontalOptions="End"
                                 Opacity="0.85"
@@ -321,7 +321,7 @@
                                         <Span Style="{DynamicResource SpanThreeBoxAmountStyle}" Text="{Binding Expense.CurrencySymbol}" />
                                         <Span Style="{DynamicResource SpanThreeBoxAmountStyle}" Text="{Binding Expense.TotalMonthlySumExpenseWithComma}" />
                                         <Span
-                                            FontSize="{StaticResource FontSizeXS}"
+                                            FontSize="{DynamicResource FontSizeXS}"
                                             Style="{DynamicResource SpanThreeBoxAmountStyle}"
                                             Text="{Binding Expense.TotalMonthlyExpenseBreakdownWithComma}" />
                                         <Span Text="{Binding Expense.NewLine}" />
@@ -345,7 +345,7 @@
                                             TextColor="{Binding ExpensesTabNetIsNegative, Converter={StaticResource NegativeToHighlightColorConverter}, ConverterParameter=LoanAppHighlightFgColor}" />
                                         <Span Text="{Binding Expense.NewLine}" />
                                         <Span
-                                            FontSize="{StaticResource FontSizeXS}"
+                                            FontSize="{DynamicResource FontSizeXS}"
                                             Text="{Binding ExpensesTabNetBreakdown}" />
                                         <Span Text="{Binding Expense.NewLine}" />
                                         <Span Style="{DynamicResource SpanThreeBoxTextStyle}" Text="{Binding ExpensesTabNetCaption}" />
@@ -397,7 +397,7 @@
                                     </Grid.ColumnDefinitions>
                                     <Label
                                         Grid.Column="0"
-                                        FontSize="{StaticResource FontSizeBody}"
+                                        FontSize="{DynamicResource FontSizeBody}"
                                         Opacity="0.45"
                                         Text="🔍"
                                         VerticalOptions="Center" />
@@ -420,7 +420,7 @@
                                 Grid.Row="1"
                                 AutomationId="BudgetExpenseSectionHeader"
                                 Margin="4,10,4,2"
-                                FontSize="{StaticResource FontSizeSmall}"
+                                FontSize="{DynamicResource FontSizeSmall}"
                                 Opacity="0.45"
                                 Text="LIVING EXPENSES"
                                 TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
@@ -471,12 +471,12 @@
                                                         Spacing="2"
                                                         VerticalOptions="Center">
                                                         <Label
-                                                            FontSize="{StaticResource FontSizeBody}"
+                                                            FontSize="{DynamicResource FontSizeBody}"
                                                             LineBreakMode="TailTruncation"
                                                             Text="{Binding Name}"
                                                             TextColor="{DynamicResource LstForegroundColor}" />
                                                         <Label
-                                                            FontSize="{StaticResource FontSizeSmall}"
+                                                            FontSize="{DynamicResource FontSizeSmall}"
                                                             Opacity="0.55"
                                                             Text="{Binding Frequency}"
                                                             TextColor="{DynamicResource LstForegroundColor}" />
@@ -484,13 +484,13 @@
                                                     <Label
                                                         Grid.Column="1"
                                                         FontAttributes="Bold"
-                                                        FontSize="{StaticResource FontSizeBody}"
+                                                        FontSize="{DynamicResource FontSizeBody}"
                                                         Text="{Binding AmountString}"
                                                         TextColor="{DynamicResource LstForegroundColor}"
                                                         VerticalOptions="Center" />
                                                     <Label
                                                         Grid.Column="2"
-                                                        FontSize="{StaticResource FontSizeMedium}"
+                                                        FontSize="{DynamicResource FontSizeMedium}"
                                                         Opacity="0.4"
                                                         Text="&#x203A;"
                                                         TextColor="{DynamicResource LstForegroundColor}"
@@ -517,13 +517,13 @@
                                 <VerticalStackLayout HorizontalOptions="Center" Spacing="8">
                                     <Label
                                         FontAttributes="Bold"
-                                        FontSize="{StaticResource FontSizeMedium}"
+                                        FontSize="{DynamicResource FontSizeMedium}"
                                         HorizontalOptions="Center"
                                         HorizontalTextAlignment="Center"
                                         Text="No expenses yet"
                                         TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
                                     <Label
-                                        FontSize="{StaticResource FontSizeBody}"
+                                        FontSize="{DynamicResource FontSizeBody}"
                                         HorizontalOptions="Center"
                                         HorizontalTextAlignment="Center"
                                         Opacity="0.7"
@@ -540,7 +540,7 @@
                                 Clicked="OnAddExpenseFab_Clicked"
                                 CornerRadius="28"
                                 FontAttributes="Bold"
-                                FontSize="{StaticResource FontSizeHeading}"
+                                FontSize="{DynamicResource FontSizeHeading}"
                                 HeightRequest="56"
                                 HorizontalOptions="End"
                                 Opacity="0.85"
@@ -605,7 +605,7 @@
                                         <FormattedString>
                                             <Span Style="{DynamicResource SpanThreeBoxCurrencyStyle}" Text="{Binding CurrencySymbol}" />
                                             <Span Style="{DynamicResource SpanThreeBoxAmountStyle}" Text="{Binding TotalMonthlyOverallExpense}" />
-                                            <Span FontSize="{StaticResource FontSizeXS}" Style="{DynamicResource SpanThreeBoxAmountStyle}" Text="{Binding TotalMonthlyOverallExpenseBreakdownWithComma}" />
+                                            <Span FontSize="{DynamicResource FontSizeXS}" Style="{DynamicResource SpanThreeBoxAmountStyle}" Text="{Binding TotalMonthlyOverallExpenseBreakdownWithComma}" />
                                             <Span Style="{DynamicResource SpanThreeBoxTextStyle}" Text=" monthly new asset overall expense" />
                                         </FormattedString>
                                     </customControls:ThreeColumnBorderedContentView.FormattedText3>
@@ -636,7 +636,7 @@
                                         </Grid.ColumnDefinitions>
                                         <Label
                                             Grid.Column="0"
-                                            FontSize="{StaticResource FontSizeBody}"
+                                            FontSize="{DynamicResource FontSizeBody}"
                                             Opacity="0.45"
                                             Text="🔍"
                                             VerticalOptions="Center" />
@@ -669,13 +669,13 @@
                                     <VerticalStackLayout HorizontalOptions="Center" Spacing="8">
                                         <Label
                                             FontAttributes="Bold"
-                                            FontSize="{StaticResource FontSizeMedium}"
+                                            FontSize="{DynamicResource FontSizeMedium}"
                                             HorizontalOptions="Center"
                                             HorizontalTextAlignment="Center"
                                             Text="No expected costs yet"
                                             TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
                                         <Label
-                                            FontSize="{StaticResource FontSizeBody}"
+                                            FontSize="{DynamicResource FontSizeBody}"
                                             HorizontalOptions="Center"
                                             HorizontalTextAlignment="Center"
                                             Opacity="0.55"
@@ -690,7 +690,7 @@
                                     Grid.Row="1"
                                     AutomationId="BudgetAssetSectionHeader"
                                     Margin="4,10,4,2"
-                                    FontSize="{StaticResource FontSizeSmall}"
+                                    FontSize="{DynamicResource FontSizeSmall}"
                                     Opacity="0.45"
                                     Text="EXPECTED ONGOING COSTS"
                                     TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
@@ -738,12 +738,12 @@
                                                         </Grid.ColumnDefinitions>
                                                         <VerticalStackLayout Grid.Column="0" Spacing="2" VerticalOptions="Center">
                                                             <Label
-                                                                FontSize="{StaticResource FontSizeBody}"
+                                                                FontSize="{DynamicResource FontSizeBody}"
                                                                 LineBreakMode="TailTruncation"
                                                                 Text="{Binding Name}"
                                                                 TextColor="{DynamicResource LstForegroundColor}" />
                                                             <Label
-                                                                FontSize="{StaticResource FontSizeSmall}"
+                                                                FontSize="{DynamicResource FontSizeSmall}"
                                                                 Opacity="0.55"
                                                                 Text="{Binding Frequency}"
                                                                 TextColor="{DynamicResource LstForegroundColor}" />
@@ -751,13 +751,13 @@
                                                         <Label
                                                             Grid.Column="1"
                                                             FontAttributes="Bold"
-                                                            FontSize="{StaticResource FontSizeBody}"
+                                                            FontSize="{DynamicResource FontSizeBody}"
                                                             Text="{Binding AmountString}"
                                                             TextColor="{DynamicResource LstForegroundColor}"
                                                             VerticalOptions="Center" />
                                                         <Label
                                                             Grid.Column="2"
-                                                            FontSize="{StaticResource FontSizeMedium}"
+                                                            FontSize="{DynamicResource FontSizeMedium}"
                                                             Opacity="0.4"
                                                             Text="&#x203A;"
                                                             TextColor="{DynamicResource LstForegroundColor}"
@@ -780,7 +780,7 @@
                                     Clicked="OnAddAssetExpenseFab_Clicked"
                                     CornerRadius="28"
                                     FontAttributes="Bold"
-                                    FontSize="{StaticResource FontSizeHeading}"
+                                    FontSize="{DynamicResource FontSizeHeading}"
                                     HeightRequest="56"
                                     HorizontalOptions="End"
                                     Text="+"
@@ -819,12 +819,12 @@
                                     StrokeThickness="0">
                                     <VerticalStackLayout HorizontalOptions="Center" Spacing="8">
                                         <Label
-                                            FontSize="{StaticResource FontSizeLarge}"
+                                            FontSize="{DynamicResource FontSizeLarge}"
                                             HorizontalTextAlignment="Center"
                                             Text="No budget data yet"
                                             TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
                                         <Label
-                                            FontSize="{StaticResource FontSizeBody}"
+                                            FontSize="{DynamicResource FontSizeBody}"
                                             HorizontalTextAlignment="Center"
                                             Opacity="0.6"
                                             Text="Add income and expense entries in the tabs above."
@@ -852,7 +852,7 @@
                                         <Grid ColumnDefinitions="*,Auto">
                                             <Label
                                                 Grid.Column="0"
-                                                FontSize="{StaticResource FontSizeSmall}"
+                                                FontSize="{DynamicResource FontSizeSmall}"
                                                 Opacity="0.6"
                                                 Text="NET EVERY MONTH"
                                                 TextColor="{DynamicResource LoanAppDefaultForegroundColor}"
@@ -866,7 +866,7 @@
                                                 Grid.Column="1"
                                                 Padding="12,8"
                                                 AutomationId="BudgetSummaryInfo"
-                                                FontSize="{StaticResource FontSizeMedium}"
+                                                FontSize="{DynamicResource FontSizeMedium}"
                                                 Text="ⓘ"
                                                 TextColor="{DynamicResource LoanAppTabIndicatorStrokeColor}"
                                                 VerticalOptions="Center">
@@ -880,7 +880,7 @@
                                             AutomationId="BudgetNetMonthly"
                                             x:Name="LblNetMonthlyHero"
                                             FontAttributes="Bold"
-                                            FontSize="32"
+                                            FontSize="{DynamicResource LoanAppTextHeroNet}"
                                             Text="{Binding NetAfterOutgoingsMonthlyFormatted}"
                                             TextColor="{DynamicResource LoanAppDefaultForegroundColor}">
                                             <Label.Triggers>
@@ -895,7 +895,7 @@
                                         <Label
                                             AutomationId="BudgetNetYearly"
                                             x:Name="LblNetYearlyHero"
-                                            FontSize="{StaticResource FontSizeSmall}"
+                                            FontSize="{DynamicResource FontSizeSmall}"
                                             Opacity="0.7"
                                             Text="{Binding NetAfterOutgoingsYearlyFormatted, StringFormat='{0} a year'}"
                                             TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
@@ -905,7 +905,7 @@
                                             x:Name="SummaryExplanationLabel"
                                             Margin="0,10,0,0"
                                             AutomationId="BudgetSummaryInfoDetail"
-                                            FontSize="{StaticResource FontSizeSmall}"
+                                            FontSize="{DynamicResource FontSizeSmall}"
                                             IsVisible="False"
                                             Opacity="0.8"
                                             Text="{Binding SummaryExplanationDetail}"
@@ -953,7 +953,7 @@
                                                     <chart:ChartLegend.LabelStyle>
                                                         <chart:ChartLegendLabelStyle
                                                             FontFamily="{DynamicResource DefaultFontFamily}"
-                                                            FontSize="{StaticResource FontSizeXS}"
+                                                            FontSize="{DynamicResource LoanAppTextChartLegend}"
                                                             TextColor="{DynamicResource LoanAppChartLegendTextColor}" />
                                                     </chart:ChartLegend.LabelStyle>
                                                 </chart:ChartLegend>
@@ -975,7 +975,7 @@
                                                             <chart:CircularDataLabelSettings.LabelStyle>
                                                                 <chart:ChartDataLabelStyle
                                                                     FontFamily="{DynamicResource DefaultFontFamily}"
-                                                                    FontSize="{StaticResource FontSizeXS}"
+                                                                    FontSize="{DynamicResource FontSizeXS}"
                                                                     LabelFormat="{Binding CurrencyFormat}" />
                                                             </chart:CircularDataLabelSettings.LabelStyle>
                                                         </chart:CircularDataLabelSettings>
@@ -987,7 +987,7 @@
                                                             VerticalOptions="Center">
                                                             <Label
                                                                 FontFamily="{DynamicResource DefaultFontFamily}"
-                                                                FontSize="{StaticResource FontSizeXS}"
+                                                                FontSize="{DynamicResource FontSizeXS}"
                                                                 HorizontalTextAlignment="Center"
                                                                 Opacity="0.6"
                                                                 Text="NET / MONTH"
@@ -995,7 +995,7 @@
                                                             <Label
                                                                 FontAttributes="Bold"
                                                                 FontFamily="{DynamicResource DefaultFontFamily}"
-                                                                FontSize="{StaticResource FontSizeSmall}"
+                                                                FontSize="{DynamicResource FontSizeSmall}"
                                                                 HorizontalTextAlignment="Center"
                                                                 Text="{Binding Source={x:Reference thisPage}, Path=BindingContext.NetAfterOutgoingsMonthlyFormatted}"
                                                                 TextColor="{DynamicResource LoanAppDonutCenterTextColor}" />
@@ -1010,7 +1010,7 @@
                                     AutomationId="BudgetSummaryCaption"
                                     Margin="0,4,0,12"
                                     FontFamily="{DynamicResource DefaultFontFamily}"
-                                    FontSize="{StaticResource FontSizeXS}"
+                                    FontSize="{DynamicResource FontSizeXS}"
                                     HorizontalOptions="Center"
                                     HorizontalTextAlignment="Center"
                                     Opacity="0.5"
@@ -1020,7 +1020,7 @@
                                 <!--  Insights section  -->
                                 <Label
                                     Margin="4,8,4,2"
-                                    FontSize="{StaticResource FontSizeSmall}"
+                                    FontSize="{DynamicResource FontSizeSmall}"
                                     Opacity="0.45"
                                     Text="INSIGHTS"
                                     TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
@@ -1046,11 +1046,11 @@
                                                 </Grid.ColumnDefinitions>
                                                 <VerticalStackLayout Grid.Column="0" Spacing="2">
                                                     <Label
-                                                        FontSize="{StaticResource FontSizeBody}"
+                                                        FontSize="{DynamicResource FontSizeBody}"
                                                         Text="Income"
                                                         TextColor="{DynamicResource LstForegroundColor}" />
                                                     <Label
-                                                        FontSize="{StaticResource FontSizeSmall}"
+                                                        FontSize="{DynamicResource FontSizeSmall}"
                                                         Opacity="0.55"
                                                         Text="{Binding IncomeSourceCountText}"
                                                         TextColor="{DynamicResource LstForegroundColor}" />
@@ -1059,7 +1059,7 @@
                                                     AutomationId="BudgetInsightsIncome"
                                                     Grid.Column="1"
                                                     FontAttributes="Bold"
-                                                    FontSize="{StaticResource FontSizeBody}"
+                                                    FontSize="{DynamicResource FontSizeBody}"
                                                     Text="{Binding TotalIncomeMonthlySigned}"
                                                     TextColor="{DynamicResource LoanAppChartColor1}"
                                                     VerticalOptions="Center" />
@@ -1078,11 +1078,11 @@
                                                 </Grid.ColumnDefinitions>
                                                 <VerticalStackLayout Grid.Column="0" Spacing="2">
                                                     <Label
-                                                        FontSize="{StaticResource FontSizeBody}"
+                                                        FontSize="{DynamicResource FontSizeBody}"
                                                         Text="Living expenses"
                                                         TextColor="{DynamicResource LstForegroundColor}" />
                                                     <Label
-                                                        FontSize="{StaticResource FontSizeSmall}"
+                                                        FontSize="{DynamicResource FontSizeSmall}"
                                                         Opacity="0.55"
                                                         Text="{Binding ExpenseRecordCountText}"
                                                         TextColor="{DynamicResource LstForegroundColor}" />
@@ -1091,7 +1091,7 @@
                                                     AutomationId="BudgetInsightsLivingExpenses"
                                                     Grid.Column="1"
                                                     FontAttributes="Bold"
-                                                    FontSize="{StaticResource FontSizeBody}"
+                                                    FontSize="{DynamicResource FontSizeBody}"
                                                     Text="{Binding TotalExpenseMonthlySigned}"
                                                     TextColor="{DynamicResource LoanAppChartColor2}"
                                                     VerticalOptions="Center" />
@@ -1110,11 +1110,11 @@
                                                 </Grid.ColumnDefinitions>
                                                 <VerticalStackLayout Grid.Column="0" Spacing="2">
                                                     <Label
-                                                        FontSize="{StaticResource FontSizeBody}"
+                                                        FontSize="{DynamicResource FontSizeBody}"
                                                         Text="Asset running costs"
                                                         TextColor="{DynamicResource LstForegroundColor}" />
                                                     <Label
-                                                        FontSize="{StaticResource FontSizeSmall}"
+                                                        FontSize="{DynamicResource FontSizeSmall}"
                                                         Opacity="0.55"
                                                         Text="Maintenance, insurance, rates"
                                                         TextColor="{DynamicResource LstForegroundColor}" />
@@ -1123,7 +1123,7 @@
                                                     AutomationId="BudgetInsightsAssetCosts"
                                                     Grid.Column="1"
                                                     FontAttributes="Bold"
-                                                    FontSize="{StaticResource FontSizeBody}"
+                                                    FontSize="{DynamicResource FontSizeBody}"
                                                     Text="{Binding AssetRunningCostMonthlyFormatted}"
                                                     TextColor="{DynamicResource LoanAppChartColor2}"
                                                     VerticalOptions="Center" />
@@ -1143,7 +1143,7 @@
                                                 <Label
                                                     Grid.Column="0"
                                                     FontAttributes="Bold"
-                                                    FontSize="{StaticResource FontSizeBody}"
+                                                    FontSize="{DynamicResource FontSizeBody}"
                                                     Text="Net"
                                                     TextColor="{DynamicResource LstForegroundColor}" />
                                                 <!--
@@ -1157,7 +1157,7 @@
                                                     AutomationId="BudgetInsightsNet"
                                                     Grid.Column="1"
                                                     FontAttributes="Bold"
-                                                    FontSize="{StaticResource FontSizeBody}"
+                                                    FontSize="{DynamicResource FontSizeBody}"
                                                     Text="{Binding NetAfterOutgoingsMonthlyFormatted}"
                                                     TextColor="{DynamicResource LoanAppChartColor1}"
                                                     VerticalOptions="Center">
@@ -1178,7 +1178,7 @@
                                 <!--  Top expenses section  -->
                                 <Label
                                     Margin="4,8,4,2"
-                                    FontSize="{StaticResource FontSizeSmall}"
+                                    FontSize="{DynamicResource FontSizeSmall}"
                                     Opacity="0.45"
                                     Text="TOP EXPENSES"
                                     TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
@@ -1204,13 +1204,13 @@
                                                         </Grid.ColumnDefinitions>
                                                         <Label
                                                             Grid.Column="0"
-                                                            FontSize="{StaticResource FontSizeBody}"
+                                                            FontSize="{DynamicResource FontSizeBody}"
                                                             Text="{Binding Name}"
                                                             TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
                                                         <Label
                                                             Grid.Column="1"
                                                             FontAttributes="Bold"
-                                                            FontSize="{StaticResource FontSizeBody}"
+                                                            FontSize="{DynamicResource FontSizeBody}"
                                                             Text="{Binding AmountString}"
                                                             TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
                                                     </Grid>
@@ -1230,7 +1230,7 @@
                                 <Label
                                     AutomationId="BudgetProjectionLink"
                                     Margin="0,4,0,0"
-                                    FontSize="{StaticResource FontSizeSmall}"
+                                    FontSize="{DynamicResource FontSizeSmall}"
                                     Text="See the projection ›"
                                     TextColor="{DynamicResource LoanAppTabIndicatorStrokeColor}"
                                     TextDecorations="Underline">
@@ -1257,7 +1257,7 @@
                                     <Label
                                         AutomationId="BudgetLoanNotCountedBanner"
                                         x:Name="LblLoanNotCounted"
-                                        FontSize="{StaticResource FontSizeSmall}"
+                                        FontSize="{DynamicResource FontSizeSmall}"
                                         TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
                                 </Border>
 
@@ -1272,7 +1272,7 @@
                                     StrokeThickness="1">
                                     <VerticalStackLayout Spacing="8">
                                         <Label
-                                            FontSize="{StaticResource FontSizeSmall}"
+                                            FontSize="{DynamicResource FontSizeSmall}"
                                             Opacity="0.6"
                                             Text="LOAN AFFORDABILITY"
                                             TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
@@ -1280,16 +1280,16 @@
                                             AutomationId="BudgetAffordabilityVerdict"
                                             x:Name="LblAffordability"
                                             FontAttributes="Bold"
-                                            FontSize="28"
+                                            FontSize="{DynamicResource LoanAppTextHeroVerdict}"
                                             TextColor="{DynamicResource LoanAppNavigationButtonBackgroundColor}" />
                                         <Label
                                             x:Name="LblAffordabilityDesc"
-                                            FontSize="{StaticResource FontSizeSmall}"
+                                            FontSize="{DynamicResource FontSizeSmall}"
                                             Opacity="0.7"
                                             TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
                                         <Label
                                             Margin="0,4,0,0"
-                                            FontSize="{StaticResource FontSizeXS}"
+                                            FontSize="{DynamicResource FontSizeXS}"
                                             Opacity="0.5"
                                             Text="{DynamicResource LoanAppEstimateMicrocopy}"
                                             TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />

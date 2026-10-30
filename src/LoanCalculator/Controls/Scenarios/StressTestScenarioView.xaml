@@ -36,8 +36,8 @@
             <BoxView Grid.Column="0" BackgroundColor="#CC3333" CornerRadius="12,0,12,0" />
             <VerticalStackLayout Grid.Column="1" Padding="14,14,14,16" Spacing="10">
 
-                <Label FontAttributes="Bold" FontSize="{StaticResource FontSizeMedium}" Text="Affordability Stress Test" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
-                <Label Margin="0,-6,0,0" FontSize="{StaticResource FontSizeSmall}" Opacity="0.6" Text="At what rate does this loan become unaffordable?" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                <Label FontAttributes="Bold" FontSize="{DynamicResource FontSizeMedium}" Text="Affordability Stress Test" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                <Label Margin="0,-6,0,0" FontSize="{DynamicResource FontSizeSmall}" Opacity="0.6" Text="At what rate does this loan become unaffordable?" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
 
                 <!--  No income/expense data yet  -->
                 <Border
@@ -48,7 +48,7 @@
                     StrokeShape="RoundRectangle 8"
                     StrokeThickness="0">
                     <Label
-                        FontSize="{StaticResource FontSizeSmall}"
+                        FontSize="{DynamicResource FontSizeSmall}"
                         Opacity="0.7"
                         Text="Record your income &amp; expenses to unlock this insight"
                         TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
@@ -64,12 +64,12 @@
                             <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
                         <VerticalStackLayout Grid.Column="0" Spacing="2">
-                            <Label FontSize="{StaticResource FontSizeSmall}" Opacity="0.6" Text="BREAKS EVEN AT" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
-                            <Label FontAttributes="Bold" FontSize="{StaticResource FontSizeXL}" Text="{Binding StressTestBreakEvenRate}" TextColor="#CC3333" />
+                            <Label FontSize="{DynamicResource FontSizeSmall}" Opacity="0.6" Text="BREAKS EVEN AT" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                            <Label FontAttributes="Bold" FontSize="{DynamicResource FontSizeXL}" Text="{Binding StressTestBreakEvenRate}" TextColor="#CC3333" />
                         </VerticalStackLayout>
                         <VerticalStackLayout Grid.Column="1" Spacing="2">
-                            <Label FontSize="{StaticResource FontSizeSmall}" Opacity="0.6" Text="YOUR BUFFER" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
-                            <Label FontAttributes="Bold" FontSize="{StaticResource FontSizeXL}" Text="{Binding StressTestRateBuffer}" TextColor="{DynamicResource LoanAppChartColor1}">
+                            <Label FontSize="{DynamicResource FontSizeSmall}" Opacity="0.6" Text="YOUR BUFFER" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                            <Label FontAttributes="Bold" FontSize="{DynamicResource FontSizeXL}" Text="{Binding StressTestRateBuffer}" TextColor="{DynamicResource LoanAppChartColor1}">
                                 <Label.Triggers>
                                     <DataTrigger Binding="{Binding StressTestRisk}" TargetType="Label" Value="0">
                                         <Setter Property="TextColor" Value="{DynamicResource LoanAppChartColor2}" />
@@ -83,8 +83,8 @@
                     </Grid>
 
                     <VerticalStackLayout Spacing="2">
-                        <Label FontSize="{StaticResource FontSizeSmall}" Opacity="0.6" Text="CURRENT MONTHLY SURPLUS" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
-                        <Label FontAttributes="Bold" FontSize="{StaticResource FontSizeMedium}" Text="{Binding StressTestCurrentSurplus}" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                        <Label FontSize="{DynamicResource FontSizeSmall}" Opacity="0.6" Text="CURRENT MONTHLY SURPLUS" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                        <Label FontAttributes="Bold" FontSize="{DynamicResource FontSizeMedium}" Text="{Binding StressTestCurrentSurplus}" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
                     </VerticalStackLayout>
 
                     <!--  Chart: Rate Capacity  -->
@@ -99,7 +99,7 @@
                                 <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="160"/>
                             </Grid.RowDefinitions>
-                            <Label Grid.Row="0" Text="Rate Capacity" FontSize="{StaticResource FontSizeXS}" TextColor="{DynamicResource LoanAppChartAxisTextColor}" Opacity="0.7" Margin="0,0,0,2"/>
+                            <Label Grid.Row="0" Text="Rate Capacity" FontSize="{DynamicResource FontSizeXS}" TextColor="{DynamicResource LoanAppChartAxisTextColor}" Opacity="0.7" Margin="0,0,0,2"/>
                             <chart:SfCartesianChart Grid.Row="1">
                                 <chart:SfCartesianChart.XAxes>
                                     <chart:CategoryAxis ShowMajorGridLines="False" LabelStyle="{chart:ChartAxisLabelStyle TextColor={DynamicResource LoanAppChartAxisTextColor}, FontSize=10}"/>
@@ -123,7 +123,7 @@
                                 <Setter Property="BackgroundColor" Value="#CC3333" />
                             </DataTrigger>
                         </Border.Triggers>
-                        <Label FontAttributes="Bold" FontSize="{StaticResource FontSizeSmall}" TextColor="{DynamicResource LoanAppChartDataMarkerTextColor1}">
+                        <Label FontAttributes="Bold" FontSize="{DynamicResource FontSizeSmall}" TextColor="{DynamicResource LoanAppChartDataMarkerTextColor1}">
                             <Label.Triggers>
                                 <DataTrigger Binding="{Binding StressTestRisk}" TargetType="Label" Value="-1">
                                     <Setter Property="Text" Value="Comfortable (estimate) — the figures you entered sit well within budget" />

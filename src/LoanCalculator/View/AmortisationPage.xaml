@@ -31,7 +31,7 @@
                     Padding="0"
                     BackgroundColor="Transparent"
                     Clicked="OnBack"
-                    FontSize="{StaticResource FontSizeXL}"
+                    FontSize="{DynamicResource FontSizeXL}"
                     HeightRequest="44"
                     Text="&#x2039;"
                     TextColor="{DynamicResource LoanAppDefaultForegroundColor}"
@@ -76,7 +76,7 @@
                                                 Grid.Column="0"
                                                 FontAttributes="Bold"
                                                 FontFamily="{DynamicResource DefaultFontFamily}"
-                                                FontSize="{StaticResource FontSizeXS}"
+                                                FontSize="{DynamicResource FontSizeXS}"
                                                 HorizontalOptions="Start"
                                                 HorizontalTextAlignment="Start"
                                                 Opacity="0.7"
@@ -86,7 +86,7 @@
                                                 Grid.Column="1"
                                                 FontAttributes="Bold"
                                                 FontFamily="{DynamicResource DefaultFontFamily}"
-                                                FontSize="{StaticResource FontSizeXS}"
+                                                FontSize="{DynamicResource FontSizeXS}"
                                                 HorizontalOptions="End"
                                                 HorizontalTextAlignment="End"
                                                 Opacity="0.7"
@@ -109,7 +109,7 @@
                                                         <chart:ChartAxisLabelStyle
                                                             FontAttributes="Bold"
                                                             FontFamily="{DynamicResource DefaultFontFamily}"
-                                                            FontSize="{StaticResource FontSizeBody}"
+                                                            FontSize="{DynamicResource LoanAppTextChartAxis}"
                                                             TextColor="{DynamicResource LoanAppChartAxisTextColor}" />
                                                     </chart:CategoryAxis.LabelStyle>
                                                     <chart:CategoryAxis.MajorTickStyle>
@@ -124,7 +124,7 @@
                                                         <chart:ChartAxisLabelStyle
                                                             FontAttributes="Bold"
                                                             FontFamily="{DynamicResource DefaultFontFamily}"
-                                                            FontSize="{StaticResource FontSizeBody}"
+                                                            FontSize="{DynamicResource LoanAppTextChartAxis}"
                                                             TextColor="{DynamicResource LoanAppChartAxisTextColor}" />
                                                     </chart:NumericalAxis.LabelStyle>
                                                     <chart:NumericalAxis.AxisLineStyle>
@@ -146,7 +146,7 @@
                                                         <chart:ChartAxisLabelStyle
                                                             FontAttributes="Bold"
                                                             FontFamily="{DynamicResource DefaultFontFamily}"
-                                                            FontSize="{StaticResource FontSizeBody}"
+                                                            FontSize="{DynamicResource LoanAppTextChartAxis}"
                                                             TextColor="{DynamicResource LoanAppChartAxisTextColor}" />
                                                     </chart:NumericalAxis.LabelStyle>
                                                     <chart:NumericalAxis.AxisLineStyle>
@@ -162,7 +162,7 @@
                                                     <chart:ChartLegend.LabelStyle>
                                                         <chart:ChartLegendLabelStyle
                                                             FontFamily="{DynamicResource DefaultFontFamily}"
-                                                            FontSize="{StaticResource FontSizeXS}"
+                                                            FontSize="{DynamicResource LoanAppTextChartLegend}"
                                                             TextColor="{DynamicResource LoanAppChartLegendTextColor}" />
                                                     </chart:ChartLegend.LabelStyle>
                                                 </chart:ChartLegend>
@@ -201,7 +201,7 @@
                             <Label
                                 Margin="0,4,0,8"
                                 FontFamily="{DynamicResource DefaultFontFamily}"
-                                FontSize="{StaticResource FontSizeXS}"
+                                FontSize="{DynamicResource FontSizeXS}"
                                 HorizontalOptions="Center"
                                 HorizontalTextAlignment="Center"
                                 Opacity="0.5"
@@ -250,11 +250,11 @@
                                                 <VerticalStackLayout Grid.Column="0" Spacing="3">
                                                     <Label
                                                         FontAttributes="Bold"
-                                                        FontSize="{StaticResource FontSizeBody}"
+                                                        FontSize="{DynamicResource FontSizeBody}"
                                                         Text="{Binding PeriodLabel}"
                                                         TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
                                                     <Label
-                                                        FontSize="{StaticResource FontSizeXS}"
+                                                        FontSize="{DynamicResource FontSizeXS}"
                                                         Opacity="0.55"
                                                         TextColor="{DynamicResource LoanAppDefaultForegroundColor}">
                                                         <Label.FormattedText>
@@ -273,12 +273,12 @@
                                                     Spacing="3">
                                                     <Label
                                                         FontAttributes="Bold"
-                                                        FontSize="{StaticResource FontSizeBody}"
+                                                        FontSize="{DynamicResource FontSizeBody}"
                                                         HorizontalTextAlignment="End"
                                                         Text="{Binding RepaymentTotal}"
                                                         TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
                                                     <Label
-                                                        FontSize="{StaticResource FontSizeXS}"
+                                                        FontSize="{DynamicResource FontSizeXS}"
                                                         HorizontalTextAlignment="End"
                                                         Opacity="0.55"
                                                         Text="{Binding EndBalance, StringFormat='{0} left'}"

@@ -258,7 +258,7 @@ namespace LoanCalculator.Core.Services
         // ║  Set to true to bypass all trial restrictions during local testing.   ║
         // ║  Search for TESTING_PREMIUM_OVERRIDE to find this flag.              ║
         // ╚══════════════════════════════════════════════════════════════════════╝
-        private const bool TESTING_PREMIUM_OVERRIDE = true; // ← set true to bypass trial gates during local testing
+        private const bool TESTING_PREMIUM_OVERRIDE = false; // ← set true to bypass trial gates during local testing
         // ────────────────────────────────────────────────────────────────────────
 
         /// <summary>
@@ -600,6 +600,35 @@ namespace LoanCalculator.Core.Services
         public static Task SetAppFontFamilyAsync(string fontFamily)
         {
             try { Preferences.Set(AppFontFamilyKey, fontFamily); }
+            catch { }
+            return Task.CompletedTask;
+        }
+
+        private const string AppTextSizeKey = "AppTextSize";
+
+        /// <summary>
+        /// The user's chosen Settings ▸ Text size step. Persisted by NAME (see
+        /// <see cref="AppTextSize"/>'s own remarks for why), defaulting to
+        /// <see cref="AppTextSize.Default"/> — today's sizes, unchanged, for anyone who has never
+        /// touched the setting.
+        /// </summary>
+        public static Task<AppTextSize> GetAppTextSizeAsync()
+        {
+            try
+            {
+                var stored = Preferences.Get(AppTextSizeKey, nameof(AppTextSize.Default));
+                var size = Enum.TryParse<AppTextSize>(stored, out var parsed) ? parsed : AppTextSize.Default;
+                return Task.FromResult(size);
+            }
+            catch
+            {
+                return Task.FromResult(AppTextSize.Default);
+            }
+        }
+
+        public static Task SetAppTextSizeAsync(AppTextSize size)
+        {
+            try { Preferences.Set(AppTextSizeKey, size.ToString()); }
             catch { }
             return Task.CompletedTask;
         }

@@ -31,7 +31,7 @@
                 Grid.Column="0"
                 Margin="0,0,10,0"
                 FontAttributes="Bold"
-                FontSize="{StaticResource FontSizeFigure}"
+                FontSize="{DynamicResource FontSizeFigure}"
                 HorizontalOptions="End"
                 HorizontalTextAlignment="End"
                 VerticalOptions="Center" />
@@ -57,12 +57,12 @@
                                 x:Name="InnerInsightsNameLabel"
                                 FontAttributes="Bold"
                                 FontFamily="{DynamicResource DefaultFontFamily}"
-                                FontSize="{StaticResource FontSizeMedium}" />
+                                FontSize="{DynamicResource FontSizeMedium}" />
                             <Span Text="  " />
                             <Span
                                 x:Name="InnerInsightsInfoToggle"
                                 FontFamily="{DynamicResource DefaultFontFamily}"
-                                FontSize="{StaticResource FontSizeBody}"
+                                FontSize="{DynamicResource FontSizeBody}"
                                 Text="ⓘ"
                                 TextColor="{DynamicResource LoanAppTabIndicatorStrokeColor}" />
                         </FormattedString>
@@ -76,14 +76,14 @@
                 <Label
                     x:Name="InnerInsightsShortLabel"
                     FontFamily="{DynamicResource DefaultFontFamily}"
-                    FontSize="{StaticResource FontSizeBody}"
+                    FontSize="{DynamicResource FontSizeBody}"
                     Opacity="0.55" />
 
                 <!--  Full description — collapsed by default, expands on ⓘ tap  -->
                 <Label
                     x:Name="InnerInsightsDescriptionLabel"
                     FontFamily="{DynamicResource DefaultFontFamily}"
-                    FontSize="{StaticResource FontSizeBody}"
+                    FontSize="{DynamicResource FontSizeBody}"
                     IsVisible="False"
                     Opacity="0.6" />
             </VerticalStackLayout>

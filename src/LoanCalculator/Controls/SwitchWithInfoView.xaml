@@ -75,11 +75,11 @@
 
             <VerticalStackLayout Grid.Column="1" Spacing="1" VerticalOptions="Center">
                 <Label
-                    FontSize="{StaticResource FontSizeBody}"
+                    FontSize="{DynamicResource LoanAppTextBody}"
                     Text="{Binding Title, Source={x:Reference Root}}"
                     TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
                 <Label
-                    FontSize="{StaticResource FontSizeSmall}"
+                    FontSize="{DynamicResource LoanAppTextCaptionCompact}"
                     Opacity="0.7"
                     Text="{Binding Subtitle, Source={x:Reference Root}}"
                     TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
@@ -94,7 +94,7 @@
                 Grid.Column="2"
                 Padding="12,10"
                 AutomationId="{Binding InfoAutomationId, Source={x:Reference Root}}"
-                FontSize="{StaticResource FontSizeMedium}"
+                FontSize="{DynamicResource FontSizeMedium}"
                 Text="ⓘ"
                 TextColor="{DynamicResource LoanAppTabIndicatorStrokeColor}"
                 VerticalOptions="Center">
@@ -110,7 +110,7 @@
             x:Name="DetailLabel"
             Margin="0,2,12,0"
             AutomationId="{Binding DetailAutomationId, Source={x:Reference Root}}"
-            FontSize="{StaticResource FontSizeSmall}"
+            FontSize="{DynamicResource LoanAppTextCaptionCompact}"
             IsVisible="False"
             Opacity="0.75"
             Text="{Binding Detail, Source={x:Reference Root}}"
@@ -126,7 +126,7 @@
             x:Name="LiveExampleLabel"
             Margin="0,8,12,10"
             FontAttributes="Bold"
-            FontSize="{StaticResource FontSizeSmall}"
+            FontSize="{DynamicResource LoanAppTextCaptionCompact}"
             IsVisible="False"
             Text="{Binding LiveExample, Source={x:Reference Root}}"
             TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />

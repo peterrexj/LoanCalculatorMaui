@@ -27,8 +27,8 @@
         <Grid ColumnDefinitions="4,*">
             <BoxView Grid.Column="0" BackgroundColor="{DynamicResource LoanAppChartColor1}" CornerRadius="12,0,12,0" />
             <VerticalStackLayout Grid.Column="1" Padding="14,14,14,16" Spacing="10">
-                <Label FontAttributes="Bold" FontSize="{StaticResource FontSizeMedium}" Text="Deposit Scenarios" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
-                <Label Margin="0,-6,0,0" FontSize="{StaticResource FontSizeSmall}" Opacity="0.6" Text="Impact of different deposit percentages  ·  highlighted = yours" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                <Label FontAttributes="Bold" FontSize="{DynamicResource FontSizeMedium}" Text="Deposit Scenarios" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                <Label Margin="0,-6,0,0" FontSize="{DynamicResource FontSizeSmall}" Opacity="0.6" Text="Impact of different deposit percentages  ·  highlighted = yours" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
                 <BoxView Style="{DynamicResource LoanAppSeparatorStyle}" />
                 <Grid ColumnSpacing="6">
                     <Grid.ColumnDefinitions>
@@ -40,19 +40,19 @@
                     <!--  Col A: lower deposit  -->
                     <Border Grid.Column="0" Padding="6,8" BackgroundColor="{DynamicResource LoanAppDefaultBackgroundColor}" StrokeShape="RoundRectangle 8" StrokeThickness="0">
                         <VerticalStackLayout Spacing="4">
-                            <Label FontAttributes="Bold" FontSize="{StaticResource FontSizeSmall}" HorizontalTextAlignment="Center" Text="{Binding DepositColALabel}" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
-                            <Label FontSize="{StaticResource FontSizeSmall}" HorizontalTextAlignment="Center" Opacity="0.65" Text="{Binding DepositColALoan}" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
-                            <Label FontAttributes="Bold" FontSize="{StaticResource FontSizeBody}" HorizontalTextAlignment="Center" Text="{Binding DepositColAMonthly}" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                            <Label FontAttributes="Bold" FontSize="{DynamicResource FontSizeSmall}" HorizontalTextAlignment="Center" Text="{Binding DepositColALabel}" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                            <Label FontSize="{DynamicResource FontSizeSmall}" HorizontalTextAlignment="Center" Opacity="0.65" Text="{Binding DepositColALoan}" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                            <Label FontAttributes="Bold" FontSize="{DynamicResource FontSizeBody}" HorizontalTextAlignment="Center" Text="{Binding DepositColAMonthly}" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
                         </VerticalStackLayout>
                     </Border>
 
                     <!--  Col B: YOUR DEPOSIT — always highlighted  -->
                     <Border Grid.Column="1" Padding="6,8" BackgroundColor="{DynamicResource LoanAppChartColor1}" StrokeShape="RoundRectangle 8" StrokeThickness="0">
                         <VerticalStackLayout Spacing="4">
-                            <Label FontAttributes="Bold" FontSize="{StaticResource FontSizeSmall}" HorizontalTextAlignment="Center" Text="{Binding DepositColBLabel}" TextColor="{DynamicResource LoanAppChartDataMarkerTextColor1}" />
-                            <Label FontSize="{StaticResource FontSizeSmall}" HorizontalTextAlignment="Center" Text="{Binding DepositColBLoan}" TextColor="{DynamicResource LoanAppChartDataMarkerTextColor1}" />
-                            <Label FontAttributes="Bold" FontSize="{StaticResource FontSizeBody}" HorizontalTextAlignment="Center" Text="{Binding DepositColBMonthly}" TextColor="{DynamicResource LoanAppChartDataMarkerTextColor1}" />
-                            <Label FontAttributes="Bold" FontSize="9" HorizontalTextAlignment="Center" Text="YOUR DEPOSIT" TextColor="{DynamicResource LoanAppChartDataMarkerTextColor1}" />
+                            <Label FontAttributes="Bold" FontSize="{DynamicResource FontSizeSmall}" HorizontalTextAlignment="Center" Text="{Binding DepositColBLabel}" TextColor="{DynamicResource LoanAppChartDataMarkerTextColor1}" />
+                            <Label FontSize="{DynamicResource FontSizeSmall}" HorizontalTextAlignment="Center" Text="{Binding DepositColBLoan}" TextColor="{DynamicResource LoanAppChartDataMarkerTextColor1}" />
+                            <Label FontAttributes="Bold" FontSize="{DynamicResource FontSizeBody}" HorizontalTextAlignment="Center" Text="{Binding DepositColBMonthly}" TextColor="{DynamicResource LoanAppChartDataMarkerTextColor1}" />
+                            <Label FontAttributes="Bold" FontSize="{DynamicResource LoanAppTextChartMarker}" HorizontalTextAlignment="Center" Text="YOUR DEPOSIT" TextColor="{DynamicResource LoanAppChartDataMarkerTextColor1}" />
                         </VerticalStackLayout>
                     </Border>
 
@@ -64,10 +64,10 @@
                             </DataTrigger>
                         </Border.Triggers>
                         <VerticalStackLayout Spacing="4">
-                            <Label FontAttributes="Bold" FontSize="{StaticResource FontSizeSmall}" HorizontalTextAlignment="Center" Text="{Binding DepositColCLabel}" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
-                            <Label FontSize="{StaticResource FontSizeSmall}" HorizontalTextAlignment="Center" Opacity="0.65" Text="{Binding DepositColCLoan}" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
-                            <Label FontAttributes="Bold" FontSize="{StaticResource FontSizeBody}" HorizontalTextAlignment="Center" Text="{Binding DepositColCMonthly}" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
-                            <Label FontAttributes="Bold" FontSize="9" HorizontalTextAlignment="Center" IsVisible="False" Text="MAX DEPOSIT" TextColor="{DynamicResource LoanAppDefaultForegroundColor}">
+                            <Label FontAttributes="Bold" FontSize="{DynamicResource FontSizeSmall}" HorizontalTextAlignment="Center" Text="{Binding DepositColCLabel}" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                            <Label FontSize="{DynamicResource FontSizeSmall}" HorizontalTextAlignment="Center" Opacity="0.65" Text="{Binding DepositColCLoan}" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                            <Label FontAttributes="Bold" FontSize="{DynamicResource FontSizeBody}" HorizontalTextAlignment="Center" Text="{Binding DepositColCMonthly}" TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                            <Label FontAttributes="Bold" FontSize="{DynamicResource LoanAppTextChartMarker}" HorizontalTextAlignment="Center" IsVisible="False" Text="MAX DEPOSIT" TextColor="{DynamicResource LoanAppDefaultForegroundColor}">
                                 <Label.Triggers>
                                     <DataTrigger Binding="{Binding DepositColCAvailable}" TargetType="Label" Value="False">
                                         <Setter Property="IsVisible" Value="True" />

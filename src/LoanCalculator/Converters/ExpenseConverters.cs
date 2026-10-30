@@ -94,12 +94,24 @@ namespace LoanCalculatorMaui.Converters
     }
 
     // Converts IsHeader (bool) → larger font size for headers vs body
+    /// <remarks>
+    /// Scaled by FontScaleHandler.CurrentFactor, which is NOT the same thing as the rest of the
+    /// app's DynamicResource-based scaling — a value converter only re-runs when its OWN bound
+    /// source property (IsHeader) changes, never because some unrelated resource changed
+    /// elsewhere, so this text cannot resize live while the popup is already open the way
+    /// everything else in the app does. It picks up whatever the CURRENT setting is the next time
+    /// it is asked to convert — i.e. the next time this popup opens — which is the best a plain
+    /// value converter can do. Previously a hard-coded literal, entirely outside the font-size
+    /// feature; brought in because this disclaimer/privacy text is exactly the kind of reading
+    /// copy that feature exists for.
+    /// </remarks>
     public class BoolToDisclaimerFontSizeConverter : IValueConverter
     {
         public object Convert(object? value, Type targetType, object? parameter, System.Globalization.CultureInfo culture)
         {
             bool isTablet = DeviceInfo.Idiom == DeviceIdiom.Tablet;
-            return value is true ? (isTablet ? 22.0 : 15.0) : (isTablet ? 18.0 : 13.0);
+            double baseSize = value is true ? (isTablet ? 22.0 : 15.0) : (isTablet ? 18.0 : 13.0);
+            return Math.Max(1.0, Math.Round(baseSize * LoanCalculator.Core.Themes.FontScaleHandler.CurrentFactor));
         }
 
         public object ConvertBack(object? value, Type targetType, object? parameter, System.Globalization.CultureInfo culture)

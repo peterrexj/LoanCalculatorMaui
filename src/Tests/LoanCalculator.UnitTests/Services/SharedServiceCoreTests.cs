@@ -1,3 +1,4 @@
+using LoanCalculator.Core.Models.Enums;
 using LoanCalculator.Core.Services;
 
 namespace LoanCalculator.UnitTests.Services
@@ -178,6 +179,28 @@ namespace LoanCalculator.UnitTests.Services
         {
             var auds = SharedServiceCore.Currencies!.Where(c => c?.IsoCode == "AUD");
             Assert.That(auds, Is.Not.Empty);
+        }
+
+        // ── Text size (Stage 3 of the font-size feature) ─────────────────────────
+        //
+        // A true get-after-set round-trip is NOT asserted here, and cannot be: Preferences.Set
+        // throws NotImplementedInReferenceAssemblyException without a MAUI host, so both
+        // GetAppTextSizeAsync and SetAppTextSizeAsync are wrapped in a try/catch that swallows it
+        // — the same documented gap LoanTermBoundsTests records for the other Preferences-backed
+        // settings. What IS covered is that the gap degrades gracefully: a getter with nothing
+        // stored returns the default rather than throwing, and a setter never throws outward
+        // regardless of whether the underlying Preferences call succeeded.
+
+        [Test]
+        public void GetAppTextSizeAsync_WithNoMauiHost_ReturnsDefaultRatherThanThrowing()
+        {
+            Assert.That(SharedServiceCore.GetAppTextSizeAsync().Result, Is.EqualTo(AppTextSize.Default));
+        }
+
+        [Test]
+        public void SetAppTextSizeAsync_WithNoMauiHost_DoesNotThrow()
+        {
+            Assert.DoesNotThrowAsync(async () => await SharedServiceCore.SetAppTextSizeAsync(AppTextSize.Large));
         }
     }
 }

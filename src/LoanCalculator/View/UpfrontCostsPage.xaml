@@ -37,15 +37,20 @@
                     Text="Upfront Costs"
                     TextColor="{DynamicResource LoanAppDefaultForegroundColor}"
                     VerticalOptions="Center" />
+                <!--
+                    Minimum*Request rather than a fixed size: the text scales with the Settings
+                    text-size choice, so a fixed box clips it on Android. See the fuller note on
+                    the same button in LoanDetailsPage.xaml.
+                -->
                 <Button
                     Grid.Column="1"
                     BackgroundColor="Transparent"
                     Clicked="OnDone"
                     FontSize="{DynamicResource FontSizeLarge}"
-                    HeightRequest="36"
+                    MinimumHeightRequest="36"
+                    MinimumWidthRequest="72"
                     Text="Done"
-                    TextColor="{DynamicResource LoanAppTabIndicatorStrokeColor}"
-                    WidthRequest="72" />
+                    TextColor="{DynamicResource LoanAppTabIndicatorStrokeColor}" />
             </Grid>
 
             <!--

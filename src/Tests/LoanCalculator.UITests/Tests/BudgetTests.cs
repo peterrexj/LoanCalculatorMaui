@@ -27,13 +27,12 @@ public class BudgetTests : UITestBase
 
         Budget.AddIncome(UniqueName("Salary"), "4000");
 
-        Budget.ScrollToTotals();
-        var after = App.WaitForText(
-            BudgetPage.IncomeMonthlyTotal,
-            shown => Digits(shown) > before,
+        var after = Budget.WaitForSummaryMagnitude(
+            BudgetPage.InsightsIncome,
+            shown => shown > before,
             $"rose above {before}");
 
-        Assert.That(Digits(after), Is.GreaterThan(before),
+        Assert.That(after, Is.GreaterThan(before),
             "Adding income did not change the monthly income total.");
     }
 
@@ -44,40 +43,54 @@ public class BudgetTests : UITestBase
 
         Budget.AddExpense(UniqueName("Electricity"), "250");
 
-        Budget.ScrollToTotals();
-        var after = App.WaitForText(
-            BudgetPage.ExpenseMonthlyTotal,
-            shown => Digits(shown) > before,
+        // Magnitude, not the displayed figure: the Insights row draws expenses negative, so the
+        // raw text falls as expenses rise. BudgetPage owns that convention.
+        var after = Budget.WaitForSummaryMagnitude(
+            BudgetPage.InsightsLivingExpenses,
+            shown => shown > before,
             $"rose above {before}");
 
-        Assert.That(Digits(after), Is.GreaterThan(before),
+        Assert.That(after, Is.GreaterThan(before),
             "Adding an expense did not change the monthly expense total.");
     }
 
+    /// <summary>
+    /// The hero net must reconcile with the three figures the Insights card breaks it into.
+    /// </summary>
+    /// <remarks>
+    /// Asset running costs are part of this and are easy to forget: the net is income less
+    /// <em>every</em> outgoing, not just living expenses (<c>BudgetViewModel.NetAfterOutgoingsMonthly</c>),
+    /// so omitting them makes this fail by exactly the asset-cost figure on any device that has
+    /// one — and pass on any device that does not, which is the worse half.
+    /// </remarks>
     [Test]
-    public void NetMonthlyEqualsIncomeMinusExpenses()
+    public void NetMonthlyEqualsIncomeMinusEveryOutgoing()
     {
         EnsureSomeBudgetData();
-        Budget.ScrollToTotals();
 
-        var income = App.Number(BudgetPage.IncomeMonthlyTotal);
-        var expenses = App.Number(BudgetPage.ExpenseMonthlyTotal);
-        var net = App.Number(BudgetPage.NetMonthly);
+        var income = Budget.MonthlyIncome();
+        var expenses = Budget.MonthlyExpenses();
+        var assetCosts = Budget.MonthlyAssetCosts();
+        var net = Budget.MonthlyNet();
 
-        // The displayed net is unsigned, so compare magnitudes.
-        Assert.That(net, Is.EqualTo(Math.Abs(income - expenses)).Within(1m),
-            $"Net ({net}) does not reconcile with income ({income}) minus expenses ({expenses}).");
+        // Four figures, each independently rounded to whole currency units for display, so the
+        // reconciliation can be off by up to half a unit per figure.
+        Assert.That(net, Is.EqualTo(income - expenses - assetCosts).Within(2m),
+            $"Net ({net}) does not reconcile with income ({income}) less living expenses "
+            + $"({expenses}) and asset running costs ({assetCosts}).");
     }
 
     [Test]
     public void YearlyNetIsTwelveTimesMonthlyNet()
     {
         EnsureSomeBudgetData();
-        Budget.ScrollToTotals();
 
-        var monthly = App.Number(BudgetPage.NetMonthly);
-        var yearly = App.Number(BudgetPage.NetYearly);
+        var monthly = Budget.MonthlyNet();
+        var yearly = Budget.YearlyNet();
 
+        // Signed on both sides, so this holds for a negative net too. The yearly total is a sum
+        // of each entry's own yearly amount rather than 12x the monthly one, but those agree
+        // exactly — the only slack needed is the two figures' display rounding.
         Assert.That(yearly, Is.EqualTo(monthly * 12m).Within(12m),
             $"Yearly net ({yearly}) is not twelve times the monthly net ({monthly}).");
     }
@@ -115,18 +128,16 @@ public class BudgetTests : UITestBase
         var name = UniqueName("EditMe");
         Budget.AddIncome(name, "1000");
 
-        Budget.ScrollToTotals();
         var before = Budget.MonthlyIncome();
 
         Budget.EditIncomeRowAmount(name, "5000");
 
-        Budget.ScrollToTotals();
-        var after = App.WaitForText(
-            BudgetPage.IncomeMonthlyTotal,
-            shown => Digits(shown) > before,
+        var after = Budget.WaitForSummaryMagnitude(
+            BudgetPage.InsightsIncome,
+            shown => shown > before,
             $"rose above {before} after the row was edited from 1,000 to 5,000");
 
-        Assert.That(Digits(after), Is.GreaterThan(before),
+        Assert.That(after, Is.GreaterThan(before),
             "Editing a row's amount upward did not raise the monthly total.");
     }
 
@@ -155,11 +166,10 @@ public class BudgetTests : UITestBase
             + "so the row is rendering without its copy.");
     }
 
-    private static string UniqueName(string stem) => TestData.UniqueName(stem);
+    // Parsing lives in BudgetPage now, not here. The Summary figures are signed, and which of
+    // them should be read as a magnitude and which signed is a property of the screen rather
+    // than of any one test — so a local digit-scraper here would have had to re-state that
+    // convention, once per test, with nothing keeping the copies honest.
 
-    private static decimal Digits(string text)
-    {
-        var cleaned = new string(text.Where(c => char.IsDigit(c) || c is '.' or '-').ToArray());
-        return decimal.TryParse(cleaned, out var value) ? value : -1m;
-    }
+    private static string UniqueName(string stem) => TestData.UniqueName(stem);
 }

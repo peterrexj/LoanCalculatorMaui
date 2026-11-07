@@ -259,6 +259,7 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
                         await SharedServiceCore.SetAppTextSizeAsync(size);
                         await FontScaleHandler.ApplyTextSize(size);
                         OnPropertyChanged(nameof(SelectedTextSize));
+                        OnPropertyChanged(nameof(PopupHeaderHeight));
 
                         // Symmetric with the pause before ApplyTextSize. ApplyTextSize's own loop
                         // yields after each of the 21 writes, but a yield only guarantees the
@@ -273,6 +274,52 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
                     catch (Exception ex) { _errorHandlingService.HandleException(ex); }
                     finally { IsUpdating = false; IsPageBusy = false; }
                 });
+            }
+        }
+
+        /// <summary>
+        /// Height for the Disclaimer / Privacy Policy popup header rows, scaled by the current
+        /// text-size choice.
+        /// </summary>
+        /// <remarks>
+        /// SfPopup.HeaderHeight is a plain double that defaults to 50, and it is a HARD height —
+        /// the HeaderTemplate is laid out into exactly that many points and clipped to it. Neither
+        /// popup used to set it, which is what made the header unreadable once the title started
+        /// scaling, and the arithmetic is what explains the platform split that looked so odd:
+        ///
+        ///   iOS      padding 50 top (status bar / notch on a full-screen popup) + 20 bottom = 70
+        ///            points of padding alone inside a 50-point box, so the title had nowhere to
+        ///            go and rendered as a clipped sliver.
+        ///   Android   padding 20 + 20 = 40 inside 50, leaving 10 points for a title that is 23 at
+        ///            Extra Large — clipped too, but enough of it survived to look acceptable.
+        ///
+        /// So it was never an iOS defect, just a tighter squeeze on the platform that needs the
+        /// status-bar inset. PopupDisclaimerView.xaml escapes it by a hair with the same default
+        /// 50: 8 points of bottom padding instead of 20, and a title that does NOT scale.
+        ///
+        /// Computed rather than a generous fixed number, because a fixed box plus scaling text is
+        /// the whole bug — see the note on the button styles in Theme.CommonStyles.xaml. Padding is
+        /// the platform's own, then room for two lines of title so a wrap cannot clip either.
+        /// </remarks>
+        /// <summary>Header padding on platforms with a status bar / notch to clear (50 top, 20 bottom).</summary>
+        internal const double ApplePopupHeaderPadding = 70.0;
+
+        /// <summary>Header padding elsewhere (20 top, 20 bottom).</summary>
+        internal const double PopupHeaderPadding = 40.0;
+
+        [JsonIgnore]
+        public double PopupHeaderHeight
+        {
+            get
+            {
+                var isApple = DeviceInfo.Platform == DevicePlatform.iOS
+                           || DeviceInfo.Platform == DevicePlatform.MacCatalyst;
+
+                // The arithmetic itself lives in FontScaleHandler so it can be tested: this view
+                // model cannot be constructed without a DI container (its parameterless ctor
+                // reaches ServiceLocator for AppInformation), so nothing reachable from a unit
+                // test can read this property.
+                return FontScaleHandler.ScaledHeaderHeight(isApple ? ApplePopupHeaderPadding : PopupHeaderPadding);
             }
         }
 
@@ -579,6 +626,12 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
         {
             OnPropertyChanged(nameof(SelectedTheme));
             OnPropertyChanged(nameof(SelectedFontFamily));
+
+            // Not only when the chip is tapped. ThemeHandler restores the saved text size
+            // asynchronously at startup, so a page constructed before that finished would have
+            // computed its popup header height at an unscaled factor and never revisited it.
+            // Re-asking on every appearance costs nothing and closes that window.
+            OnPropertyChanged(nameof(PopupHeaderHeight));
             LoadAustralianModeSetting();
             LoadStampDutySetting();
             LoadCalculatorDefaults();

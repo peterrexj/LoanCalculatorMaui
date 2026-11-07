@@ -754,10 +754,26 @@
         there rather than changing the style Settings depends on.
     -->
 
+    <!--
+        Every button style below sets MinimumHeightRequest / MinimumWidthRequest, never the fixed
+        HeightRequest / WidthRequest they used to, because each one also sets a FontSize that
+        scales with the Settings text-size choice. A fixed box plus growing text clips, and it
+        clips on Android specifically: the native AppCompatButton spends part of a fixed box on
+        padding and the Material inset drawable before the text gets any room, so the usable area
+        is well under the stated number. iOS has no equivalent inset, so the same markup looks
+        correct there — which is what made this read as an Android rendering defect rather than a
+        size that had stopped being big enough.
+
+        A Setter is the costly place for this mistake: it breaks every element using the style at
+        once rather than one visible button, the same reason CLAUDE.md singles out the Setter form
+        of the BackgroundColor/Background gradient bug. ExpanderHeaderLabelStyle above was already
+        converted for this reason (its fixed HeightRequest is still there, commented out).
+    -->
+
     <!--  Full-width primary action button at the bottom of a popup (the "Apply" button).  -->
     <Style x:Key="PopupPrimaryButtonStyle" TargetType="Button">
         <Setter Property="Margin" Value="16,10,16,16" />
-        <Setter Property="HeightRequest" Value="48" />
+        <Setter Property="MinimumHeightRequest" Value="48" />
         <Setter Property="CornerRadius" Value="12" />
         <Setter Property="FontAttributes" Value="Bold" />
         <Setter Property="FontSize" Value="{DynamicResource FontSizeLarge}" />
@@ -770,7 +786,7 @@
     <Style x:Key="PopupSecondaryButtonStyle" TargetType="Button">
         <Setter Property="BackgroundColor" Value="Transparent" />
         <Setter Property="CornerRadius" Value="12" />
-        <Setter Property="HeightRequest" Value="48" />
+        <Setter Property="MinimumHeightRequest" Value="48" />
         <Setter Property="FontSize" Value="{DynamicResource FontSizeBody}" />
         <Setter Property="FontFamily" Value="{DynamicResource DefaultFontFamily}" />
         <Setter Property="TextColor" Value="{DynamicResource LoanAppDefaultForegroundColor}" />
@@ -781,8 +797,8 @@
         <Setter Property="Text" Value="✕" />
         <Setter Property="BackgroundColor" Value="Transparent" />
         <Setter Property="FontSize" Value="{DynamicResource FontSizeXL}" />
-        <Setter Property="HeightRequest" Value="36" />
-        <Setter Property="WidthRequest" Value="44" />
+        <Setter Property="MinimumHeightRequest" Value="36" />
+        <Setter Property="MinimumWidthRequest" Value="44" />
         <Setter Property="Padding" Value="0" />
         <Setter Property="TextColor" Value="{DynamicResource LoanAppDefaultForegroundColor}" />
         <!--  app.css `.modal-head .x` is 0.6 — the dismiss glyph recedes.  -->
@@ -831,8 +847,8 @@
         <Setter Property="Padding" Value="0" />
         <Setter Property="FontAttributes" Value="Bold" />
         <Setter Property="FontSize" Value="{DynamicResource FontSizeXL}" />
-        <Setter Property="WidthRequest" Value="36" />
-        <Setter Property="HeightRequest" Value="36" />
+        <Setter Property="MinimumWidthRequest" Value="36" />
+        <Setter Property="MinimumHeightRequest" Value="36" />
         <Setter Property="VerticalOptions" Value="Center" />
     </Style>
 

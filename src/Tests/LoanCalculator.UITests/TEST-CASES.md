@@ -329,8 +329,40 @@ an absolute total. That keeps them correct whether the device starts empty or wi
 earlier run.
 
 Two of them call `EnsureSomeBudgetData()` first, because an empty budget shows a placeholder
-instead of the totals. The Summary totals are reached via `ScrollToTotals()` — required on
-Android, where the accessibility tree *omits* far-off-screen ScrollView children entirely.
+instead of the totals.
+
+> **The Summary tab's figures, and their signs.** There is no single "monthly income total" label
+> any more: `BudgetIncomeMonthlyTotal`/`BudgetExpenseMonthlyTotal` were removed in the redesign.
+> The tab is now a hero card (`BudgetNetMonthly`, `BudgetNetYearly`) over an Insights card that
+> breaks that net into `BudgetInsightsIncome`, `BudgetInsightsLivingExpenses` and
+> `BudgetInsightsAssetCosts`.
+>
+> Every one of them is rendered **with a sign** — `+$6,000`, `-$2,500` — where the old Net label
+> was unsigned. `BudgetPage` owns that convention in one place so no test has to: the three
+> category figures are returned as **magnitudes** (their sign is a display convention, so "expenses
+> rose" means the magnitude rose), and the net is returned **signed** (there the sign is the
+> verdict). Read them through `MonthlyIncome()`/`MonthlyExpenses()`/`MonthlyAssetCosts()`/
+> `MonthlyNet()`/`YearlyNet()` or `WaitForSummaryMagnitude(...)`, never with a local digit
+> scraper — a test that reads a category figure signed gets an assertion that is silently
+> inverted rather than one that fails.
+>
+> Each reader brings its own element into view **from wherever the tab currently sits**, searching
+> down and then up. Both directions are needed: `AppDriver.ScrollTo` only swipes one way, and
+> these figures are at opposite ends of a long tab — the hero net at the very top, the Insights
+> rows well below it. Scrolling at all is required rather than optional on Android, where the
+> accessibility tree *omits* far-off-screen ScrollView children entirely, so they are absent
+> rather than merely invisible.
+>
+> **The failure that produced this design**, in case a reader is ever "simplified" back to one
+> direction: reading the income row leaves the hero scrolled off the *top*, so a downward-only
+> hunt for it afterwards swipes further away, burns its budget and concludes the totals are not
+> showing — which returns the empty-budget baseline of 0. TC-3.3 read `11500, 0, 0, 0`: the first
+> figure correct, then a zero for everything after it. It presents as an app inconsistency
+> (income with no matching net) rather than as a scroll-position problem.
+>
+> `HasSummaryTotals()` probes `BudgetNetMonthly` and must keep doing so. Only the hero card, the
+> three-box row and the chart are hidden on an empty budget; **the Insights card stays visible and
+> renders zeroes**, so probing it would report "totals are showing" on a wiped device.
 
 > **Frequency caveat:** the add form's frequency defaults to whatever the view model last held,
 > so an entry may be weekly or fortnightly and contribute a *converted* figure to the monthly
@@ -341,10 +373,10 @@ Android, where the accessibility tree *omits* far-off-screen ScrollView children
 
 - **Objective:** adding income flows through to the Summary total — the whole add → save → list
   → aggregate chain.
-- **Steps:** Budget → read monthly income (0 if empty) → Income tab → tap `+` → enter a
-  timestamped unique name and amount 4000 → Save → Summary → scroll to totals → wait for the
-  total to exceed the baseline.
-- **Expected:** monthly income total strictly increased.
+- **Steps:** Budget → read `BudgetInsightsIncome` (0 if empty) → Income tab → tap `+` → enter a
+  timestamped unique name and amount 4000 → Save → Summary → scroll to the Insights income row →
+  wait for it to exceed the baseline.
+- **Expected:** monthly income figure strictly increased.
 - **Run:** `--filter "Name=AddingIncomeRaisesTheMonthlyIncomeTotal"`
 - **On failure:** if the popup did not open, check `BudgetIncomeAddFab`. If it opened but Save
   did nothing, check the add/update command and that the amount parsed. If the total did not
@@ -353,31 +385,43 @@ Android, where the accessibility tree *omits* far-off-screen ScrollView children
 
 ### TC-3.2 `AddingAnExpenseRaisesTheMonthlyExpenseTotal`
 
-- **Objective:** the same chain on the expense side, which has its own popup, list and aggregate.
-- **Steps:** as TC-3.1 via the Expenses tab, amount 250.
-- **Expected:** monthly expense total strictly increased.
+- **Objective:** the same chain on the expense side, which has its own list and aggregate.
+- **Steps:** as TC-3.1 via the Expenses tab, amount 250, reading `BudgetInsightsLivingExpenses`.
+- **Expected:** monthly expense figure strictly increased **in magnitude**. The row draws
+  expenses negative, so the raw text falls as expenses rise — `WaitForSummaryMagnitude` is what
+  keeps the assertion the right way round.
 - **Run:** `--filter "Name=AddingAnExpenseRaisesTheMonthlyExpenseTotal"`
 - **On failure:** as TC-3.1. If income works and expense does not, the bug is expense-specific —
-  compare the two popups' handlers.
+  compare the two call sites' handlers. If it fails with the figure having *fallen*, something is
+  reading the row signed rather than as a magnitude.
 
-### TC-3.3 `NetMonthlyEqualsIncomeMinusExpenses`
+### TC-3.3 `NetMonthlyEqualsIncomeMinusEveryOutgoing`
 
-- **Objective:** internal consistency of the Summary tab. Catches an aggregate that is computed
-  from stale or differently-filtered data than the figures beside it.
-- **Steps:** ensure some budget data exists → Summary → scroll to totals → read income, expenses
-  and net.
-- **Expected:** `net == |income − expenses|` (±1). Magnitudes are compared because the displayed
-  net is unsigned.
-- **Run:** `--filter "Name=NetMonthlyEqualsIncomeMinusExpenses"`
-- **On failure:** a genuine reconciliation bug, and worth chasing — the three numbers are drawn
-  from the same screen, so they cannot legitimately disagree. Check whether one includes asset
-  expenses and another does not (the Budget tab has "include asset expenses" switches).
+- **Objective:** internal consistency of the Summary tab — the hero net must reconcile with the
+  three figures the Insights card breaks it into. Catches an aggregate computed from stale or
+  differently-filtered data than the figures beside it.
+- **Steps:** ensure some budget data exists → Summary → read income, living expenses, asset
+  running costs and net.
+- **Expected:** `net == income − livingExpenses − assetCosts` (±2 — four figures, each
+  independently rounded to whole currency units for display).
+- **Run:** `--filter "Name=NetMonthlyEqualsIncomeMinusEveryOutgoing"`
+- **On failure:**
+  - **Off by exactly the asset-costs figure** — something is reconciling against living expenses
+    alone. The net is income less *every* outgoing (`BudgetViewModel.NetAfterOutgoingsMonthly`),
+    and asset running costs are the outgoing that is easy to forget. Note this failure mode is
+    invisible on a device with no asset costs recorded, so reproduce it with some.
+  - Otherwise a genuine reconciliation bug, and worth chasing — the four numbers are drawn from
+    the same screen, so they cannot legitimately disagree. Check whether one includes asset
+    expenses and another does not (the Budget tab has "include asset expenses" switches).
 
 ### TC-3.4 `YearlyNetIsTwelveTimesMonthlyNet`
 
 - **Objective:** the monthly → yearly conversion.
-- **Steps:** ensure data → Summary → scroll to totals → read monthly net and yearly net.
-- **Expected:** `yearly == monthly × 12` (±12, allowing rounding).
+- **Steps:** ensure data → Summary → read monthly net and yearly net, both **signed**.
+- **Expected:** `yearly == monthly × 12` (±12, allowing rounding). Holds for a negative net too,
+  since both sides keep their sign. The yearly figure is a sum of each entry's own yearly amount
+  rather than 12× the monthly one, but those agree exactly — the tolerance covers display
+  rounding only.
 - **Run:** `--filter "Name=YearlyNetIsTwelveTimesMonthlyNet"`
 - **On failure:** if the ratio is 52 or 26, a frequency conversion is being applied twice. If it
   is close but outside tolerance, rounding changed — widen the tolerance only if the new
@@ -387,20 +431,27 @@ Android, where the accessibility tree *omits* far-off-screen ScrollView children
 
 - **Objective:** delete, which had no coverage. Also feeds the empty-state class — deleting the last
   row is how a screen ends up empty.
-- **Steps:** add an income row with a unique space-free name → confirm it appears → read the monthly
-  total → tap that row's delete button → confirm the row is gone and the total fell.
+- **Steps:** add an income row with a unique space-free name → confirm it appears → read the
+  monthly income figure → tap the row → scroll to and tap `BudgetIncomeDeleteButton` on the entry
+  page → confirm the native "Yes" prompt → confirm the row is gone and the figure fell.
 - **Run:** `--filter "Name=DeletingAnIncomeRowRemovesItAndLowersTheTotal"`
-- **Note:** row buttons are addressed as `IncomeDelete_<name>`, which is why names avoid spaces.
-- **On failure:** if the row will not delete, check `OnBudgetIncomeDelete` — it takes the row from
-  `btn.BindingContext`. It used to parse `btn.AutomationId` as a Guid, which made the button
-  untaggable; do not reintroduce that.
+- **Note:** rows are addressed as `IncomeRow_<name>`, which is why names avoid spaces. There is
+  no per-row delete button any more — the whole row is one tap target that opens the entry page,
+  and **delete lives at the foot of that page**, so deleting is two steps.
+- **On failure:**
+  - The delete confirmation is a **native modal**. Skipping it does not merely fail this step; it
+    leaves an alert covering every later lookup, which surfaces as unrelated "could not find ..."
+    failures further along.
+  - If the row will not delete, check `OnBudgetIncomeDelete` — it takes the row from
+    `btn.BindingContext`. It used to parse `btn.AutomationId` as a Guid, which made the button
+    untaggable; do not reintroduce that.
 
 ### TC-3.6 `EditingAnIncomeRowAmountUpdatesTheTotal`
 
 - **Objective:** edit, the third CRUD operation. Exercises the edit form pre-populating from an
   existing row and saving back over it, rather than creating a new one.
-- **Steps:** add a row at 1,000 → read the monthly total → open that row's edit button → change the
-  amount to 5,000 → Save → wait for the total to rise.
+- **Steps:** add a row at 1,000 → read the monthly income figure → tap that row (which opens the
+  entry page pre-populated) → change the amount to 5,000 → Save → wait for the figure to rise.
 - **Run:** `--filter "Name=EditingAnIncomeRowAmountUpdatesTheTotal"`
 - **On failure:** if the total rises by the *full* 5,000 rather than the difference, the edit created
   a duplicate row instead of updating in place — check `AddOrUpdateEntryFromView`.
@@ -552,16 +603,60 @@ All inputs on this page are `−`/`+` steppers; there are no text fields.
 
 ### TC-5.5 `SettingsPageRendersItsAppearancePickers`
 
-- **Objective:** the three appearance pickers exist. A cheap structural guard — if a picker
-  disappears from the page, TC-5.1's failure would be confusing without this.
+- **Objective:** the three appearance pickers and the four text-size chips exist. A cheap
+  structural guard — if one disappears from the page, TC-5.1's failure would be confusing
+  without this.
 - **Steps:** Settings tab → assert `SettingsThemeCombo`, `SettingsFontCombo` and
-  `SettingsCurrencyCombo` are all present.
-- **Expected:** all three visible.
+  `SettingsCurrencyCombo` → scroll to `SettingsTextSizeSmall` → assert all four chips.
+- **Expected:** all seven present.
 - **Run:** `--filter "Name=SettingsPageRendersItsAppearancePickers"` — runs on **both** platforms.
-- **On failure:** a picker was removed, renamed, or its `AutomationId` was dropped in a XAML
+- **On failure:** a control was removed, renamed, or its `AutomationId` was dropped in a XAML
   edit. Confirm against the artifact `.xml`.
 
+### TC-5.6 `EveryTextSizeRendersEveryTab`
+
+- **Objective:** the Settings ▸ Text size choice rewrites every scalable font-size resource in the
+  app (`FontScaleHandler`, 21 keys) and every `DynamicResource` consumer re-measures in response.
+  That is the same structural risk as the theme and font systems, so it gets the same treatment:
+  switch, then re-render every tab.
+- **Steps:** for each of Small, Default, Large, Extra Large → Settings → tap the chip → wait out
+  the apply overlay → visit all four shell tabs. Restores **Default** in a `finally`.
+- **Expected:** every tab renders at every size.
+- **Run:** `--filter "Name=EveryTextSizeRendersEveryTab"` — runs on **both** platforms.
+- **Why it is not `SkipOnAndroid`, and why that matters:** the chips are plain tappable `Border`s
+  with `TapGestureRecognizer`s, not an `SfComboBox`, so unlike every other test in this fixture
+  this one genuinely runs on Android. It is the only Android coverage the appearance settings
+  have at all.
+- **On failure:**
+  - A tab failing at one size only — something on that page has a fixed height or width around
+    scaling text. That is the family of bug this exists for.
+  - **If it fails before the first tap**, suspect a stale build: `SettingsBusyOverlay` is a
+    recently added `AutomationId` and `--no-build` tests whatever was built last.
+  - The choice **persists in Preferences**. If a run dies part-way, the device is left at
+    whatever size it reached and *every later test and run* starts scaled — see TROUBLESHOOTING.
+
+### TC-5.7 `ExtraLargeTextKeepsTheModalFormsUsable`
+
+- **Objective:** at the largest text size the modal forms must still be completable, which means
+  their header buttons must still be reachable. **This is a regression that shipped:** the Loan
+  Details and Transaction Entry header buttons were a fixed 36 × 72, and at Extra Large on Android
+  the native button's Material insets left so little room inside that box that "Done" rendered as
+  "Don" with the glyphs cut off. iOS has no such inset and still fit, so it presented as an
+  Android rendering defect rather than as markup that had stopped being big enough.
+- **Steps:** Settings → Extra Large → Loan → open Loan Details → enter asset and deposit → tap the
+  header Done button → assert the page closed. Dismisses any modal and restores **Default** in a
+  `finally`.
+- **Expected:** the modal closes.
+- **Run:** `--filter "Name=ExtraLargeTextKeepsTheModalFormsUsable"` — runs on **both** platforms,
+  and Android is the one that matters.
+- **On failure:** a clipped or mis-measured button is also an unreliable tap target, so this fails
+  as "the page did not close" rather than as a cosmetic diff. Check for a fixed
+  `HeightRequest`/`WidthRequest` on a header button — they must be `MinimumHeightRequest`/
+  `MinimumWidthRequest`, since the text scales but the box would not. See the note on that button
+  in `LoanDetailsPage.xaml`.
+
 ---
+
 
 ## 6. EdgeCaseTests — `TestCategory=EdgeCase`
 
@@ -645,23 +740,59 @@ by accident.
 
 ---
 
+## 7. ScreenshotSweep — `TestCategory=Screens`
+
+Not a test: it walks every reachable surface, screenshots it for design review, and asserts almost
+nothing. Excluded from every other category, so run it deliberately:
+`./run-uitests.sh --ios --no-build --filter "TestCategory=Screens"`. Output and a
+`sweep-report.txt` naming any surface it could not reach land in
+`UITestConfig.ArtifactDirectory`.
+
+Three ordered passes, and the order is the point: `CaptureEmptyStates` (1) wipes data, so it must
+run before `CapturePopulatedSurfaces` (2) seeds it, and `CaptureExtraLargeSurfaces` (3) runs last
+so a failure part-way cannot leave the Default-size set captured at the wrong scale.
+
+### The Extra Large pass — `CaptureExtraLargeSurfaces`
+
+Re-captures the surfaces where clipping and overflow show up — Loan, Budget Summary, What If
+Answer, Settings, and the two modal forms — as `4x-…-xl`. Restores **Default** in a `finally`; the
+setting persists, so leaving it at Extra Large would silently re-scale every later run, including
+the populated sweep's own files. If a run dies here, check Settings ▸ Text size by hand before
+trusting the next sweep.
+
+---
+
 ## Quick reference — anchors used for navigation
 
 If a navigation step fails, these are the elements being waited for.
 
 | Target | Anchor `AutomationId` |
 |---|---|
-| Shell → Loan | `FabQuickInput` |
+| Shell → Loan | `LoanSummaryBox` |
 | Shell → Budget | `BudgetTabIncome` |
 | Shell → What If | `WhatIfPageTitle` |
 | Shell → Settings | `SettingsPageTitle` |
-| Loan → Asset | `FabQuickInput` |
-| Loan → Amortisation | `LoanAmortisationGrid` |
-| Loan → Insights | `LoanInsightsExportButton` |
+| Loan (the page itself) | `LoanSummaryBox` |
+| Loan → repayment schedule (pushed page) | `LoanAmortisationGrid` |
 | Budget → Income | `BudgetIncomeAddFab` |
 | Budget → Expenses | `BudgetExpenseAddFab` |
+| Budget → Asset costs | `LoanRunningCostFilter` |
 | Budget → Summary | `BudgetSummaryCaption` |
-| Budget → Projection | `BudgetProjectionYearsSlider` |
+| What If → Answer | `WhatIfAnswerCard` |
+| What If → Scenarios | `WhatIfScenarioRateChange` |
+| What If → Projection | `WhatIfProjectionIntro` |
+| What If → Insights | `LoanInsightsExportButton` |
+
+Two of these are chosen against the obvious candidate, and both choices are load-bearing:
+
+- **Loan is anchored on `LoanSummaryBox`, not on `FabWizard`.** The FAB is pinned bottom-right,
+  *outside* the page's ScrollView — so an open keyboard covers it and the `ScrollTo` fallback can
+  never bring it back. That failed as "scrolled 8 times without bringing FabWizard into view",
+  which reads like a missing `AutomationId` rather than like a keyboard left up by an earlier step.
+- **Projection is anchored on `WhatIfProjectionIntro`, not on `BudgetProjectionYearsSlider`.** The
+  slider moved inside the "ADJUST THE SETTINGS" `SfExpander`, so it is only in the tree while that
+  disclosure is open. It currently is, by its `IsExpanded="True"` default — which is the only
+  reason the old anchor still resolved.
 
 Shell tabs themselves carry no `AutomationId` (MAUI does not add one) and are matched by title,
 disambiguated by taking the bottom-most match on screen. If a tab title changes in

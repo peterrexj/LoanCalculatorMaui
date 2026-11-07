@@ -118,10 +118,18 @@ public sealed class WhatIfPage(AppDriver app) : PageBase(app)
     }
 
     /// <summary>Moved here from BudgetPage when Projection left Budget.</summary>
+    /// <remarks>
+    /// Anchored on the intro line in the tab's pinned header, NOT on
+    /// <c>BudgetProjectionYearsSlider</c>. The slider moved inside the "ADJUST THE SETTINGS"
+    /// <c>SfExpander</c>, so it is only in the tree while that disclosure happens to be open —
+    /// it currently is, by its <c>IsExpanded="True"</c> default, which is the only reason the old
+    /// anchor still resolved. One markup default away from timing out, and it would have failed
+    /// as "the Projection tab never rendered" rather than as "the anchor moved into a disclosure".
+    /// </remarks>
     public void OpenProjectionTab()
     {
         EnsureOnWhatIf();
-        OpenTab(TabProjection, "BudgetProjectionYearsSlider");
+        OpenTab(TabProjection, "WhatIfProjectionIntro");
     }
 
     /// <summary>Moved here from LoanPage when Insights left Loan.</summary>

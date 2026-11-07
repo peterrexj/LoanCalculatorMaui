@@ -32,10 +32,10 @@
                     BackgroundColor="Transparent"
                     Clicked="OnBack"
                     FontSize="{DynamicResource FontSizeXL}"
-                    HeightRequest="44"
+                    MinimumHeightRequest="44"
+                    MinimumWidthRequest="44"
                     Text="&#x2039;"
-                    TextColor="{DynamicResource LoanAppDefaultForegroundColor}"
-                    WidthRequest="44" />
+                    TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
                 <Label
                     x:Name="lblTitle"
                     Grid.Column="1"

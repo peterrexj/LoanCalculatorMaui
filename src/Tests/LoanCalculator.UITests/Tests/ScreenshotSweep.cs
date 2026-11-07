@@ -214,6 +214,72 @@ public class ScreenshotSweep : UITestBase
         CaptureModals();
     }
 
+    /// <summary>
+    /// The surfaces that matter again at the largest text size, where clipping and overflow show
+    /// up — the two modal forms especially, whose header buttons were a fixed size and clipped on
+    /// Android at this scale.
+    /// </summary>
+    /// <remarks>
+    /// Runs last of the three so the Default-size set above is never captured at the wrong scale
+    /// if this one dies part-way, and restores Default in a <c>finally</c> — the choice persists
+    /// in Preferences, so leaving it at Extra Large would silently re-scale every later run,
+    /// including the populated sweep's own files.
+    /// </remarks>
+    [Test]
+    [Order(3)]
+    public void CaptureExtraLargeSurfaces()
+    {
+        TestData.EnsureLoan(Tabs, Loan);
+        TestData.EnsureBudget(Tabs, Budget);
+
+        try
+        {
+            Tabs.GoTo(AppTab.Settings);
+            Settings.SelectTextSize(SettingsPage.TextSizeExtraLarge);
+
+            Capture("40-loan-asset-xl", () =>
+            {
+                Tabs.GoTo(AppTab.Loan);
+                Loan.OpenAssetTab();
+            });
+            Capture("41-budget-summary-xl", () =>
+            {
+                Tabs.GoTo(AppTab.Budget);
+                Budget.OpenSummaryTab();
+            });
+            Capture("42-whatif-answer-xl", WhatIf.OpenAnswerTab);
+            Capture("43-settings-xl", () => Tabs.GoTo(AppTab.Settings));
+
+            if (Capture("44-loan-details-xl", () =>
+                {
+                    Tabs.GoTo(AppTab.Loan);
+                    Loan.OpenAssetTab();
+                    App.Tap(LoanPage.LoanDetailsFab);
+                    App.WaitUntilVisible("AssetEntry", TimeSpan.FromSeconds(15));
+                }))
+            {
+                Dismiss("WizardCancelButton");
+            }
+
+            if (Capture("45-transaction-entry-xl", () =>
+                {
+                    Tabs.GoTo(AppTab.Budget);
+                    Budget.OpenIncomeTab();
+                    App.Tap(BudgetPage.IncomeAddFab);
+                    App.WaitUntilVisible("BudgetIncomeAmountEntry", TimeSpan.FromSeconds(15));
+                }))
+            {
+                Dismiss("TransactionEntryCancelButton");
+            }
+        }
+        finally
+        {
+            ModalPages.DismissAny(App);
+            Tabs.GoTo(AppTab.Settings);
+            Settings.SelectTextSize(SettingsPage.TextSizeDefault);
+        }
+    }
+
     private void CaptureSettingsPopups()
     {
         // Both rows live in the Support card well down the page, so each needs scrolling into

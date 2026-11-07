@@ -524,6 +524,40 @@ Options are matched by visible text, since rows come from an `ItemTemplate` with
 exactly — check the `.xml` for the real string (watch for trailing spaces and symbols, e.g.
 currency rows are `"Euro (€)"`, not `"EUR"`).
 
+### A Settings appearance change "works", then the *next* step fails to find the tab
+
+Applying a font-family or text-size change raises an opaque, full-screen overlay bound to
+`SettingsViewModel.IsPageBusy`. It is `InputTransparent="False"`, and while it is up it covers
+`SettingsPageTitle` — which is `ShellTabs.AnchorOf(Settings)`. So a step that returns before the
+apply finishes leaves the next lookup staring at a scrim: it reports `Could not find the 'Settings'
+tab`, or a tap lands on the overlay and does nothing, several lines away from the cause.
+
+`SettingsPage.SelectFont` and `SelectTextSize` both wait it out via
+`WaitUntilGone("SettingsBusyOverlay")`. **Any new appearance setting must do the same.** A
+text-size apply is genuinely slow — it rewrites 21 font resources and every `DynamicResource`
+consumer in every page constructed this session re-measures — so the wait is 30 s, not the
+default.
+
+If `SettingsBusyOverlay` itself is reported missing, it is a recently added `AutomationId`: you
+are almost certainly running `--no-build` against an older build.
+
+### Settings ▸ Text size is stuck at a size nobody chose
+
+The text-size choice **persists in Preferences**, exactly like the theme and the font family.
+`EveryTextSizeRendersEveryTab`, `ExtraLargeTextKeepsTheModalFormsUsable` and the sweep's
+`CaptureExtraLargeSurfaces` all restore `Default` in a `finally` — but a run killed with SIGKILL,
+a closed terminal, or a device that wedged mid-apply never runs it. The device is then left scaled,
+and because the setting survives reinstall, *every later run starts scaled* and nothing says so.
+
+Symptoms are diffuse rather than a clean failure: layout assertions that were fine now fail,
+`ScrollTo` needs more swipes than its budget allows because everything is taller, and screenshot
+artifacts look subtly wrong. Same family as `animator_duration_scale` — a persisted device
+setting masquerading as an app bug.
+
+Check and fix by hand: Settings ▸ Text size, tap **Default**. There is no way to read the current
+size through Appium (the selected chip is marked by a drawn `DataTrigger`, not by text), so this
+is an eyeball check, not an assertion.
+
 ---
 
 ## Tab navigation problems
@@ -552,6 +586,31 @@ disambiguates against same-worded page labels by taking the **bottom-most** matc
 | A tab was commented out of `AppShell.xaml` | Update `AppTab` and `TitleOf` |
 | A modal popup is covering the tab bar | Dismiss it first |
 
+### "IS in the element tree but is not visible" for a tab you are already on
+
+A tab-opening helper times out on its own anchor, and the artifact shows the tab's content plainly
+on screen. Two things conspire, and neither is what the message suggests:
+
+1. **Syncfusion tabs keep their scroll position**, and re-tapping an already-selected tab does
+   **not** scroll it back to the top. So an "open the tab" helper that waits for a *mid-page*
+   anchor waits forever once something scrolled past it — the tap is a no-op and nothing will
+   bring the anchor back.
+2. **An element scrolled up behind the pinned tab strip is reported `visible="false"`** while
+   still being in the tree at a perfectly ordinary on-screen `y`. That is the giveaway: check the
+   artifact's `y` against the tab strip's. In the real case the caption sat at `y=84` with the
+   strip at `y=62` — it looks on-screen, so the message's suggestions (keyboard, inactive tab,
+   scrolled off-screen) all read as wrong, and the keyboard is the one it names first.
+
+`BudgetPage.OpenSummaryTab` is the worked example: it checks a **set** of markers spread down the
+tab's length rather than one anchor, and returns early when any of them is visible, so it is a
+genuine no-op at any scroll offset. If you add a long-ScrollView tab, do the same rather than
+reaching for `OpenTab`, whose single-anchor wait is only safe on a tab whose anchor cannot scroll
+away.
+
+Related: this is the second failure of the same family in one sitting. The other was
+`ScrollTo` searching one direction only — see TC-3.3's note in TEST-CASES.md. Anything that reads
+several figures from one long tab needs to be position-independent in both respects.
+
 ### Navigation reports success but the wrong page is showing
 
 `ShellTabs.GoTo` waits for `AnchorOf(tab)`. If that anchor also exists on another page, the
@@ -570,6 +629,7 @@ Genuine flake. In rough order of likelihood:
 | A `Thread.Sleep` crept in | Replace with an explicit wait |
 | Test order dependence | `UITEST_RESTART_PER_TEST` defaults to `true`; do not disable it in CI |
 | Leftover data from previous runs skewing totals | `--fresh` |
+| A persisted appearance setting left behind by a run that died | Theme, font family and **text size** all survive reinstall. Check Settings ▸ Text size shows **Default** |
 | Animations | `reduceMotion` on iOS. On Android the script zeroes **two** scales (`window_animation_scale`, `transition_animation_scale`) and restores them on exit. It never sets `animator_duration_scale` — that one hangs the app — but it does check for a stray `0` and repair it. `disableWindowAnimation` is deliberately **not** used, because it zeroes all three |
 | A cached element going stale | `AppDriver` never caches — but if you held an `AppiumElement` yourself, stop |
 

@@ -1106,7 +1106,7 @@
                                         <Border Margin="0,10,0,0" Style="{DynamicResource ExpanderCardStyle}">
                                             <expander:SfExpander
                                                 HeaderIconPosition="End"
-                                                IsExpanded="False"
+                                                IsExpanded="True"
                                                 Style="{DynamicResource CommonExpanderStyle}">
 
                                                 <expander:SfExpander.Header>

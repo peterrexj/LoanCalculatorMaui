@@ -39,16 +39,21 @@
                     Grid.Column="0"
                     Style="{DynamicResource PopupTitleLabelStyle}"
                     Text="Entry" />
+                <!--
+                    Minimum*Request rather than a fixed size: the text scales with the Settings
+                    text-size choice, so a fixed box clips it on Android. See the fuller note on
+                    the same button in LoanDetailsPage.xaml.
+                -->
                 <Button
                     x:Name="btnSave"
                     Grid.Column="1"
                     BackgroundColor="Transparent"
                     Clicked="OnSave"
                     FontSize="{DynamicResource FontSizeLarge}"
-                    HeightRequest="36"
+                    MinimumHeightRequest="36"
+                    MinimumWidthRequest="72"
                     Text="Save"
-                    TextColor="{DynamicResource LoanAppTabIndicatorStrokeColor}"
-                    WidthRequest="72" />
+                    TextColor="{DynamicResource LoanAppTabIndicatorStrokeColor}" />
                 <Button
                     AutomationId="TransactionEntryCancelButton"
                     Grid.Column="2"

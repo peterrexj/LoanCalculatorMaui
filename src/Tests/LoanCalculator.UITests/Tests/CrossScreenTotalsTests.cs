@@ -110,10 +110,8 @@ public class CrossScreenTotalsTests : UITestBase
         // explicitly, as BudgetTests does in its [SetUp].
         Tabs.GoTo(AppTab.Budget);
 
-        Budget.OpenSummaryTab();
-        Budget.ScrollToTotals();
-        var netBefore = App.Number(BudgetPage.NetMonthly);
-        var summaryIncomeBefore = App.Number(BudgetPage.IncomeMonthlyTotal);
+        var netBefore = Budget.MonthlyNet();
+        var summaryIncomeBefore = Budget.MonthlyIncome();
 
         var incomeTabBefore = Budget.IncomeTabSummaryText();
         var expenseTabBefore = Budget.ExpenseTabSummaryText();
@@ -128,16 +126,14 @@ public class CrossScreenTotalsTests : UITestBase
             "the Income tab's figures did not change, so the switch tap did not register and this "
             + "test proves nothing");
 
-        Budget.OpenSummaryTab();
-        Budget.ScrollToTotals();
-
+        // Each reader navigates to Summary and scrolls to its own figure from wherever the tab
+        // currently sits, so no explicit navigation or scrolling is needed here.
         Assert.Multiple(() =>
         {
-            Assert.That(App.Number(BudgetPage.NetMonthly), Is.EqualTo(netBefore).Within(1m),
+            Assert.That(Budget.MonthlyNet(), Is.EqualTo(netBefore).Within(1m),
                 "Budget's Net changed when the Income tab's display toggle was flipped — it is "
                 + "subtracting the expenses twice");
-            Assert.That(App.Number(BudgetPage.IncomeMonthlyTotal),
-                Is.EqualTo(summaryIncomeBefore).Within(1m),
+            Assert.That(Budget.MonthlyIncome(), Is.EqualTo(summaryIncomeBefore).Within(1m),
                 "Budget's Summary income changed; it means the income the user entered");
         });
 

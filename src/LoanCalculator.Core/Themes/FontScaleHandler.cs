@@ -103,6 +103,19 @@ namespace LoanCalculator.Core.Themes
         /// <summary>Convenience for <c>FactorFor(CurrentSize)</c> — see <see cref="CurrentSize"/>.</summary>
         public static double CurrentFactor => FactorFor(CurrentSize);
 
+        /// <summary>
+        /// Height for a popup header whose title is a scaling <c>FontSizeXL</c> label sitting
+        /// inside <paramref name="padding"/> points of fixed vertical padding.
+        /// </summary>
+        /// <remarks>
+        /// For <c>SfPopup.HeaderHeight</c>, which is a hard height that clips its own
+        /// HeaderTemplate rather than growing to fit it — so a header title that scales needs a
+        /// header height that scales with it, computed rather than guessed generously. Room for
+        /// two lines, because those titles word-wrap and a wrap must not clip either.
+        /// </remarks>
+        public static double ScaledHeaderHeight(double padding) =>
+            padding + (BaseSizeFor("FontSizeXL") * CurrentFactor * 2.0);
+
         public static double FactorFor(AppTextSize size) => size switch
         {
             AppTextSize.Small => 0.9,

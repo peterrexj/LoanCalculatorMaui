@@ -43,6 +43,7 @@
             AnimationMode="Zoom"
             AppearanceMode="OneButton"
             BackgroundColor="{DynamicResource LoanAppPopupBg}"
+            HeaderHeight="{Binding PopupHeaderHeight}"
             IsFullScreen="True"
             IsOpen="{Binding IsPopupRequired}"
             ShowCloseButton="False"
@@ -54,27 +55,37 @@
                     <!--
                         Top padding clears the iOS status bar / notch (full-screen popup).
 
-                        THE ACTUAL CAUSE, found by comparison rather than guessing a third time:
-                        this SfPopup set AutoSizeMode="Height". PopupDisclaimerView.xaml — the
-                        first-launch disclaimer, confirmed working per CLAUDE.md, with the exact
-                        same unbounded-ScrollView content shape as this one — does NOT set it at
-                        all. AutoSizeMode="Height" is only needed when an SfComboBox lives inside
-                        the popup (see CLAUDE.md's note on that), which is not the case here; it
-                        was never load-bearing for this popup's actual content.
+                        THE CAUSE, which took four attempts: SfPopup.HeaderHeight is a hard height
+                        defaulting to 50, and this template is laid out into exactly that and
+                        clipped to it. The padding below is 70 points on its own on iOS, so the
+                        title had nowhere left to go. HeaderHeight is now bound to
+                        SettingsViewModel.PopupHeaderHeight, which scales with the text-size
+                        choice — see that property's remarks for the full arithmetic and for why
+                        Android looked fine while iOS did not.
 
-                        Two earlier attempts targeted the wrong thing and are recorded here so they
-                        are not re-tried: a MinimumHeightRequest + WordWrap fix (theory: not enough
-                        room) had no effect, and reverting FontSize to a fixed literal (theory: a
-                        live DynamicResource change wasn't being picked up by an already-realized
-                        template) ALSO had no effect — which, in hindsight, was the real tell: if
-                        a non-reactive, fixed-at-construction value still failed to show, the fault
-                        could never have been about reactivity at all. FontSize is back to
-                        {DynamicResource FontSizeXL} now that AutoSizeMode is gone; there is no
-                        more reason to exclude this title from the Text size feature.
+                        Three earlier attempts targeted the wrong thing and are recorded so they
+                        are not re-tried. (1) A MinimumHeightRequest on this Grid plus WordWrap:
+                        no effect, and it CANNOT work — SfPopup clips the template to HeaderHeight,
+                        so a minimum the Grid asks for is simply ignored. It has been removed as
+                        dead markup. (2) Reverting FontSize to a fixed literal: also no effect,
+                        which in hindsight was the tell — if a value fixed at construction still
+                        failed to show, the fault was never about reactivity. (3) Removing
+                        AutoSizeMode="Height", on the grounds that the known-working
+                        PopupDisclaimerView.xaml does not set it: this one DID change the symptom,
+                        from an invisible header to a clipped sliver, so it was a real
+                        contributing factor rather than a dead end — but it was not the cause, and
+                        removing it alone left the title still unreadable.
+
+                        Worth knowing why PopupDisclaimerView.xaml survives on the default 50: it
+                        clears the same iOS inset but uses 8 points of bottom padding instead of
+                        20, and its title does not scale. It escapes this by a hair rather than by
+                        being built differently, so do not read it as proof the default is safe.
+
+                        FontSize stays {DynamicResource FontSizeXL} — with HeaderHeight scaling in
+                        step there is no reason to exclude this title from the Text size feature.
                     -->
                     <Grid
                         Padding="{OnPlatform iOS='0,50,0,20', MacCatalyst='0,50,0,20', Default='0,20,0,20'}"
-                        MinimumHeightRequest="{OnPlatform iOS=110, MacCatalyst=110, Default=80}"
                         BackgroundColor="{DynamicResource LoanAppPopupBg}">
                         <Label
                             BackgroundColor="Transparent"
@@ -155,6 +166,7 @@
             AnimationMode="Zoom"
             AppearanceMode="OneButton"
             BackgroundColor="{DynamicResource LoanAppPopupBg}"
+            HeaderHeight="{Binding PopupHeaderHeight}"
             IsFullScreen="True"
             IsOpen="{Binding IsPrivacyPopupRequired}"
             ShowCloseButton="False"
@@ -166,27 +178,37 @@
                     <!--
                         Top padding clears the iOS status bar / notch (full-screen popup).
 
-                        THE ACTUAL CAUSE, found by comparison rather than guessing a third time:
-                        this SfPopup set AutoSizeMode="Height". PopupDisclaimerView.xaml — the
-                        first-launch disclaimer, confirmed working per CLAUDE.md, with the exact
-                        same unbounded-ScrollView content shape as this one — does NOT set it at
-                        all. AutoSizeMode="Height" is only needed when an SfComboBox lives inside
-                        the popup (see CLAUDE.md's note on that), which is not the case here; it
-                        was never load-bearing for this popup's actual content.
+                        THE CAUSE, which took four attempts: SfPopup.HeaderHeight is a hard height
+                        defaulting to 50, and this template is laid out into exactly that and
+                        clipped to it. The padding below is 70 points on its own on iOS, so the
+                        title had nowhere left to go. HeaderHeight is now bound to
+                        SettingsViewModel.PopupHeaderHeight, which scales with the text-size
+                        choice — see that property's remarks for the full arithmetic and for why
+                        Android looked fine while iOS did not.
 
-                        Two earlier attempts targeted the wrong thing and are recorded here so they
-                        are not re-tried: a MinimumHeightRequest + WordWrap fix (theory: not enough
-                        room) had no effect, and reverting FontSize to a fixed literal (theory: a
-                        live DynamicResource change wasn't being picked up by an already-realized
-                        template) ALSO had no effect — which, in hindsight, was the real tell: if
-                        a non-reactive, fixed-at-construction value still failed to show, the fault
-                        could never have been about reactivity at all. FontSize is back to
-                        {DynamicResource FontSizeXL} now that AutoSizeMode is gone; there is no
-                        more reason to exclude this title from the Text size feature.
+                        Three earlier attempts targeted the wrong thing and are recorded so they
+                        are not re-tried. (1) A MinimumHeightRequest on this Grid plus WordWrap:
+                        no effect, and it CANNOT work — SfPopup clips the template to HeaderHeight,
+                        so a minimum the Grid asks for is simply ignored. It has been removed as
+                        dead markup. (2) Reverting FontSize to a fixed literal: also no effect,
+                        which in hindsight was the tell — if a value fixed at construction still
+                        failed to show, the fault was never about reactivity. (3) Removing
+                        AutoSizeMode="Height", on the grounds that the known-working
+                        PopupDisclaimerView.xaml does not set it: this one DID change the symptom,
+                        from an invisible header to a clipped sliver, so it was a real
+                        contributing factor rather than a dead end — but it was not the cause, and
+                        removing it alone left the title still unreadable.
+
+                        Worth knowing why PopupDisclaimerView.xaml survives on the default 50: it
+                        clears the same iOS inset but uses 8 points of bottom padding instead of
+                        20, and its title does not scale. It escapes this by a hair rather than by
+                        being built differently, so do not read it as proof the default is safe.
+
+                        FontSize stays {DynamicResource FontSizeXL} — with HeaderHeight scaling in
+                        step there is no reason to exclude this title from the Text size feature.
                     -->
                     <Grid
                         Padding="{OnPlatform iOS='0,50,0,20', MacCatalyst='0,50,0,20', Default='0,20,0,20'}"
-                        MinimumHeightRequest="{OnPlatform iOS=110, MacCatalyst=110, Default=80}"
                         BackgroundColor="{DynamicResource LoanAppPopupBg}">
                         <Label
                             BackgroundColor="Transparent"
@@ -1434,7 +1456,15 @@
             all 21 at once: this hides what is still happening underneath, that fixes how long it
             takes and whether the spinner itself can still animate while it does.
         -->
+        <!--
+            AutomationId so the UI suite can wait for this to clear rather than racing it. It is
+            opaque, full-screen and InputTransparent="False", so while it is up it covers
+            SettingsPageTitle — which is ShellTabs.AnchorOf(Settings) — and swallows taps. A
+            following lookup then fails as "could not find the tab", pointing nowhere near the
+            cause. See SettingsPage.SelectFont / SelectTextSize.
+        -->
         <Grid
+            AutomationId="SettingsBusyOverlay"
             BackgroundColor="{DynamicResource LoanAppDefaultBackgroundColor}"
             InputTransparent="False"
             IsVisible="{Binding IsPageBusy}"

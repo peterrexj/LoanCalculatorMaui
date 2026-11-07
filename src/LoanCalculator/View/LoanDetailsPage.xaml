@@ -25,16 +25,30 @@
 
             <Grid Grid.Row="0" Padding="16,14,8,4" ColumnDefinitions="*,Auto,Auto">
                 <Label Grid.Column="0" Style="{DynamicResource PopupTitleLabelStyle}" Text="Loan Details" />
+                <!--
+                    Minimum*Request, never a fixed HeightRequest/WidthRequest, because FontSize
+                    scales with the Settings text-size choice and these are the floor of a tap
+                    target, not the size of the button.
+
+                    This was a fixed 36 x 72 and it clipped on Android at Extra Large — "Done"
+                    rendered as "Don" with the lower half of the glyphs cut off. Android only,
+                    because the native AppCompatButton spends part of a fixed box on padding and
+                    the Material inset drawable (~16dp each side horizontally, ~10dp vertically)
+                    before the text gets any room, so the usable area inside 36 x 72 is far
+                    smaller than the numbers suggest. iOS has no such inset and 20pt text still
+                    fit, which is exactly why it looked like an Android rendering defect rather
+                    than markup that had stopped being big enough.
+                -->
                 <Button
                     AutomationId="QuickInputApplyButton"
                     Grid.Column="1"
                     BackgroundColor="Transparent"
                     Clicked="OnApply"
                     FontSize="{DynamicResource FontSizeLarge}"
-                    HeightRequest="36"
+                    MinimumHeightRequest="36"
+                    MinimumWidthRequest="72"
                     Text="Done"
-                    TextColor="{DynamicResource LoanAppTabIndicatorStrokeColor}"
-                    WidthRequest="72" />
+                    TextColor="{DynamicResource LoanAppTabIndicatorStrokeColor}" />
                 <Button
                     AutomationId="WizardCancelButton"
                     Grid.Column="2"

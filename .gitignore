@@ -363,3 +363,7 @@ MigrationBackup/
 FodyWeavers.xsd
 /src/LoanCalculator/.idea/.idea.LoanCalculatorMaui/.idea
 .DS_Store
+
+# Raw Appium screenshot captures (~240 MB, regenerable via UITests StoreScreenshots + ScreenshotSweep).
+# The framed store images in Resources/Images/Screenshots/Store/ are the committed deliverable.
+Resources/Images/Screenshots/Captures/

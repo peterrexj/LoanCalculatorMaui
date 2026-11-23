@@ -299,6 +299,36 @@ public sealed class AppDriver : IDisposable
     }
 
     /// <summary>
+    /// Dismisses the system "Sign in to Apple Account" prompt that StoreKit raises on a simulator
+    /// with no Apple account (the app restores purchases at launch). It sits over the whole app, so
+    /// every tap lands on it and the disclaimer never closes — which reads as a broken Accept
+    /// button. Scoped to alerts that mention an Apple account: the Settings delete confirmation and
+    /// the app's own error alert are also native alerts and must NOT be dismissed here.
+    /// </summary>
+    /// <returns>True if a prompt was dismissed.</returns>
+    public bool TryDismissAppleSignInPrompt()
+    {
+        if (Platform != TestPlatform.iOS) return false;
+
+        try
+        {
+            var alert = Raw.SwitchTo().Alert();
+            var text = alert.Text ?? string.Empty;
+            if (!text.Contains("Apple Account", StringComparison.OrdinalIgnoreCase)
+                && !text.Contains("Apple ID", StringComparison.OrdinalIgnoreCase))
+                return false;
+
+            alert.Dismiss();
+            return true;
+        }
+        catch (WebDriverException)
+        {
+            // NoAlertPresent is the normal case, and is a WebDriverException subtype.
+            return false;
+        }
+    }
+
+    /// <summary>
     /// The app surfaces unhandled exceptions as a native alert ("An unexpected error
     /// occurred"), which is modal and hides the whole UI. Without this, the first test to hit
     /// it reports a 20-second "element not found" and every test after it fails the same way,

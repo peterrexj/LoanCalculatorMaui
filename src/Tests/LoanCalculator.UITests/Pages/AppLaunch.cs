@@ -10,6 +10,13 @@ namespace LoanCalculator.UITests.Pages;
 /// </summary>
 public sealed class AppLaunch(AppDriver app)
 {
+    /// <summary>
+    /// When set, the first-run disclaimer is screenshotted under this name before it is accepted.
+    /// Only meaningful on a fresh install — on a used device the gate never appears. Used by
+    /// <c>GuideCapture</c>, which wants the screens a brand-new user sees.
+    /// </summary>
+    public static string? CaptureDisclaimerAs { get; set; }
+
     private const string DisclaimerAccept = "DisclaimerAcceptButton";
     private const string WizardCancel = "WizardCancelButton";
 
@@ -20,9 +27,19 @@ public sealed class AppLaunch(AppDriver app)
 
         while (DateTime.UtcNow < deadline)
         {
+            // A simulator with no Apple account raises a system sign-in prompt over everything.
+            if (app.TryDismissAppleSignInPrompt()) continue;
+
             // The disclaimer is modal and full-screen, so it wins if several are present.
             if (app.Exists(DisclaimerAccept, TimeSpan.FromMilliseconds(500)))
             {
+                if (CaptureDisclaimerAs is not null)
+                {
+                    Thread.Sleep(1200);   // let the popup finish animating in
+                    Artifacts.Capture(app, CaptureDisclaimerAs);
+                    CaptureDisclaimerAs = null;
+                }
+
                 app.Tap(DisclaimerAccept);
                 app.WaitUntilGone(DisclaimerAccept, TimeSpan.FromSeconds(15));
                 continue;

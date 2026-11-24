@@ -20,6 +20,32 @@ import sys
 
 from PIL import Image, ImageDraw, ImageFilter, ImageFont
 
+
+def _safe_box(method, rounded=False):
+    """Make drawing calls behave the same on every Pillow version. Newer releases raise ValueError
+    ("x1 must be greater than or equal to x0") when a box ends before it starts, or when a rounded
+    corner radius does not fit the box (a thin side button with radius = half its width, say).
+    Order the corners, and shrink the radius until it fits."""
+    def wrapper(self, xy, *args, **kwargs):
+        if len(xy) == 4 and all(isinstance(v, (int, float)) for v in xy):
+            x0, y0, x1, y1 = xy
+            xy = (min(x0, x1), min(y0, y1), max(x0, x1), max(y0, y1))
+            if rounded:
+                r = kwargs.get("radius", args[0] if args else 0)
+                fit = max(0, (min(xy[2] - xy[0], xy[3] - xy[1]) - 2) // 2)
+                r = max(0, min(int(r), fit))
+                if args:
+                    args = (r,) + tuple(args[1:])
+                else:
+                    kwargs["radius"] = r
+        return method(self, xy, *args, **kwargs)
+    return wrapper
+
+
+for _name in ("rounded_rectangle", "ellipse", "rectangle"):
+    setattr(ImageDraw.ImageDraw, _name,
+            _safe_box(getattr(ImageDraw.ImageDraw, _name), rounded=_name == "rounded_rectangle"))
+
 HERE = os.path.dirname(os.path.abspath(__file__))
 FONT_BOLD = os.path.abspath(os.path.join(
     HERE, "..", "..", "..", "src", "LoanCalculator", "Resources", "Fonts", "NotoSans-Bold.ttf"))
@@ -182,7 +208,7 @@ def framed_device(path, cfg, tw, skin=None):
         for y0, y1, left in ((0.17, 0.23, True), (0.26, 0.34, True), (0.27, 0.40, False)):
             x = c if left else c + bw + tw + 2 * b
             od.rounded_rectangle((x, c + bw + int(H * y0), x + bw, c + bw + int(H * y1)),
-                                 radius=bw // 2, fill=edge + (255,))
+                                 radius=max(0, (bw - 2) // 2), fill=edge + (255,))
     if c:
         od.rounded_rectangle((0, 0, out.width - 1, out.height - 1), radius=corner + b + m,
                              fill=case_color, outline=tuple(min(255, v + 50) for v in case_color[:3]) + (case_color[3],),
@@ -375,7 +401,31 @@ def _render(cfg, name, files, style, skin_label):
     if full is not None:
         full.convert("RGB").resize((full.width // 3, full.height // 3), Image.LANCZOS).save(
             os.path.join(out_dir, "_full.png"), optimize=True)
-    print(f"  {name}: style {num} {folder}: {len(images)} images -> {out_dir}")
+    return f"  {name}: style {num} {folder}: {len(images)} images -> {out_dir}"
+
+
+def _hero_files(cfg, name, quiet=False):
+    cap = os.path.join(HERE, "Captures", cfg["folder"])
+    files = []
+    for stem, slug, text in HERO:
+        p = os.path.join(cap, f"{cfg['prefix']}-default-{stem}.png")
+        if not os.path.exists(p):
+            if not quiet:
+                print(f"  {name}: missing {os.path.basename(p)}, skipped")
+            continue
+        files.append((p, slug, text))
+    return files
+
+
+def _job(args):
+    """One (device, style, phone type) render. Top level so worker processes can import it; on Windows
+    each worker is a fresh interpreter, so everything it needs is rebuilt from these small arguments."""
+    import store_styles
+    name, num, skin = args
+    store_styles.OVERRIDE["skin"] = skin
+    style = next(st for st in store_styles.STYLES if st[0] == num)
+    cfg = DEVICES[name]
+    return _render(cfg, name, _hero_files(cfg, name, quiet=True), style, skin)
 
 
 def main():
@@ -388,6 +438,8 @@ def main():
     ap.add_argument("-s", "--style", help="style numbers, e.g. 3  or 3,5,8  or 2-6  or all")
     ap.add_argument("-k", "--skin", help="phone type / case for every style: a name, or 'all' "
                                          "(see --list). Default: each style's own")
+    ap.add_argument("-j", "--jobs", type=int, default=0,
+                    help="parallel worker processes (default: half your CPU cores, 1-6). Use 1 for no parallelism")
     ap.add_argument("-l", "--list", action="store_true", help="list styles and phone types, then exit")
     args = ap.parse_args()
 
@@ -418,24 +470,28 @@ def main():
     else:
         skins = [None]
 
+    jobs = []
     for name in devices:
-        cfg = DEVICES[name]
-        cap = os.path.join(HERE, "Captures", cfg["folder"])
-        files = []
-        for stem, slug, text in HERO:
-            p = os.path.join(cap, f"{cfg['prefix']}-default-{stem}.png")
-            if not os.path.exists(p):
-                print(f"  {name}: missing {os.path.basename(p)}, skipped")
-                continue
-            files.append((p, slug, text))
-        if not files:
+        if not _hero_files(DEVICES[name], name):          # reports any missing captures once
             continue
-        print(f"{name}:")
         for skin in skins:
-            store_styles.OVERRIDE["skin"] = skin
-            for style in [st for st in styles if st[0] in picked]:
-                _render(cfg, name, files, style, skin)
-    store_styles.OVERRIDE["skin"] = None
+            jobs += [(name, st[0], skin) for st in styles if st[0] in picked]
+
+    workers = args.jobs or max(1, min(6, (os.cpu_count() or 2) // 2))
+    workers = max(1, min(workers, len(jobs)))
+    print(f"{len(jobs)} renders, {workers} worker{'s' if workers != 1 else ''}")
+    if workers == 1:
+        for j in jobs:
+            print(_job(j), flush=True)
+    else:
+        from concurrent.futures import ProcessPoolExecutor, as_completed
+        with ProcessPoolExecutor(max_workers=workers) as pool:
+            futures = {pool.submit(_job, j): j for j in jobs}
+            for done, fut in enumerate(as_completed(futures), 1):
+                try:
+                    print(f"[{done}/{len(jobs)}]{fut.result()}", flush=True)
+                except Exception as exc:                  # one bad render must not lose the rest
+                    print(f"[{done}/{len(jobs)}]  FAILED {futures[fut]}: {exc!r}", flush=True)
 
 
 if __name__ == "__main__":

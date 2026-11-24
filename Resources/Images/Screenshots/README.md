@@ -1,7 +1,8 @@
 # Screenshots: scripts, how to run them, what they make
 
 Nothing in `Captures/`, `Store/` or the website guide images is edited by hand. Raw screens come from the
-UI-test suite; three Python scripts turn them into finished images and the guide page.
+UI-test suite; Python scripts turn them into finished images and the guide page. **Jump to the command cheat sheet
+below** for every command and what it does.
 
 ```
 Resources/Images/Screenshots/
@@ -18,19 +19,100 @@ Resources/Images/Screenshots/
   Droid/ Win/ Review/ InAppImage*.png   older, hand-made material; not touched by any script
 ```
 
-## The three scripts at a glance
+## Command cheat sheet (start here)
+
+Run everything from this folder. Install once: `pip3 install pillow`.
+
+### Store images: `make_store_images.py`
+
+Reads `Captures/<device>/<Prefix>-default-<hero>.png`, writes `Store/<device>/<style-name>/NN-slug.png`.
+Devices: `iphone` (1320x2868), `ipad` (2064x2752), `android` (1080x2160). Styles: numbers 1 to 20.
+
+| Command | What it does |
+|---|---|
+| `python3 make_store_images.py` | Opens a **menu**: pick styles by number, then a phone type, for all three devices. |
+| `python3 make_store_images.py iphone` | Same menu, but only the iPhone. Also `ipad`, `android`, or several: `iphone android`. |
+| `python3 make_store_images.py --list` | Prints every style number, name and description, and every phone type. Renders nothing. |
+| `python3 make_store_images.py -s 1,2` | Styles 1 (classic) and 2 (panorama) for **all three platforms**, no menu. |
+| `python3 make_store_images.py iphone -s 1,2` | Styles 1 and 2 for the iPhone only. |
+| `python3 make_store_images.py ipad -s 1,2` | Styles 1 and 2 for the iPad only. |
+| `python3 make_store_images.py android -s 1,2` | Styles 1 and 2 for Android only. |
+| `python3 make_store_images.py -s 3` | One style (3, clean-light), all platforms. |
+| `python3 make_store_images.py -s 3,5,8` | Several styles, all platforms. |
+| `python3 make_store_images.py -s 2-6` | A range: styles 2, 3, 4, 5, 6. |
+| `python3 make_store_images.py -s all` | **Every style** (all 20), all platforms. 60 renders, a few minutes in parallel. |
+| `python3 make_store_images.py iphone -s all` | Every style, iPhone only. |
+| `python3 make_store_images.py iphone ipad -s 1-10` | A range on two devices. |
+| `python3 make_store_images.py iphone -s 4 --skin gold` | Style 4 drawn with a **gold phone**. Output folder gets a suffix: `sunset-tilt+gold`. |
+| `python3 make_store_images.py -s 1 --skin case-red` | Style 1 in a red phone case, all platforms. |
+| `python3 make_store_images.py iphone -s 1 --skin all` | Style 1 once for **each of the 13 phone types** (13 folders). |
+| `python3 make_store_images.py -s all -j 8` | Every style using **8 parallel workers**. |
+| `python3 make_store_images.py -s all -j 1` | Every style with **no parallelism** (use this to debug an error). |
+
+Flags, in full:
+
+| Flag | Meaning |
+|---|---|
+| *(device names)* | `iphone`, `ipad`, `android`. None given means all three. |
+| `-s`, `--style` | Style numbers: `4`, `3,5,8`, `2-6` or `all`. Leave it out and you get the menu. |
+| `-k`, `--skin` | Phone type or case for every style, or `all`. Leave it out and each style uses its own phone. Types: `black`, `silver`, `titanium`, `gold`, `blue`, `white`, `case-red`, `case-navy`, `case-mint`, `case-clear`, `case-rugged`, `notch`, `no-camera`. |
+| `-j`, `--jobs` | Parallel worker processes. Default: half your CPU cores, between 1 and 6. Each worker can use about half a gigabyte of memory (the panorama canvases are large), so lower it if the machine struggles. `-j 1` runs one at a time. |
+| `-l`, `--list` | List styles and phone types, then exit. |
+
+Notes: each (device, style, phone type) is one separate job, so `-s all` on three devices is 60 jobs shared between
+the workers, and lines appear as `[17/60] ...` in whatever order they finish. A render that fails prints `FAILED` and
+the rest carry on. Re-running a style overwrites only its own folder. With no terminal (a script, CI) and no `-s`,
+it builds styles 1 and 2.
+
+### Compress images: `compress_images.py`
+
+| Command | What it does |
+|---|---|
+| `python3 compress_images.py` | Losslessly shrinks the committed sets (hero shots and guide shots), in place. |
+| `python3 compress_images.py --colors 256 Captures/ios-iphone-6.9-guide` | Lossy, about 3x to 5x smaller. For the guide shots only. |
+| `python3 compress_images.py some/folder other.png` | Any files and folders (searched recursively). |
+| `python3 compress_images.py --dry-run` | Shows the saving and changes nothing. |
+
+### Website guide: `make_guide_images.py` and `make_guide_page.py`
+
+| Command | What it does |
+|---|---|
+| `python3 make_guide_images.py` | Captures in `Captures/ios-iphone-6.9-guide/` become framed `.webp` files in the pages repo, `images/loanaffordcalc/guide/`. |
+| `python3 make_guide_images.py some/other/folder` | Same, but writes to a folder you choose. |
+| `python3 make_guide_page.py` | Writes `guides/loan-affordability-calculator.html` in the pages repo from the text in this script. |
+
+### Take the raw screenshots (UI tests), from `src/Tests/LoanCalculator.UITests/`
+
+| Command | What it does |
+|---|---|
+| `... --ios --no-build --fresh --device "iPhone 17 Pro Max" --filter "TestCategory=Guide"` | The guide walkthrough, on a fresh install (about 17 min). |
+| `... --ios --no-build --device "iPhone 17 Pro Max" --filter "TestCategory=Store"` | The iPhone store set. |
+| `... --ios --no-build --fresh --device "iPad Pro 13-inch (M5)" --filter "TestCategory=Store"` | The iPad store set. |
+| `... --android --no-build --avd Medium_Phone_API_36.1 --filter "TestCategory=Store"` | The Android store set. |
+
+The full commands (with `UITEST_ARTIFACTS=...` and the `./run-uitests.sh` prefix) are in Part 1 below.
+
+### The scripts at a glance
 
 | Script | You run it when | Needs | Output |
 |---|---|---|---|
-| `make_store_images.py` (menu, or `-s 3,5 --skin gold`) | store screenshots changed, or you want to try other styles | Pillow, the store captures | `Store/<device>/<style-name>/` (8 images each) |
+| `make_store_images.py` | store screenshots changed, or you want to try other styles | Pillow, the store captures | `Store/<device>/<style-name>/` (8 images each) |
+| `compress_images.py` | after any new or retaken capture, before committing | Pillow | the PNGs, smaller, in place |
 | `make_guide_images.py [out_dir]` | any guide screenshot changed | Pillow, the guide captures | 51+ framed `.webp` in `YourSimpleAppsPages/images/loanaffordcalc/guide/` |
 | `make_guide_page.py` | you edit the guide text or add an image | nothing extra | `YourSimpleAppsPages/guides/loan-affordability-calculator.html` |
 
-Install once: `pip3 install pillow`. Run the scripts from this folder (`cd Resources/Images/Screenshots`).
-All three can be rerun as often as you like; they overwrite their own output only.
+All of them can be rerun as often as you like; they overwrite their own output only.
 
 Required store sizes, and what we produce: **iPhone 6.9"** 1320x2868, **iPad 13"** 2064x2752,
 **Google Play phone** 1080x2160 (Play rejects anything longer than 2:1).
+
+## Troubleshooting the Python scripts
+
+- **`ValueError: x1 must be greater than or equal to x0`** (newer Pillow, common on Windows): fixed in the script; pull
+  the latest `make_store_images.py`. If it returns, rerun with `-j 1` and send the full traceback.
+- **Slow on Windows:** it runs in parallel by default; raise `-j` if you have the cores and memory.
+- **Out of memory or the machine freezes:** lower the workers, `-j 2`, or render fewer styles at once.
+- **`missing ... skipped`:** a hero capture is not in `Captures/<device>/`. See "What is tracked in git" below.
 
 ## Part 1: take the raw screenshots (only when the UI or data changed)
 
@@ -142,7 +224,8 @@ Dynamic Island), `no-camera` (a clean screen with no cut-out). The coloured ones
   optional `case=(colour, thickness)`).
 - *A new arrangement:* write a function like `bleed` or `duo` in `store_styles.py`.
 
-Each style takes about 8 to 15 seconds per device, so `-s all` on one device is a few minutes.
+Each style takes about 8 to 15 seconds per device per worker; renders run in parallel (`-j`), so `-s all` on three
+devices is a few minutes on a multi-core machine.
 
 **Headlines and screens.** Edit `HERO` at the top of `make_store_images.py`: each entry is
 *(capture name, file slug, headline)*. The first slot is what shows in search results, so give it the strongest

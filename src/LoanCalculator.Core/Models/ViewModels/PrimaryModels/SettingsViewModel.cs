@@ -31,6 +31,7 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
         [JsonIgnore] public ICommand PopupCloseCommand { get; }
         [JsonIgnore] public ICommand PrivacyPolicyCloseCommand { get; }
         [JsonIgnore] public ICommand OpenPrivacyPolicyUrlCommand { get; }
+        [JsonIgnore] public ICommand OpenUserGuideCommand { get; }
         [JsonIgnore]
         public bool IsAllDataDeleteVisible
         {
@@ -68,6 +69,7 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
             ShowPrivacyPolicyCommand = new Command(async () => await ShowPrivacyPolicy());
             PrivacyPolicyCloseCommand = new Command(() => IsPrivacyPopupRequired = false);
             OpenPrivacyPolicyUrlCommand = new Command(async () => await OpenPrivacyPolicyUrl());
+            OpenUserGuideCommand = new Command(async () => await OpenUserGuide());
             OnShareAppRequestCommand = new Command(OnShareAppRequest);
             OnRateAppRequestCommand = new Command(OnRateAppRequest);
         }
@@ -621,6 +623,27 @@ namespace LoanCalculator.Core.Models.ViewModels.PrimaryModels
 
 
 
+
+        // The step-by-step user guide, hosted on the site rather than bundled so it can be corrected
+        // and extended without an app release. Opens in the system browser, like the privacy policy.
+        private const string UserGuideUrl =
+            "https://www.yoursimpleapps.com/guides/loan-affordability-calculator.html";
+
+        private async Task OpenUserGuide()
+        {
+            try
+            {
+                // OpenAsync, not TryOpenAsync: TryOpenAsync asks Android "can anything open this?" first,
+                // and on Android 11+ that answers no unless the manifest declares a <queries> entry,
+                // so it reported failure on devices that had a perfectly good browser.
+                await Launcher.Default.OpenAsync(UserGuideUrl);
+            }
+            catch (Exception)
+            {
+                await _alertService.ShowAlertAsync("User guide",
+                    "The guide could not be opened. Please check your internet connection and try again.", "OK");
+            }
+        }
 
         public void RefreshProperties()
         {

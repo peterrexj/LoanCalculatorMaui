@@ -1205,6 +1205,38 @@
 
                         <BoxView Style="{DynamicResource LoanAppSeparatorInsetStyle}" />
 
+                        <!--  User guide: opens the hosted step-by-step guide in the browser  -->
+                        <Grid AutomationId="SettingsUserGuideRow" Padding="16,14">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <Grid.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding OpenUserGuideCommand}" />
+                            </Grid.GestureRecognizers>
+                            <VerticalStackLayout Grid.Column="0" Spacing="2">
+                                <Label
+                                    FontSize="{DynamicResource FontSizeBody}"
+                                    Text="User guide"
+                                    TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                                <Label
+                                    FontSize="{DynamicResource FontSizeSmall}"
+                                    Opacity="0.55"
+                                    Text="Step by step, with pictures"
+                                    TextColor="{DynamicResource LoanAppDefaultForegroundColor}" />
+                            </VerticalStackLayout>
+                            <Label
+                                Grid.Column="1"
+                                FontFamily="{DynamicResource DefaultFontFamily}"
+                                FontSize="{DynamicResource FontSizeMedium}"
+                                Opacity="0.4"
+                                Text="›"
+                                TextColor="{DynamicResource LoanAppDefaultForegroundColor}"
+                                VerticalOptions="Center" />
+                        </Grid>
+
+                        <BoxView Style="{DynamicResource LoanAppSeparatorInsetStyle}" />
+
                         <!--  Privacy Policy  -->
                         <Grid AutomationId="SettingsPrivacyRow" Padding="16,14">
                             <Grid.ColumnDefinitions>
